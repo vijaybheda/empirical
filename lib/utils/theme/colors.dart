@@ -22,6 +22,7 @@ class GradientThemeColors {
 class AppColors {
   static Color primaryBlack = const Color.fromARGB(255, 0, 0, 0);
   static Color primary = const Color(0xff0ba900);
+  static Color accentColor = const Color(0xff0ba900);
   static Color textInput = const Color(0xffFFFFFD);
   static Color textColor = const Color(0xffFFFFFF);
   static Color hintColor = const Color(0xffABABAB);
@@ -33,6 +34,7 @@ class AppColors {
 
   static Color primaryColor = const Color(0xffF29D38);
   static Color secondaryColor = const Color(0xffc46d1d);
+  static Color backgroundColor = const Color(0xffEBF9F6);
   static Color darkPrimaryColor = const Color(0xff0D0D0D);
   static Color black = const Color(0xff180E02);
   static Color dark = const Color(0xff474747);
@@ -55,4 +57,5 @@ class AppColors {
   static Color textBlue = const Color(0xFF347CF6);
   static Color searchfieldColor = const Color(0xffF8F8F9);
   static Color brightGrey = const Color(0xFFE6E6E6);
+  static Color warningColor = const Color(0xFFFF0101);
 }

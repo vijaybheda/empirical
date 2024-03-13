@@ -79,4 +79,6 @@ class StorageKey {
   static const String kNotificationSettings = 'notificationSetting';
   static const String kAppLanguage = 'appLanguage';
   static const String kIsBoardWatched = 'isBoardWatched';
+  static const String jwtToken = 'jwtToken';
+  static const String kBaseUrlKey = 'baseUrlKey';
 }
