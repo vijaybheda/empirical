@@ -1,5 +1,5 @@
 import 'package:get_storage/get_storage.dart';
-import 'package:pverify/models/user_model.dart';
+import 'package:pverify/models/user.dart';
 
 class AppStorage {
   // ignore: prefer_function_declarations_over_variables
@@ -26,17 +26,17 @@ class AppStorage {
     return await storageBox().write(key, value);
   }
 
-  UserModel? getUserData() {
+  User? getUserData() {
     String? loggedInUser = read(StorageKey.kLoggedInUser);
     if (loggedInUser == null) {
       return null;
     }
-    UserModel userModel = UserModel.fromJson(loggedInUser);
-    return userModel;
+    User user = User.fromJson(loggedInUser);
+    return user;
   }
 
-  Future<void> setUserData(UserModel userModel) async {
-    await write(StorageKey.kLoggedInUser, userModel.toJson());
+  Future<void> setUserData(User User) async {
+    await write(StorageKey.kLoggedInUser, User.toJson());
     return;
   }
 

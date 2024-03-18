@@ -11,8 +11,6 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:pverify/models/user_model.dart';
-import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class AppIcon {
@@ -159,58 +157,6 @@ class Utils {
         ],
       ),
     );
-  }
-
-  static Widget getUserProfileWidget({UserModel? userModel}) {
-    UserModel? userData;
-    if (userModel != null) {
-      userData = userModel;
-    } else {
-      userData = AppStorage.instance.getUserData();
-    }
-
-    Widget widget;
-    if (userData != null &&
-        (userData.profilePicture.toString() != 'null' ||
-            userData.profilePicture.toString().isNotEmpty)) {
-      widget = Image.network(
-        userData.profilePicture!,
-        fit: BoxFit.fill,
-        loadingBuilder: (BuildContext context, Widget child,
-            ImageChunkEvent? loadingProgress) {
-          if (loadingProgress == null) return child;
-          return SizedBox(
-            height: 35,
-            width: 35,
-            child: Center(
-                child: CircularProgressIndicator.adaptive(
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryColor),
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
-                  : null,
-            )),
-          );
-        },
-        errorBuilder: (_, __, ___) {
-          return Icon(
-            Icons.person_outline,
-            color: AppColors.primaryColor,
-            size: 35,
-          );
-        },
-        height: 35,
-        width: 35,
-      );
-    } else {
-      widget = Icon(
-        Icons.person_outline,
-        color: AppColors.primaryColor,
-        size: 35,
-      );
-    }
-
-    return widget;
   }
 
   static void showInternetConnectionDialog(BuildContext context) {
