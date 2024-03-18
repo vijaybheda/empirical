@@ -9,8 +9,10 @@ class AuthController extends GetxController {
   bool isLoading = false;
 
   User? userModel;
-  TextEditingController emailTextController = TextEditingController();
-  TextEditingController passwordTextController = TextEditingController();
+  final TextEditingController emailTextController = TextEditingController();
+  final TextEditingController passwordTextController = TextEditingController();
+  final FocusNode fNodeEmail = FocusNode();
+  final FocusNode fNodePass = FocusNode();
 
   bool socialButtonVisible = true;
   AppStorage appStorage = AppStorage.instance;

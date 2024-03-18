@@ -3,23 +3,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/auth_controller.dart';
 import 'package:pverify/utils/Common%20Widget/Buttons.dart';
 import 'package:pverify/utils/Common%20Widget/Header.dart';
-import 'package:pverify/utils/Common%20Widget/textFields.dart';
+import 'package:pverify/utils/Common%20Widget/text_fields.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
-import 'package:pverify/utils/theme/text_theme.dart';
 
 class LoginScreen extends GetView<AuthController> {
-  final FocusNode fNodeEmail = FocusNode();
-  final FocusNode fNodePass = FocusNode();
-  TextEditingController emailTextController = TextEditingController();
-  TextEditingController passwordTextController = TextEditingController();
-
-  LoginScreen({super.key});
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +40,6 @@ class LoginScreen extends GetView<AuthController> {
             ),
             Container(
               width: (ResponsiveHelper.getDeviceWidth(context)).w,
-              height: 220.h,
               decoration: BoxDecoration(
                   color: AppColors.white,
                   borderRadius: BorderRadius.circular(10.0)),
@@ -55,7 +47,7 @@ class LoginScreen extends GetView<AuthController> {
                 children: [
                   BoxTextField(
                     isMulti: false,
-                    controller: emailTextController,
+                    controller: controller.emailTextController,
                     onTap: () {
                       print('on Tap');
                     },
@@ -70,6 +62,7 @@ class LoginScreen extends GetView<AuthController> {
                     },
                     keyboardType: TextInputType.emailAddress,
                     hintText: 'Email',
+                    focusNode: controller.fNodeEmail,
                   ),
                   new Divider(
                     height: 2,
@@ -77,7 +70,7 @@ class LoginScreen extends GetView<AuthController> {
                   ),
                   BoxTextField(
                     isMulti: false,
-                    controller: passwordTextController,
+                    controller: controller.passwordTextController,
                     onTap: () {
                       print('on Tap');
                     },
@@ -93,6 +86,7 @@ class LoginScreen extends GetView<AuthController> {
                     keyboardType: TextInputType.name,
                     hintText: 'Password',
                     isPasswordField: true,
+                    focusNode: controller.fNodePass,
                   ),
                 ],
               ),

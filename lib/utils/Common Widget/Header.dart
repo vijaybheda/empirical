@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pverify/utils/assets.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
@@ -38,6 +37,7 @@ Widget baseHeaderView() {
         SizedBox(
           width: 35.w,
         ),
+        // Helly based on connectivity change icon, listen for internet conectivity
         Image.asset(
           AppImages.ic_Wifi,
           width: 70.w,

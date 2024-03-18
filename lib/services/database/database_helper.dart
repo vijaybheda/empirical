@@ -19,10 +19,6 @@ class DatabaseHelper {
     return _database!;
   }
 
-  /*Database get lazyDatabase {
-    return _database!;
-  }*/
-
   // lazy Database
   Database get lazyDatabase => _database!;
 
@@ -196,5 +192,5 @@ final class BaseColumns {
   BaseColumns();
 
   static const String ID = "id";
-  static const String _COUNT = "count";
+  static const String COUNT = "count";
 }

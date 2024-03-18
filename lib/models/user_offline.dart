@@ -23,7 +23,7 @@ class UserOffline {
 
   Map<String, dynamic> toMap() {
     return {
-      '_id': id,
+      'id': id,
       'User_ID': userId,
       'Access': userHash,
       'EnterpriseId': enterpriseId,
@@ -37,7 +37,7 @@ class UserOffline {
 
   factory UserOffline.fromMap(Map<String, dynamic> map) {
     return UserOffline(
-      id: map['_id'],
+      id: map['id'],
       userId: map['User_ID'],
       userHash: map['Access'],
       enterpriseId: map['EnterpriseId'],

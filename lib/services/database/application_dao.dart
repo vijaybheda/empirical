@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/models/inspection_defect.dart';
@@ -12,6 +13,8 @@ import 'package:pverify/services/database/database_helper.dart';
 import 'package:pverify/services/database/db_tables.dart';
 
 class ApplicationDao {
+  // instance
+
   final dbProvider = DatabaseHelper.instance;
 
   Future<int> createOrUpdateUser(User user) async {
@@ -28,6 +31,15 @@ class ApplicationDao {
         whereArgs: [user.id],
       );
     }
+  }
+
+  // find all users
+  Future<List<User>> findAllUsers() async {
+    final db = await DatabaseHelper.instance.database;
+    List<Map<String, dynamic>> maps = await db.query(DBTables.USER);
+    return List.generate(maps.length, (mapData) {
+      return User.fromMap(maps.elementAt(mapData));
+    });
   }
 
   Future<User?> findUserByUserName(String name) async {
