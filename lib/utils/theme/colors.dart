@@ -1,4 +1,10 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/animation.dart';
+import 'package:flutter/material.dart';
+import 'package:pverify/utils/app_const.dart';
+import 'package:pverify/utils/enumeration.dart';
+import 'package:pverify/utils/theme/app_theme.dart';
 
 class GradientThemeColors {
   static List<Color> purpleGradient = [
@@ -20,6 +26,9 @@ class GradientThemeColors {
 }
 
 class AppColors {
+  static Color sampleColorTheme = AppConst.AppTheme == ThemeType.dark
+      ? const Color(0xffF29D38)
+      : const Color(0xffABABAB); // Sample Color for Dark / Light Theme
   static Color primaryBlack = const Color.fromARGB(255, 0, 0, 0);
   static Color primary = const Color(0xff0ba900);
   static Color accentColor = const Color(0xff0ba900);
@@ -36,13 +45,11 @@ class AppColors {
   static Color secondaryColor = const Color(0xffc46d1d);
   static Color backgroundColor = const Color(0xffEBF9F6);
   static Color darkPrimaryColor = const Color(0xff0D0D0D);
-  static Color black = const Color(0xff180E02);
   static Color dark = const Color(0xff474747);
   static Color grey2 = const Color(0xff818181);
   static Color grey = const Color(0xff0d0d0d);
   static Color lightGrey = const Color(0xffBABABA);
   static Color darkGrey = const Color(0xdd4B5665);
-  static Color white = const Color(0xffffffff);
   static Color lightSky = const Color(0xffE8F5F5);
   static Color red = const Color(0xffea4001);
   static Color blue = const Color(0xff0064B2);
@@ -58,4 +65,11 @@ class AppColors {
   static Color searchfieldColor = const Color(0xffF8F8F9);
   static Color brightGrey = const Color(0xFFE6E6E6);
   static Color warningColor = const Color(0xFFFF0101);
+
+  // Login Screen Colors
+
+  static Color black = const Color(0xff180E02);
+  static Color white = const Color(0xffffffff);
+  static Color primaryColor_Green = const Color(0xff83B733);
+  static Color loginTextField_UnderlineColor = const Color(0xff680000);
 }

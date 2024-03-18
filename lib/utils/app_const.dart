@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names, non_constant_identifier_names
+
 import 'dart:async';
 import 'dart:io';
 
@@ -7,9 +9,31 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pverify/services/network_request_service/file_service.dart';
+import 'package:pverify/utils/enumeration.dart';
 import 'package:pverify/utils/theme/magic_number.dart';
 
+class ResponsiveHelper {
+  static double getDeviceWidth(BuildContext context) {
+    return MediaQuery.of(context).size.width *
+        MediaQuery.of(context).devicePixelRatio;
+  }
+
+  static double getDeviceHeight(BuildContext context) {
+    // Add Additional or Customize To Get Accurate Height
+    return MediaQuery.of(context).size.height *
+            MediaQuery.of(context).devicePixelRatio +
+        kToolbarHeight +
+        kBottomNavigationBarHeight;
+  }
+}
+
 class AppConst {
+  static Device getDeviceType(BuildContext? context) {
+    final data = MediaQuery.of(context!);
+    return data.size.shortestSide > 600 ? Device.tablet : Device.phone;
+  }
+
+  static const ThemeType AppTheme = ThemeType.light;
   static const String primaryErrorMsg = 'Oops! Something went wrong.';
   static const String timeOutErrorMsg =
       "Timeout, Please try again after some time.";
