@@ -361,6 +361,50 @@ class Utils {
       ),
     );
   }
+
+  static void showInfoAlertDialog(String message) {
+    // Helly redesign this dialog based on client requirement, change text style and color
+    Get.defaultDialog(
+      title: "Info",
+      content: Text(
+        message,
+        style: TextStyle(fontSize: 16),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Get.back();
+          },
+          child: Text(
+            'OK',
+            style: TextStyle(color: AppColors.primary),
+          ),
+        ),
+      ],
+    );
+  }
+
+  static void showErrorAlert(String message) {
+    // Helly redesign this dialog based on client requirement, change text style and color
+    Get.defaultDialog(
+      title: "Error",
+      content: Text(
+        message,
+        style: TextStyle(fontSize: 16),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Get.back();
+          },
+          child: Text(
+            'OK',
+            style: TextStyle(color: AppColors.primary),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 void unFocus() {

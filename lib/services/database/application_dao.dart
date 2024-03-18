@@ -1,4 +1,3 @@
-import 'package:get/get.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/models/inspection_defect.dart';
@@ -11,6 +10,7 @@ import 'package:pverify/models/user_offline.dart';
 import 'package:pverify/services/database/column_names.dart';
 import 'package:pverify/services/database/database_helper.dart';
 import 'package:pverify/services/database/db_tables.dart';
+import 'package:sqflite/sqflite.dart';
 
 class ApplicationDao {
   // instance
@@ -31,6 +31,94 @@ class ApplicationDao {
         whereArgs: [user.id],
       );
     }
+  }
+
+  Future<int> getEnterpriseIdByUserId(String userId) async {
+    final db = await DatabaseHelper.instance.database;
+
+    int enterpriseId = 0;
+    List<Map<String, dynamic>> result = await db.query(
+      'user_table_offline',
+      where: 'user_id = ?',
+      whereArgs: [userId],
+    );
+
+    if (result.isNotEmpty) {
+      enterpriseId = result.first['enterprise_id'];
+    }
+
+    await db.close();
+
+    return enterpriseId;
+  }
+
+  Future<int> createOrUpdateOfflineUser(
+    String userId,
+    String userHash,
+    int enterpriseId,
+    String status,
+    bool isSubscriptionExpired,
+    int supplierId,
+    int headquarterSupplierId,
+    bool gtinScanning,
+  ) async {
+    int result = -1;
+    final db = await DatabaseHelper.instance.database;
+    await db.transaction((txn) async {
+      int? userIdExists = Sqflite.firstIntValue(await txn.rawQuery(
+          'SELECT COUNT(*) FROM user_table_offline WHERE user_id = ?',
+          [userId]));
+
+      if (userIdExists == 0) {
+        result = await txn.insert('user_table_offline', {
+          'user_id': userId,
+          'access': userHash,
+          'enterprise_id': enterpriseId,
+          'status': status,
+          'supplier_id': supplierId,
+          'headquarter_supplier_id': headquarterSupplierId,
+          'expiration_date': isSubscriptionExpired ? 'true' : 'false',
+          'gtin_scanning': gtinScanning ? 'true' : 'false'
+        });
+      } else {
+        result = await txn.update(
+          'user_table_offline',
+          {
+            'user_id': userId,
+            'access': userHash,
+            'enterprise_id': enterpriseId,
+            'status': status,
+            'supplier_id': supplierId,
+            'headquarter_supplier_id': headquarterSupplierId,
+            'expiration_date': isSubscriptionExpired ? 'true' : 'false',
+            'gtin_scanning': gtinScanning ? 'true' : 'false'
+          },
+          where: 'user_id = ?',
+          whereArgs: [userId],
+        );
+      }
+    });
+
+    await db.close();
+    return result;
+  }
+
+  Future<String?> getOfflineUserHash(String userId) async {
+    final db = await DatabaseHelper.instance.database;
+    String? userHash;
+    List<Map<String, dynamic>> result = await db.query(
+      'user_table_offline',
+      columns: ['access'],
+      where: 'user_id = ?',
+      whereArgs: [userId],
+    );
+
+    if (result.isNotEmpty) {
+      userHash = result.first['access'];
+    }
+
+    await db.close();
+    return userHash;
   }
 
   // find all users

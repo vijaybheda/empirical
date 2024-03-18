@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pverify/services/custom_exception/custom_exception.dart';
+import 'package:pverify/services/network_request_service/api_urls.dart';
 import 'package:pverify/utils/app_storage.dart';
 
 class BaseRequestService extends GetConnect {
@@ -12,17 +13,11 @@ class BaseRequestService extends GetConnect {
   static const String unAuthorizedMessage =
       'To view the contents, kindly contact the admin.';
 
-  AppStorage appStorage = AppStorage.instance;
+  final AppStorage appStorage = AppStorage.instance;
 
   @override
   void onInit() {
-    final String baseUrl = appStorage.read(StorageKey.kBaseUrlKey) != null &&
-            appStorage.read(StorageKey.kBaseUrlKey) != ''
-        ? appStorage.read(StorageKey.kBaseUrlKey)
-        : const String.fromEnvironment('API_HOST');
-    httpClient.baseUrl = baseUrl.contains('http')
-        ? '$baseUrl/api/v1/'
-        : 'https://$baseUrl/api/v1/';
+    httpClient.baseUrl = ApiUrls.serverUrl;
     final String authToken = appStorage.read(StorageKey.jwtToken) ?? "";
     httpClient.defaultContentType = "application/json";
     httpClient.timeout = const Duration(seconds: 10);

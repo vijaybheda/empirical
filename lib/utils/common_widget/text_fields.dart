@@ -46,7 +46,7 @@ class BoxTextField extends StatelessWidget {
     final _showPassword = false.obs;
     RxBool _isPasswordField = false.obs;
 
-    void _togglevisibility() {
+    void _toggleVisibility() {
       _showPassword.value = !_showPassword.value;
     }
 
@@ -76,10 +76,11 @@ class BoxTextField extends StatelessWidget {
               hintStyle: TextStyle(color: AppColors.lightGrey),
               border: InputBorder.none,
               isDense: true,
-              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               suffixIcon: _isPasswordField.value
                   ? GestureDetector(
-                      onTap: _togglevisibility,
+                      onTap: _toggleVisibility,
                       child: Icon(
                         size: 22,
                         _showPassword.value

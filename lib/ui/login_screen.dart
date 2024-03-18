@@ -1,13 +1,11 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, sort_child_properties_last, unnecessary_new, avoid_print
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/auth_controller.dart';
-import 'package:pverify/utils/Common%20Widget/Buttons.dart';
-import 'package:pverify/utils/Common%20Widget/Header.dart';
-import 'package:pverify/utils/Common%20Widget/text_fields.dart';
 import 'package:pverify/utils/app_const.dart';
+import 'package:pverify/utils/common_widget/buttons.dart';
+import 'package:pverify/utils/common_widget/header.dart';
+import 'package:pverify/utils/common_widget/text_fields.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
@@ -26,6 +24,7 @@ class LoginScreen extends GetView<AuthController> {
       ),
       body: Container(
         width: ResponsiveHelper.getDeviceWidth(context),
+        padding: EdgeInsets.only(left: 20, right: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -94,8 +93,21 @@ class LoginScreen extends GetView<AuthController> {
             SizedBox(
               height: 70.h,
             ),
-            customButton('LOG IN', double.infinity, 90,
-                onbuttonTap: {print('LOG IN Button Tapped')}),
+            customButton('LOG IN', double.infinity, 90, onbuttonTap: () async {
+              // validate email and password
+              if (controller.emailTextController.text.isEmpty) {
+                Get.snackbar('Error', 'Please enter email');
+                return;
+              }
+              if (controller.passwordTextController.text.isEmpty) {
+                Get.snackbar('Error', 'Please enter password');
+                return;
+              }
+              // change snackbar according to requirements
+
+              // TODO: Vijay
+              // User? user = await controller.loginUser(isLoginButton: true);
+            }),
             SizedBox(
               height: 40.h,
             ),
@@ -103,7 +115,6 @@ class LoginScreen extends GetView<AuthController> {
                 onbuttonTap: {print('Setup Button Tapped')})
           ],
         ),
-        padding: EdgeInsets.only(left: 20, right: 20),
       ),
     );
   }
