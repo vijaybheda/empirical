@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/auth_controller.dart';
 import 'package:pverify/utils/Common%20Widget/Buttons.dart';
@@ -10,6 +11,7 @@ import 'package:pverify/utils/Common%20Widget/Header.dart';
 import 'package:pverify/utils/Common%20Widget/textFields.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/images.dart';
+import 'package:pverify/utils/strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/theme/text_theme.dart';
 
@@ -24,7 +26,7 @@ class LoginScreen extends GetView<AuthController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.sampleColorTheme,
+      backgroundColor: AppColors.grey2,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         toolbarHeight: 150.h,
@@ -37,13 +39,17 @@ class LoginScreen extends GetView<AuthController> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            SizedBox(
+              height: 50.h,
+            ),
             Image.asset(
+              fit: BoxFit.contain,
               AppImages.appLogo,
-              width: 130.w,
-              height: 130.w,
+              width: 220.w,
+              height: 220.h,
             ),
             SizedBox(
-              height: 40.h,
+              height: 50.h,
             ),
             Container(
               width: (ResponsiveHelper.getDeviceWidth(context)).w,
@@ -55,43 +61,42 @@ class LoginScreen extends GetView<AuthController> {
                 children: [
                   BoxTextField(
                     isMulti: false,
-                    controller: emailTextController,
+                    controller:
+                        Get.find<AuthController>().emailTextController.value,
                     onTap: () {
                       print('on Tap');
                     },
                     errorText: '',
-                    suffix: Container(),
-                    prefix: Container(),
                     onEditingCompleted: () {
-                      print('Complete Change');
+                      print(
+                          Get.find<AuthController>().emailTextController.value);
                     },
-                    onChanged: (value) {
-                      print(value);
-                    },
+                    onChanged: (value) {},
                     keyboardType: TextInputType.emailAddress,
-                    hintText: 'Email',
+                    hintText: Appstrings.UserName,
                   ),
                   new Divider(
                     height: 2,
-                    color: AppColors.loginTextField_UnderlineColor,
+                    color: AppColors.textFieldText_Color,
                   ),
                   BoxTextField(
                     isMulti: false,
-                    controller: passwordTextController,
+                    controller:
+                        Get.find<AuthController>().passwordTextController.value,
                     onTap: () {
                       print('on Tap');
                     },
                     errorText: '',
-                    suffix: Container(),
-                    prefix: Container(),
                     onEditingCompleted: () {
-                      print('Complete Change');
+                      print(Get.find<AuthController>()
+                          .passwordTextController
+                          .value);
                     },
                     onChanged: (value) {
                       print(value);
                     },
                     keyboardType: TextInputType.name,
-                    hintText: 'Password',
+                    hintText: Appstrings.Password,
                     isPasswordField: true,
                   ),
                 ],
@@ -100,13 +105,16 @@ class LoginScreen extends GetView<AuthController> {
             SizedBox(
               height: 70.h,
             ),
-            customButton('LOG IN', double.infinity, 90,
-                onbuttonTap: {print('LOG IN Button Tapped')}),
+            customButton(Appstrings.LOGIN, double.infinity, 90,
+                onClickAction: () => {
+                      if (AuthController().isLoginFieldsValidate() == true)
+                        {print("All field are validate.")}
+                    }),
             SizedBox(
               height: 40.h,
             ),
-            customButton('SETUP', double.infinity, 90,
-                onbuttonTap: {print('Setup Button Tapped')})
+            customButton(Appstrings.SETUP, double.infinity, 90,
+                onClickAction: () => {}),
           ],
         ),
         padding: EdgeInsets.only(left: 20, right: 20),

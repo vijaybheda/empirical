@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:get/state_manager.dart';
+import 'package:pverify/utils/theme/theme.dart';
 
 class BoxTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -17,8 +18,6 @@ class BoxTextField extends StatelessWidget {
   final bool autofocus;
   final bool enabled;
   final String errorText;
-  final Widget suffix;
-  final Widget prefix;
   final String hintText;
   final bool isPasswordField;
 
@@ -33,8 +32,6 @@ class BoxTextField extends StatelessWidget {
       this.hintText = "",
       this.autofocus = false,
       required this.errorText,
-      required this.suffix,
-      required this.prefix,
       this.enabled = true,
       this.isPasswordField = false,
       required this.onEditingCompleted,
@@ -69,11 +66,11 @@ class BoxTextField extends StatelessWidget {
             : false,
         keyboardType: keyboardType,
         controller: controller,
-        style: const TextStyle(color: Colors.black),
+        style: TextStyle(color: AppColors.textFieldText_Color),
         cursorColor: AppColors.primary,
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(color: AppColors.lightGrey),
+          hintStyle: TextStyle(color: AppColors.textFieldText_Color),
           border: InputBorder.none,
           isDense: true,
           contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),

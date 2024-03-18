@@ -30,7 +30,7 @@ class AppColors {
       ? const Color(0xffF29D38)
       : const Color(0xffABABAB); // Sample Color for Dark / Light Theme
   static Color primaryBlack = const Color.fromARGB(255, 0, 0, 0);
-  static Color primary = const Color(0xff0ba900);
+  static Color primary = const Color(0xff3F51B5);
   static Color accentColor = const Color(0xff0ba900);
   static Color textInput = const Color(0xffFFFFFD);
   static Color textColor = const Color(0xffFFFFFF);
@@ -70,6 +70,7 @@ class AppColors {
 
   static Color black = const Color(0xff180E02);
   static Color white = const Color(0xffffffff);
-  static Color primaryColor_Green = const Color(0xff83B733);
+  static Color primaryColor_Green = const Color(0xff303F9F);
   static Color loginTextField_UnderlineColor = const Color(0xff680000);
+  static Color textFieldText_Color = const Color(0xff912688);
 }
