@@ -91,6 +91,11 @@ class AppStrings {
 
   static const String invalidUsernamePassword =
       'Invalid username or password. Please try again.';
+  static const String passwordBlank = 'Password cannot be blank';
+  static const String passwordValid =
+      'Password must be at least 8 characters long, contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character.';
+  static const String userNameBlank = 'Email cannot be blank';
+  static const String invalidUsername = 'Invalid email. Please try again.';
   static const String couldNotConnect =
       'Could not connect to webservice. Please contact Administrator.';
   static const String validateCredential = 'Validating user credentials';

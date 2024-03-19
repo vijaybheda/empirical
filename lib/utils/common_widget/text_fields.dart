@@ -15,8 +15,6 @@ class BoxTextField extends StatelessWidget {
   final bool autofocus;
   final bool enabled;
   final String errorText;
-  final Widget suffix;
-  final Widget prefix;
   final String hintText;
   final bool isPasswordField;
   final FocusNode? focusNode;
@@ -32,8 +30,6 @@ class BoxTextField extends StatelessWidget {
     this.hintText = "",
     this.autofocus = false,
     required this.errorText,
-    required this.suffix,
-    required this.prefix,
     this.enabled = true,
     this.isPasswordField = false,
     required this.onEditingCompleted,
@@ -69,11 +65,11 @@ class BoxTextField extends StatelessWidget {
             obscureText: _isPasswordField.value ? !_showPassword.value : false,
             keyboardType: keyboardType,
             controller: controller,
-            style: const TextStyle(color: Colors.black),
+            style: TextStyle(color: AppColors.textFieldText_Color),
             cursorColor: AppColors.primary,
             decoration: InputDecoration(
               hintText: hintText,
-              hintStyle: TextStyle(color: AppColors.lightGrey),
+              hintStyle: TextStyle(color: AppColors.textFieldText_Color),
               border: InputBorder.none,
               isDense: true,
               contentPadding:

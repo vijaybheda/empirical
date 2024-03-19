@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/auth_controller.dart';
 import 'package:pverify/utils/app_const.dart';
+import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header.dart';
 import 'package:pverify/utils/common_widget/text_fields.dart';
 import 'package:pverify/utils/images.dart';
-import 'package:pverify/utils/strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class LoginScreen extends GetView<AuthController> {
@@ -67,13 +66,14 @@ class LoginScreen extends GetView<AuthController> {
                     hintText: 'Email',
                     focusNode: controller.fNodeEmail,
                   ),
-                  new Divider(
+                  Divider(
                     height: 2,
                     color: AppColors.textFieldText_Color,
                   ),
                   BoxTextField(
                     isMulti: false,
-                    controller: controller.passwordTextController,
+                    controller:
+                        Get.find<AuthController>().passwordTextController.value,
                     onTap: () {
                       print('on Tap');
                     },
@@ -87,7 +87,7 @@ class LoginScreen extends GetView<AuthController> {
                       print(value);
                     },
                     keyboardType: TextInputType.name,
-                    hintText: Appstrings.Password,
+                    hintText: AppStrings.password,
                     isPasswordField: true,
                     focusNode: controller.fNodePass,
                   ),
@@ -97,9 +97,10 @@ class LoginScreen extends GetView<AuthController> {
             SizedBox(
               height: 70.h,
             ),
-            customButton(Appstrings.LOGIN, double.infinity, 90, onbuttonTap: () async {
+            customButton(AppStrings.login, double.infinity, 90,
+                onClickAction: () {
               // validate email and password
-              if (AuthController().isLoginFieldsValidate() == true) {
+              if (Get.find<AuthController>().isLoginFieldsValidate()) {
                 // TODO: Vijay
                 // User? user = await controller.loginUser(isLoginButton: true);
               }
@@ -108,7 +109,7 @@ class LoginScreen extends GetView<AuthController> {
             SizedBox(
               height: 40.h,
             ),
-            customButton(Appstrings.SETUP, double.infinity, 90,
+            customButton(AppStrings.setup, double.infinity, 90,
                 onClickAction: () => {}),
           ],
         ),
