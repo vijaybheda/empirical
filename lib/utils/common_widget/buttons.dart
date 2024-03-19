@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 Widget customButton(
+  Color? backgroundColor,
   String title,
   double width,
   double height, {
@@ -19,7 +20,7 @@ Widget customButton(
       height: height.h,
       width: width.w,
       decoration: BoxDecoration(
-          color: AppColors.primary, borderRadius: BorderRadius.circular(45.r)),
+          color: backgroundColor, borderRadius: BorderRadius.circular(45.r)),
       child: Text(
         title,
         style: GoogleFonts.poppins(
