@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/utils/images.dart';
+import 'package:pverify/utils/strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 Widget baseHeaderView() {
@@ -20,7 +21,7 @@ Widget baseHeaderView() {
           width: 15.w,
         ),
         Text(
-          'Login',
+          Appstrings.Login,
           style: GoogleFonts.poppins(
               fontSize: 40.sp,
               fontWeight: FontWeight.bold,
@@ -35,7 +36,7 @@ Widget baseHeaderView() {
               textStyle: TextStyle(color: AppColors.white)),
         ),
         SizedBox(
-          width: 35.w,
+          width: 40.w,
         ),
         // Helly based on connectivity change icon, listen for internet conectivity
         Image.asset(

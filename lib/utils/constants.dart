@@ -1,10 +1,10 @@
-bool validateEmail(String email, bool emailError) {
+bool validateEmail(String email) {
   if (RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
           .hasMatch(email) &&
       email.isNotEmpty) {
-    return emailError = false;
+    return false;
   } else {
-    return emailError = true;
+    return true;
   }
 }
 
@@ -25,12 +25,12 @@ String validatePassword(String password, String cpassword) {
   }
 }
 
-String checkPassword(String password) {
+bool checkPassword(String password) {
   if (RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
           .hasMatch(password) &&
       password.isNotEmpty) {
-    return "Valid Password";
+    return true;
   } else {
-    return "Invalid Password";
+    return false;
   }
 }

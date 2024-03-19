@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
-Widget customButton(String title, double width, double height, {onbuttonTap}) {
+Widget customButton(
+  String title,
+  double width,
+  double height, {
+  Function? onClickAction,
+}) {
   return InkWell(
     onTap: () {
-      onbuttonTap();
+      onClickAction!();
     },
     child: Container(
       alignment: Alignment.center,

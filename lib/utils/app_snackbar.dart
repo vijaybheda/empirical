@@ -36,9 +36,8 @@ class AppSnackBar {
         padding: const EdgeInsets.only(left: 18.0),
         child: Text(
           message,
-          style: AppFontStyle.bodySmall?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: AppFontStyle.bodySmall
+              ?.copyWith(fontWeight: FontWeight.w600, color: AppColors.black),
         ),
       ),
       messageText: Padding(
