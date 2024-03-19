@@ -5,11 +5,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/ui/setup_platfrom/setup_controller.dart';
-import 'package:pverify/utils/Common%20Widget/Common%20TextField/textFields.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header.dart';
+import 'package:pverify/utils/common_widget/text_field/text_fields.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class SetupScreen extends GetView<SetupController> {
