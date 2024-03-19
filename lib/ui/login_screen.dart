@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/auth_controller.dart';
-import 'package:pverify/ui/setupPlatfrom/Setup.dart';
+import 'package:pverify/ui/setup_platfrom/setup.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header.dart';
-import 'package:pverify/utils/common_widget/text_fields.dart';
+import 'package:pverify/utils/common_widget/text_field/text_fields.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
@@ -29,6 +29,7 @@ class LoginScreen extends GetView<AuthController> {
           ),
           body: Container(
             width: ResponsiveHelper.getDeviceWidth(context),
+            padding: const EdgeInsets.only(left: 20, right: 20),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -63,7 +64,7 @@ class LoginScreen extends GetView<AuthController> {
                         keyboardType: TextInputType.emailAddress,
                         hintText: AppStrings.username,
                       ),
-                      new Divider(
+                      Divider(
                         height: 2,
                         color: AppColors.textFieldText_Color,
                       ),
@@ -102,7 +103,6 @@ class LoginScreen extends GetView<AuthController> {
                     onClickAction: () => {Get.to(() => SetupScreen())}),
               ],
             ),
-            padding: EdgeInsets.only(left: 20, right: 20),
           ),
         );
       },
