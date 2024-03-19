@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/utils/assets.dart';
 import 'package:pverify/utils/images.dart';
-import 'package:pverify/utils/strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 Widget baseHeaderView(String title, bool isVersionShow) {
