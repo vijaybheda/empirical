@@ -15,105 +15,105 @@ class LoginScreen extends GetView<AuthController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.grey2,
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        toolbarHeight: 150.h,
-        backgroundColor: AppColors.primary,
-        title: baseHeaderView(),
-      ),
-      body: Container(
-        width: ResponsiveHelper.getDeviceWidth(context),
-        padding: EdgeInsets.only(left: 20, right: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 50.h,
+    return GetBuilder<AuthController>(
+        init: AuthController(),
+        builder: (controller) {
+          return Scaffold(
+            backgroundColor: AppColors.grey2,
+            resizeToAvoidBottomInset: false,
+            appBar: AppBar(
+              toolbarHeight: 150.h,
+              backgroundColor: AppColors.primary,
+              title: baseHeaderView(),
             ),
-            Image.asset(
-              fit: BoxFit.contain,
-              AppImages.appLogo,
-              width: 220.w,
-              height: 220.h,
-            ),
-            SizedBox(
-              height: 50.h,
-            ),
-            Container(
-              width: (ResponsiveHelper.getDeviceWidth(context)).w,
-              decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(10.0)),
+            body: Container(
+              width: ResponsiveHelper.getDeviceWidth(context),
+              padding: const EdgeInsets.only(left: 20, right: 20),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  BoxTextField(
-                    isMulti: false,
-                    controller:
-                        Get.find<AuthController>().emailTextController.value,
-                    onTap: () {
-                      print('on Tap');
-                    },
-                    errorText: '',
-                    onEditingCompleted: () {
-                      print(
-                          Get.find<AuthController>().emailTextController.value);
-                    },
-                    onChanged: (value) {},
-                    keyboardType: TextInputType.emailAddress,
-                    hintText: 'Email',
-                    focusNode: controller.fNodeEmail,
+                  SizedBox(
+                    height: 50.h,
                   ),
-                  Divider(
-                    height: 2,
-                    color: AppColors.textFieldText_Color,
+                  Image.asset(
+                    fit: BoxFit.contain,
+                    AppImages.appLogo,
+                    width: 220.w,
+                    height: 220.h,
                   ),
-                  BoxTextField(
-                    isMulti: false,
-                    controller:
-                        Get.find<AuthController>().passwordTextController.value,
-                    onTap: () {
-                      print('on Tap');
-                    },
-                    errorText: '',
-                    onEditingCompleted: () {
-                      print(Get.find<AuthController>()
-                          .passwordTextController
-                          .value);
-                    },
-                    onChanged: (value) {
-                      print(value);
-                    },
-                    keyboardType: TextInputType.name,
-                    hintText: AppStrings.password,
-                    isPasswordField: true,
-                    focusNode: controller.fNodePass,
+                  SizedBox(
+                    height: 50.h,
                   ),
+                  Container(
+                    width: (ResponsiveHelper.getDeviceWidth(context)).w,
+                    decoration: BoxDecoration(
+                        color: AppColors.white,
+                        borderRadius: BorderRadius.circular(10.0)),
+                    child: Column(
+                      children: [
+                        BoxTextField(
+                          isMulti: false,
+                          controller: controller.emailTextController.value,
+                          onTap: () {
+                            print('on Tap');
+                          },
+                          errorText: '',
+                          onEditingCompleted: () {
+                            print(controller.emailTextController.value);
+                          },
+                          onChanged: (value) {},
+                          keyboardType: TextInputType.emailAddress,
+                          hintText: 'Email',
+                          focusNode: controller.fNodeEmail,
+                          autofocus: true,
+                        ),
+                        Divider(
+                          height: 2,
+                          color: AppColors.textFieldText_Color,
+                        ),
+                        BoxTextField(
+                          isMulti: false,
+                          controller: controller.passwordTextController.value,
+                          onTap: () {
+                            print('on Tap');
+                          },
+                          errorText: '',
+                          onEditingCompleted: () {
+                            print(controller.passwordTextController.value);
+                          },
+                          onChanged: (value) {
+                            print(value);
+                          },
+                          keyboardType: TextInputType.name,
+                          hintText: AppStrings.password,
+                          isPasswordField: true,
+                          focusNode: controller.fNodePass,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 70.h,
+                  ),
+                  customButton(AppStrings.login, double.infinity, 90,
+                      onClickAction: () {
+                    // validate email and password
+                    if (controller.isLoginFieldsValidate()) {
+                      // TODO: Vijay
+                      // User? user = await controller.loginUser(isLoginButton: true);
+                    }
+                    // change snackbar according to requirements
+                  }),
+                  SizedBox(
+                    height: 40.h,
+                  ),
+                  customButton(AppStrings.setup, double.infinity, 90,
+                      onClickAction: () => {}),
                 ],
               ),
             ),
-            SizedBox(
-              height: 70.h,
-            ),
-            customButton(AppStrings.login, double.infinity, 90,
-                onClickAction: () {
-              // validate email and password
-              if (Get.find<AuthController>().isLoginFieldsValidate()) {
-                // TODO: Vijay
-                // User? user = await controller.loginUser(isLoginButton: true);
-              }
-              // change snackbar according to requirements
-            }),
-            SizedBox(
-              height: 40.h,
-            ),
-            customButton(AppStrings.setup, double.infinity, 90,
-                onClickAction: () => {}),
-          ],
-        ),
-      ),
-    );
+          );
+        });
   }
 }

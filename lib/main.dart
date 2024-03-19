@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
       child: GetMaterialApp(
           theme: currentTheme,
           darkTheme: _darkTheme,
-          themeMode: ThemeMode.system,
+          themeMode: ThemeMode.dark,
           debugShowCheckedModeBanner: false,
           enableLog: true,
           initialRoute: '/',
@@ -88,7 +88,6 @@ class MyApp extends StatelessWidget {
 class GlobalBindings extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() => AuthController(), fenix: true);
     Get.lazyPut(() => GlobalConfigController(), fenix: true);
   }
 }

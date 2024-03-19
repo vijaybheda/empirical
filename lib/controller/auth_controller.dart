@@ -14,8 +14,9 @@ class AuthController extends GetxController {
   bool isLoading = false;
 
   User? userModel;
-  final emailTextController = TextEditingController().obs;
-  final passwordTextController = TextEditingController().obs;
+  Rx<TextEditingController> emailTextController = TextEditingController().obs;
+  Rx<TextEditingController> passwordTextController =
+      TextEditingController().obs;
   final FocusNode fNodeEmail = FocusNode();
   final FocusNode fNodePass = FocusNode();
 
