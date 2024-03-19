@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/auth_controller.dart';
+import 'package:pverify/models/login_data.dart';
 import 'package:pverify/ui/setup_platfrom/setup.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -12,13 +13,15 @@ import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class LoginScreen extends GetView<AuthController> {
-  LoginScreen({super.key});
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
       init: AuthController(),
       builder: (authController) {
+        controller.emailTextController.value.text = 'nirali.talavia@gmail.com';
+        controller.passwordTextController.value.text = 'Niralishah@1234';
         return Scaffold(
           backgroundColor: AppColors.grey2,
           resizeToAvoidBottomInset: false,
@@ -90,16 +93,45 @@ class LoginScreen extends GetView<AuthController> {
                   AppStrings.logIn.toUpperCase(),
                   double.infinity,
                   90,
-                  onClickAction: () => {
-                    if (authController.isLoginFieldsValidate() == true)
-                      {debugPrint("All field are validate.")}
+                  onClickAction: () async {
+                    if (authController.isLoginFieldsValidate()) {
+                      LoginData? loginData =
+                          await controller.loginUser(isLoginButton: true);
+                      if (loginData != null) {
+                        if (loginData.subscriptionExpired ?? false) {
+                          // dismissible info dialog
+                          Get.snackbar(
+                            AppStrings.error,
+                            "User is not active.",
+                            backgroundColor: AppColors.red,
+                            colorText: AppColors.white,
+                          );
+                        } else if (loginData.status == 3) {
+                          // "Account is not active." dialog
+                          Get.snackbar(
+                            AppStrings.error,
+                            "Account is not active.",
+                            backgroundColor: AppColors.red,
+                            colorText: AppColors.white,
+                          );
+                        } else {
+                          await controller.persistUserName();
+
+                          // CacheUtil.offlineLoadSuppliers();
+                          // CacheUtil.offlineLoadCarriers();
+                          // CacheUtil.offlineLoadCommodity(context);
+
+                          await controller.downloadCloudData();
+                        }
+                      }
+                    }
                   },
                 ),
                 SizedBox(
                   height: 40.h,
                 ),
-                customButton(
-                    AppColors.primary, AppStrings.setup.toUpperCase(), double.infinity, 90,
+                customButton(AppColors.primary, AppStrings.setup.toUpperCase(),
+                    double.infinity, 90,
                     onClickAction: () => {Get.to(() => SetupScreen())}),
               ],
             ),

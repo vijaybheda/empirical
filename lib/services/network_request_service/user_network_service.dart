@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:get/get.dart';
+import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/user.dart';
 import 'package:pverify/services/custom_exception/custom_exception.dart';
 import 'package:pverify/services/network_request_service/api_urls.dart';
@@ -32,16 +33,21 @@ class UserService extends BaseRequestService {
     }
   }
 
-  Future<Map<String, dynamic>> checkLogin(
+  Future<LoginData?> checkLogin(
       String mUsername, String mPassword, bool isLoginButton) async {
     try {
-      final Response<Map<String, dynamic>> result =
-          await get(ApiUrls.LOGIN_REQUEST);
+      final Response<Map<String, dynamic>> result = await get(
+        ApiUrls.serverUrl + ApiUrls.LOGIN_REQUEST,
+        headers: {
+          'username': mUsername,
+          'password': mPassword,
+        },
+      );
       log('result is ${result.body}');
       final Map<String, dynamic> data = await errorHandler(result);
-      User currentUser = User.fromMap(data);
-      AppStorage.instance.setUserData(currentUser);
-      return data;
+      LoginData currentUser = LoginData.fromJson(data);
+      AppStorage.instance.setLoginData(currentUser);
+      return currentUser;
     } catch (e, stackTrace) {
       log(e.toString(), error: e, name: "[checkLogin]");
       if (e is CustomException) {

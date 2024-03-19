@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pverify/utils/assets.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
@@ -27,7 +26,7 @@ Widget baseHeaderView(String title, bool isVersionShow) {
               fontWeight: FontWeight.bold,
               textStyle: TextStyle(color: AppColors.white)),
         ),
-        Spacer(),
+        const Spacer(),
         isVersionShow
             ? Text(
                 '10.19.7',

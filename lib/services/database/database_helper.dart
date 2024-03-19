@@ -33,17 +33,63 @@ class DatabaseHelper {
   }
 
   Future<void> _onCreate(Database db, int version) async {
-    db.execute(
-        "CREATE TABLE ${DBTables.USER} (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, User_Name CHAR NOT NULL, Login_Time INTEGER, Language CHAR )");
+    db.execute("CREATE TABLE ${DBTables.USER} (${BaseColumns.ID} "
+        "INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "User_Name CHAR NOT NULL, "
+        "Login_Time INTEGER, "
+        "Language CHAR )");
+
+    db.execute("CREATE TABLE ${DBTables.USER_OFFLINE} (${BaseColumns.ID} "
+        "INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "User_ID CHAR NOT NULL, "
+        "Access CHAR NOT NULL, "
+        "EnterpriseId INTEGER, "
+        "Status CHAR, "
+        "IsSubscriptionExpired CHAR, "
+        "Supplier_Id INTEGER, "
+        "Headquater_Supplier_Id INTEGER, "
+        "GtinScanning CHAR )");
+
+    db.execute("CREATE TABLE ${DBTables.INSPECTION} (${BaseColumns.ID} "
+        "INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "User_ID INTEGER NOT NULL, "
+        "Partner_ID INTEGER, "
+        "Carrier_ID INTEGER, "
+        "Commodity_ID INTEGER, "
+        "Variety_ID INTEGER, "
+        "Variety_Name CHAR, "
+        "Created_Time INTEGER, "
+        "Result CHAR, "
+        "Manager_Status CHAR, "
+        "Manager_Comment CHAR, "
+        "Status CHAR, "
+        "Complete CHAR, "
+        "Grade_ID INTEGER, "
+        "Download_ID INTEGER, "
+        "UploadStatus INTEGER, "
+        "Completed_Time INTEGER, "
+        "Specification_Name CHAR, "
+        "Specification_Version CHAR, "
+        "Specification_Number CHAR, "
+        "Specification_TypeName CHAR, "
+        "Lot_No CHAR, PackDate CHAR, "
+        "Sample_Size_By_Count INTEGER, "
+        "Item_SKU CHAR, "
+        "Item_SKU_Id INTEGER, "
+        "Commodity_Name CHAR, "
+        "PO_Number CHAR, "
+        "InspectionServerID INTEGER, "
+        "Rating INTEGER, "
+        "POLineNo INTEGER, "
+        "Partner_Name CHAR, "
+        "To_Location_ID INTEGER, "
+        "To_Location_Name CHAR, "
+        "Cte_Type CHAR, "
+        "Item_Sku_Name CHAR )");
 
     db.execute(
-        "CREATE TABLE ${DBTables.USER_OFFLINE} (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, User_ID CHAR NOT NULL, Access CHAR NOT NULL, EnterpriseId INTEGER, Status CHAR, IsSubscriptionExpired CHAR, Supplier_Id INTEGER, Headquater_Supplier_Id INTEGER, GtinScanning CHAR )");
-
-    db.execute(
-        "CREATE TABLE ${DBTables.INSPECTION} (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, User_ID INTEGER NOT NULL, Partner_ID INTEGER, Carrier_ID INTEGER, Commodity_ID INTEGER, Variety_ID INTEGER, Variety_Name CHAR,Created_Time INTEGER, Result CHAR, Manager_Status CHAR, Manager_Comment CHAR, Status CHAR, Complete CHAR, Grade_ID INTEGER, Download_ID INTEGER, UploadStatus INTEGER, Completed_Time INTEGER, Specification_Name CHAR, Specification_Version CHAR, Specification_Number CHAR, Specification_TypeName CHAR, Lot_No CHAR, PackDate CHAR, Sample_Size_By_Count INTEGER, Item_SKU CHAR, Item_SKU_Id INTEGER, Commodity_Name CHAR, PO_Number CHAR, InspectionServerID INTEGER, Rating INTEGER, POLineNo INTEGER, Partner_Name CHAR, To_Location_ID INTEGER, To_Location_Name CHAR, Cte_Type CHAR, Item_Sku_Name CHAR )");
-
-    db.execute(
-        "CREATE TABLE ${DBTables.INSPECTION_ATTACHMENT} (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, Inspection_ID INTEGER NOT NULL, Attachment_ID, Attachment_Title, Created_Time INTEGER, File_Location CHAR )");
+        "CREATE TABLE ${DBTables.INSPECTION_ATTACHMENT} (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, Inspection_ID INTEGER NOT NULL, Attachment_ID, Attachment_Title, Created_Time INTEGER, "
+        "File_Location CHAR )");
 
     db.execute(
         "CREATE TABLE ${DBTables.INSPECTION_SAMPLE} (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, Inspection_ID INTEGER NOT NULL, Set_Size INTEGER, Set_Name CHAR, Set_Number INTEGER, Created_Time INTEGER, Last_Updated_Time INTEGER, complete INTEGER, Sample_Name CHAR )");
@@ -90,20 +136,33 @@ class DatabaseHelper {
     db.execute(
         "CREATE TABLE ${DBTables.SPECIFICATION_ANALYTICAL} (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, Number_Specification CHAR,Version_Specification CHAR,Analytical_ID INTEGER,Analytical_name CHAR,Spec_Min DECIMAL,Spec_Max DECIMAL,Target_Num_Value DECIMAL,Target_Text_Value CHAR,UOM_Name CHAR,Type_Entry INTEGER,Description CHAR,OrderNo INTEGER,Picture_Required CHAR,Target_Text_Default CHAR,Inspection_Result CHAR)");
 
-    db.execute(
-        "CREATE TABLE ${DBTables.AGENCY}  (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, ID INTEGER NOT NULL,Name CHAR)");
+    db.execute("CREATE TABLE ${DBTables.AGENCY}  "
+        "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "Name CHAR)");
 
-    db.execute(
-        "CREATE TABLE ${DBTables.GRADE}  (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, ID INTEGER NOT NULL,Name CHAR, Agency_ID INTEGER )");
+    db.execute("CREATE TABLE ${DBTables.GRADE}  "
+        "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "Name CHAR, "
+        "Agency_ID INTEGER )");
 
-    db.execute(
-        "CREATE TABLE ${DBTables.GRADE_COMMODITY}  (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, ID INTEGER NOT NULL, Agency_ID INTEGER, Commodity_ID INTEGER )");
+    db.execute("CREATE TABLE ${DBTables.GRADE_COMMODITY} "
+        " (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "Agency_ID INTEGER, "
+        "Commodity_ID INTEGER )");
 
-    db.execute(
-        "CREATE TABLE ${DBTables.GRADE_COMMODITY_DETAIL}  (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, ID INTEGER NOT NULL, Grade_ID INTEGER, Grade_Commodity_ID INTEGER, Status CHAR, SORT_SEQUENCE_FIELD INTEGER )");
+    db.execute("CREATE TABLE ${DBTables.GRADE_COMMODITY_DETAIL}"
+        "  (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "Grade_ID INTEGER, "
+        "Grade_Commodity_ID INTEGER, "
+        "Status CHAR, "
+        "SORT_SEQUENCE_FIELD INTEGER )");
 
-    db.execute(
-        "CREATE TABLE ${DBTables.GRADE_COMMODITY_TOLERANCE}  (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, Severity_Defect_ID INTEGER,Defect_ID INTEGER,Grade_Tolerance_Percentage DECIMAL,Grade_Commodity_Detail_ID INTEGER)");
+    db.execute("CREATE TABLE ${DBTables.GRADE_COMMODITY_TOLERANCE}"
+        "  (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "Severity_Defect_ID INTEGER, "
+        "Defect_ID INTEGER, "
+        "Grade_Tolerance_Percentage DECIMAL, "
+        "Grade_Commodity_Detail_ID INTEGER)");
 
     db.execute(
         "CREATE TABLE ${DBTables.SPECIFICATION_ATTRIBUTES} (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, Inspection_ID INTEGER NOT NULL, Analytical_ID INTEGER,Comply CHAR,Sample_Text_Value CHAR,Sample_Value INTEGER,Comment CHAR,Analytical_Name CHAR,Picture_Required BOOLEAN, Inspection_Result CHAR )");
@@ -117,11 +176,17 @@ class DatabaseHelper {
     db.execute(
         "CREATE TABLE ${DBTables.SPECIFICATION_PACKAGING_FINISHED_GOODS} (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, Finished_Goods_ID INTEGER NOT NULL, Number_Specification CHAR,Version_Specification CHAR,Item_SKU_ID INTEGER)");
 
-    db.execute(
-        "CREATE TABLE ${DBTables.COMMODITY}  (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, ID INTEGER NOT NULL,Name CHAR,Sample_Size_By_Count INTEGER,Keywords CHAR)");
+    db.execute("CREATE TABLE ${DBTables.COMMODITY} "
+        " (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "Name CHAR, "
+        "Sample_Size_By_Count INTEGER, "
+        "Keywords CHAR)");
 
-    db.execute(
-        "CREATE TABLE ${DBTables.COMMODITY_CTE}  (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, ID INTEGER NOT NULL,Name CHAR,Sample_Size_By_Count INTEGER,Keywords CHAR)");
+    db.execute("CREATE TABLE ${DBTables.COMMODITY_CTE} "
+        " (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "Name CHAR, "
+        "Sample_Size_By_Count INTEGER, "
+        "Keywords CHAR)");
 
     db.execute(
         "CREATE TABLE ${DBTables.SPECIFICATION_TYPE} (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, Specification_Type_ID INTEGER NOT NULL, Name CHAR)");
@@ -144,14 +209,37 @@ class DatabaseHelper {
     db.execute(
         "CREATE TABLE ${DBTables.RESULT_REJECTION_DETAILS} (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, Inspection_ID INTEGER NOT NULL, Result CHAR, Result_Reason CHAR, Defect_Comments CHAR )");
 
-    db.execute(
-        "CREATE TABLE ${DBTables.COMMODITY_KEYWORDS}  (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, ID INTEGER NOT NULL,Keywords CHAR)");
+    db.execute("CREATE TABLE ${DBTables.COMMODITY_KEYWORDS} "
+        " (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "Keywords CHAR)");
 
-    db.execute(
-        "CREATE TABLE ${DBTables.PO_HEADER} (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, PO_Header_ID CHAR NOT NULL, PO_Number CHAR, PO_Deliver_To_Id INTEGER, PO_Deliver_To_Name CHAR, PO_Partner_Id INTEGER, PO_Partner_Name CHAR )");
+    db.execute("CREATE TABLE ${DBTables.PO_HEADER}"
+        " (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "PO_Header_ID CHAR NOT NULL, "
+        "PO_Number CHAR, "
+        "PO_Deliver_To_Id INTEGER, "
+        "PO_Deliver_To_Name CHAR, "
+        "PO_Partner_Id INTEGER, "
+        "PO_Partner_Name CHAR )");
 
-    db.execute(
-        "CREATE TABLE ${DBTables.PO_DETAIL} (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, PO_Detail_ID CHAR NOT NULL, PO_Header_ID CHAR, PO_Detail_Number CHAR, PO_Deliver_To_Id INTEGER, PO_Deliver_To_Name CHAR, PO_Line_Number INTEGER, PO_Item_Sku_Id INTEGER, PO_Item_Sku_Code CHAR, PO_Item_Sku_Name CHAR, PO_Quantity INTEGER, PO_Qty_UOM_Id INTEGER, PO_Qty_UOM_Name CHAR, PO_Number_Spec CHAR, PO_Version_Spec CHAR, PO_Commodity_Id INTEGER, PO_Commodity_Name CHAR )");
+    db.execute("CREATE TABLE ${DBTables.PO_DETAIL} "
+        "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "PO_Detail_ID CHAR NOT NULL, "
+        "PO_Header_ID CHAR, "
+        "PO_Detail_Number CHAR, "
+        "PO_Deliver_To_Id INTEGER, "
+        "PO_Deliver_To_Name CHAR, "
+        "PO_Line_Number INTEGER, "
+        "PO_Item_Sku_Id INTEGER, "
+        "PO_Item_Sku_Code CHAR, "
+        "PO_Item_Sku_Name CHAR, "
+        "PO_Quantity INTEGER, "
+        "PO_Qty_UOM_Id INTEGER, "
+        "PO_Qty_UOM_Name CHAR, "
+        "PO_Number_Spec CHAR, "
+        "PO_Version_Spec CHAR, "
+        "PO_Commodity_Id INTEGER, "
+        "PO_Commodity_Name CHAR )");
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {

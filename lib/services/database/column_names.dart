@@ -11,12 +11,13 @@ class UserColumn {
 class UserOfflineColumn {
   static const String USER_ID = 'User_ID';
   static const String USER_NAME = 'User_Name';
-  static const String PASSWORD = 'Password';
-  static const String EMAIL = 'Email';
-  static const String PHONE = 'Phone';
-  static const String ADDRESS = 'Address';
-  static const String CREATED_AT = 'Created_At';
-  static const String UPDATED_AT = 'Updated_At';
+  static const String ACCESS = 'Access';
+  static const String ENTERPRISEID = 'EnterpriseId';
+  static const String STATUS = 'Status';
+  static const String IS_SUBSCRIPTION_EXPIRED = 'IsSubscriptionExpired';
+  static const String SUPPLIER_ID = 'Supplier_Id';
+  static const String HEADQUATER_SUPPLIER_ID = 'Headquater_Supplier_Id';
+  static const String GTIN_SCANNING = 'GtinScanning';
 }
 
 class InspectionColumn {

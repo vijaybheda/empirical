@@ -1,11 +1,22 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
+import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/user.dart';
+import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/services/network_request_service/user_network_service.dart';
+import 'package:pverify/services/permission_service.dart';
+import 'package:pverify/services/secure_password.dart';
+import 'package:pverify/ui/cache_download_screen.dart';
+import 'package:pverify/ui/dashboard_screen.dart';
+import 'package:pverify/ui/setup_platfrom/setup.dart';
 import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/constants.dart';
+import 'package:pverify/utils/utils.dart';
 
 class AuthController extends GetxController {
   bool isLoading = false;
@@ -14,6 +25,28 @@ class AuthController extends GetxController {
   final passwordTextController = TextEditingController().obs;
   bool socialButtonVisible = true;
   AppStorage appStorage = AppStorage.instance;
+
+  int wifiLevel = 0;
+
+  @override
+  void onInit() {
+    super.onInit();
+    Utils.checkWifiLevel().then((value) {
+      wifiLevel = value;
+    });
+    // FIXME: change below logic
+    // if (isLoggedIn()) {
+    //   Get.offAll(() => const DashboardScreen());
+    // }
+
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      // request for storage permission
+      await PermissionsService.instance
+          .checkAndRequestExternalStoragePermissions();
+      await PermissionsService.instance
+          .checkAndRequestCameraPhotosPermissions();
+    });
+  }
 
   bool isLoggedIn() {
     User? userData = AppStorage.instance.getUserData();
@@ -26,108 +59,82 @@ class AuthController extends GetxController {
     await appStorage.appLogout();
   }
 
-
   // loginUser
-  /*Future<User?> loginUser({required bool isLoginButton}) async {
+  Future<LoginData?> loginUser({required bool isLoginButton}) async {
     isLoading = true;
 
-    // unfocus
-    fNodeEmail.unfocus();
-    fNodePass.unfocus();
-
     if (await Utils.hasInternetConnection()) {
-      String mUsername = emailTextController.text.trim();
-      String mPassword = passwordTextController.text;
+      String mUsername = emailTextController.value.text.trim();
+      String mPassword = passwordTextController.value.text;
       // TODO: Vijay show loading indicator
-      Map<String, dynamic>? userData =
+      LoginData? userData =
           await UserService().checkLogin(mUsername, mPassword, isLoginButton);
 
       if (userData != null) {
         try {
-          var status = userData['status'];
-          var access = userData['access1'];
-
-          String userId = userData["userName"];
-          var gtinScanning = userData["gtinScanning"];
-          var headquarterSupplierId = userData["headquarterSupplierId"];
-          var supplierId = userData["supplierId"];
-          var features = userData["features"];
-          var isSubscriptionExpired = userData["subscriptionExpired"];
-          var systemLabels = userData["systemLabels"];
-          var language = userData["language"];
-          var enterpriseId = userData["enterpriseId"];
-
           int userid =
               await ApplicationDao().getEnterpriseIdByUserId(mUsername);
           if (userid == 0) {
-            if (status == 3) {
-              ApplicationDao().createOrUpdateOfflineUser(
-                  mUsername.toLowerCase(),
-                  access,
-                  enterpriseId,
-                  "Inactive",
-                  isSubscriptionExpired,
-                  supplierId,
-                  headquarterSupplierId,
-                  gtinScanning);
-            } else {
-              ApplicationDao().createOrUpdateOfflineUser(
-                  mUsername.toLowerCase(),
-                  access,
-                  enterpriseId,
-                  "Active",
-                  isSubscriptionExpired,
-                  supplierId,
-                  headquarterSupplierId,
-                  gtinScanning);
-            }
-          }
-        } catch (e) {}
-      }
-    } else {
-      String mUsername = emailTextController.text.trim();
-      String mPassword = passwordTextController.text;
-      String? userHash =
-          await ApplicationDao().getOfflineUserHash(mUsername.toLowerCase());
+            int? id = await ApplicationDao().createOrUpdateOfflineUser(
+              mUsername.toLowerCase(),
+              userData.access1!,
+              userData.enterpriseId!,
+              userData.status == 3 ? "Inactive" : "Active",
+              userData.subscriptionExpired ?? false,
+              userData.supplierId!,
+              userData.headquarterSupplierId!,
+              userData.gtinScanning!,
+            );
 
-      if (userHash != null && userHash.isNotEmpty) {
-        if (SecurePassword().validatePasswordHash(mPassword, userHash)) {
-          AppInfo.setUsername(mUsername.toLowerCase());
-          AppInfo.setPassword(mPassword);
-
-          List<String> features = [];
-          features.add("pfg");
-
-          // TODO: Need usernames from /user/users WS
-
-          ApplicationDao().getOfflineUserData(mUsername.toLowerCase());
-
-          persistUserName();
-
-          if (isLoginButton) {
-            if (AppInfo.user.isSubscriptionExpired() ||
-                AppInfo.user.getStatus() == 3) {
-              Utils.showInfoAlertDialog(
-                  "Your account is inactive. Please contact your administrator.");
-            } else {
-              CacheUtil.offlineLoadSuppliers();
-              CacheUtil.offlineLoadCarriers();
-              CacheUtil.offlineLoadCommodity(context);
-
-              Get.offAll(() => TrendingReport());
-            }
+            return userData;
           } else {
-            Get.to(() => SetupScreen());
+            return userData;
           }
-        } else {
-          // show error alert dialog
+        } catch (e) {
           Utils.showErrorAlert("0");
         }
       } else {
-        // alert dialog for "Please go to your hotspot and turn WiFi on - need to update data with first login."
-        // show Info Alert Dialog
-        Utils.showInfoAlertDialog(
-            "Please go to your hotspot and turn WiFi on - need to update data with first login.");
+        String mUsername = emailTextController.value.text.trim();
+        String mPassword = passwordTextController.value.text;
+        String? userHash =
+            await ApplicationDao().getOfflineUserHash(mUsername.toLowerCase());
+
+        if (userHash != null && userHash.isNotEmpty) {
+          if (SecurePassword().validatePasswordHash(mPassword, userHash)) {
+            List<String> features = [];
+            features.add("pfg");
+
+            ApplicationDao().getOfflineUserData(mUsername.toLowerCase());
+
+            persistUserName();
+
+            if (isLoginButton) {
+              LoginData? userData = appStorage.getLoginData();
+              if ((userData?.subscriptionExpired ?? true) ||
+                  userData?.status == 3) {
+                Utils.showInfoAlertDialog(
+                    "Your account is inactive. Please contact your administrator.");
+              } else {
+                // TODO: add below logic
+                // CacheUtil.offlineLoadSuppliers();
+                // CacheUtil.offlineLoadCarriers();
+                // CacheUtil.offlineLoadCommodity(context);
+
+                Get.offAll(() => const DashboardScreen());
+              }
+            } else {
+              Get.offAll(() => SetupScreen());
+            }
+          } else {
+            // show error alert dialog
+            Utils.showErrorAlert("0");
+          }
+        } else {
+          // alert dialog for "Please go to your hotspot and turn WiFi on - need to update data with first login."
+          // show Info Alert Dialog
+          Utils.showInfoAlertDialog(
+              "Please go to your hotspot and turn WiFi on - need to update data with first login.");
+        }
       }
     }
 
@@ -137,17 +144,19 @@ class AuthController extends GetxController {
   }
 
   Future<void> persistUserName() async {
-    if (AppInfo.user != null) {
+    LoginData? loginData = appStorage.getLoginData();
+    if (loginData != null) {
       int? userId;
 
       try {
-        userId = await ApplicationDao().createOrUpdateUser(AppInfo.user);
-        AppInfo.user.setId(userId);
+        userId = await ApplicationDao().createOrUpdateUser(loginData);
+        loginData = loginData.copyWith(id: userId);
+        await appStorage.setLoginData(loginData);
       } catch (e) {
         return;
       }
     }
-  }*/
+  }
 
   // LOGIN SCREEN VALIDATION'S
 
@@ -173,5 +182,31 @@ class AuthController extends GetxController {
       return false;
     }
     return true;
+  }
+
+  Future<void> triggerCheckForUpdate() async {
+    /// start the service to check for updates.
+    // WSUpdateService updateWebservice = new WSUpdateService(appContext);
+    // updateWebservice.RequestUpdateInfo();
+  }
+
+  Future<void> downloadCloudData() async {
+    if (appStorage.getBool(StorageKey.kIsCSVDownloaded1) == false) {
+      if (await Utils.hasInternetConnection()) {
+        if (wifiLevel >= 2) {
+          appStorage.setBool(StorageKey.kIsCSVDownloaded1, true);
+          appStorage.setInt(
+              StorageKey.kCacheDate, DateTime.now().millisecondsSinceEpoch);
+          Get.to(() => const CacheDownloadScreen());
+        } else {
+          Utils.showInfoAlertDialog(AppStrings.downloadWifiError);
+        }
+      } else {
+        Utils.showInfoAlertDialog(AppStrings.betterWifiConnWarning);
+      }
+      await appStorage.setBool("isCSVDownloaded1", true);
+    } else {
+      Get.offAll(() => const DashboardScreen());
+    }
   }
 }

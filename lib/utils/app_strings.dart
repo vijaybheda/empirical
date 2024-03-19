@@ -1,5 +1,4 @@
 class AppStrings {
-
   static const String appName = 'Ver-ify 10.19.7';
   static const String appNameN2N = 'Share-ify';
   static const String actionSettings = 'Settings';
@@ -22,7 +21,6 @@ class AppStrings {
 
   static const String userNameValid = 'Please enter valid username.';
   static const String error = 'Error!';
-
 
   static const String inspectionMenu = 'Inspection Menu';
 
@@ -134,6 +132,8 @@ class AppStrings {
   static const String dateFormat = 'Date Format';
   static const String downloadWifiError =
       'Please go to your hotspot, turn WiFi on - need to update data with new version.';
+  static const String betterWifiConnWarning =
+      'Need better WiFi connection to update data now.';
   static const String appUpdateWifiError =
       'Please turn Wifi On to Update Application.';
   static const String banner1Url = 'Banner 1';
@@ -150,6 +150,9 @@ class AppStrings {
       'Note - Only Commodities that have Varieties are shown.';
 
   static const String downloadingVarietyList = 'Downloading variety list.';
+
+  static String storageDeniedMessage =
+      "External Storage permission required for this app. nPlease go to Settings and enable permissions to continue.";
 
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';
@@ -384,7 +387,7 @@ class AppStrings {
       'Storage and Camera Permissions are required for this app.\nPlease click ALLOW button to continue.';
 
   static const String appPermissionNecessary =
-      'Storage and Camera Permissions are required for this app.\nPlease go to Settings and enable permissions to continue."';
+      'Storage and Camera Permissions are required for this app.\nPlease go to Settings and enable permissions to continue.';
 
   static const String target = 'Target';
   static const String targetText = 'Text';

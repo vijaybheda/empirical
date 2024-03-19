@@ -11,6 +11,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class AppIcon {
@@ -362,7 +363,7 @@ class Utils {
     );
   }
 
-  static void showInfoAlertDialog(String message) {
+  static void showInfoAlertDialog(String message, {Function? onOk}) {
     // Helly redesign this dialog based on client requirement, change text style and color
     Get.defaultDialog(
       title: "Info",
@@ -374,6 +375,9 @@ class Utils {
         TextButton(
           onPressed: () {
             Get.back();
+            if (onOk != null) {
+              onOk();
+            }
           },
           child: Text(
             'OK',
@@ -404,6 +408,24 @@ class Utils {
         ),
       ],
     );
+  }
+
+  static Future<int> checkWifiLevel() async {
+    int level = 0;
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.wifi) {
+      level = 3;
+      // FIXME: check wifi level
+    } else {
+      level = 0;
+    }
+    return level;
+  }
+
+  Future<String> getExternalStoragePath() async {
+    var externalStoragePath =
+        await getExternalStorageDirectory().then((value) => value!.path);
+    return externalStoragePath;
   }
 }
 

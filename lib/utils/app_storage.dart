@@ -1,4 +1,5 @@
 import 'package:get_storage/get_storage.dart';
+import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/user.dart';
 
 class AppStorage {
@@ -13,7 +14,7 @@ class AppStorage {
 
   Future<void> appLogout() async {
     await storageBox().remove(StorageKey.kIsBoardWatched);
-    await storageBox().remove(StorageKey.kLoggedInUser);
+    await storageBox().remove(StorageKey.kUser);
     await storageBox().remove(StorageKey.kNotificationSettings);
     return;
   }
@@ -27,7 +28,7 @@ class AppStorage {
   }
 
   User? getUserData() {
-    String? loggedInUser = read(StorageKey.kLoggedInUser);
+    String? loggedInUser = read(StorageKey.kUser);
     if (loggedInUser == null) {
       return null;
     }
@@ -35,8 +36,22 @@ class AppStorage {
     return user;
   }
 
-  Future<void> setUserData(User User) async {
-    await write(StorageKey.kLoggedInUser, User.toJson());
+  Future<void> setUserData(User user) async {
+    await write(StorageKey.kUser, user.toJson());
+    return;
+  }
+
+  LoginData? getLoginData() {
+    String? loggedInUser = read(StorageKey.kLoginUserData);
+    if (loggedInUser == null) {
+      return null;
+    }
+    LoginData loginData = LoginData.fromStringJson(loggedInUser);
+    return loginData;
+  }
+
+  Future<void> setLoginData(LoginData loginData) async {
+    await write(StorageKey.kLoginUserData, loginData.toJson());
     return;
   }
 
@@ -63,6 +78,24 @@ class AppStorage {
     return;
   }
 
+  Future<void> setString(String key, String value) async {
+    await write(key, value);
+    return;
+  }
+
+  Future<String?> getString(String key) async {
+    return read(key);
+  }
+
+  Future<void> setInt(String key, int value) async {
+    await write(key, value);
+    return;
+  }
+
+  Future<int?> getInt(String key) async {
+    return read(key);
+  }
+
   Future<void> initStorage() async {
     await GetStorage.init(StorageKey.kAppStorageKey);
   }
@@ -75,10 +108,13 @@ class AppStorage {
 class StorageKey {
   static const String kAppStorageKey = 'AppStorageKey';
 
-  static const String kLoggedInUser = 'LoggedInUser';
+  static const String kUser = 'LoggedInUser';
+  static const String kLoginUserData = 'LoginUserData';
   static const String kNotificationSettings = 'notificationSetting';
   static const String kAppLanguage = 'appLanguage';
   static const String kIsBoardWatched = 'isBoardWatched';
   static const String jwtToken = 'jwtToken';
   static const String kBaseUrlKey = 'baseUrlKey';
+  static const String kCacheDate = 'cacheDate';
+  static const String kIsCSVDownloaded1 = 'isCSVDownloaded1';
 }
