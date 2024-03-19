@@ -30,7 +30,7 @@ class AppColors {
       ? const Color(0xffF29D38)
       : const Color(0xffABABAB); // Sample Color for Dark / Light Theme
   static Color primaryBlack = const Color.fromARGB(255, 0, 0, 0);
-  static Color primary = const Color(0xff3F51B5);
+  static Color primary = const Color(0xff0ba900);
   static Color accentColor = const Color(0xff0ba900);
   static Color textInput = const Color(0xffFFFFFD);
   static Color textColor = const Color(0xffFFFFFF);
@@ -56,7 +56,6 @@ class AppColors {
   static Color sky = const Color(0xff00B2CB);
   static Color purple = const Color(0xff5D5DFF);
 
-  static Color graniteGray = const Color(0xff5F646C);
   static Color textFieldBorderColor = const Color(0xffE5E8E9);
   static Color lightButtonBackground = const Color(0xffEBF9F6);
   static Color chatBackgroundColor = const Color(0xffFFFFFF);
@@ -65,6 +64,7 @@ class AppColors {
   static Color searchfieldColor = const Color(0xffF8F8F9);
   static Color brightGrey = const Color(0xFFE6E6E6);
   static Color warningColor = const Color(0xFFFF0101);
+  static Color graniteGray = const Color(0xff5F646C);
 
   // Login Screen Colors
 
