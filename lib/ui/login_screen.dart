@@ -31,7 +31,7 @@ class LoginScreen extends GetView<AuthController> {
       appBar: AppBar(
         toolbarHeight: 150.h,
         backgroundColor: AppColors.primary,
-        title: baseHeaderView(),
+        title: baseHeaderView(Appstrings.Login,true),
       ),
       body: Container(
         width: ResponsiveHelper.getDeviceWidth(context),
@@ -105,7 +105,7 @@ class LoginScreen extends GetView<AuthController> {
             SizedBox(
               height: 70.h,
             ),
-            customButton(Appstrings.LOGIN, double.infinity, 90,
+            customButton(AppColors.primary,Appstrings.LOGIN, double.infinity, 90,
                 onClickAction: () => {
                       if (AuthController().isLoginFieldsValidate() == true)
                         {print("All field are validate.")}
@@ -113,7 +113,7 @@ class LoginScreen extends GetView<AuthController> {
             SizedBox(
               height: 40.h,
             ),
-            customButton(Appstrings.SETUP, double.infinity, 90,
+            customButton(AppColors.primary,Appstrings.SETUP, double.infinity, 90,
                 onClickAction: () => {}),
           ],
         ),
