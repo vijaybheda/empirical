@@ -1,4 +1,5 @@
 class AppStrings {
+
   static const String appName = 'Ver-ify 10.19.7';
   static const String appNameN2N = 'Share-ify';
   static const String actionSettings = 'Settings';
@@ -19,6 +20,10 @@ class AppStrings {
   static const String inspectionRipening = 'Inspections & Ripening';
   static const String inspectionManagement = 'Inspection Management';
 
+  static const String userNameValid = 'Please enter valid username.';
+  static const String error = 'Error!';
+
+
   static const String inspectionMenu = 'Inspection Menu';
 
   static const String cancel = 'Cancel';
@@ -28,7 +33,6 @@ class AppStrings {
   static const String logOut = 'Log out';
   static const String save = 'Save';
   static const String alert = 'ALERT';
-  static const String error = 'ERROR';
   static const String skip = 'Skip';
   static const String discardAndSkip = 'Discard and Skip';
   static const String saveAndCalculate = 'Save & Calculate';

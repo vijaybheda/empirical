@@ -1,7 +1,4 @@
-// ignore_for_file: unrelated_type_equality_checks
-
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/models/user.dart';
@@ -12,14 +9,9 @@ import 'package:pverify/utils/constants.dart';
 
 class AuthController extends GetxController {
   bool isLoading = false;
-
   User? userModel;
-  Rx<TextEditingController> emailTextController = TextEditingController().obs;
-  Rx<TextEditingController> passwordTextController =
-      TextEditingController().obs;
-  final FocusNode fNodeEmail = FocusNode();
-  final FocusNode fNodePass = FocusNode();
-
+  final emailTextController = TextEditingController().obs;
+  final passwordTextController = TextEditingController().obs;
   bool socialButtonVisible = true;
   AppStorage appStorage = AppStorage.instance;
 
@@ -30,12 +22,10 @@ class AuthController extends GetxController {
   }
 
   Future<void> userLogout() async {
-    //get user data
     AppStorage appStorage = AppStorage.instance;
-    // User? userData = appStorage.getUserData();
-    //user data remove
     await appStorage.appLogout();
   }
+
 
   // loginUser
   /*Future<User?> loginUser({required bool isLoginButton}) async {
@@ -159,26 +149,25 @@ class AuthController extends GetxController {
     }
   }*/
 
+  // LOGIN SCREEN VALIDATION'S
+
   bool isLoginFieldsValidate() {
-    if (Get.find<AuthController>().emailTextController.value.text.isEmpty) {
+    if (emailTextController.value.text.isEmpty) {
       AppSnackBar.getCustomSnackBar(AppStrings.userNameBlank, AppStrings.error,
           isSuccess: false);
       return false;
     }
-    if (validateEmail(
-        Get.find<AuthController>().emailTextController.value.text.trim())) {
-      AppSnackBar.getCustomSnackBar(
-          AppStrings.invalidUsername, AppStrings.error,
+    if (validateEmail(emailTextController.value.text) == true) {
+      AppSnackBar.getCustomSnackBar(AppStrings.userNameValid, AppStrings.error,
           isSuccess: false);
       return false;
     }
-    if (Get.find<AuthController>().passwordTextController.value.text.isEmpty) {
+    if (passwordTextController.value.text.isEmpty) {
       AppSnackBar.getCustomSnackBar(AppStrings.passwordBlank, AppStrings.error,
           isSuccess: false);
       return false;
     }
-    if (checkPassword(
-        Get.find<AuthController>().passwordTextController.value.text.trim())) {
+    if (checkPassword(passwordTextController.value.text) == false) {
       AppSnackBar.getCustomSnackBar(AppStrings.passwordValid, AppStrings.error,
           isSuccess: false);
       return false;
