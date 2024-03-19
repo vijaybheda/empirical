@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
+// ignore_for_file: non_constant_identifier_names, avoid_types_as_parameter_names, prefer_const_constructors
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,18 +8,19 @@ import 'package:pverify/ui/setup_platfrom/setup_controller.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
-import 'package:pverify/utils/common_widget/header.dart';
+import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/common_widget/text_field/text_fields.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class SetupScreen extends GetView<SetupController> {
   SetupScreen({super.key});
+  SetupController setupController = SetupController();
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
         init: SetupController(),
-        builder: (SetupController) {
+        builder: (Controller) {
           return Scaffold(
             backgroundColor: AppColors.white,
             resizeToAvoidBottomInset: false,
@@ -31,6 +32,7 @@ class SetupScreen extends GetView<SetupController> {
             ),
             body: Container(
               width: ResponsiveHelper.getDeviceWidth(context),
+              padding: EdgeInsets.only(left: 20, right: 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -63,14 +65,17 @@ class SetupScreen extends GetView<SetupController> {
                   SizedBox(
                     height: 70.h,
                   ),
-                  customButton(
-                      AppColors.primary, AppStrings.save.toUpperCase(), double.infinity, 90,
+                  customButton(AppColors.primary, AppStrings.save.toUpperCase(),
+                      double.infinity, 90,
                       onClickAction: () => {}),
                   SizedBox(
                     height: 40.h,
                   ),
-                  customButton(AppColors.primary, AppStrings.checkForUpdate.toUpperCase(),
-                      double.infinity, 90,
+                  customButton(
+                      AppColors.primary,
+                      AppStrings.checkForUpdate.toUpperCase(),
+                      double.infinity,
+                      90,
                       onClickAction: () => {}),
                   SizedBox(
                     height: 40.h,
@@ -83,7 +88,6 @@ class SetupScreen extends GetView<SetupController> {
                       onClickAction: () => {}),
                 ],
               ),
-              padding: EdgeInsets.only(left: 20, right: 20),
             ),
           );
         });
@@ -108,14 +112,35 @@ class SetupScreen extends GetView<SetupController> {
         Expanded(
           flex: 2,
           child: isDropdown
-              ? DropdownButton<String>(
-                  items: <String>['A', 'B', 'C', 'D'].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (_) {},
+              ? Obx(
+                  () => DropdownButton<String>(
+                    dropdownColor: AppColors.white,
+                    hint: Text(
+                      'Select DateFormat',
+                      style: GoogleFonts.poppins(
+                          fontSize: 30.sp,
+                          fontWeight: FontWeight.normal,
+                          textStyle:
+                              TextStyle(color: AppColors.textFieldText_Color)),
+                    ),
+                    items: setupController.dateformats.map((selectedType) {
+                      return DropdownMenuItem<String>(
+                        value: selectedType,
+                        child: Text(
+                          selectedType,
+                          style: GoogleFonts.poppins(
+                              fontSize: 30.sp,
+                              fontWeight: FontWeight.normal,
+                              textStyle: TextStyle(
+                                  color: AppColors.textFieldText_Color)),
+                        ),
+                      );
+                    }).toList(),
+                    value: setupController.selectetdDateFormat.value,
+                    onChanged: (newValue) {
+                      setupController.setSelected(newValue ?? '');
+                    },
+                  ),
                 )
               : BoxTextField1(
                   isMulti: false,

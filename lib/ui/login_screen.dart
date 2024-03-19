@@ -6,7 +6,7 @@ import 'package:pverify/ui/setup_platfrom/setup.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
-import 'package:pverify/utils/common_widget/header.dart';
+import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/common_widget/text_field/text_fields.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
