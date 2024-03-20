@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io' show Directory, File, HttpStatus;
-import 'dart:typed_data';
 
 import 'package:archive/archive_io.dart';
 import 'package:dio/dio.dart';
@@ -29,8 +28,8 @@ class CacheDownloadService extends BaseRequestService {
       }
       directory.createSync(recursive: true);
 
-      File? savedZipFile =
-          await downloadFile(requestUrl, directory.path, headers: headerMap);
+      File? savedZipFile = await downloadFile(requestUrl, directory.path,
+          headers: headerMap, fileName: 'file.zip');
       if (savedZipFile == null) {
         return null;
       }
@@ -100,10 +99,41 @@ class CacheDownloadService extends BaseRequestService {
   }
 
   /// download JSON File
-  Future<bool> downloadJSON(
+  Future<File?> downloadJSON(
       String requestUrl, Map<String, dynamic> headerMap) async {
     try {
-      final response = await getCall(requestUrl, headers: headerMap);
+      var storagePath = await Utils().getExternalStoragePath();
+      final Directory directory =
+          Directory("$storagePath${AppStrings.jsonFilesCache}/");
+      if (directory.existsSync()) {
+        directory.deleteSync(recursive: true);
+      }
+      directory.createSync(recursive: true);
+
+      File? savedJsonFile = await downloadFile(requestUrl, directory.path,
+          headers: headerMap, fileName: 'jsonfile.zip');
+      if (savedJsonFile == null) {
+        return null;
+      }
+
+      List<int> bytes = await savedJsonFile.readAsBytes();
+
+      final zipInputStream = ZipDecoder().decodeBytes(bytes);
+
+      for (ArchiveFile zipEntry in zipInputStream) {
+        log('Extracting: ${zipEntry.name}');
+        final innerFileName = '${directory.path}${zipEntry.name}';
+        final innerFile = File(innerFileName);
+
+        if (!zipEntry.isFile) {
+          await innerFile.create(recursive: true);
+        } else {
+          await innerFile.create(recursive: true);
+          await innerFile.writeAsBytes(zipEntry.content);
+        }
+      }
+
+      /*final response = await getCall(requestUrl, headers: headerMap);
 
       if (response.statusCode == HttpStatus.ok) {
         var storagePath = await Utils().getExternalStoragePath();
@@ -150,12 +180,12 @@ class CacheDownloadService extends BaseRequestService {
         log('Error in downloadZip: 404 Not Found');
       } else {
         log('Error in downloadZip: ${response.statusCode}');
-      }
-      return false;
+      }*/
+      return savedJsonFile;
     } catch (e) {
       log('Error in downloadZip');
       log(e.toString());
-      return false;
+      return null;
     }
   }
 
@@ -227,6 +257,7 @@ class CacheDownloadService extends BaseRequestService {
   Future<File?> downloadFile(
     String url,
     String savePath, {
+    required String? fileName,
     Map<String, dynamic>? headers,
   }) async {
     Dio dio = Dio();
@@ -244,7 +275,7 @@ class CacheDownloadService extends BaseRequestService {
       );
 
       // Write the file
-      File file = File(join(savePath, 'a.zip'));
+      File file = File(join(savePath, fileName));
       await file.writeAsBytes(response.data);
       print('File downloaded to: $savePath');
 

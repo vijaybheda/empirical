@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:get_storage/get_storage.dart';
+import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/login_data.dart';
+import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/user.dart';
 
 class AppStorage {
@@ -48,6 +52,50 @@ class AppStorage {
     }
     LoginData loginData = LoginData.fromJson(loggedInUser);
     return loginData;
+  }
+
+  Future<void> savePartnerList(List<PartnerItem> partnerList) {
+    // list to String
+    String partnerListString = partnerList.map((e) => e.toJson()).toString();
+    return write(StorageKey.kPartnerList, partnerListString);
+  }
+
+  List<PartnerItem>? getPartnerList() {
+    // read String data and convert to List<PartnerItem> list
+    String? partnerListString = read(StorageKey.kPartnerList);
+    if (partnerListString == null) {
+      return null;
+    }
+
+    List<dynamic> decodedData = json.decode(partnerListString);
+    List<PartnerItem> partnerList = decodedData
+        .map((item) => PartnerItem.fromJson(item))
+        .toList()
+        .cast<PartnerItem>();
+
+    return partnerList;
+  }
+
+  Future<void> saveCarrierList(List<CarrierItem> carrierList) {
+    // list to String
+    String carrierListString = carrierList.map((e) => e.toJson()).toString();
+    return write(StorageKey.kCarrierList, carrierListString);
+  }
+
+  List<CarrierItem>? getCarrierList() {
+    // read String data and convert to List<CarrierItem> list
+    String? carrierListString = read(StorageKey.kCarrierList);
+    if (carrierListString == null) {
+      return null;
+    }
+
+    List<dynamic> decodedData = json.decode(carrierListString);
+    List<CarrierItem> carrierList = decodedData
+        .map((item) => CarrierItem.fromJson(item))
+        .toList()
+        .cast<CarrierItem>();
+
+    return carrierList;
   }
 
   Future<void> setLoginData(LoginData loginData) async {
@@ -101,7 +149,7 @@ class AppStorage {
   }
 
   Future<bool> isBoardWatched() async {
-    return await getBool(StorageKey.kIsBoardWatched);
+    return getBool(StorageKey.kIsBoardWatched);
   }
 
   Future<void> setHeaderMap(Map<String, String> mapData) async {
@@ -126,4 +174,6 @@ class StorageKey {
   static const String kCacheDate = 'cacheDate';
   static const String kIsCSVDownloaded1 = 'isCSVDownloaded1';
   static const String kHeaderMap = 'headerMap';
+  static const String kPartnerList = 'partnerList';
+  static const String kCarrierList = 'carrierList';
 }

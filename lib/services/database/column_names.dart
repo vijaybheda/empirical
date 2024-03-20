@@ -202,6 +202,7 @@ class ItemGroup1Column {
 }
 
 class SpecificationColumn {
+  static const String ID = 'ID';
   static const String NUMBER = 'Number';
   static const String VERSION = 'Version';
   static const String NAME = 'Name';
@@ -211,14 +212,21 @@ class SpecificationColumn {
 }
 
 class SpecificationSupplierColumn {
-  static const String NUMBER_SPECIFICATION = 'Number_Specification';
-  static const String VERSION_SPECIFICATION = 'Version_Specification';
-  static const String SUPPLIER_ID = 'Supplier_ID';
-  static const String NEGOTIATION_STATUS = 'Negotiation_Status';
-  static const String STATUS = 'Status';
-  static const String ITEM_SKU_ID = 'Item_SKU_ID';
-  static const String GTIN = 'Gtin';
-  static const String SPECIFICATION_SUPPLIER_ID = 'Specification_Supplier_ID';
+  static const String NUMBER_SPECIFICATION = "Number_Specification";
+  static const String VERSION_SPECIFICATION = "Version_Specification";
+  static const String ANALYTICAL_ID = "Analytical_ID";
+  static const String ANALYTICAL_NAME = "Analytical_name";
+  static const String SPEC_MIN = "Spec_Min";
+  static const String SPEC_MAX = "Spec_Max";
+  static const String TARGET_NUM_VALUE = "Target_Num_Value";
+  static const String TARGET_TEXT_VALUE = "Target_Text_Value";
+  static const String UOM_NAME = "UOM_Name";
+  static const String TYPE_ENTRY = "Type_Entry";
+  static const String DESCRIPTION = "Description";
+  static const String ORDERNO = "OrderNo";
+  static const String PICTURE_REQUIRED = "Picture_Required";
+  static const String TARGET_TEXT_DEFAULT = "Target_Text_Default";
+  static const String INSPECTION_RESULT = "Inspection_Result";
 }
 
 class SpecificationSupplierGtinColumn {
@@ -266,20 +274,24 @@ class SpecificationAnalyticalColumn {
 }
 
 class AgencyColumn {
+  static const String ID = 'ID';
   static const String NAME = 'Name';
 }
 
 class GradeColumn {
+  static const String ID = 'ID';
   static const String NAME = 'Name';
   static const String AGENCY_ID = 'Agency_ID';
 }
 
 class GradeCommodityColumn {
+  static const String ID = 'ID';
   static const String AGENCY_ID = 'Agency_ID';
   static const String COMMODITY_ID = 'Commodity_ID';
 }
 
 class GradeCommodityDetailColumn {
+  static const String ID = 'ID';
   static const String GRADE_ID = 'Grade_ID';
   static const String GRADE_COMMODITY_ID = 'Grade_Commodity_ID';
   static const String STATUS = 'Status';
@@ -335,12 +347,14 @@ class SpecificationPackagingFinishedGoodsColumn {
 }
 
 class CommodityColumn {
+  static const String ID = 'ID';
   static const String NAME = 'Name';
   static const String SAMPLE_SIZE_BY_COUNT = 'Sample_Size_By_Count';
   static const String KEYWORDS = 'Keywords';
 }
 
 class CommodityCteColumn {
+  static const String ID = 'ID';
   static const String NAME = 'Name';
   static const String SAMPLE_SIZE_BY_COUNT = 'Sample_Size_By_Count';
   static const String KEYWORDS = 'Keywords';
@@ -431,6 +445,7 @@ class ResultRejectionDetailsColumn {
 }
 
 class CommodityKeywordsColumn {
+  static const String ID = 'ID';
   static const String KEYWORDS = 'Keywords';
 }
 

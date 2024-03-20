@@ -653,10 +653,10 @@ class ApplicationDao {
         await txn.rawDelete('DELETE FROM ${DBTables.ITEM_GROUP1}');
 
         for (var row in fields.skip(1)) {
-          log('rowData $row');
-          int igrId = int.tryParse(row[0].toString().trim()) ?? 0;
-          String igrName = row[1].toString().trim();
-          int igrCommodityId = int.tryParse(row[2].toString().trim()) ?? 0;
+          // log('rowData $row');
+          int igrId = row[0];
+          String igrName = row[1];
+          int igrCommodityId = row[2];
 
           await txn.insert(
             DBTables.ITEM_GROUP1,
@@ -688,6 +688,725 @@ class ApplicationDao {
     } catch (e) {
       log(e.toString());
       return -1;
+    }
+  }
+
+  Future<bool> csvImportItemSKU() async {
+    print('Importing Item SKU');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file =
+          File("$storagePath${AppStrings.csvFilesCache}/item_sku.csv");
+      if (!file.existsSync()) {
+        log('item_sku CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn.rawDelete('DELETE FROM ${DBTables.ITEM_SKU}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemSkuData = {
+            ItemSkuColumn.SKU_ID: row[0],
+            ItemSkuColumn.CODE: row[1],
+            ItemSkuColumn.COMMODITY_ID: row[2],
+            ItemSkuColumn.NAME: row[3],
+            ItemSkuColumn.DESCRIPTION: row[4],
+            ItemSkuColumn.STATUS: row[5],
+            ItemSkuColumn.ITEM_GROUP1_ID: row[6],
+            ItemSkuColumn.ITEM_GROUP2_ID: row[7],
+            ItemSkuColumn.GRADE_ID: row[8],
+            ItemSkuColumn.PACKAGING_ID: row[9],
+            ItemSkuColumn.USAGE_TYPE: row[10],
+            ItemSkuColumn.COMMODITY_CATEGORY_ID: row[11],
+            ItemSkuColumn.ITEM_TYPE: row[12],
+            ItemSkuColumn.GLOBAL_PARTNER_ID: row[13],
+            ItemSkuColumn.COMPANY_ID: row[14],
+            ItemSkuColumn.DIVISION_ID: row[15],
+            ItemSkuColumn.BRANDED: row[16],
+            ItemSkuColumn.FTL: row[17],
+          };
+          await txn.insert(DBTables.ITEM_SKU, itemSkuData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> csvImportAgency() async {
+    print('Importing Item Agency');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file =
+          File("$storagePath${AppStrings.csvFilesCache}/agency.csv");
+      if (!file.existsSync()) {
+        log('agency CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn.rawDelete('DELETE FROM ${DBTables.AGENCY}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemAgencyData = {
+            AgencyColumn.ID: row[0],
+            AgencyColumn.NAME: row[1],
+          };
+          await txn.insert(DBTables.AGENCY, itemAgencyData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> csvImportGrade() async {
+    print('Importing Item Grade');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file =
+          File("$storagePath${AppStrings.csvFilesCache}/grade.csv");
+      if (!file.existsSync()) {
+        log('grade CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn.rawDelete('DELETE FROM ${DBTables.GRADE}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemGradeData = {
+            GradeColumn.ID: row[0],
+            GradeColumn.NAME: row[1],
+            GradeColumn.AGENCY_ID: row[2],
+          };
+          await txn.insert(DBTables.GRADE, itemGradeData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> csvImportGradeCommodity() async {
+    print('Importing Item Grade Commodity');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file =
+          File("$storagePath${AppStrings.csvFilesCache}/grade_commodity.csv");
+      if (!file.existsSync()) {
+        log('grade_commodity CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn.rawDelete('DELETE FROM ${DBTables.GRADE_COMMODITY}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemGradeCommodityData = {
+            GradeCommodityColumn.ID: row[0],
+            GradeCommodityColumn.AGENCY_ID: row[1],
+            GradeCommodityColumn.COMMODITY_ID: row[2],
+          };
+          await txn.insert(DBTables.GRADE_COMMODITY, itemGradeCommodityData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> csvImportGradeCommodityDetail() async {
+    print('Importing Item Grade Commodity Detail');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file = File(
+          "$storagePath${AppStrings.csvFilesCache}/grade_commodity_detail.csv");
+      if (!file.existsSync()) {
+        log('grade_commodity_detail CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn.rawDelete('DELETE FROM ${DBTables.GRADE_COMMODITY_DETAIL}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemGradeCommodityDetailData = {
+            GradeCommodityDetailColumn.ID: row[0],
+            GradeCommodityDetailColumn.GRADE_ID: row[1],
+            GradeCommodityDetailColumn.GRADE_COMMODITY_ID: row[2],
+            GradeCommodityDetailColumn.STATUS: row[3],
+            GradeCommodityDetailColumn.SORT_SEQUENCE_FIELD: row[4],
+          };
+          await txn.insert(
+              DBTables.GRADE_COMMODITY_DETAIL, itemGradeCommodityDetailData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> csvImportSpecification() async {
+    print('Importing Item specification');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file =
+          File("$storagePath${AppStrings.csvFilesCache}/specification.csv");
+      if (!file.existsSync()) {
+        log('specification CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemSpecificationData = {
+            SpecificationColumn.NUMBER: row[0],
+            SpecificationColumn.VERSION: row[1],
+            SpecificationColumn.NAME: row[2],
+            SpecificationColumn.ITEM_GROUP1_ID: row[3],
+            SpecificationColumn.COMMODITY_ID: row[4],
+            SpecificationColumn.SPECIFICATION_TYPE_ID: row[5],
+          };
+          await txn.insert(DBTables.SPECIFICATION, itemSpecificationData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> csvImportMaterialSpecification() async {
+    print('Importing Item Material Specification');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file = File(
+          "$storagePath${AppStrings.csvFilesCache}/material_specification.csv");
+      if (!file.existsSync()) {
+        log('material_specification CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn.rawDelete('DELETE FROM ${DBTables.MATERIAL_SPECIFICATION}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemMaterialSpecificationData = {
+            MaterialSpecificationColumn.NUMBER_SPECIFICATION: row[0],
+            MaterialSpecificationColumn.VERSION_SPECIFICATION: row[1],
+            MaterialSpecificationColumn.GRADE_ID: row[2],
+            MaterialSpecificationColumn.STATUS: row[3],
+          };
+          await txn.insert(
+              DBTables.MATERIAL_SPECIFICATION, itemMaterialSpecificationData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> csvImportSpecificationSupplier() async {
+    print('Importing Item Specification Supplier');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file = File(
+          "$storagePath${AppStrings.csvFilesCache}/specification_supplier.csv");
+      if (!file.existsSync()) {
+        log('specification_supplier CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION_SUPPLIER}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemSpecificationSupplierData = {
+            SpecificationSupplierColumn.NUMBER_SPECIFICATION: row[0],
+            SpecificationSupplierColumn.VERSION_SPECIFICATION: row[1],
+            SpecificationSupplierColumn.ANALYTICAL_ID: row[2],
+            SpecificationSupplierColumn.ANALYTICAL_NAME: row[3],
+            SpecificationSupplierColumn.DESCRIPTION: row[5],
+            SpecificationSupplierColumn.SPEC_MIN: row[6],
+            SpecificationSupplierColumn.SPEC_MAX: row[7],
+            SpecificationSupplierColumn.TARGET_NUM_VALUE: row[8].isEmpty
+                ? row[8]
+                : double.parse(row[8].toString().trim()),
+            SpecificationSupplierColumn.TARGET_TEXT_VALUE: row[9],
+            SpecificationSupplierColumn.UOM_NAME: row[10],
+            SpecificationSupplierColumn.TYPE_ENTRY: row[11],
+            SpecificationSupplierColumn.ORDERNO: row[12],
+            SpecificationSupplierColumn.PICTURE_REQUIRED: row[13],
+            SpecificationSupplierColumn.TARGET_TEXT_DEFAULT: row[14],
+            SpecificationSupplierColumn.INSPECTION_RESULT: row[15],
+          };
+          await txn.insert(
+              DBTables.SPECIFICATION_SUPPLIER, itemSpecificationSupplierData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> csvImportSpecificationGradeTolerance() async {
+    print('Importing Item Specification Grade Tolerance');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file = File(
+          "$storagePath${AppStrings.csvFilesCache}/specification_grade_tolerance.csv");
+      if (!file.existsSync()) {
+        log('specification_grade_tolerance CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn
+            .rawDelete('DELETE FROM ${DBTables.SPECIFICATION_GRADE_TOLERANCE}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemSpecificationGradeToleranceData = {
+            SpecificationGradeToleranceColumn.SPECIFICATION_GRADE_TOLERANCE_ID:
+                row[0],
+            SpecificationGradeToleranceColumn.NUMBER_SPECIFICATION: row[1],
+            SpecificationGradeToleranceColumn.VERSION_SPECIFICATION: row[2],
+            SpecificationGradeToleranceColumn.SEVERITY_DEFECT_ID: row[3],
+            SpecificationGradeToleranceColumn.DEFECT_ID: row[4],
+            SpecificationGradeToleranceColumn.GRADE_TOLERANCE_PERCENTAGE:
+                row[5].isEmpty
+                    ? row[5]
+                    : double.parse(row[5].toString().trim()),
+            SpecificationGradeToleranceColumn.OVERRIDDEN: row[6],
+            SpecificationGradeToleranceColumn.DEFECT_NAME: row[7],
+            SpecificationGradeToleranceColumn.DEFECT_CATEGORY_NAME: row[8],
+            SpecificationGradeToleranceColumn.SEVERITY_DEFECT_NAME: row[9],
+          };
+          await txn.insert(DBTables.SPECIFICATION_GRADE_TOLERANCE,
+              itemSpecificationGradeToleranceData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> csvImportSpecificationAnalytical() async {
+    print('Importing Item Specification Analytical');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file = File(
+          "$storagePath${AppStrings.csvFilesCache}/specification_analytical.csv");
+      if (!file.existsSync()) {
+        log('specification_analytical CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION_ANALYTICAL}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemSpecificationAnalyticalData = {
+            SpecificationAnalyticalColumn.NUMBER_SPECIFICATION: row[0],
+            SpecificationAnalyticalColumn.VERSION_SPECIFICATION: row[1],
+            SpecificationAnalyticalColumn.ANALYTICAL_ID: row[2],
+            SpecificationAnalyticalColumn.ANALYTICAL_NAME: row[3],
+            SpecificationAnalyticalColumn.SPEC_MIN: row[4],
+            SpecificationAnalyticalColumn.SPEC_MAX: row[5].isEmpty
+                ? row[5]
+                : double.parse(row[5].toString().trim()),
+            SpecificationAnalyticalColumn.TARGET_NUM_VALUE: row[6],
+            SpecificationAnalyticalColumn.TARGET_TEXT_VALUE: row[7],
+            SpecificationAnalyticalColumn.UOM_NAME: row[8],
+            SpecificationAnalyticalColumn.TYPE_ENTRY: row[9],
+            SpecificationAnalyticalColumn.DESCRIPTION: row[10],
+            SpecificationAnalyticalColumn.ORDER_NO: row[11],
+            SpecificationAnalyticalColumn.PICTURE_REQUIRED: row[12],
+            SpecificationAnalyticalColumn.TARGET_TEXT_DEFAULT: row[13],
+            SpecificationAnalyticalColumn.INSPECTION_RESULT: row[14],
+          };
+          await txn.insert(DBTables.SPECIFICATION_ANALYTICAL,
+              itemSpecificationAnalyticalData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> csvImportSpecificationPackagingFinishedGoods() async {
+    print('Importing Item Specification Analytical');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file = File(
+          "$storagePath${AppStrings.csvFilesCache}/specification_packaging_finished_goods.csv");
+      if (!file.existsSync()) {
+        log('specification_analytical CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn.rawDelete(
+            'DELETE FROM ${DBTables.SPECIFICATION_PACKAGING_FINISHED_GOODS}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemSpecificationAnalyticalData = {
+            SpecificationPackagingFinishedGoodsColumn.FINISHED_GOODS_ID: row[0],
+            SpecificationPackagingFinishedGoodsColumn.NUMBER_SPECIFICATION:
+                row[1],
+            SpecificationPackagingFinishedGoodsColumn.VERSION_SPECIFICATION:
+                row[2],
+            SpecificationPackagingFinishedGoodsColumn.ITEM_SKU_ID: row[3],
+          };
+          await txn.insert(DBTables.SPECIFICATION_PACKAGING_FINISHED_GOODS,
+              itemSpecificationAnalyticalData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> csvImportSpecificationType() async {
+    print('Importing Item Specification Type');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file = File(
+          "$storagePath${AppStrings.csvFilesCache}/specification_type.csv");
+      if (!file.existsSync()) {
+        log('specification_type CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION_TYPE}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemSpecificationTypeData = {
+            SpecificationTypeColumn.SPECIFICATION_TYPE_ID: row[0],
+            SpecificationTypeColumn.NAME: row[1],
+          };
+          await txn.insert(
+              DBTables.SPECIFICATION_TYPE, itemSpecificationTypeData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> csvImportCommodity() async {
+    print('Importing Item Commodity');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file =
+          File("$storagePath${AppStrings.csvFilesCache}/commodity.csv");
+      if (!file.existsSync()) {
+        log('commodity CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn.rawDelete('DELETE FROM ${DBTables.COMMODITY}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemCommodityData = {
+            CommodityColumn.ID: row[0],
+            CommodityColumn.NAME: row[1],
+            CommodityColumn.SAMPLE_SIZE_BY_COUNT: row[2],
+            CommodityColumn.KEYWORDS: row[3],
+          };
+          await txn.insert(DBTables.COMMODITY, itemCommodityData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> csvImportCommodityKeywords() async {
+    print('Importing Item Commodity Keywords');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file = File(
+          "$storagePath${AppStrings.csvFilesCache}/commodity_keywords.csv");
+      if (!file.existsSync()) {
+        log('commodity_keywords CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn.rawDelete('DELETE FROM ${DBTables.COMMODITY_KEYWORDS}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemCommodityKeywordsData = {
+            CommodityKeywordsColumn.ID: row[0],
+            CommodityKeywordsColumn.KEYWORDS: row[1],
+          };
+          await txn.insert(
+              DBTables.COMMODITY_KEYWORDS, itemCommodityKeywordsData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> csvImportPOHeader() async {
+    print('Importing Item POHeader');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file = File(
+          "$storagePath${AppStrings.csvFilesCache}/purchase_order_header.csv");
+      if (!file.existsSync()) {
+        log('purchase_order_header CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn.rawDelete('DELETE FROM ${DBTables.PO_HEADER}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemPOHeaderData = {
+            POHeaderColumn.PO_HEADER_ID: row[0],
+            POHeaderColumn.PO_NUMBER: row[1],
+            POHeaderColumn.PO_DELIVER_TO_ID: row[2],
+            POHeaderColumn.PO_DELIVER_TO_NAME: row[3],
+            POHeaderColumn.PO_PARTNER_ID: row[4],
+            POHeaderColumn.PO_PARTNER_NAME: row[5],
+          };
+          await txn.insert(DBTables.PO_HEADER, itemPOHeaderData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> csvImportPODetail() async {
+    print('Importing Item PODetail');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file = File(
+          "$storagePath${AppStrings.csvFilesCache}/purchase_order_detail.csv");
+      if (!file.existsSync()) {
+        log('purchase_order_detail CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn.rawDelete('DELETE FROM ${DBTables.PO_DETAIL}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemPODetailData = {
+            PODetailColumn.PO_DETAIL_ID: row[0],
+            PODetailColumn.PO_HEADER_ID: row[1],
+            PODetailColumn.PO_DETAIL_NUMBER: row[2],
+            PODetailColumn.PO_DELIVER_TO_ID: row[3],
+            PODetailColumn.PO_DELIVER_TO_NAME: row[4],
+            PODetailColumn.PO_LINE_NUMBER: row[5],
+            PODetailColumn.PO_ITEM_SKU_ID: row[6],
+            PODetailColumn.PO_ITEM_SKU_CODE: row[7],
+            PODetailColumn.PO_ITEM_SKU_NAME: row[8],
+            PODetailColumn.PO_QUANTITY: row[9],
+            PODetailColumn.PO_QTY_UOM_ID: row[10],
+            PODetailColumn.PO_QTY_UOM_NAME: row[11],
+            PODetailColumn.PO_NUMBER_SPEC: row[12],
+            PODetailColumn.PO_VERSION_SPEC: row[13],
+            PODetailColumn.PO_COMMODITY_ID: row[14],
+            PODetailColumn.PO_COMMODITY_NAME: row[15],
+          };
+          await txn.insert(DBTables.PO_DETAIL, itemPODetailData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> csvImportSpecificationSupplierGtins() async {
+    print('Importing Item Specification SupplierGtins');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file = File(
+          "$storagePath${AppStrings.csvFilesCache}/specification_supplier_gtins.csv");
+      if (!file.existsSync()) {
+        log('specification_supplier_gtins CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn
+            .rawDelete('DELETE FROM ${DBTables.SPECIFICATION_SUPPLIER_GTIN}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemSpecificationSupplierGtinsData = {
+            SpecificationSupplierGtinColumn.SPECIFICATION_SUPPLIER_ID: row[0],
+            SpecificationSupplierGtinColumn.GTIN: row[1],
+          };
+          await txn.insert(DBTables.SPECIFICATION_SUPPLIER_GTIN,
+              itemSpecificationSupplierGtinsData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
+    }
+  }
+
+  Future<bool> csvImportCommodityCTE() async {
+    print('Importing Item Commodity CTE');
+
+    try {
+      Database db = await dbProvider.database;
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file = File(
+          "$storagePath${AppStrings.csvFilesCache}/supplier_commodity.csv");
+      if (!file.existsSync()) {
+        log('supplier_commodity CSV file not found');
+        return false;
+      }
+      final String contents = await file.readAsString();
+      List<List<dynamic>> rowsAsListOfValues =
+          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      await db.transaction((txn) async {
+        await txn.rawDelete('DELETE FROM ${DBTables.COMMODITY_CTE}');
+
+        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+          Map<String, dynamic> itemCommodityCteData = {
+            CommodityCteColumn.ID: row[0],
+            CommodityCteColumn.NAME: row[1],
+            CommodityCteColumn.SAMPLE_SIZE_BY_COUNT: row[2],
+            CommodityCteColumn.KEYWORDS: row[3],
+          };
+          await txn.insert(DBTables.COMMODITY_CTE, itemCommodityCteData);
+        }
+      });
+      return true;
+    } on FileSystemException catch (e) {
+      print('File operation failed: $e');
+      return false;
     }
   }
 }
