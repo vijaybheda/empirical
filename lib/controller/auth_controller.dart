@@ -26,7 +26,6 @@ class AuthController extends GetxController {
     await appStorage.appLogout();
   }
 
-
   // loginUser
   /*Future<User?> loginUser({required bool isLoginButton}) async {
     isLoading = true;
@@ -152,17 +151,18 @@ class AuthController extends GetxController {
   // LOGIN SCREEN VALIDATION'S
 
   bool isLoginFieldsValidate() {
-    if (emailTextController.value.text.isEmpty) {
+    if (emailTextController.value.text.trim().isEmpty) {
       AppSnackBar.getCustomSnackBar(AppStrings.userNameBlank, AppStrings.error,
           isSuccess: false);
       return false;
     }
     if (validateEmail(emailTextController.value.text) == true) {
-      AppSnackBar.getCustomSnackBar(AppStrings.userNameValid, AppStrings.error,
+      AppSnackBar.getCustomSnackBar(
+          AppStrings.invalidUsername, AppStrings.error,
           isSuccess: false);
       return false;
     }
-    if (passwordTextController.value.text.isEmpty) {
+    if (passwordTextController.value.text.trim().isEmpty) {
       AppSnackBar.getCustomSnackBar(AppStrings.passwordBlank, AppStrings.error,
           isSuccess: false);
       return false;

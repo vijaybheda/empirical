@@ -67,7 +67,10 @@ class SetupScreen extends GetView<SetupController> {
                   ),
                   customButton(AppColors.primary, AppStrings.save.toUpperCase(),
                       double.infinity, 90,
-                      onClickAction: () => {}),
+                      onClickAction: () => {
+                            if (Controller.isSetupFieldsValidate())
+                              {debugPrint('All Fields Are Validate')}
+                          }),
                   SizedBox(
                     height: 40.h,
                   ),

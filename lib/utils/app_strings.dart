@@ -1,5 +1,4 @@
 class AppStrings {
-
   static const String appName = 'Ver-ify 10.19.7';
   static const String appNameN2N = 'Share-ify';
   static const String actionSettings = 'Settings';
@@ -22,7 +21,6 @@ class AppStrings {
 
   static const String userNameValid = 'Please enter valid username.';
   static const String error = 'Error!';
-
 
   static const String inspectionMenu = 'Inspection Menu';
 
@@ -433,9 +431,18 @@ class AppStrings {
   static const String next = 'Next';
   static const String previous = 'Previous';
 
+  static const String banner1Blank = 'Banner 1 cannot be blank';
+  static const String banner2Blank = 'Banner 2 cannot be blank';
+  static const String serverUrlBlank = 'Server Url cannot be blank';
+
   static const List<String> stowage = ['Internal Managed', 'X-Dock'];
 
   static const List<String> array_name = ['Yes', 'No', 'N/A'];
 
   static const List<String> yesNoArray = ['Y', 'N'];
+  static const List<String> dateFormats = [
+    'mm-dd-yyyy',
+    'dd-mm-yyyy',
+    'yyyy-mm-dd'
+  ];
 }

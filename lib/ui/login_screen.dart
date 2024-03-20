@@ -98,9 +98,12 @@ class LoginScreen extends GetView<AuthController> {
                 SizedBox(
                   height: 40.h,
                 ),
-                customButton(
-                    AppColors.primary, AppStrings.setup.toUpperCase(), double.infinity, 90,
-                    onClickAction: () => {Get.to(() => SetupScreen())}),
+                customButton(AppColors.primary, AppStrings.setup.toUpperCase(),
+                    double.infinity, 90,
+                    onClickAction: () => {
+                          if (authController.isLoginFieldsValidate() == true)
+                            {Get.to(() => SetupScreen())}
+                        }),
               ],
             ),
           ),

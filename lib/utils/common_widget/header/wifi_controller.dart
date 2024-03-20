@@ -4,11 +4,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_internet_signal/flutter_internet_signal.dart';
 import 'package:get/get.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/images.dart';
-import 'package:wifi_info_plugin_plus/wifi_info_plugin_plus.dart';
 
 class WifiController extends GetxController {
   final NetworkConnectivity _networkConnectivity = NetworkConnectivity.instance;
