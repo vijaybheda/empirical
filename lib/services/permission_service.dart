@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:pverify/utils/app_strings.dart';
-import 'package:pverify/utils/utils.dart';
 
 class PermissionsService {
   static PermissionsService get instance => _instance;
@@ -41,16 +39,27 @@ class PermissionsService {
     if (Platform.isAndroid) {
       final PermissionStatus storagePermissionStatus =
           await Permission.manageExternalStorage.status;
+      await Permission.manageExternalStorage.request();
       if (!storagePermissionStatus.isGranted) {
         if (await Permission.manageExternalStorage.isRestricted) {
           // Permission is restricted, open app settings
           // openAppSettings();
-          Utils.showInfoAlertDialog(
+          /*Utils.showInfoAlertDialog(
             AppStrings.storageDeniedMessage,
             onOk: () {
-              openAppSettings();
+              Get.back();
             },
-          );
+            additionalButton: TextButton(
+              onPressed: () {
+                Get.back();
+                openAppSettings();
+              },
+              child: Text(
+                'Open Settings',
+                style: TextStyle(color: AppColors.primary),
+              ),
+            ),
+          );*/
           return false;
         } else {
           // Request permission

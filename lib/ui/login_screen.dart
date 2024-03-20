@@ -131,8 +131,9 @@ class LoginScreen extends GetView<AuthController> {
                   height: 40.h,
                 ),
                 customButton(AppColors.primary, AppStrings.setup.toUpperCase(),
-                    double.infinity, 90,
-                    onClickAction: () => {Get.to(() => SetupScreen())}),
+                    double.infinity, 90, onClickAction: () {
+                  Get.to(() => SetupScreen());
+                }),
               ],
             ),
           ),

@@ -11,13 +11,25 @@ class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
         init: CacheDownloadController(),
         builder: (controller) {
           return Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.background,
             appBar: AppBar(
               title: const Text('Cache Download'),
             ),
             body: const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[],
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  /// loading indicator
+
+                  Center(
+                    child: SizedBox(
+                      height: 50,
+                      width: 50,
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                ],
               ),
             ),
           );

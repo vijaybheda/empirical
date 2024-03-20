@@ -25,6 +25,8 @@ class AppStrings {
   static const String inspectionMenu = 'Inspection Menu';
 
   static const String cancel = 'Cancel';
+  static const String csvFilesCache = 'csvfilescache';
+  static const String jsonFilesCache = 'jsonfilescache';
   static const String ok = 'OK';
   static const String yes = 'Yes';
   static const String no = 'No';
@@ -152,7 +154,7 @@ class AppStrings {
   static const String downloadingVarietyList = 'Downloading variety list.';
 
   static String storageDeniedMessage =
-      "External Storage permission required for this app. nPlease go to Settings and enable permissions to continue.";
+      "External Storage permission required for this app.\nPlease go to Settings and enable permissions to continue.";
 
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';

@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/user.dart';
 import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/services/network_request_service/api_urls.dart';
 import 'package:pverify/services/network_request_service/user_network_service.dart';
 import 'package:pverify/services/permission_service.dart';
 import 'package:pverify/services/secure_password.dart';
@@ -67,8 +68,8 @@ class AuthController extends GetxController {
       String mUsername = emailTextController.value.text.trim();
       String mPassword = passwordTextController.value.text;
       // TODO: Vijay show loading indicator
-      LoginData? userData =
-          await UserService().checkLogin(mUsername, mPassword, isLoginButton);
+      LoginData? userData = await UserService()
+          .checkLogin(loginRequestUrl, mUsername, mPassword, isLoginButton);
 
       if (userData != null) {
         try {
@@ -143,15 +144,23 @@ class AuthController extends GetxController {
     return null;
   }
 
+  String get loginRequestUrl => ApiUrls.serverUrl + ApiUrls.LOGIN_REQUEST;
+
   Future<void> persistUserName() async {
     LoginData? loginData = appStorage.getLoginData();
     if (loginData != null) {
       int? userId;
 
       try {
-        userId = await ApplicationDao().createOrUpdateUser(loginData);
-        loginData = loginData.copyWith(id: userId);
-        await appStorage.setLoginData(loginData);
+        User user = User(
+          id: 0,
+          name: loginData.userName,
+          timestamp: DateTime.now().millisecondsSinceEpoch,
+          language: loginData.language,
+        );
+        userId = await ApplicationDao().createOrUpdateUser(user);
+        user = user.copyWith(id: userId);
+        await appStorage.setUserData(user);
       } catch (e) {
         return;
       }
@@ -197,6 +206,7 @@ class AuthController extends GetxController {
           appStorage.setBool(StorageKey.kIsCSVDownloaded1, true);
           appStorage.setInt(
               StorageKey.kCacheDate, DateTime.now().millisecondsSinceEpoch);
+          await appStorage.setBool(StorageKey.kIsCSVDownloaded1, true);
           Get.to(() => const CacheDownloadScreen());
         } else {
           Utils.showInfoAlertDialog(AppStrings.downloadWifiError);
@@ -204,7 +214,6 @@ class AuthController extends GetxController {
       } else {
         Utils.showInfoAlertDialog(AppStrings.betterWifiConnWarning);
       }
-      await appStorage.setBool("isCSVDownloaded1", true);
     } else {
       Get.offAll(() => const DashboardScreen());
     }

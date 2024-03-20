@@ -363,13 +363,25 @@ class Utils {
     );
   }
 
-  static void showInfoAlertDialog(String message, {Function? onOk}) {
+  static void showInfoAlertDialog(String message,
+      {Widget? additionalButton, Function? onOk}) {
     // Helly redesign this dialog based on client requirement, change text style and color
     Get.defaultDialog(
       title: "Info",
-      content: Text(
-        message,
-        style: TextStyle(fontSize: 16),
+      content: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          alignment: WrapAlignment.center,
+          runAlignment: WrapAlignment.center,
+          children: [
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(
@@ -380,10 +392,11 @@ class Utils {
             }
           },
           child: Text(
-            'OK',
+            'Cancel',
             style: TextStyle(color: AppColors.primary),
           ),
         ),
+        additionalButton ?? Container(),
       ],
     );
   }
@@ -423,9 +436,18 @@ class Utils {
   }
 
   Future<String> getExternalStoragePath() async {
-    var externalStoragePath =
-        await getExternalStorageDirectory().then((value) => value!.path);
-    return externalStoragePath;
+    if (Platform.isAndroid) {
+      return '/storage/emulated/0/';
+      // var externalStoragePath =
+      //     await getExternalStorageDirectory().then((value) => value!.path);
+      // return externalStoragePath;
+    } else if (Platform.isIOS) {
+      var externalStoragePath =
+          await getApplicationDocumentsDirectory().then((value) => value.path);
+      return externalStoragePath;
+    } else {
+      return "";
+    }
   }
 }
 

@@ -48,4 +48,18 @@ class User {
     data['Language'] = language;
     return data;
   }
+
+  User copyWith({
+    int? id,
+    String? name,
+    int? timestamp,
+    String? language,
+  }) {
+    return User(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      timestamp: timestamp ?? this.timestamp,
+      language: language ?? this.language,
+    );
+  }
 }

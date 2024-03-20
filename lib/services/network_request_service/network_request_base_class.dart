@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pverify/services/custom_exception/custom_exception.dart';
@@ -18,11 +16,12 @@ class BaseRequestService extends GetConnect {
   @override
   void onInit() {
     httpClient.baseUrl = ApiUrls.serverUrl;
-    final String authToken = appStorage.read(StorageKey.jwtToken) ?? "";
+    // final String authToken = appStorage.read(StorageKey.jwtToken) ?? "";
     httpClient.defaultContentType = "application/json";
-    httpClient.timeout = const Duration(seconds: 10);
-    final Map<String, String> headers = {'Authorization': "Bearer $authToken"};
-    log('Bearer$authToken');
+    httpClient.timeout = const Duration(seconds: 60);
+    // final Map<String, String> headers = {'Authorization': "Bearer $authToken"};
+    final Map<String, String> headers = appStorage.read(StorageKey.kHeaderMap);
+    // log('Bearer$authToken');
     httpClient.addRequestModifier<Object?>((request) {
       request.headers.addAll(headers);
       return request;
@@ -66,4 +65,30 @@ class BaseRequestService extends GetConnect {
   }
 
   String? getString(String key) => GetStorage().read(key);
+
+  // global get request
+  Future<Response<Map<String, dynamic>>> getCall(
+    String url, {
+    Map<String, dynamic>? query,
+    Map<String, dynamic>? headers,
+  }) async {
+    Map<String, String>? headersMap;
+
+    if (headers != null && headers.isNotEmpty) {
+      headersMap = headers.map((key, value) {
+        return MapEntry(key, value.toString());
+      });
+    }
+    Response<Map<String, dynamic>> response =
+        await super.get<Map<String, dynamic>>(
+      url,
+      query: query,
+      headers: headersMap,
+    );
+    if (response.isOk) {
+      return response;
+    } else {
+      throw await errorHandler(response);
+    }
+  }
 }

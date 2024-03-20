@@ -52,6 +52,7 @@ dependencies:
   path: ^1.9.0
   crypto: ^3.0.3
   csv: ^6.0.0
+  archive: ^3.4.10
 
 dev_dependencies:
   flutter_test:

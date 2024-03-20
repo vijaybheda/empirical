@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:csv/csv.dart';
@@ -7,7 +8,6 @@ import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/models/inspection_defect.dart';
 import 'package:pverify/models/inspection_sample.dart';
 import 'package:pverify/models/inspection_specification.dart';
-import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/my_inspection_48hour_item.dart';
 import 'package:pverify/models/specification.dart';
 import 'package:pverify/models/user.dart';
@@ -15,6 +15,7 @@ import 'package:pverify/models/user_offline.dart';
 import 'package:pverify/services/database/column_names.dart';
 import 'package:pverify/services/database/database_helper.dart';
 import 'package:pverify/services/database/db_tables.dart';
+import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/utils.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -23,7 +24,7 @@ class ApplicationDao {
 
   final dbProvider = DatabaseHelper.instance;
 
-  Future<int> createOrUpdateUser(LoginData user) async {
+  Future<int> createOrUpdateUser(User user) async {
     final db = await DatabaseHelper.instance.database;
     if (user.id == null) {
       // Insert
@@ -632,41 +633,61 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportItemGroup1() async {
-    var storagePath = await Utils().getExternalStoragePath();
-    final File file = File("${storagePath}csvfilescache/item_group1.csv");
-    if (!file.existsSync()) {
-      print('CSV file not found');
+    try {
+      var storagePath = await Utils().getExternalStoragePath();
+      final File file =
+          File("$storagePath${AppStrings.csvFilesCache}/item_group1.csv");
+      if (!file.existsSync()) {
+        log('CSV file not found');
+        return false;
+      }
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
+
+      Database db = await dbProvider.database;
+
+      await db.transaction((txn) async {
+        await txn.rawDelete('DELETE FROM ${DBTables.ITEM_GROUP1}');
+
+        for (var row in fields.skip(1)) {
+          log('rowData $row');
+          int igrId = int.tryParse(row[0].toString().trim()) ?? 0;
+          String igrName = row[1].toString().trim();
+          int igrCommodityId = int.tryParse(row[2].toString().trim()) ?? 0;
+
+          await txn.insert(
+            DBTables.ITEM_GROUP1,
+            {
+              ItemGroup1Column.GROUP1_ID: igrId,
+              ItemGroup1Column.NAME: igrName,
+              ItemGroup1Column.COMMODITY_ID: igrCommodityId,
+            },
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+      });
+
+      log('CSV data inserted into the database successfully.');
+      return true;
+    } catch (e) {
+      log(e.toString());
       return false;
     }
-    final inputStream = file.openRead();
-    final fields = await inputStream
-        .transform(utf8.decoder)
-        .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
-        .toList();
+  }
 
-    Database db = await dbProvider.database;
+  Future<int> deletePartnerItemSKUForUpdateCache() async {
+    try {
+      final db = await dbProvider.database;
 
-    await db.transaction((txn) async {
-      await txn.rawDelete('DELETE FROM ${DBTables.ITEM_GROUP1}');
-
-      for (var row in fields.skip(1)) {
-        int igrId = int.tryParse(row[0].trim()) ?? 0;
-        String igrName = row[1].trim();
-        int igrCommodityId = int.tryParse(row[2].trim()) ?? 0;
-
-        await txn.insert(
-          DBTables.ITEM_GROUP1,
-          {
-            ItemGroup1Column.GROUP1_ID: igrId,
-            ItemGroup1Column.NAME: igrName,
-            ItemGroup1Column.COMMODITY_ID: igrCommodityId,
-          },
-          conflictAlgorithm: ConflictAlgorithm.replace,
-        );
-      }
-    });
-
-    print('CSV data inserted into the database successfully.');
-    return true;
+      return await db.transaction((txn) async {
+        return await txn.delete(DBTables.PARTNER_ITEMSKU);
+      });
+    } catch (e) {
+      log(e.toString());
+      return -1;
+    }
   }
 }

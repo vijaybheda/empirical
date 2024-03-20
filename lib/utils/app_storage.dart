@@ -42,11 +42,11 @@ class AppStorage {
   }
 
   LoginData? getLoginData() {
-    String? loggedInUser = read(StorageKey.kLoginUserData);
+    Map<String, dynamic>? loggedInUser = read(StorageKey.kLoginUserData);
     if (loggedInUser == null) {
       return null;
     }
-    LoginData loginData = LoginData.fromStringJson(loggedInUser);
+    LoginData loginData = LoginData.fromJson(loggedInUser);
     return loginData;
   }
 
@@ -100,8 +100,16 @@ class AppStorage {
     await GetStorage.init(StorageKey.kAppStorageKey);
   }
 
-  bool isBoardWatched() {
-    return getBool(StorageKey.kIsBoardWatched);
+  Future<bool> isBoardWatched() async {
+    return await getBool(StorageKey.kIsBoardWatched);
+  }
+
+  Future<void> setHeaderMap(Map<String, String> mapData) async {
+    return write(StorageKey.kHeaderMap, mapData);
+  }
+
+  Map<String, dynamic> getHeaderMap() {
+    return read(StorageKey.kHeaderMap) ?? {};
   }
 }
 
@@ -117,4 +125,5 @@ class StorageKey {
   static const String kBaseUrlKey = 'baseUrlKey';
   static const String kCacheDate = 'cacheDate';
   static const String kIsCSVDownloaded1 = 'isCSVDownloaded1';
+  static const String kHeaderMap = 'headerMap';
 }
