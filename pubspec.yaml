@@ -51,7 +51,7 @@ dependencies:
   sqflite: ^2.3.2
   path: ^1.9.0
   crypto: ^3.0.3
-  wifi_info_plugin_plus: ^2.0.2
+  flutter_internet_signal: ^0.0.30
 
 dev_dependencies:
   flutter_test:

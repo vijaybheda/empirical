@@ -114,6 +114,10 @@ class SetupScreen extends GetView<SetupController> {
           child: isDropdown
               ? Obx(
                   () => DropdownButton<String>(
+                    underline: Container(
+                      height: 1,
+                      color: AppColors.black,
+                    ),
                     dropdownColor: AppColors.white,
                     hint: Text(
                       'Select DateFormat',
