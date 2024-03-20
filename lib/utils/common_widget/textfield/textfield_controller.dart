@@ -1,6 +1,6 @@
 import 'package:get/state_manager.dart';
 
-class BoxTextFieldController extends GetxController {
+class TextFieldController extends GetxController {
   var showPassword = false.obs;
 
   void changePwdVisibility() {

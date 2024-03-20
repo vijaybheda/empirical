@@ -1,13 +1,16 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/utils/app_font.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
-class ThemeColor {
+class AppThemeData {
   static ThemeData mThemeData(BuildContext context, {bool isDark = false}) {
     return ThemeData(
       visualDensity: VisualDensity.adaptivePlatformDensity,
-      primaryColor: AppColors.lightGrey,
-      scaffoldBackgroundColor: isDark ? Colors.black : const Color(0xffF3F4F9),
+      primaryColor: isDark ? AppColors.primary : AppColors.primary,
+      scaffoldBackgroundColor: isDark ? AppColors.white : AppColors.grey,
       applyElevationOverlayColor: true,
       bannerTheme: MaterialBannerTheme.of(context),
       bottomAppBarTheme: BottomAppBarTheme.of(context),
@@ -22,7 +25,7 @@ class ThemeColor {
         ),
       ),
       textSelectionTheme: TextSelectionThemeData(
-        cursorColor: AppColors.primaryColor,
+        cursorColor: isDark ? AppColors.primaryColor : AppColors.blue,
       ),
       checkboxTheme: CheckboxThemeData(
           checkColor: MaterialStateProperty.all(Colors.white),
@@ -80,12 +83,6 @@ class ThemeColor {
           borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(
             color: Colors.grey,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
-            color: AppColors.primaryColor,
           ),
         ),
         errorStyle: const TextStyle(color: Colors.red),
@@ -186,11 +183,10 @@ class ThemeColor {
 
   static TextTheme textTheme(isDark, context) {
     return TextTheme(
-      displayLarge: TextStyle(
-        fontSize: 30, // 75
-        fontFamily: AppFont.fontFamily, letterSpacing: 0,
-        color: isDark ? Colors.white : AppColors.darkPrimaryColor,
-      ),
+      displayLarge: GoogleFonts.poppins(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          textStyle: TextStyle(color: AppColors.white)),
       displayMedium: TextStyle(
           fontSize: 13.5,
           color: isDark ? Colors.white : AppColors.lightGrey,

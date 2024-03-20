@@ -52,10 +52,11 @@ dependencies:
   path: ^1.9.0
   crypto: ^3.0.3
   flutter_internet_signal: ^0.0.30
+  package_info_plus: ^5.0.1
 
 dev_dependencies:
   flutter_test:
-    sdk: flutter
+    sdk: flutter  
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

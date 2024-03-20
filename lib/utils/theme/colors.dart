@@ -4,7 +4,6 @@ import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/enumeration.dart';
-import 'package:pverify/utils/theme/app_theme.dart';
 
 class GradientThemeColors {
   static List<Color> purpleGradient = [
@@ -53,7 +52,6 @@ class AppColors {
   static Color lightSky = const Color(0xffE8F5F5);
   static Color red = const Color(0xffea4001);
   static Color blue = const Color(0xff0064B2);
-  static Color sky = const Color(0xff00B2CB);
   static Color purple = const Color(0xff5D5DFF);
 
   static Color textFieldBorderColor = const Color(0xffE5E8E9);
@@ -73,4 +71,5 @@ class AppColors {
   static Color primaryColor_Green = const Color(0xff303F9F);
   static Color loginTextField_UnderlineColor = const Color(0xff680000);
   static Color textFieldText_Color = const Color(0xff912688);
+  static Color sky = const Color(0xff00B2CB);
 }

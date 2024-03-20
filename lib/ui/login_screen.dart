@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/auth_controller.dart';
+import 'package:pverify/ui/home/home.dart';
 import 'package:pverify/ui/setup_platfrom/setup.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';
-import 'package:pverify/utils/common_widget/text_field/text_fields.dart';
+import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class LoginScreen extends GetView<AuthController> {
-  LoginScreen({super.key});
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class LoginScreen extends GetView<AuthController> {
       init: AuthController(),
       builder: (authController) {
         return Scaffold(
-          backgroundColor: AppColors.grey2,
+          backgroundColor: AppColors.textBody,
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
             toolbarHeight: 150.h,
@@ -92,7 +93,7 @@ class LoginScreen extends GetView<AuthController> {
                   90,
                   onClickAction: () => {
                     if (authController.isLoginFieldsValidate() == true)
-                      {debugPrint("All field are validate.")}
+                      {Get.to(() => Home())}
                   },
                 ),
                 SizedBox(

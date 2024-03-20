@@ -9,7 +9,7 @@ import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';
-import 'package:pverify/utils/common_widget/text_field/text_fields.dart';
+import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class SetupScreen extends GetView<SetupController> {
@@ -116,19 +116,15 @@ class SetupScreen extends GetView<SetupController> {
           flex: 2,
           child: isDropdown
               ? Obx(
-                  () => DropdownButton<String>(
-                    underline: Container(
-                      height: 1,
-                      color: AppColors.black,
-                    ),
+                  () => DropdownButtonFormField<String>(
+                    decoration: InputDecoration(border: InputBorder.none),
                     dropdownColor: AppColors.white,
                     hint: Text(
                       'Select DateFormat',
                       style: GoogleFonts.poppins(
                           fontSize: 30.sp,
                           fontWeight: FontWeight.normal,
-                          textStyle:
-                              TextStyle(color: AppColors.textFieldText_Color)),
+                          textStyle: TextStyle(color: AppColors.sky)),
                     ),
                     items: setupController.dateformats.map((selectedType) {
                       return DropdownMenuItem<String>(
@@ -138,8 +134,7 @@ class SetupScreen extends GetView<SetupController> {
                           style: GoogleFonts.poppins(
                               fontSize: 30.sp,
                               fontWeight: FontWeight.normal,
-                              textStyle: TextStyle(
-                                  color: AppColors.textFieldText_Color)),
+                              textStyle: TextStyle(color: AppColors.sky)),
                         ),
                       );
                     }).toList(),

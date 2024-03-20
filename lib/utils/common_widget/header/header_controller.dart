@@ -4,22 +4,35 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_internet_signal/flutter_internet_signal.dart';
 import 'package:get/get.dart';
-import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/images.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
-class WifiController extends GetxController {
+class HeaderController extends GetxController {
   final NetworkConnectivity _networkConnectivity = NetworkConnectivity.instance;
   Map _source = {ConnectivityResult.none: false};
   final wifiImage1 = AppImages.ic_Wifi_off.obs;
-  WifiController();
+  var appVersion = ''.obs;
+  HeaderController();
 
   @override
   void onInit() {
     super.onInit();
+    appversion();
     snetwork();
+  }
+
+  // FETCHED APPVERSION
+
+  void appversion() {
+    PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+      String appName = packageInfo.appName;
+      String packageName = packageInfo.packageName;
+      String version = packageInfo.version;
+      String buildNumber = packageInfo.buildNumber;
+      appVersion.value = version;
+    });
   }
 
   void networkChecker() async {

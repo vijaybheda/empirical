@@ -1,4 +1,4 @@
-// ignore_for_file: unused_element, prefer_const_constructors, unused_import
+// ignore_for_file: unused_element, prefer_const_constructors, unused_import, unused_local_variable
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,6 +9,7 @@ import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/services/database/database_helper.dart';
 import 'package:pverify/ui/splash_screen.dart';
 import 'package:pverify/utils/app_const.dart';
+import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/enumeration.dart';
 import 'package:pverify/utils/theme/app_theme.dart';
 import 'package:pverify/utils/theme/colors_theme.dart';
@@ -20,34 +21,9 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-// Dark Theme Colors
-
-ThemeData currentTheme =
-    AppConst.AppTheme == ThemeType.dark ? _darkTheme : _lightTheme;
-ThemeData _darkTheme = ThemeData(
-    hintColor: Colors.red,
-    brightness: Brightness.dark,
-    primaryColor: Colors.amber,
-    buttonTheme: ButtonThemeData(
-      buttonColor: Colors.amber,
-      disabledColor: Colors.grey,
-    ));
-
-// Light Theme Colors
-
-ThemeData _lightTheme = ThemeData(
-    hintColor: Colors.pink,
-    brightness: Brightness.light,
-    primaryColor: Colors.blue,
-    buttonTheme: ButtonThemeData(
-      buttonColor: Colors.blue,
-      disabledColor: Colors.grey,
-    ));
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  @override
   void initState() {
     Size size = WidgetsBinding.instance.window.physicalSize;
     double width = size.width;
@@ -63,14 +39,14 @@ class MyApp extends StatelessWidget {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: GetMaterialApp(
-          theme: currentTheme,
-          darkTheme: _darkTheme,
-          themeMode: ThemeMode.dark,
+          theme: AppThemeData.mThemeData(context, isDark: false),
+          darkTheme: AppThemeData.mThemeData(context, isDark: false),
+          themeMode: ThemeMode.light,
           debugShowCheckedModeBanner: false,
           enableLog: true,
           initialRoute: '/',
           useInheritedMediaQuery: true,
-          title: 'p-ver-ify',
+          title: AppStrings.appName,
           initialBinding: GlobalBindings(),
           defaultTransition: Transition.cupertino,
           opaqueRoute: Get.isOpaqueRouteDefault,
