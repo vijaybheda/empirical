@@ -17,8 +17,7 @@ class CacheDownloadService extends BaseRequestService {
   CacheDownloadService._internal();
 
   /// download Zip File
-  Future<File?> downloadZip(
-      String requestUrl, Map<String, dynamic> headerMap) async {
+  Future<File?> downloadZip(String requestUrl) async {
     try {
       var storagePath = await Utils().getExternalStoragePath();
       final Directory directory =
@@ -28,8 +27,8 @@ class CacheDownloadService extends BaseRequestService {
       }
       directory.createSync(recursive: true);
 
-      File? savedZipFile = await downloadFile(requestUrl, directory.path,
-          headers: headerMap, fileName: 'file.zip');
+      File? savedZipFile =
+          await downloadFile(requestUrl, directory.path, fileName: 'file.zip');
       if (savedZipFile == null) {
         return null;
       }
@@ -99,8 +98,7 @@ class CacheDownloadService extends BaseRequestService {
   }
 
   /// download JSON File
-  Future<File?> downloadJSON(
-      String requestUrl, Map<String, dynamic> headerMap) async {
+  Future<File?> downloadJSON(String requestUrl) async {
     try {
       var storagePath = await Utils().getExternalStoragePath();
       final Directory directory =
@@ -111,7 +109,7 @@ class CacheDownloadService extends BaseRequestService {
       directory.createSync(recursive: true);
 
       File? savedJsonFile = await downloadFile(requestUrl, directory.path,
-          headers: headerMap, fileName: 'jsonfile.zip');
+          fileName: 'jsonfile.zip');
       if (savedJsonFile == null) {
         return null;
       }
@@ -258,11 +256,13 @@ class CacheDownloadService extends BaseRequestService {
     String url,
     String savePath, {
     required String? fileName,
-    Map<String, dynamic>? headers,
   }) async {
     Dio dio = Dio();
 
     try {
+      Map<String, dynamic> headers = appStorage.getHeaderMap();
+      print('headerMap $headers');
+
       Response? response = await dio.get(
         url,
         options: Options(

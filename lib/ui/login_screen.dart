@@ -20,8 +20,9 @@ class LoginScreen extends GetView<AuthController> {
     return GetBuilder(
       init: AuthController(),
       builder: (authController) {
-        controller.emailTextController.value.text = 'nirali.talavia@gmail.com';
-        controller.passwordTextController.value.text = 'Niralishah@1234';
+        //authController.emailTextController.value.text =
+        //    'nirali.talavia@gmail.com';
+        // authController.passwordTextController.value.text = 'Niralishah@1234';
         return Scaffold(
           backgroundColor: AppColors.grey2,
           resizeToAvoidBottomInset: false,
@@ -96,7 +97,7 @@ class LoginScreen extends GetView<AuthController> {
                   onClickAction: () async {
                     if (authController.isLoginFieldsValidate()) {
                       LoginData? loginData =
-                          await controller.loginUser(isLoginButton: true);
+                          await authController.loginUser(isLoginButton: true);
                       if (loginData != null) {
                         if (loginData.subscriptionExpired ?? false) {
                           // dismissible info dialog
@@ -115,13 +116,16 @@ class LoginScreen extends GetView<AuthController> {
                             colorText: AppColors.white,
                           );
                         } else {
-                          await controller.persistUserName();
+                          await authController.persistUserName();
 
-                          // CacheUtil.offlineLoadSuppliers();
-                          // CacheUtil.offlineLoadCarriers();
-                          // CacheUtil.offlineLoadCommodity(context);
+                          await authController.jsonFileOperations
+                              .offlineLoadSuppliersData();
+                          await authController.jsonFileOperations
+                              .offlineLoadCarriersData();
+                          await authController.jsonFileOperations
+                              .offlineLoadCommodityData();
 
-                          await controller.downloadCloudData();
+                          await authController.downloadCloudData();
                         }
                       }
                     }
@@ -130,10 +134,19 @@ class LoginScreen extends GetView<AuthController> {
                 SizedBox(
                   height: 40.h,
                 ),
-                customButton(AppColors.primary, AppStrings.setup.toUpperCase(),
-                    double.infinity, 90, onClickAction: () {
-                  Get.to(() => SetupScreen());
-                }),
+                customButton(
+                  AppColors.primary,
+                  AppStrings.setup.toUpperCase(),
+                  double.infinity,
+                  90,
+                  onClickAction: () async {
+                    LoginData? loginData =
+                        await authController.loginUser(isLoginButton: false);
+                    if (loginData != null) {
+                      Get.to(() => SetupScreen());
+                    }
+                  },
+                ),
               ],
             ),
           ),

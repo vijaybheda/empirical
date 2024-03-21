@@ -34,7 +34,7 @@ class ApplicationDao {
       return await db.update(
         DBTables.USER,
         user.toJson(),
-        where: '${BaseColumns.ID} = ?',
+        where: '${UserColumn.ID} = ?',
         whereArgs: [user.id],
       );
     }
@@ -105,13 +105,13 @@ class ApplicationDao {
     String? userHash;
     List<Map<String, dynamic>> result = await db.query(
       DBTables.USER_OFFLINE,
-      columns: ['access'],
+      columns: [UserOfflineColumn.ACCESS],
       where: '${UserOfflineColumn.USER_ID} = ?',
       whereArgs: [userId],
     );
 
     if (result.isNotEmpty) {
-      userHash = result.first['access'];
+      userHash = result.first[UserOfflineColumn.ACCESS];
     }
 
     return userHash;
@@ -652,7 +652,7 @@ class ApplicationDao {
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.ITEM_GROUP1}');
 
-        for (var row in fields.skip(1)) {
+        for (var row in fields.skip(1).toList()) {
           // log('rowData $row');
           int igrId = row[0];
           String igrName = row[1];
@@ -703,14 +703,17 @@ class ApplicationDao {
         log('item_sku CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.ITEM_SKU}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSkuData = {
             ItemSkuColumn.SKU_ID: row[0],
             ItemSkuColumn.CODE: row[1],
@@ -738,6 +741,9 @@ class ApplicationDao {
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
       return false;
+    } catch (e) {
+      log('Error: while adding Item SKU $e');
+      return false;
     }
   }
 
@@ -753,14 +759,17 @@ class ApplicationDao {
         log('agency CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.AGENCY}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemAgencyData = {
             AgencyColumn.ID: row[0],
             AgencyColumn.NAME: row[1],
@@ -771,6 +780,9 @@ class ApplicationDao {
       return true;
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
+      return false;
+    } catch (e) {
+      log('Error: while adding Item Agency $e');
       return false;
     }
   }
@@ -787,14 +799,17 @@ class ApplicationDao {
         log('grade CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.GRADE}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemGradeData = {
             GradeColumn.ID: row[0],
             GradeColumn.NAME: row[1],
@@ -806,6 +821,9 @@ class ApplicationDao {
       return true;
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
+      return false;
+    } catch (e) {
+      log('Error: while adding Item Grade $e');
       return false;
     }
   }
@@ -822,14 +840,17 @@ class ApplicationDao {
         log('grade_commodity CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.GRADE_COMMODITY}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemGradeCommodityData = {
             GradeCommodityColumn.ID: row[0],
             GradeCommodityColumn.AGENCY_ID: row[1],
@@ -841,6 +862,9 @@ class ApplicationDao {
       return true;
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
+      return false;
+    } catch (e) {
+      log('Error: while adding Item Grade Commodity $e');
       return false;
     }
   }
@@ -857,14 +881,17 @@ class ApplicationDao {
         log('grade_commodity_detail CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.GRADE_COMMODITY_DETAIL}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemGradeCommodityDetailData = {
             GradeCommodityDetailColumn.ID: row[0],
             GradeCommodityDetailColumn.GRADE_ID: row[1],
@@ -879,6 +906,9 @@ class ApplicationDao {
       return true;
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
+      return false;
+    } catch (e) {
+      log('Error: while adding Item Grade Commodity Detail $e');
       return false;
     }
   }
@@ -895,14 +925,17 @@ class ApplicationDao {
         log('specification CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationData = {
             SpecificationColumn.NUMBER: row[0],
             SpecificationColumn.VERSION: row[1],
@@ -917,6 +950,9 @@ class ApplicationDao {
       return true;
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
+      return false;
+    } catch (e) {
+      log('Error: while adding Item specification $e');
       return false;
     }
   }
@@ -933,14 +969,17 @@ class ApplicationDao {
         log('material_specification CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.MATERIAL_SPECIFICATION}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemMaterialSpecificationData = {
             MaterialSpecificationColumn.NUMBER_SPECIFICATION: row[0],
             MaterialSpecificationColumn.VERSION_SPECIFICATION: row[1],
@@ -954,6 +993,9 @@ class ApplicationDao {
       return true;
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
+      return false;
+    } catch (e) {
+      log('Error: while adding Item Material Specification $e');
       return false;
     }
   }
@@ -970,32 +1012,26 @@ class ApplicationDao {
         log('specification_supplier CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION_SUPPLIER}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationSupplierData = {
             SpecificationSupplierColumn.NUMBER_SPECIFICATION: row[0],
             SpecificationSupplierColumn.VERSION_SPECIFICATION: row[1],
-            SpecificationSupplierColumn.ANALYTICAL_ID: row[2],
-            SpecificationSupplierColumn.ANALYTICAL_NAME: row[3],
-            SpecificationSupplierColumn.DESCRIPTION: row[5],
-            SpecificationSupplierColumn.SPEC_MIN: row[6],
-            SpecificationSupplierColumn.SPEC_MAX: row[7],
-            SpecificationSupplierColumn.TARGET_NUM_VALUE: row[8].isEmpty
-                ? row[8]
-                : double.parse(row[8].toString().trim()),
-            SpecificationSupplierColumn.TARGET_TEXT_VALUE: row[9],
-            SpecificationSupplierColumn.UOM_NAME: row[10],
-            SpecificationSupplierColumn.TYPE_ENTRY: row[11],
-            SpecificationSupplierColumn.ORDERNO: row[12],
-            SpecificationSupplierColumn.PICTURE_REQUIRED: row[13],
-            SpecificationSupplierColumn.TARGET_TEXT_DEFAULT: row[14],
-            SpecificationSupplierColumn.INSPECTION_RESULT: row[15],
+            SpecificationSupplierColumn.SUPPLIER_ID: row[2],
+            SpecificationSupplierColumn.NEGOTIATION_STATUS: row[3],
+            SpecificationSupplierColumn.STATUS: row[4],
+            SpecificationSupplierColumn.ITEM_SKU_ID: row[5],
+            SpecificationSupplierColumn.GTIN: row[6],
+            SpecificationSupplierColumn.SPECIFICATION_SUPPLIER_ID: row[7],
           };
           await txn.insert(
               DBTables.SPECIFICATION_SUPPLIER, itemSpecificationSupplierData);
@@ -1004,6 +1040,9 @@ class ApplicationDao {
       return true;
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
+      return false;
+    } catch (e) {
+      log('Error: while adding Item Specification Supplier $e');
       return false;
     }
   }
@@ -1020,15 +1059,18 @@ class ApplicationDao {
         log('specification_grade_tolerance CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn
             .rawDelete('DELETE FROM ${DBTables.SPECIFICATION_GRADE_TOLERANCE}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationGradeToleranceData = {
             SpecificationGradeToleranceColumn.SPECIFICATION_GRADE_TOLERANCE_ID:
                 row[0],
@@ -1037,9 +1079,9 @@ class ApplicationDao {
             SpecificationGradeToleranceColumn.SEVERITY_DEFECT_ID: row[3],
             SpecificationGradeToleranceColumn.DEFECT_ID: row[4],
             SpecificationGradeToleranceColumn.GRADE_TOLERANCE_PERCENTAGE:
-                row[5].isEmpty
+                row[5].toString().isEmpty
                     ? row[5]
-                    : double.parse(row[5].toString().trim()),
+                    : Utils().parseDoubleDefault(row[5].toString().trim()),
             SpecificationGradeToleranceColumn.OVERRIDDEN: row[6],
             SpecificationGradeToleranceColumn.DEFECT_NAME: row[7],
             SpecificationGradeToleranceColumn.DEFECT_CATEGORY_NAME: row[8],
@@ -1052,6 +1094,9 @@ class ApplicationDao {
       return true;
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
+      return false;
+    } catch (e) {
+      log('Error: while adding Item Specification Grade Tolerance $e');
       return false;
     }
   }
@@ -1068,23 +1113,26 @@ class ApplicationDao {
         log('specification_analytical CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION_ANALYTICAL}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationAnalyticalData = {
             SpecificationAnalyticalColumn.NUMBER_SPECIFICATION: row[0],
             SpecificationAnalyticalColumn.VERSION_SPECIFICATION: row[1],
             SpecificationAnalyticalColumn.ANALYTICAL_ID: row[2],
             SpecificationAnalyticalColumn.ANALYTICAL_NAME: row[3],
             SpecificationAnalyticalColumn.SPEC_MIN: row[4],
-            SpecificationAnalyticalColumn.SPEC_MAX: row[5].isEmpty
+            SpecificationAnalyticalColumn.SPEC_MAX: row[5].toString().isEmpty
                 ? row[5]
-                : double.parse(row[5].toString().trim()),
+                : Utils().parseDoubleDefault(row[5].toString().trim()),
             SpecificationAnalyticalColumn.TARGET_NUM_VALUE: row[6],
             SpecificationAnalyticalColumn.TARGET_TEXT_VALUE: row[7],
             SpecificationAnalyticalColumn.UOM_NAME: row[8],
@@ -1103,6 +1151,9 @@ class ApplicationDao {
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
       return false;
+    } catch (e) {
+      log('Error: while adding Item Specification Analytical $e');
+      return false;
     }
   }
 
@@ -1118,15 +1169,18 @@ class ApplicationDao {
         log('specification_analytical CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn.rawDelete(
             'DELETE FROM ${DBTables.SPECIFICATION_PACKAGING_FINISHED_GOODS}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationAnalyticalData = {
             SpecificationPackagingFinishedGoodsColumn.FINISHED_GOODS_ID: row[0],
             SpecificationPackagingFinishedGoodsColumn.NUMBER_SPECIFICATION:
@@ -1143,6 +1197,9 @@ class ApplicationDao {
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
       return false;
+    } catch (e) {
+      log('Error: while adding Item Specification Analytical $e');
+      return false;
     }
   }
 
@@ -1158,14 +1215,17 @@ class ApplicationDao {
         log('specification_type CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION_TYPE}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationTypeData = {
             SpecificationTypeColumn.SPECIFICATION_TYPE_ID: row[0],
             SpecificationTypeColumn.NAME: row[1],
@@ -1177,6 +1237,9 @@ class ApplicationDao {
       return true;
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
+      return false;
+    } catch (e) {
+      log('Error: while adding Item Specification Type $e');
       return false;
     }
   }
@@ -1193,14 +1256,17 @@ class ApplicationDao {
         log('commodity CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.COMMODITY}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemCommodityData = {
             CommodityColumn.ID: row[0],
             CommodityColumn.NAME: row[1],
@@ -1213,6 +1279,9 @@ class ApplicationDao {
       return true;
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
+      return false;
+    } catch (e) {
+      log('Error: while adding Item Commodity $e');
       return false;
     }
   }
@@ -1229,14 +1298,17 @@ class ApplicationDao {
         log('commodity_keywords CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.COMMODITY_KEYWORDS}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemCommodityKeywordsData = {
             CommodityKeywordsColumn.ID: row[0],
             CommodityKeywordsColumn.KEYWORDS: row[1],
@@ -1248,6 +1320,9 @@ class ApplicationDao {
       return true;
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
+      return false;
+    } catch (e) {
+      log('Error: while adding Item Commodity Keywords $e');
       return false;
     }
   }
@@ -1264,14 +1339,17 @@ class ApplicationDao {
         log('purchase_order_header CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.PO_HEADER}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemPOHeaderData = {
             POHeaderColumn.PO_HEADER_ID: row[0],
             POHeaderColumn.PO_NUMBER: row[1],
@@ -1286,6 +1364,9 @@ class ApplicationDao {
       return true;
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
+      return false;
+    } catch (e) {
+      log('Error: while adding Item POHeader $e');
       return false;
     }
   }
@@ -1302,14 +1383,17 @@ class ApplicationDao {
         log('purchase_order_detail CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.PO_DETAIL}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemPODetailData = {
             PODetailColumn.PO_DETAIL_ID: row[0],
             PODetailColumn.PO_HEADER_ID: row[1],
@@ -1335,6 +1419,9 @@ class ApplicationDao {
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
       return false;
+    } catch (e) {
+      log('Error: while adding Item PODetail $e');
+      return false;
     }
   }
 
@@ -1350,15 +1437,18 @@ class ApplicationDao {
         log('specification_supplier_gtins CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn
             .rawDelete('DELETE FROM ${DBTables.SPECIFICATION_SUPPLIER_GTIN}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationSupplierGtinsData = {
             SpecificationSupplierGtinColumn.SPECIFICATION_SUPPLIER_ID: row[0],
             SpecificationSupplierGtinColumn.GTIN: row[1],
@@ -1370,6 +1460,9 @@ class ApplicationDao {
       return true;
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
+      return false;
+    } catch (e) {
+      log('Error: while adding Specification Supplier Gtins $e');
       return false;
     }
   }
@@ -1386,14 +1479,17 @@ class ApplicationDao {
         log('supplier_commodity CSV file not found');
         return false;
       }
-      final String contents = await file.readAsString();
-      List<List<dynamic>> rowsAsListOfValues =
-          const CsvToListConverter(fieldDelimiter: '|').convert(contents);
+
+      final inputStream = file.openRead();
+      final fields = await inputStream
+          .transform(utf8.decoder)
+          .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
+          .toList();
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.COMMODITY_CTE}');
 
-        for (List<dynamic> row in rowsAsListOfValues.skip(1)) {
+        for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemCommodityCteData = {
             CommodityCteColumn.ID: row[0],
             CommodityCteColumn.NAME: row[1],
@@ -1406,6 +1502,9 @@ class ApplicationDao {
       return true;
     } on FileSystemException catch (e) {
       print('File operation failed: $e');
+      return false;
+    } catch (e) {
+      log('Error: while adding Commodity CTE $e');
       return false;
     }
   }

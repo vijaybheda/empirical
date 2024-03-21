@@ -19,7 +19,7 @@ class UserService extends BaseRequestService {
       User currentUser = User.fromJson(data['data']);
       AppStorage.instance.setUserData(currentUser);
       return currentUser;
-    } catch (e, stackTrace) {
+    } catch (e) {
       log(e.toString(), error: e, name: "[getUser]");
 
       if (e is CustomException) {
@@ -45,13 +45,13 @@ class UserService extends BaseRequestService {
       log('result is ${result.body}');
       final Map<String, dynamic> data = await errorHandler(result);
       LoginData currentUser = LoginData.fromJson(data);
-      AppStorage.instance.setLoginData(currentUser);
-      AppStorage.instance.setHeaderMap({
+      await AppStorage.instance.setLoginData(currentUser);
+      await AppStorage.instance.setHeaderMap({
         'username': mUsername,
         'password': mPassword,
       });
       return currentUser;
-    } catch (e, stackTrace) {
+    } catch (e) {
       log(e.toString(), error: e, name: "[checkLogin]");
       if (e is CustomException) {
         //handled exception

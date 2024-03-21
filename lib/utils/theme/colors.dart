@@ -4,7 +4,6 @@ import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/enumeration.dart';
-import 'package:pverify/utils/theme/app_theme.dart';
 
 class GradientThemeColors {
   static List<Color> purpleGradient = [

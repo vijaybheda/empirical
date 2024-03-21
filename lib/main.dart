@@ -9,14 +9,15 @@ import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/services/database/database_helper.dart';
 import 'package:pverify/ui/splash_screen.dart';
 import 'package:pverify/utils/app_const.dart';
+import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/enumeration.dart';
 import 'package:pverify/utils/theme/app_theme.dart';
 import 'package:pverify/utils/theme/colors_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final db = await DatabaseHelper.instance.database;
-
+  await DatabaseHelper.instance.database;
+  await AppStorage.instance.initStorage();
   runApp(const MyApp());
 }
 
@@ -68,6 +69,7 @@ class MyApp extends StatelessWidget {
           themeMode: ThemeMode.dark,
           debugShowCheckedModeBanner: false,
           enableLog: true,
+          locale: Get.deviceLocale ?? Locale('en', 'US'),
           initialRoute: '/',
           useInheritedMediaQuery: true,
           title: 'p-ver-ify',

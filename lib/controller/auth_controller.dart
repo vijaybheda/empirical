@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
+import 'package:pverify/controller/json_file_operations.dart';
 import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/user.dart';
+import 'package:pverify/models/user_offline.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/services/network_request_service/api_urls.dart';
 import 'package:pverify/services/network_request_service/user_network_service.dart';
@@ -25,7 +27,8 @@ class AuthController extends GetxController {
   final emailTextController = TextEditingController().obs;
   final passwordTextController = TextEditingController().obs;
   bool socialButtonVisible = true;
-  AppStorage appStorage = AppStorage.instance;
+  final AppStorage appStorage = AppStorage.instance;
+  final JsonFileOperations jsonFileOperations = JsonFileOperations.instance;
 
   int wifiLevel = 0;
 
@@ -63,10 +66,9 @@ class AuthController extends GetxController {
   // loginUser
   Future<LoginData?> loginUser({required bool isLoginButton}) async {
     isLoading = true;
-
+    String mUsername = emailTextController.value.text.trim();
+    String mPassword = passwordTextController.value.text;
     if (await Utils.hasInternetConnection()) {
-      String mUsername = emailTextController.value.text.trim();
-      String mPassword = passwordTextController.value.text;
       // TODO: Vijay show loading indicator
       LoginData? userData = await UserService()
           .checkLogin(loginRequestUrl, mUsername, mPassword, isLoginButton);
@@ -76,7 +78,7 @@ class AuthController extends GetxController {
           int userid =
               await ApplicationDao().getEnterpriseIdByUserId(mUsername);
           if (userid == 0) {
-            int? id = await ApplicationDao().createOrUpdateOfflineUser(
+            int? _id = await ApplicationDao().createOrUpdateOfflineUser(
               mUsername.toLowerCase(),
               userData.access1!,
               userData.enterpriseId!,
@@ -105,9 +107,9 @@ class AuthController extends GetxController {
             List<String> features = [];
             features.add("pfg");
 
-            ApplicationDao().getOfflineUserData(mUsername.toLowerCase());
+            await ApplicationDao().getOfflineUserData(mUsername.toLowerCase());
 
-            persistUserName();
+            await persistUserName();
 
             if (isLoginButton) {
               LoginData? userData = appStorage.getLoginData();
@@ -117,9 +119,9 @@ class AuthController extends GetxController {
                     "Your account is inactive. Please contact your administrator.");
               } else {
                 // TODO: add below logic
-                // CacheUtil.offlineLoadSuppliers();
-                // CacheUtil.offlineLoadCarriers();
-                // CacheUtil.offlineLoadCommodity(context);
+                await jsonFileOperations.offlineLoadSuppliersData();
+                await jsonFileOperations.offlineLoadCarriersData();
+                await jsonFileOperations.offlineLoadCommodityData();
 
                 Get.offAll(() => const DashboardScreen());
               }
@@ -131,11 +133,40 @@ class AuthController extends GetxController {
             Utils.showErrorAlert("0");
           }
         } else {
-          // alert dialog for "Please go to your hotspot and turn WiFi on - need to update data with first login."
           // show Info Alert Dialog
-          Utils.showInfoAlertDialog(
-              "Please go to your hotspot and turn WiFi on - need to update data with first login.");
+          Utils.showInfoAlertDialog(AppStrings.turnOnWifi);
         }
+      }
+    } else {
+      String? userHash =
+          await ApplicationDao().getOfflineUserHash(mUsername.toLowerCase());
+
+      if (userHash != null && userHash.isNotEmpty) {
+        if (SecurePassword().validatePasswordHash(mPassword, userHash)) {
+          UserOffline? offlineUser = await ApplicationDao()
+              .getOfflineUserData(mUsername.toLowerCase());
+          await persistUserName();
+          if (isLoginButton) {
+            if (offlineUser != null && offlineUser.isSubscriptionExpired ||
+                offlineUser?.status == 3) {
+              // show Info Alert Dialog
+              Utils.showInfoAlertDialog(
+                  "Your account is inactive. Please contact your administrator.");
+            } else {
+              await jsonFileOperations.offlineLoadSuppliersData();
+              await jsonFileOperations.offlineLoadCarriersData();
+              await jsonFileOperations.offlineLoadCommodityData();
+              Get.offAll(() => const DashboardScreen());
+            }
+          } else {
+            Get.offAll(() => SetupScreen());
+          }
+        } else {
+          Utils.showErrorAlert("0");
+        }
+      } else {
+        // show Info Alert Dialog
+        Utils.showInfoAlertDialog(AppStrings.turnOnWifi);
       }
     }
 
@@ -207,7 +238,7 @@ class AuthController extends GetxController {
           appStorage.setInt(
               StorageKey.kCacheDate, DateTime.now().millisecondsSinceEpoch);
           await appStorage.setBool(StorageKey.kIsCSVDownloaded1, true);
-          Get.to(() => const CacheDownloadScreen());
+          await Get.to(() => const CacheDownloadScreen());
         } else {
           Utils.showInfoAlertDialog(AppStrings.downloadWifiError);
         }

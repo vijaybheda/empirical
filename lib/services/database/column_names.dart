@@ -1,4 +1,7 @@
+import 'package:pverify/services/database/database_helper.dart';
+
 class UserColumn {
+  static const String ID = BaseColumns.ID;
   static const String USER_NAME = 'User_Name';
   static const String PASSWORD = 'Password';
   static const String EMAIL = 'Email';
@@ -9,6 +12,7 @@ class UserColumn {
 }
 
 class UserOfflineColumn {
+  static const String ID = BaseColumns.ID;
   static const String USER_ID = 'User_ID';
   static const String USER_NAME = 'User_Name';
   static const String ACCESS = 'Access';
@@ -21,6 +25,7 @@ class UserOfflineColumn {
 }
 
 class InspectionColumn {
+  static const String ID = BaseColumns.ID;
   static const String TABLE_NAME = 'INSPECTION';
   static const String USER_ID = 'User_ID';
   static const String PARTNER_ID = 'Partner_ID';
@@ -60,6 +65,7 @@ class InspectionColumn {
 }
 
 class InspectionAttachmentColumn {
+  static const String ID = BaseColumns.ID;
   static const String INSPECTION_ID = 'Inspection_ID';
   static const String ATTACHMENT_ID =
       'Attachment_ID'; // Ensure to define the appropriate data type in the database if missed
@@ -69,6 +75,7 @@ class InspectionAttachmentColumn {
 }
 
 class InspectionSampleColumn {
+  static const String ID = BaseColumns.ID;
   static const String INSPECTION_ID = 'Inspection_ID';
   static const String SET_SIZE = 'Set_Size';
   static const String SET_NAME = 'Set_Name';
@@ -80,6 +87,7 @@ class InspectionSampleColumn {
 }
 
 class InspectionDefectColumn {
+  static const String ID = BaseColumns.ID;
   static const String INSPECTION_ID = 'Inspection_ID';
   static const String INSPECTION_SAMPLE_ID = 'Inspection_Sample_ID';
   static const String DEFECT_ID = 'Defect_ID';
@@ -102,6 +110,7 @@ class InspectionDefectColumn {
 }
 
 class InspectionDefectAttachmentColumn {
+  static const String ID = BaseColumns.ID;
   static const String INSPECTION_ID = 'Inspection_ID';
   static const String INSPECTION_SAMPLE_ID = 'Inspection_Sample_ID';
   static const String INSPECTION_DEFECT_ID = 'Inspection_Defect_ID';
@@ -111,6 +120,7 @@ class InspectionDefectAttachmentColumn {
 }
 
 class TrailerTemperatureColumn {
+  static const String ID = BaseColumns.ID;
   static const String INSPECTION_ID = 'Inspection_ID';
   static const String LOCATION = 'Location';
   static const String LEVEL = 'Level';
@@ -120,6 +130,7 @@ class TrailerTemperatureColumn {
 }
 
 class QualityControlColumn {
+  static const String ID = BaseColumns.ID;
   static const String INSPECTION_ID = 'Inspection_ID';
   static const String BRAND_ID = 'Brand_ID';
   static const String ORIGIN_ID = 'Origin_ID';
@@ -155,6 +166,7 @@ class QualityControlColumn {
 }
 
 class OverriddenResultColumn {
+  static const String ID = BaseColumns.ID;
   static const String INSPECTION_ID = 'Inspection_ID';
   static const String OVERRIDDEN_BY = 'Overridden_By';
   static const String OVERRIDDEN_RESULT = 'Overridden_Result';
@@ -168,6 +180,7 @@ class OverriddenResultColumn {
 }
 
 class InspectionSpecificationColumn {
+  static const String ID = BaseColumns.ID;
   static const String INSPECTION_ID = 'Inspection_ID';
   static const String SPECIFICATION_NUMBER = 'Specification_Number';
   static const String SPECIFICATION_VERSION = 'Specification_Version';
@@ -175,6 +188,7 @@ class InspectionSpecificationColumn {
 }
 
 class ItemSkuColumn {
+  static const String ID = BaseColumns.ID;
   static const String SKU_ID = 'SKU_ID';
   static const String CODE = 'Code';
   static const String COMMODITY_ID = 'Commodity_ID';
@@ -196,13 +210,14 @@ class ItemSkuColumn {
 }
 
 class ItemGroup1Column {
+  static const String ID = BaseColumns.ID;
   static const String GROUP1_ID = 'Group1_ID';
   static const String NAME = 'Name';
   static const String COMMODITY_ID = 'Commodity_ID';
 }
 
 class SpecificationColumn {
-  static const String ID = 'ID';
+  static const String ID = BaseColumns.ID;
   static const String NUMBER = 'Number';
   static const String VERSION = 'Version';
   static const String NAME = 'Name';
@@ -212,21 +227,15 @@ class SpecificationColumn {
 }
 
 class SpecificationSupplierColumn {
+  static const String ID = BaseColumns.ID;
   static const String NUMBER_SPECIFICATION = "Number_Specification";
   static const String VERSION_SPECIFICATION = "Version_Specification";
-  static const String ANALYTICAL_ID = "Analytical_ID";
-  static const String ANALYTICAL_NAME = "Analytical_name";
-  static const String SPEC_MIN = "Spec_Min";
-  static const String SPEC_MAX = "Spec_Max";
-  static const String TARGET_NUM_VALUE = "Target_Num_Value";
-  static const String TARGET_TEXT_VALUE = "Target_Text_Value";
-  static const String UOM_NAME = "UOM_Name";
-  static const String TYPE_ENTRY = "Type_Entry";
-  static const String DESCRIPTION = "Description";
-  static const String ORDERNO = "OrderNo";
-  static const String PICTURE_REQUIRED = "Picture_Required";
-  static const String TARGET_TEXT_DEFAULT = "Target_Text_Default";
-  static const String INSPECTION_RESULT = "Inspection_Result";
+  static const String SUPPLIER_ID = "Supplier_ID";
+  static const String NEGOTIATION_STATUS = "Negotiation_Status";
+  static const String STATUS = "Status";
+  static const String ITEM_SKU_ID = "Item_SKU_ID";
+  static const String GTIN = "Gtin";
+  static const String SPECIFICATION_SUPPLIER_ID = "Specification_Supplier_ID";
 }
 
 class SpecificationSupplierGtinColumn {
@@ -235,6 +244,7 @@ class SpecificationSupplierGtinColumn {
 }
 
 class MaterialSpecificationColumn {
+  static const String ID = BaseColumns.ID;
   static const String NUMBER_SPECIFICATION = 'Number_Specification';
   static const String VERSION_SPECIFICATION = 'Version_Specification';
   static const String GRADE_ID = 'Grade_ID';
@@ -242,6 +252,7 @@ class MaterialSpecificationColumn {
 }
 
 class SpecificationGradeToleranceColumn {
+  static const String ID = BaseColumns.ID;
   static const String SPECIFICATION_GRADE_TOLERANCE_ID =
       'Specification_Grade_Tolerance_ID';
   static const String NUMBER_SPECIFICATION = 'Number_Specification';
@@ -256,6 +267,7 @@ class SpecificationGradeToleranceColumn {
 }
 
 class SpecificationAnalyticalColumn {
+  static const String ID = BaseColumns.ID;
   static const String NUMBER_SPECIFICATION = 'Number_Specification';
   static const String VERSION_SPECIFICATION = 'Version_Specification';
   static const String ANALYTICAL_ID = 'Analytical_ID';
@@ -275,23 +287,27 @@ class SpecificationAnalyticalColumn {
 
 class AgencyColumn {
   static const String ID = 'ID';
+  static const String _ID = BaseColumns.ID;
   static const String NAME = 'Name';
 }
 
 class GradeColumn {
   static const String ID = 'ID';
+  static const String _ID = BaseColumns.ID;
   static const String NAME = 'Name';
   static const String AGENCY_ID = 'Agency_ID';
 }
 
 class GradeCommodityColumn {
   static const String ID = 'ID';
+  static const String _ID = BaseColumns.ID;
   static const String AGENCY_ID = 'Agency_ID';
   static const String COMMODITY_ID = 'Commodity_ID';
 }
 
 class GradeCommodityDetailColumn {
   static const String ID = 'ID';
+  static const String _ID = BaseColumns.ID;
   static const String GRADE_ID = 'Grade_ID';
   static const String GRADE_COMMODITY_ID = 'Grade_Commodity_ID';
   static const String STATUS = 'Status';
@@ -299,6 +315,7 @@ class GradeCommodityDetailColumn {
 }
 
 class GradeCommodityToleranceColumn {
+  static const String ID = BaseColumns.ID;
   static const String SEVERITY_DEFECT_ID = 'Severity_Defect_ID';
   static const String DEFECT_ID = 'Defect_ID';
   static const String GRADE_TOLERANCE_PERCENTAGE = 'Grade_Tolerance_Percentage';
@@ -306,6 +323,7 @@ class GradeCommodityToleranceColumn {
 }
 
 class SpecificationAttributesColumn {
+  static const String ID = BaseColumns.ID;
   static const String INSPECTION_ID = 'Inspection_ID';
   static const String ANALYTICAL_ID = 'Analytical_ID';
   static const String COMPLY = 'Comply';
@@ -318,6 +336,7 @@ class SpecificationAttributesColumn {
 }
 
 class TempTrailerTemperatureColumn {
+  static const String ID = BaseColumns.ID;
   static const String PARTNER_ID = 'Partner_ID';
   static const String LOCATION = 'Location';
   static const String LEVEL = 'Level';
@@ -327,6 +346,7 @@ class TempTrailerTemperatureColumn {
 }
 
 class PartnerItemSkuColumn {
+  static const String ID = BaseColumns.ID;
   static const String PARTNER_ID = 'Partner_ID';
   static const String ITEM_SKU = 'ItemSKU';
   static const String LOT_NO = 'LotNo';
@@ -340,6 +360,7 @@ class PartnerItemSkuColumn {
 }
 
 class SpecificationPackagingFinishedGoodsColumn {
+  static const String ID = BaseColumns.ID;
   static const String FINISHED_GOODS_ID = 'Finished_Goods_ID';
   static const String NUMBER_SPECIFICATION = 'Number_Specification';
   static const String VERSION_SPECIFICATION = 'Version_Specification';
@@ -348,6 +369,7 @@ class SpecificationPackagingFinishedGoodsColumn {
 
 class CommodityColumn {
   static const String ID = 'ID';
+  static const String _ID = BaseColumns.ID;
   static const String NAME = 'Name';
   static const String SAMPLE_SIZE_BY_COUNT = 'Sample_Size_By_Count';
   static const String KEYWORDS = 'Keywords';
@@ -355,17 +377,20 @@ class CommodityColumn {
 
 class CommodityCteColumn {
   static const String ID = 'ID';
+  static const String _ID = BaseColumns.ID;
   static const String NAME = 'Name';
   static const String SAMPLE_SIZE_BY_COUNT = 'Sample_Size_By_Count';
   static const String KEYWORDS = 'Keywords';
 }
 
 class SpecificationTypeColumn {
+  static const String ID = BaseColumns.ID;
   static const String SPECIFICATION_TYPE_ID = 'Specification_Type_ID';
   static const String NAME = 'Name';
 }
 
 class TrailerTemperatureDetailsColumn {
+  static const String ID = BaseColumns.ID;
   static const String PARTNER_ID = 'Partner_ID';
   static const String TEMP_OPEN1 = 'TempOpen1';
   static const String TEMP_OPEN2 = 'TempOpen2';
@@ -375,6 +400,7 @@ class TrailerTemperatureDetailsColumn {
 }
 
 class TempTrailerTemperatureDetailsColumn {
+  static const String ID = BaseColumns.ID;
   static const String PARTNER_ID = 'Partner_ID';
   static const String TEMP_OPEN1 = 'TempOpen1';
   static const String TEMP_OPEN2 = 'TempOpen2';
@@ -384,6 +410,7 @@ class TempTrailerTemperatureDetailsColumn {
 }
 
 class QcHeaderDetailsColumn {
+  static const String ID = BaseColumns.ID;
   static const String INSPECTION_ID = 'Inspection_ID';
   static const String PO_NUMBER = 'PO_number';
   static const String SEAL_NUMBER = 'Seal_number';
@@ -399,6 +426,7 @@ class QcHeaderDetailsColumn {
 }
 
 class TempQcHeaderDetailsColumn {
+  static const String ID = BaseColumns.ID;
   static const String PARTNER_ID = 'Partner_ID';
   static const String PO_NUMBER = 'PO_number';
   static const String SEAL_NUMBER = 'Seal_number';
@@ -416,6 +444,7 @@ class TempQcHeaderDetailsColumn {
 }
 
 class SelectedItemSkuListColumn {
+  static const String ID = BaseColumns.ID;
   static const String SKU_ID = 'SKU_ID';
   static const String UNIQUE_ITEM_ID = 'Unique_Item_ID';
   static const String PO_NUMBER = 'PO_number';
@@ -438,6 +467,7 @@ class SelectedItemSkuListColumn {
 }
 
 class ResultRejectionDetailsColumn {
+  static const String ID = BaseColumns.ID;
   static const String INSPECTION_ID = 'Inspection_ID';
   static const String RESULT = 'Result';
   static const String RESULT_REASON = 'Result_Reason';
@@ -446,10 +476,12 @@ class ResultRejectionDetailsColumn {
 
 class CommodityKeywordsColumn {
   static const String ID = 'ID';
+  static const String _ID = BaseColumns.ID;
   static const String KEYWORDS = 'Keywords';
 }
 
 class POHeaderColumn {
+  static const String ID = BaseColumns.ID;
   static const String PO_HEADER_ID = 'PO_Header_ID';
   static const String PO_NUMBER = 'PO_Number';
   static const String PO_DELIVER_TO_ID = 'PO_Deliver_To_Id';
@@ -459,6 +491,7 @@ class POHeaderColumn {
 }
 
 class PODetailColumn {
+  static const String ID = BaseColumns.ID;
   static const String PO_DETAIL_ID = 'PO_Detail_ID';
   static const String PO_HEADER_ID = 'PO_Header_ID';
   static const String PO_DETAIL_NUMBER = 'PO_Detail_Number';

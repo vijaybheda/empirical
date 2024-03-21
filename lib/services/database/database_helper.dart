@@ -138,20 +138,24 @@ class DatabaseHelper {
 
     db.execute("CREATE TABLE ${DBTables.AGENCY}  "
         "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "ID INTEGER NOT NULL, "
         "Name CHAR)");
 
     db.execute("CREATE TABLE ${DBTables.GRADE}  "
         "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "ID INTEGER NOT NULL, "
         "Name CHAR, "
         "Agency_ID INTEGER )");
 
     db.execute("CREATE TABLE ${DBTables.GRADE_COMMODITY} "
         " (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "ID INTEGER NOT NULL, "
         "Agency_ID INTEGER, "
         "Commodity_ID INTEGER )");
 
     db.execute("CREATE TABLE ${DBTables.GRADE_COMMODITY_DETAIL}"
         "  (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "ID INTEGER NOT NULL, "
         "Grade_ID INTEGER, "
         "Grade_Commodity_ID INTEGER, "
         "Status CHAR, "
@@ -178,12 +182,14 @@ class DatabaseHelper {
 
     db.execute("CREATE TABLE ${DBTables.COMMODITY} "
         " (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "ID INTEGER NOT NULL, "
         "Name CHAR, "
         "Sample_Size_By_Count INTEGER, "
         "Keywords CHAR)");
 
     db.execute("CREATE TABLE ${DBTables.COMMODITY_CTE} "
         " (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "ID INTEGER NOT NULL, "
         "Name CHAR, "
         "Sample_Size_By_Count INTEGER, "
         "Keywords CHAR)");
@@ -211,6 +217,7 @@ class DatabaseHelper {
 
     db.execute("CREATE TABLE ${DBTables.COMMODITY_KEYWORDS} "
         " (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "ID INTEGER NOT NULL, "
         "Keywords CHAR)");
 
     db.execute("CREATE TABLE ${DBTables.PO_HEADER}"
@@ -279,6 +286,6 @@ class DatabaseHelper {
 final class BaseColumns {
   BaseColumns();
 
-  static const String ID = "id";
+  static const String ID = "_id";
   static const String COUNT = "count";
 }

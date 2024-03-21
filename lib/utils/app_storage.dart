@@ -1,12 +1,17 @@
 import 'dart:convert';
 
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pverify/models/carrier_item.dart';
+import 'package:pverify/models/commodity_item.dart';
+import 'package:pverify/models/defect_item.dart';
 import 'package:pverify/models/login_data.dart';
+import 'package:pverify/models/offline_commodity.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/severity_defect.dart';
 import 'package:pverify/models/user.dart';
 
-class AppStorage {
+class AppStorage extends GetxController {
   // ignore: prefer_function_declarations_over_variables
   final storageBox = () => GetStorage(StorageKey.kAppStorageKey);
 
@@ -98,6 +103,98 @@ class AppStorage {
     return carrierList;
   }
 
+  Future<void> saveCommodityList(List<CommodityItem> commodityList) {
+    // list to String
+    String commodityListString =
+        commodityList.map((e) => e.toJson()).toString();
+    return write(StorageKey.kCommodityList, commodityListString);
+  }
+
+  List<CommodityItem>? getCommodityList() {
+    // read String data and convert to List<CommodityItem> list
+    String? commodityListString = read(StorageKey.kCommodityList);
+    if (commodityListString == null) {
+      return null;
+    }
+
+    List<dynamic> decodedData = json.decode(commodityListString);
+    List<CommodityItem> commodityList = decodedData
+        .map((item) => CommodityItem.fromJson(item))
+        .toList()
+        .cast<CommodityItem>();
+
+    return commodityList;
+  }
+
+  Future<void> saveDefectList(List<DefectItem> defectList) {
+    // list to String
+    String defectListString = defectList.map((e) => e.toJson()).toString();
+    return write(StorageKey.kDefectList, defectListString);
+  }
+
+  List<DefectItem>? getDefectList() {
+    // read String data and convert to List<DefectItem> list
+    String? defectListString = read(StorageKey.kDefectList);
+    if (defectListString == null) {
+      return null;
+    }
+
+    List<dynamic> decodedData = json.decode(defectListString);
+    List<DefectItem> defectList = decodedData
+        .map((item) => DefectItem.fromJson(item))
+        .toList()
+        .cast<DefectItem>();
+
+    return defectList;
+  }
+
+  Future<void> saveSeverityDefectList(List<SeverityDefect> severityDefectList) {
+    // list to String
+    String severityDefectListString =
+        severityDefectList.map((e) => e.toJson()).toString();
+    return write(StorageKey.kSeverityDefectList, severityDefectListString);
+  }
+
+  List<SeverityDefect>? getSeverityDefectList() {
+    // read String data and convert to List<SeverityDefectItem> list
+    String? severityDefectListString = read(StorageKey.kSeverityDefectList);
+    if (severityDefectListString == null) {
+      return null;
+    }
+
+    List<dynamic> decodedData = json.decode(severityDefectListString);
+    List<SeverityDefect> severityDefectList = decodedData
+        .map((item) => SeverityDefect.fromJson(item))
+        .toList()
+        .cast<SeverityDefect>();
+
+    return severityDefectList;
+  }
+
+  Future<void> saveOfflineCommodityList(
+      List<OfflineCommodity> offlineCommodityList) {
+    // list to String
+    String offlineCommodityListString =
+        offlineCommodityList.map((e) => e.toJson()).toString();
+    return write(StorageKey.kOfflineCommodityList, offlineCommodityListString);
+  }
+
+  List<OfflineCommodity>? getOfflineCommodityList() {
+    // read String data and convert to List<OfflineCommodityItem> list
+    String? offlineCommodityListString = read(StorageKey.kOfflineCommodityList);
+    if (offlineCommodityListString == null) {
+      return null;
+    }
+
+    List<dynamic> decodedData = json.decode(offlineCommodityListString);
+    List<OfflineCommodity> offlineCommodityList = decodedData
+        .map((item) => OfflineCommodity.fromJson(item))
+        .toList()
+        .cast<OfflineCommodity>();
+
+    return offlineCommodityList;
+  }
+
   Future<void> setLoginData(LoginData loginData) async {
     await write(StorageKey.kLoginUserData, loginData.toJson());
     return;
@@ -176,4 +273,8 @@ class StorageKey {
   static const String kHeaderMap = 'headerMap';
   static const String kPartnerList = 'partnerList';
   static const String kCarrierList = 'carrierList';
+  static const String kCommodityList = 'commodityList';
+  static const String kDefectList = 'defectList';
+  static const String kSeverityDefectList = 'severityDefect';
+  static const String kOfflineCommodityList = 'offlineCommodity';
 }

@@ -27,6 +27,7 @@ class AppStrings {
   static const String cancel = 'Cancel';
   static const String csvFilesCache = 'csvfilescache';
   static const String jsonFilesCache = 'jsonfilescache';
+  static const String commodityVarietyDocument = 'commodity';
   static const String ok = 'OK';
   static const String yes = 'Yes';
   static const String no = 'No';
@@ -105,6 +106,9 @@ class AppStrings {
   static const String validateCredential = 'Validating user credentials';
   static const String notReadyForOffline =
       'Not ready for offline - Please turn WiFi on.';
+
+  static const String turnOnWifi =
+      'Please go to your hotspot and turn WiFi on - need to update data with first login.';
 
   static const String inspectionsAccessAlert =
       'You are not authorized to access Inspections';

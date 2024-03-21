@@ -10,27 +10,22 @@ Widget customButton(
   double height, {
   Function? onClickAction,
 }) {
-  return GestureDetector(
+  return InkWell(
     onTap: () {
       onClickAction!();
     },
-    child: InkWell(
-      onTap: () {
-        onClickAction!();
-      },
-      child: Container(
-        alignment: Alignment.center,
-        height: height.h,
-        width: width.w,
-        decoration: BoxDecoration(
-            color: backgroundColor, borderRadius: BorderRadius.circular(45.r)),
-        child: Text(
-          title,
-          style: GoogleFonts.poppins(
-              fontSize: 25.sp,
-              fontWeight: FontWeight.w500,
-              textStyle: TextStyle(color: AppColors.white)),
-        ),
+    child: Container(
+      alignment: Alignment.center,
+      height: height.h,
+      width: width.w,
+      decoration: BoxDecoration(
+          color: backgroundColor, borderRadius: BorderRadius.circular(45.r)),
+      child: Text(
+        title,
+        style: GoogleFonts.poppins(
+            fontSize: 25.sp,
+            fontWeight: FontWeight.w500,
+            textStyle: TextStyle(color: AppColors.white)),
       ),
     ),
   );

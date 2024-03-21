@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class AppIcon {
@@ -448,6 +449,24 @@ class Utils {
     } else {
       return "";
     }
+  }
+
+  static Future<String> createCommodityVarietyDocumentDirectory() async {
+    var externalStoragePath =
+        await getExternalStorageDirectory().then((value) => value!.path);
+    var directory = Directory(
+        '$externalStoragePath${AppStrings.commodityVarietyDocument}/');
+    if (!directory.existsSync()) {
+      directory.createSync(recursive: true);
+    }
+    return directory.path;
+  }
+
+  double parseDoubleDefault(String value) {
+    RegExp regExp = RegExp(r'(\d+(\.\d+)?)');
+    String numericPart = regExp.firstMatch(value)?.group(0) ?? '0';
+
+    return double.parse(numericPart);
   }
 }
 
