@@ -55,14 +55,14 @@ class JsonFileOperations {
 
     File file = File(join(
       directory.path,
-      'deliveryTo.json',
+      'carriers.json',
     ));
     if (!(await file.exists())) {
       return false;
     }
 
     String content =
-        await getJsonFileContent(directory, fileName: 'deliveryTo.json');
+        await getJsonFileContent(directory, fileName: 'carriers.json');
 
     List<CarrierItem>? data = parseCarrierJson(content);
 

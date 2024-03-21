@@ -651,7 +651,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.ITEM_GROUP1}');
-
+        print('fields ${fields.length} ${DBTables.ITEM_GROUP1}');
         for (var row in fields.skip(1).toList()) {
           // log('rowData $row');
           int igrId = row[0];
@@ -712,7 +712,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.ITEM_SKU}');
-
+        print('fields ${fields.length} ${DBTables.ITEM_SKU}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSkuData = {
             ItemSkuColumn.SKU_ID: row[0],
@@ -768,7 +768,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.AGENCY}');
-
+        print('fields ${fields.length} ${DBTables.AGENCY}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemAgencyData = {
             AgencyColumn.ID: row[0],
@@ -808,7 +808,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.GRADE}');
-
+        print('fields ${fields.length} ${DBTables.GRADE}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemGradeData = {
             GradeColumn.ID: row[0],
@@ -849,7 +849,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.GRADE_COMMODITY}');
-
+        print('fields ${fields.length} ${DBTables.GRADE_COMMODITY}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemGradeCommodityData = {
             GradeCommodityColumn.ID: row[0],
@@ -890,7 +890,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.GRADE_COMMODITY_DETAIL}');
-
+        print('fields ${fields.length} ${DBTables.GRADE_COMMODITY_DETAIL}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemGradeCommodityDetailData = {
             GradeCommodityDetailColumn.ID: row[0],
@@ -934,7 +934,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION}');
-
+        print('fields ${fields.length} ${DBTables.SPECIFICATION}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationData = {
             SpecificationColumn.NUMBER: row[0],
@@ -978,7 +978,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.MATERIAL_SPECIFICATION}');
-
+        print('fields ${fields.length} ${DBTables.MATERIAL_SPECIFICATION}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemMaterialSpecificationData = {
             MaterialSpecificationColumn.NUMBER_SPECIFICATION: row[0],
@@ -1021,7 +1021,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION_SUPPLIER}');
-
+        print('fields ${fields.length} ${DBTables.SPECIFICATION_SUPPLIER}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationSupplierData = {
             SpecificationSupplierColumn.NUMBER_SPECIFICATION: row[0],
@@ -1069,7 +1069,8 @@ class ApplicationDao {
       await db.transaction((txn) async {
         await txn
             .rawDelete('DELETE FROM ${DBTables.SPECIFICATION_GRADE_TOLERANCE}');
-
+        print(
+            'fields ${fields.length} ${DBTables.SPECIFICATION_GRADE_TOLERANCE}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationGradeToleranceData = {
             SpecificationGradeToleranceColumn.SPECIFICATION_GRADE_TOLERANCE_ID:
@@ -1122,7 +1123,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION_ANALYTICAL}');
-
+        print('fields ${fields.length} ${DBTables.SPECIFICATION_ANALYTICAL}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationAnalyticalData = {
             SpecificationAnalyticalColumn.NUMBER_SPECIFICATION: row[0],
@@ -1179,7 +1180,8 @@ class ApplicationDao {
       await db.transaction((txn) async {
         await txn.rawDelete(
             'DELETE FROM ${DBTables.SPECIFICATION_PACKAGING_FINISHED_GOODS}');
-
+        print(
+            'fields ${fields.length} ${DBTables.SPECIFICATION_PACKAGING_FINISHED_GOODS}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationAnalyticalData = {
             SpecificationPackagingFinishedGoodsColumn.FINISHED_GOODS_ID: row[0],
@@ -1224,7 +1226,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION_TYPE}');
-
+        print('fields ${fields.length} ${DBTables.SPECIFICATION_TYPE}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationTypeData = {
             SpecificationTypeColumn.SPECIFICATION_TYPE_ID: row[0],
@@ -1265,7 +1267,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.COMMODITY}');
-
+        print('fields ${fields.length} ${DBTables.COMMODITY}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemCommodityData = {
             CommodityColumn.ID: row[0],
@@ -1307,7 +1309,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.COMMODITY_KEYWORDS}');
-
+        print('fields ${fields.length} ${DBTables.COMMODITY_KEYWORDS}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemCommodityKeywordsData = {
             CommodityKeywordsColumn.ID: row[0],
@@ -1348,7 +1350,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.PO_HEADER}');
-
+        print('fields ${fields.length} ${DBTables.PO_HEADER}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemPOHeaderData = {
             POHeaderColumn.PO_HEADER_ID: row[0],
@@ -1392,7 +1394,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.PO_DETAIL}');
-
+        print('fields ${fields.length} ${DBTables.PO_DETAIL}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemPODetailData = {
             PODetailColumn.PO_DETAIL_ID: row[0],
@@ -1447,7 +1449,8 @@ class ApplicationDao {
       await db.transaction((txn) async {
         await txn
             .rawDelete('DELETE FROM ${DBTables.SPECIFICATION_SUPPLIER_GTIN}');
-
+        print(
+            'fields ${fields.length} ${DBTables.SPECIFICATION_SUPPLIER_GTIN}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationSupplierGtinsData = {
             SpecificationSupplierGtinColumn.SPECIFICATION_SUPPLIER_ID: row[0],
@@ -1488,7 +1491,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.COMMODITY_CTE}');
-
+        print('fields ${fields.length} ${DBTables.COMMODITY_CTE}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemCommodityCteData = {
             CommodityCteColumn.ID: row[0],
