@@ -3,7 +3,7 @@ class UserOffline {
   String userId;
   String userHash;
   int enterpriseId;
-  String status;
+  int? status;
   bool isSubscriptionExpired;
   int supplierId;
   int headquarterSupplierId;
@@ -46,6 +46,33 @@ class UserOffline {
       supplierId: map['Supplier_Id'],
       headquarterSupplierId: map['Headquater_Supplier_Id'],
       gtinScanning: map['GtinScanning'] == 1,
+    );
+  }
+
+  // copyWith
+  UserOffline copyWith({
+    int? id,
+    String? userId,
+    String? userHash,
+    int? enterpriseId,
+    int? status,
+    bool? isSubscriptionExpired,
+    int? supplierId,
+    int? headquarterSupplierId,
+    bool? gtinScanning,
+  }) {
+    return UserOffline(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      userHash: userHash ?? this.userHash,
+      enterpriseId: enterpriseId ?? this.enterpriseId,
+      status: status ?? this.status,
+      isSubscriptionExpired:
+          isSubscriptionExpired ?? this.isSubscriptionExpired,
+      supplierId: supplierId ?? this.supplierId,
+      headquarterSupplierId:
+          headquarterSupplierId ?? this.headquarterSupplierId,
+      gtinScanning: gtinScanning ?? this.gtinScanning,
     );
   }
 }

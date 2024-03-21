@@ -137,4 +137,13 @@ class SystemLabels {
     data['ITEM_GROUP_1'] = iTEMGROUP1;
     return data;
   }
+
+  // copyWith
+  SystemLabels copyWith({
+    String? iTEMGROUP1,
+  }) {
+    return SystemLabels(
+      iTEMGROUP1: iTEMGROUP1 ?? this.iTEMGROUP1,
+    );
+  }
 }

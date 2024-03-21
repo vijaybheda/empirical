@@ -31,8 +31,8 @@ class User {
 
   // fromJson parameter as a String
 
-  User.fromJson(String _json) {
-    final Map<String, dynamic> json = _json as Map<String, dynamic>;
+  User.fromJson(String jsonString) {
+    final Map<String, dynamic> json = jsonString as Map<String, dynamic>;
     id = json['id'];
     name = json['User_Name'];
     timestamp = json['Login_Time'];

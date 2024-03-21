@@ -32,4 +32,21 @@ class InspectionSpecification {
       name: map['Name'],
     );
   }
+
+  // copyWith
+  InspectionSpecification copyWith({
+    int? id,
+    int? inspectionID,
+    String? number,
+    String? version,
+    String? name,
+  }) {
+    return InspectionSpecification(
+      id: id ?? this.id,
+      inspectionID: inspectionID ?? this.inspectionID,
+      number: number ?? this.number,
+      version: version ?? this.version,
+      name: name ?? this.name,
+    );
+  }
 }

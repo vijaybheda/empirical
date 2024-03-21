@@ -1,14 +1,21 @@
 class PartnerItem {
-  final int id;
-  final String name;
-  final double redPercentage;
-  final double yellowPercentage;
-  final double orangePercentage;
-  final double greenPercentage;
-  final String recordType;
+  final int? id;
+  final String? name;
+  final double? redPercentage;
+  final double? yellowPercentage;
+  final double? orangePercentage;
+  final double? greenPercentage;
+  final String? recordType;
 
-  PartnerItem(this.id, this.name, this.redPercentage, this.yellowPercentage,
-      this.orangePercentage, this.greenPercentage, this.recordType);
+  PartnerItem({
+    this.id,
+    this.name,
+    this.redPercentage,
+    this.yellowPercentage,
+    this.orangePercentage,
+    this.greenPercentage,
+    this.recordType,
+  });
 
   PartnerItem.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -40,13 +47,13 @@ class PartnerItem {
     String? recordType,
   }) {
     return PartnerItem(
-      id ?? this.id,
-      name ?? this.name,
-      redPercentage ?? this.redPercentage,
-      yellowPercentage ?? this.yellowPercentage,
-      orangePercentage ?? this.orangePercentage,
-      greenPercentage ?? this.greenPercentage,
-      recordType ?? this.recordType,
+      id: id ?? this.id,
+      name: name ?? this.name,
+      redPercentage: redPercentage ?? this.redPercentage,
+      yellowPercentage: yellowPercentage ?? this.yellowPercentage,
+      orangePercentage: orangePercentage ?? this.orangePercentage,
+      greenPercentage: greenPercentage ?? this.greenPercentage,
+      recordType: recordType ?? this.recordType,
     );
   }
 }
