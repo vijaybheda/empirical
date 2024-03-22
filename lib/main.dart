@@ -18,6 +18,10 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final db = await DatabaseHelper.instance.database;
 
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(const MyApp());
 }
 
@@ -38,10 +42,12 @@ class MyApp extends StatelessWidget {
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();
       },
-      child: GetMaterialApp(
-          theme: AppThemeData.mThemeData(context, isDark: false),
-          darkTheme: AppThemeData.mThemeData(context, isDark: false),
-          themeMode: ThemeMode.light,
+      child: ScreenUtilInit(
+        designSize: Size(1200, 2670),
+        builder: (context, child) => GetMaterialApp(
+          theme: AppThemeData.mThemeData(context, isDark: true),
+          darkTheme: AppThemeData.mThemeData(context, isDark: true),
+          themeMode: ThemeMode.dark,
           debugShowCheckedModeBanner: false,
           enableLog: true,
           initialRoute: '/',
@@ -53,10 +59,10 @@ class MyApp extends StatelessWidget {
           popGesture: Get.isPopGestureEnable,
           transitionDuration: const Duration(milliseconds: 500),
           defaultGlobalState: true,
-          home: ScreenUtilInit(
-            designSize: Size(1200, 2670),
-            child: const SplashScreen(),
-          )),
+          home: const SplashScreen(),
+        ),
+        child: SplashScreen(),
+      ),
     );
   }
 }

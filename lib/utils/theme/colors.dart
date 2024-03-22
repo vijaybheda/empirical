@@ -34,7 +34,6 @@ class AppColors {
   static Color textInput = const Color(0xffFFFFFD);
   static Color textColor = const Color(0xffFFFFFF);
   static Color hintColor = const Color(0xffABABAB);
-  static Color textBody = const Color(0xffF0F0F0);
   static Color notificationOff = const Color.fromARGB(186, 255, 0, 0);
 
   static Color darkBlue = const Color(0xff09262D);
@@ -47,6 +46,8 @@ class AppColors {
   static Color dark = const Color(0xff474747);
   static Color grey2 = const Color(0xff818181);
   static Color grey = const Color(0xff0d0d0d);
+  static Color lightBackgroundGrey = const Color(0xff787878);
+  static Color darkBackgroundGrey = const Color(0xff5f5f5f);
   static Color lightGrey = const Color(0xffBABABA);
   static Color darkGrey = const Color(0xdd4B5665);
   static Color lightSky = const Color(0xffE8F5F5);
@@ -60,7 +61,6 @@ class AppColors {
   static Color alertBoxTextColot = const Color(0xff007AFF);
   static Color textBlue = const Color(0xFF347CF6);
   static Color searchfieldColor = const Color(0xffF8F8F9);
-  static Color brightGrey = const Color(0xFFE6E6E6);
   static Color warningColor = const Color(0xFFFF0101);
   static Color graniteGray = const Color(0xff5F646C);
 
@@ -72,4 +72,10 @@ class AppColors {
   static Color loginTextField_UnderlineColor = const Color(0xff680000);
   static Color textFieldText_Color = const Color(0xff912688);
   static Color sky = const Color(0xff00B2CB);
+  static Color uploadBG = const Color(0xffFFC0CB);
+  static Color brightGrey = const Color(0xFFE6E6E6);
+
+  static Color background = AppConst.AppTheme == ThemeType.dark
+      ? const Color(0xff5f5f5f)
+      : const Color(0xff5f5f5f);
 }

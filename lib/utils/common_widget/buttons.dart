@@ -7,7 +7,8 @@ Widget customButton(
   Color? backgroundColor,
   String title,
   double width,
-  double height, {
+  double height,
+  TextStyle fontStyle, {
   Function? onClickAction,
 }) {
   return InkWell(
@@ -22,10 +23,7 @@ Widget customButton(
           color: backgroundColor, borderRadius: BorderRadius.circular(45.r)),
       child: Text(
         title,
-        style: GoogleFonts.poppins(
-            fontSize: 25.sp,
-            fontWeight: FontWeight.w500,
-            textStyle: TextStyle(color: AppColors.white)),
+        style: fontStyle,
       ),
     ),
   );

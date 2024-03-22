@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names, avoid_types_as_parameter_names, prefer_const_constructors
+// ignore_for_file: non_constant_identifier_names, avoid_types_as_parameter_names, prefer_const_constructors, must_be_immutable
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,7 +22,7 @@ class SetupScreen extends GetView<SetupController> {
         init: SetupController(),
         builder: (Controller) {
           return Scaffold(
-            backgroundColor: AppColors.white,
+            backgroundColor: Theme.of(context).colorScheme.background,
             resizeToAvoidBottomInset: false,
             appBar: AppBar(
               automaticallyImplyLeading: false,
@@ -42,22 +42,22 @@ class SetupScreen extends GetView<SetupController> {
                       SizedBox(
                         height: 50.h,
                       ),
-                      commonRowView(AppStrings.banner1Url,
+                      commonRowView(context, AppStrings.banner1Url,
                           controller.banner1TextController.value),
                       SizedBox(
                         height: 40.h,
                       ),
-                      commonRowView(AppStrings.banner2Url,
+                      commonRowView(context, AppStrings.banner2Url,
                           controller.banner2TextController.value),
                       SizedBox(
                         height: 40.h,
                       ),
-                      commonRowView(AppStrings.serverUrl,
+                      commonRowView(context, AppStrings.serverUrl,
                           controller.banner3TextController.value),
                       SizedBox(
                         height: 40.h,
                       ),
-                      commonRowView(AppStrings.dateFormat,
+                      commonRowView(context, AppStrings.dateFormat,
                           controller.banner3TextController.value,
                           isDropdown: true),
                     ],
@@ -65,8 +65,15 @@ class SetupScreen extends GetView<SetupController> {
                   SizedBox(
                     height: 70.h,
                   ),
-                  customButton(AppColors.primary, AppStrings.save.toUpperCase(),
-                      double.infinity, 90,
+                  customButton(
+                      AppColors.primary,
+                      AppStrings.save.toUpperCase(),
+                      double.infinity,
+                      90,
+                      GoogleFonts.poppins(
+                          fontSize: 25.sp,
+                          fontWeight: FontWeight.w500,
+                          textStyle: TextStyle(color: AppColors.white)),
                       onClickAction: () => {
                             if (Controller.isSetupFieldsValidate())
                               {debugPrint('All Fields Are Validate')}
@@ -79,6 +86,10 @@ class SetupScreen extends GetView<SetupController> {
                       AppStrings.checkForUpdate.toUpperCase(),
                       double.infinity,
                       90,
+                      GoogleFonts.poppins(
+                          fontSize: 25.sp,
+                          fontWeight: FontWeight.w500,
+                          textStyle: TextStyle(color: AppColors.white)),
                       onClickAction: () => {}),
                   SizedBox(
                     height: 40.h,
@@ -88,6 +99,10 @@ class SetupScreen extends GetView<SetupController> {
                       AppStrings.cacheForOfflineUse.toUpperCase(),
                       double.infinity,
                       90,
+                      GoogleFonts.poppins(
+                          fontSize: 25.sp,
+                          fontWeight: FontWeight.w500,
+                          textStyle: TextStyle(color: AppColors.white)),
                       onClickAction: () => {}),
                 ],
               ),
@@ -96,7 +111,8 @@ class SetupScreen extends GetView<SetupController> {
         });
   }
 
-  Widget commonRowView(String labelTitle, TextEditingController controller,
+  Widget commonRowView(
+      BuildContext context, String labelTitle, TextEditingController controller,
       {bool isDropdown = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -109,7 +125,7 @@ class SetupScreen extends GetView<SetupController> {
             style: GoogleFonts.poppins(
                 fontSize: 30.sp,
                 fontWeight: FontWeight.normal,
-                textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+                textStyle: TextStyle(color: AppColors.white)),
           ),
         ),
         Expanded(
@@ -118,7 +134,8 @@ class SetupScreen extends GetView<SetupController> {
               ? Obx(
                   () => DropdownButtonFormField<String>(
                     decoration: InputDecoration(border: InputBorder.none),
-                    dropdownColor: AppColors.white,
+                    dropdownColor: Theme.of(context).colorScheme.background,
+                    iconEnabledColor: AppColors.hintColor,
                     hint: Text(
                       'Select DateFormat',
                       style: GoogleFonts.poppins(

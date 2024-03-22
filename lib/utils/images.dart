@@ -8,4 +8,11 @@ class AppImages {
   static const String ic_Wifi_bar_3 = 'assets/images/ic_wifi_3_bar.png';
   static const String ic_Wifi_bar_4 = 'assets/images/ic_wifi_4_bar.png';
   static const String ic_Wifi_off = 'assets/images/ic_wifi_off.png';
+  static const String ic_download = 'assets/images/ic_download.png';
+  static const String ic_unSelectCheckbox = 'assets/images/uncheck.png';
+  static const String ic_SelectedCheckbox = 'assets/images/checkbox.png';
+
+  static const String ic_sortNone = 'assets/images/sort_none_selected.png';
+  static const String ic_sortUp = 'assets/images/sort_up_selected.png';
+  static const String ic_sortDown = 'assets/images/sort_down_selected.png';
 }

@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 class AppStrings {
 //  static const String appName = 'Ver-ify 10.19.7';
   static const String appName = 'p-ver-ify';
@@ -10,6 +12,7 @@ class AppStrings {
   static const String model = 'Model';
   static const String androidOS = 'Android OS';
   static const String appNameInspection = 'Share-ify Inspection';
+  static const String data0DaysOld = 'Data 0 days old';
 
   static const String logIn = 'Log In';
   static const String username = 'UserName';
@@ -110,6 +113,7 @@ class AppStrings {
   static const String ripeningAccessAlert =
       'You are not authorized to access Ripening';
 
+  static const String ID = 'ID';
   static const String deviceId = 'Device ID';
   static const String wsUrl = 'Server Address';
   static const String timeout = 'Connection Timeout';
@@ -403,6 +407,7 @@ class AppStrings {
   static const String itemAttributes = 'Item Attributes';
   static const String quantity = 'Quantity';
   static const String notOk = 'Not OK';
+  static const String Res = 'Res';
 
   static const String QCHOPEN1 = 'Certificate of Departure';
   static const String QCHOPEN2 = 'Factory Reference #';

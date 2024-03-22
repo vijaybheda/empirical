@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,7 +8,7 @@ import 'package:pverify/utils/theme/colors.dart';
 import 'package:get/state_manager.dart';
 import 'package:pverify/utils/theme/theme.dart';
 
-class BoxTextField extends StatelessWidget {
+class BoxTextFieldLogin extends StatelessWidget {
   final TextEditingController controller;
   final bool obsecure;
   final bool readOnly;
@@ -21,7 +23,7 @@ class BoxTextField extends StatelessWidget {
   final String hintText;
   final bool isPasswordField;
 
-  BoxTextField(
+  BoxTextFieldLogin(
       {Key? key,
       required this.controller,
       this.keyboardType = TextInputType.text,
@@ -47,6 +49,9 @@ class BoxTextField extends StatelessWidget {
             alignment: Alignment.center,
             height: 105.h,
             child: TextFormField(
+              autofillHints: !isPasswordField
+                  ? [AutofillHints.username]
+                  : [AutofillHints.password],
               textAlignVertical: TextAlignVertical.center,
               onChanged: onChanged,
               onEditingComplete: onEditingCompleted,
@@ -153,16 +158,16 @@ class BoxTextField1 extends StatelessWidget {
               cursorColor: Theme.of(context).textSelectionTheme.cursorColor,
               decoration: InputDecoration(
                 enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.black),
+                  borderSide: BorderSide(color: AppColors.hintColor),
                 ),
                 focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.red),
+                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
                 ),
                 hintText: hintText,
                 hintStyle: GoogleFonts.poppins(
                     fontSize: 30.sp,
                     fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+                    textStyle: TextStyle(color: AppColors.hintColor)),
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding:
