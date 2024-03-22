@@ -61,7 +61,8 @@ class AppStorage extends GetxController {
 
   Future<void> savePartnerList(List<PartnerItem> partnerList) {
     // list to String
-    String partnerListString = partnerList.map((e) => e.toJson()).toString();
+    List<Map<String, dynamic>> partnerListString =
+        partnerList.map((e) => e.toJson()).toList();
     return write(StorageKey.kPartnerList, partnerListString);
   }
 
@@ -83,7 +84,8 @@ class AppStorage extends GetxController {
 
   Future<void> saveCarrierList(List<CarrierItem> carrierList) {
     // list to String
-    String carrierListString = carrierList.map((e) => e.toJson()).toString();
+    List<Map<String, dynamic>> carrierListString =
+        carrierList.map((e) => e.toJson()).toList();
     return write(StorageKey.kCarrierList, carrierListString);
   }
 
@@ -105,8 +107,8 @@ class AppStorage extends GetxController {
 
   Future<void> saveCommodityList(List<CommodityItem> commodityList) {
     // list to String
-    String commodityListString =
-        commodityList.map((e) => e.toJson()).toString();
+    List<Map<String, dynamic>> commodityListString =
+        commodityList.map((e) => e.toJson()).toList();
     return write(StorageKey.kCommodityList, commodityListString);
   }
 
@@ -128,7 +130,8 @@ class AppStorage extends GetxController {
 
   Future<void> saveDefectList(List<DefectItem> defectList) {
     // list to String
-    String defectListString = defectList.map((e) => e.toJson()).toString();
+    List<Map<String, dynamic>> defectListString =
+        defectList.map((e) => e.toJson()).toList();
     return write(StorageKey.kDefectList, defectListString);
   }
 
@@ -150,8 +153,8 @@ class AppStorage extends GetxController {
 
   Future<void> saveSeverityDefectList(List<SeverityDefect> severityDefectList) {
     // list to String
-    String severityDefectListString =
-        severityDefectList.map((e) => e.toJson()).toString();
+    List<Map<String, dynamic>> severityDefectListString =
+        severityDefectList.map((e) => e.toJson()).toList();
     return write(StorageKey.kSeverityDefectList, severityDefectListString);
   }
 
@@ -174,8 +177,8 @@ class AppStorage extends GetxController {
   Future<void> saveOfflineCommodityList(
       List<OfflineCommodity> offlineCommodityList) {
     // list to String
-    String offlineCommodityListString =
-        offlineCommodityList.map((e) => e.toJson()).toString();
+    List<Map<String, dynamic>> offlineCommodityListString =
+        offlineCommodityList.map((e) => e.toJson()).toList();
     return write(StorageKey.kOfflineCommodityList, offlineCommodityListString);
   }
 

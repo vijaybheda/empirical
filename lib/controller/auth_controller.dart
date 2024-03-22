@@ -67,7 +67,6 @@ class AuthController extends GetxController {
     String mUsername = emailTextController.value.text.trim();
     String mPassword = passwordTextController.value.text;
     if (await Utils.hasInternetConnection()) {
-      // TODO: Vijay show loading indicator
       LoginData? userData = await UserService()
           .checkLogin(loginRequestUrl, mUsername, mPassword, isLoginButton);
 
@@ -118,7 +117,6 @@ class AuthController extends GetxController {
                 Utils.showInfoAlertDialog(
                     "Your account is inactive. Please contact your administrator.");
               } else {
-                // TODO: add below logic
                 await jsonFileOperations.offlineLoadSuppliersData();
                 await jsonFileOperations.offlineLoadCarriersData();
                 await jsonFileOperations.offlineLoadCommodityData();

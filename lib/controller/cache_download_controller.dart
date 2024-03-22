@@ -133,8 +133,6 @@ class CacheDownloadController extends GetxController {
         return false;
       }
 
-      //TODO: implement below methods to add csv files
-
       bool itemSKU = await dao.csvImportItemSKU();
 
       if (!itemSKU) {
