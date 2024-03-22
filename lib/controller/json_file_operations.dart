@@ -28,17 +28,17 @@ class JsonFileOperations {
   Future<bool> offlineLoadSuppliersData() async {
     var storagePath = await Utils().getExternalStoragePath();
     final Directory directory =
-        Directory("$storagePath${AppStrings.jsonFilesCache}/");
+        Directory("$storagePath${FileManString.jsonFilesCache}/");
 
     File file = File(join(
       directory.path,
-      'suppliers.json',
+      FileManString.suppliersJson,
     ));
     if (!(await file.exists())) {
       return false;
     }
-    String content =
-        await getJsonFileContent(directory, fileName: 'suppliers.json');
+    String content = await getJsonFileContent(directory,
+        fileName: FileManString.suppliersJson);
 
     List<PartnerItem>? data = parseSupplierJson(content);
 
@@ -51,18 +51,18 @@ class JsonFileOperations {
   Future<bool> offlineLoadCarriersData() async {
     var storagePath = await Utils().getExternalStoragePath();
     final Directory directory =
-        Directory("$storagePath${AppStrings.jsonFilesCache}/");
+        Directory("$storagePath${FileManString.jsonFilesCache}/");
 
     File file = File(join(
       directory.path,
-      'carriers.json',
+      FileManString.carriersJson,
     ));
     if (!(await file.exists())) {
       return false;
     }
 
-    String content =
-        await getJsonFileContent(directory, fileName: 'carriers.json');
+    String content = await getJsonFileContent(directory,
+        fileName: FileManString.carriersJson);
 
     List<CarrierItem>? data = parseCarrierJson(content);
 
@@ -75,18 +75,18 @@ class JsonFileOperations {
   Future<bool> offlineLoadCommodityData() async {
     var storagePath = await Utils().getExternalStoragePath();
     final Directory directory =
-        Directory("$storagePath${AppStrings.jsonFilesCache}/");
+        Directory("$storagePath${FileManString.jsonFilesCache}/");
 
     File file = File(join(
       directory.path,
-      'commodity.json',
+      FileManString.commodityJson,
     ));
     if (!(await file.exists())) {
       return false;
     }
 
-    String commodityJsonContent =
-        await getJsonFileContent(directory, fileName: 'commodity.json');
+    String commodityJsonContent = await getJsonFileContent(directory,
+        fileName: FileManString.commodityJson);
 
     List<CommodityItem>? commodityDataList =
         await parseCommodityJson(commodityJsonContent);
@@ -355,18 +355,18 @@ class JsonFileOperations {
   Future<bool> offlineLoadSpecificationBannerData() async {
     var storagePath = await Utils().getExternalStoragePath();
     final Directory directory =
-        Directory("$storagePath${AppStrings.jsonFilesCache}/");
+        Directory("$storagePath${FileManString.jsonFilesCache}/");
 
     File file = File(join(
       directory.path,
-      'specificationBannerData.json',
+      FileManString.specificationBannerDataJson,
     ));
     if (!(await file.exists())) {
       return false;
     }
 
     String specificationBannerJsonContent = await getJsonFileContent(directory,
-        fileName: 'specificationBannerData.json');
+        fileName: FileManString.specificationBannerDataJson);
 
     List<CommodityVarietyData>? list;
 
@@ -420,7 +420,8 @@ class JsonFileOperations {
 
         String name = '${specificationNumber}_$specificationVersion';
         name = name.replaceAll(' ', '');
-        String filename = '${'specificationBannerData'}_$name.json';
+        String filename =
+            '${FileManString.specificationBannerDataJson.replaceAll('.json', '').toString()}_$name.json';
 
         File(filename).writeAsStringSync(jsonEncode(element));
         list ??= [];

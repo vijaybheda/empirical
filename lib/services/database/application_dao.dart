@@ -636,7 +636,7 @@ class ApplicationDao {
     try {
       var storagePath = await Utils().getExternalStoragePath();
       final File file =
-          File("$storagePath${AppStrings.csvFilesCache}/item_group1.csv");
+          File("$storagePath${FileManString.csvFilesCache}/item_group1.csv");
       if (!file.existsSync()) {
         log('CSV file not found');
         return false;
@@ -698,7 +698,7 @@ class ApplicationDao {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file =
-          File("$storagePath${AppStrings.csvFilesCache}/item_sku.csv");
+          File("$storagePath${FileManString.csvFilesCache}/item_sku.csv");
       if (!file.existsSync()) {
         log('item_sku CSV file not found');
         return false;
@@ -754,7 +754,7 @@ class ApplicationDao {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file =
-          File("$storagePath${AppStrings.csvFilesCache}/agency.csv");
+          File("$storagePath${FileManString.csvFilesCache}/agency.csv");
       if (!file.existsSync()) {
         log('agency CSV file not found');
         return false;
@@ -794,7 +794,7 @@ class ApplicationDao {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file =
-          File("$storagePath${AppStrings.csvFilesCache}/grade.csv");
+          File("$storagePath${FileManString.csvFilesCache}/grade.csv");
       if (!file.existsSync()) {
         log('grade CSV file not found');
         return false;
@@ -834,8 +834,8 @@ class ApplicationDao {
     try {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
-      final File file =
-          File("$storagePath${AppStrings.csvFilesCache}/grade_commodity.csv");
+      final File file = File(
+          "$storagePath${FileManString.csvFilesCache}/grade_commodity.csv");
       if (!file.existsSync()) {
         log('grade_commodity CSV file not found');
         return false;
@@ -876,7 +876,7 @@ class ApplicationDao {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
-          "$storagePath${AppStrings.csvFilesCache}/grade_commodity_detail.csv");
+          "$storagePath${FileManString.csvFilesCache}/grade_commodity_detail.csv");
       if (!file.existsSync()) {
         log('grade_commodity_detail CSV file not found');
         return false;
@@ -920,7 +920,7 @@ class ApplicationDao {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file =
-          File("$storagePath${AppStrings.csvFilesCache}/specification.csv");
+          File("$storagePath${FileManString.csvFilesCache}/specification.csv");
       if (!file.existsSync()) {
         log('specification CSV file not found');
         return false;
@@ -964,7 +964,7 @@ class ApplicationDao {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
-          "$storagePath${AppStrings.csvFilesCache}/material_specification.csv");
+          "$storagePath${FileManString.csvFilesCache}/material_specification.csv");
       if (!file.existsSync()) {
         log('material_specification CSV file not found');
         return false;
@@ -1007,7 +1007,7 @@ class ApplicationDao {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
-          "$storagePath${AppStrings.csvFilesCache}/specification_supplier.csv");
+          "$storagePath${FileManString.csvFilesCache}/specification_supplier.csv");
       if (!file.existsSync()) {
         log('specification_supplier CSV file not found');
         return false;
@@ -1054,7 +1054,7 @@ class ApplicationDao {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
-          "$storagePath${AppStrings.csvFilesCache}/specification_grade_tolerance.csv");
+          "$storagePath${FileManString.csvFilesCache}/specification_grade_tolerance.csv");
       if (!file.existsSync()) {
         log('specification_grade_tolerance CSV file not found');
         return false;
@@ -1109,7 +1109,7 @@ class ApplicationDao {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
-          "$storagePath${AppStrings.csvFilesCache}/specification_analytical.csv");
+          "$storagePath${FileManString.csvFilesCache}/specification_analytical.csv");
       if (!file.existsSync()) {
         log('specification_analytical CSV file not found');
         return false;
@@ -1165,7 +1165,7 @@ class ApplicationDao {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
-          "$storagePath${AppStrings.csvFilesCache}/specification_packaging_finished_goods.csv");
+          "$storagePath${FileManString.csvFilesCache}/specification_packaging_finished_goods.csv");
       if (!file.existsSync()) {
         log('specification_analytical CSV file not found');
         return false;
@@ -1212,7 +1212,7 @@ class ApplicationDao {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
-          "$storagePath${AppStrings.csvFilesCache}/specification_type.csv");
+          "$storagePath${FileManString.csvFilesCache}/specification_type.csv");
       if (!file.existsSync()) {
         log('specification_type CSV file not found');
         return false;
@@ -1253,7 +1253,7 @@ class ApplicationDao {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file =
-          File("$storagePath${AppStrings.csvFilesCache}/commodity.csv");
+          File("$storagePath${FileManString.csvFilesCache}/commodity.csv");
       if (!file.existsSync()) {
         log('commodity CSV file not found');
         return false;
@@ -1295,7 +1295,7 @@ class ApplicationDao {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
-          "$storagePath${AppStrings.csvFilesCache}/commodity_keywords.csv");
+          "$storagePath${FileManString.csvFilesCache}/commodity_keywords.csv");
       if (!file.existsSync()) {
         log('commodity_keywords CSV file not found');
         return false;
@@ -1336,7 +1336,7 @@ class ApplicationDao {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
-          "$storagePath${AppStrings.csvFilesCache}/purchase_order_header.csv");
+          "$storagePath${FileManString.csvFilesCache}/purchase_order_header.csv");
       if (!file.existsSync()) {
         log('purchase_order_header CSV file not found');
         return false;
@@ -1380,7 +1380,7 @@ class ApplicationDao {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
-          "$storagePath${AppStrings.csvFilesCache}/purchase_order_detail.csv");
+          "$storagePath${FileManString.csvFilesCache}/purchase_order_detail.csv");
       if (!file.existsSync()) {
         log('purchase_order_detail CSV file not found');
         return false;
@@ -1434,7 +1434,7 @@ class ApplicationDao {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
-          "$storagePath${AppStrings.csvFilesCache}/specification_supplier_gtins.csv");
+          "$storagePath${FileManString.csvFilesCache}/specification_supplier_gtins.csv");
       if (!file.existsSync()) {
         log('specification_supplier_gtins CSV file not found');
         return false;
@@ -1477,7 +1477,7 @@ class ApplicationDao {
       Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
-          "$storagePath${AppStrings.csvFilesCache}/supplier_commodity.csv");
+          "$storagePath${FileManString.csvFilesCache}/supplier_commodity.csv");
       if (!file.existsSync()) {
         log('supplier_commodity CSV file not found');
         return false;

@@ -455,7 +455,7 @@ class Utils {
     var externalStoragePath =
         await getExternalStorageDirectory().then((value) => value!.path);
     var directory = Directory(
-        '$externalStoragePath${AppStrings.commodityVarietyDocument}/');
+        '$externalStoragePath${FileManString.commodityVarietyDocument}/');
     if (!directory.existsSync()) {
       directory.createSync(recursive: true);
     }
@@ -467,6 +467,29 @@ class Utils {
     String numericPart = regExp.firstMatch(value)?.group(0) ?? '0';
 
     return double.parse(numericPart);
+  }
+
+  static Future<void> showLoadingDialog() async {
+    await Future.delayed(const Duration(milliseconds: 10));
+    Get.dialog(
+      const Center(
+        child: CircularProgressIndicator.adaptive(),
+      ),
+      barrierDismissible: false,
+      transitionCurve: Curves.easeInOut,
+      navigatorKey: Get.key,
+      transitionDuration: const Duration(milliseconds: 200),
+    );
+
+    await Future.delayed(const Duration(milliseconds: 10));
+  }
+
+  // hide loading dialog using navigatorKey
+  static Future<void> hideLoadingDialog() async {
+    if (Get.isDialogOpen ?? false) {
+      Get.back();
+    }
+    await Future.delayed(const Duration(milliseconds: 10));
   }
 }
 

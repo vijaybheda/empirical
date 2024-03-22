@@ -21,7 +21,7 @@ class CacheDownloadService extends BaseRequestService {
     try {
       var storagePath = await Utils().getExternalStoragePath();
       final Directory directory =
-          Directory("$storagePath${AppStrings.csvFilesCache}/");
+          Directory("$storagePath${FileManString.csvFilesCache}/");
       if (directory.existsSync()) {
         directory.deleteSync(recursive: true);
       }
@@ -55,7 +55,7 @@ class CacheDownloadService extends BaseRequestService {
       /*if (response.statusCode == HttpStatus.ok) {
         var storagePath = await Utils().getExternalStoragePath();
         final Directory directory =
-            Directory("$storagePath/${AppStrings.csvFilesCache}/");
+            Directory("$storagePath/${FileManString.csvFilesCache}/");
         if (directory.existsSync()) {
           directory.deleteSync(recursive: true);
         }
@@ -102,7 +102,7 @@ class CacheDownloadService extends BaseRequestService {
     try {
       var storagePath = await Utils().getExternalStoragePath();
       final Directory directory =
-          Directory("$storagePath${AppStrings.jsonFilesCache}/");
+          Directory("$storagePath${FileManString.jsonFilesCache}/");
       if (directory.existsSync()) {
         directory.deleteSync(recursive: true);
       }
@@ -136,7 +136,7 @@ class CacheDownloadService extends BaseRequestService {
       if (response.statusCode == HttpStatus.ok) {
         var storagePath = await Utils().getExternalStoragePath();
         final Directory directory =
-            Directory("$storagePath${AppStrings.jsonFilesCache}/");
+            Directory("$storagePath${FileManString.jsonFilesCache}/");
         if (directory.existsSync()) {
           directory.deleteSync(recursive: true);
         }
@@ -154,7 +154,7 @@ class CacheDownloadService extends BaseRequestService {
         Archive archive = decoder.decodeBytes(data);
         for (ArchiveFile file in archive) {
           String innerFileName =
-              '${directory.path}${AppStrings.jsonFilesCache}/${file.name}';
+              '${directory.path}${FileManString.jsonFilesCache}/${file.name}';
           File innerFile = File(innerFileName);
           if (innerFile.existsSync()) {
             await innerFile.delete();

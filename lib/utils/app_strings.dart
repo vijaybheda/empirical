@@ -25,9 +25,6 @@ class AppStrings {
   static const String inspectionMenu = 'Inspection Menu';
 
   static const String cancel = 'Cancel';
-  static const String csvFilesCache = 'csvfilescache';
-  static const String jsonFilesCache = 'jsonfilescache';
-  static const String commodityVarietyDocument = 'commodity';
   static const String ok = 'OK';
   static const String yes = 'Yes';
   static const String no = 'No';
@@ -447,4 +444,16 @@ class AppStrings {
   static const List<String> array_name = ['Yes', 'No', 'N/A'];
 
   static const List<String> yesNoArray = ['Y', 'N'];
+}
+
+class FileManString {
+  static const String csvFilesCache = 'csvfilescache';
+  static const String jsonFilesCache = 'jsonfilescache';
+  static const String commodityVarietyDocument = 'commodity';
+
+  static const String suppliersJson = 'suppliers.json';
+  static const String carriersJson = 'carriers.json';
+  static const String commodityJson = 'commodity.json';
+  static const String specificationBannerDataJson =
+      'specificationBannerData.json';
 }

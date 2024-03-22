@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/auth_controller.dart';
 import 'package:pverify/models/login_data.dart';
-import 'package:pverify/ui/setup_platfrom/setup.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
@@ -11,6 +10,7 @@ import 'package:pverify/utils/common_widget/header.dart';
 import 'package:pverify/utils/common_widget/text_field/text_fields.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
+import 'package:pverify/utils/utils.dart';
 
 class LoginScreen extends GetView<AuthController> {
   const LoginScreen({super.key});
@@ -20,9 +20,9 @@ class LoginScreen extends GetView<AuthController> {
     return GetBuilder(
       init: AuthController(),
       builder: (authController) {
-        //authController.emailTextController.value.text =
-        //    'nirali.talavia@gmail.com';
-        // authController.passwordTextController.value.text = 'Niralishah@1234';
+        authController.emailTextController.value.text =
+            'nirali.talavia@gmail.com';
+        authController.passwordTextController.value.text = 'Niralishah@1234';
         return Scaffold(
           backgroundColor: AppColors.grey2,
           resizeToAvoidBottomInset: false,
@@ -95,40 +95,7 @@ class LoginScreen extends GetView<AuthController> {
                   double.infinity,
                   90,
                   onClickAction: () async {
-                    if (authController.isLoginFieldsValidate()) {
-                      LoginData? loginData =
-                          await authController.loginUser(isLoginButton: true);
-                      if (loginData != null) {
-                        if (loginData.subscriptionExpired ?? false) {
-                          // dismissible info dialog
-                          Get.snackbar(
-                            AppStrings.error,
-                            "User is not active.",
-                            backgroundColor: AppColors.red,
-                            colorText: AppColors.white,
-                          );
-                        } else if (loginData.status == 3) {
-                          // "Account is not active." dialog
-                          Get.snackbar(
-                            AppStrings.error,
-                            "Account is not active.",
-                            backgroundColor: AppColors.red,
-                            colorText: AppColors.white,
-                          );
-                        } else {
-                          await authController.persistUserName();
-
-                          await authController.jsonFileOperations
-                              .offlineLoadSuppliersData();
-                          await authController.jsonFileOperations
-                              .offlineLoadCarriersData();
-                          await authController.jsonFileOperations
-                              .offlineLoadCommodityData();
-
-                          await authController.downloadCloudData();
-                        }
-                      }
-                    }
+                    await doLoginAction(authController, isLoginButton: true);
                   },
                 ),
                 SizedBox(
@@ -140,11 +107,7 @@ class LoginScreen extends GetView<AuthController> {
                   double.infinity,
                   90,
                   onClickAction: () async {
-                    LoginData? loginData =
-                        await authController.loginUser(isLoginButton: false);
-                    if (loginData != null) {
-                      Get.to(() => SetupScreen());
-                    }
+                    await doLoginAction(authController, isLoginButton: false);
                   },
                 ),
               ],
@@ -153,5 +116,53 @@ class LoginScreen extends GetView<AuthController> {
         );
       },
     );
+  }
+
+  Future<void> doLoginAction(
+    AuthController authController, {
+    required bool isLoginButton,
+  }) async {
+    if (authController.isLoginFieldsValidate()) {
+      try {
+        Utils.showLoadingDialog();
+        LoginData? loginData =
+            await authController.loginUser(isLoginButton: isLoginButton);
+        if (loginData != null) {
+          if (loginData.subscriptionExpired ?? false) {
+            // dismissible info dialog
+            Utils.hideLoadingDialog();
+            Get.snackbar(
+              AppStrings.error,
+              "User is not active.",
+              backgroundColor: AppColors.red,
+              colorText: AppColors.white,
+            );
+          } else if (loginData.status == 3) {
+            // "Account is not active." dialog
+            Utils.hideLoadingDialog();
+            Get.snackbar(
+              AppStrings.error,
+              "Account is not active.",
+              backgroundColor: AppColors.red,
+              colorText: AppColors.white,
+            );
+          } else {
+            await authController.persistUserName();
+
+            await authController.jsonFileOperations.offlineLoadSuppliersData();
+            await authController.jsonFileOperations.offlineLoadCarriersData();
+            await authController.jsonFileOperations.offlineLoadCommodityData();
+
+            await authController.downloadCloudData();
+            Utils.hideLoadingDialog();
+          }
+        } else {
+          Utils.hideLoadingDialog();
+        }
+      } catch (e) {
+        print(e);
+        Utils.hideLoadingDialog();
+      }
+    }
   }
 }

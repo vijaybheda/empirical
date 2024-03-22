@@ -22,7 +22,6 @@ import 'package:pverify/utils/constants.dart';
 import 'package:pverify/utils/utils.dart';
 
 class AuthController extends GetxController {
-  bool isLoading = false;
   User? userModel;
   final emailTextController = TextEditingController().obs;
   final passwordTextController = TextEditingController().obs;
@@ -65,7 +64,6 @@ class AuthController extends GetxController {
 
   // loginUser
   Future<LoginData?> loginUser({required bool isLoginButton}) async {
-    isLoading = true;
     String mUsername = emailTextController.value.text.trim();
     String mPassword = passwordTextController.value.text;
     if (await Utils.hasInternetConnection()) {
@@ -94,7 +92,8 @@ class AuthController extends GetxController {
             return userData;
           }
         } catch (e) {
-          Utils.showErrorAlert("0");
+          await Utils.hideLoadingDialog();
+          Utils.showErrorAlert(AppStrings.invalidUsernamePassword);
         }
       } else {
         String mUsername = emailTextController.value.text.trim();
@@ -115,6 +114,7 @@ class AuthController extends GetxController {
               LoginData? userData = appStorage.getLoginData();
               if ((userData?.subscriptionExpired ?? true) ||
                   userData?.status == 3) {
+                await Utils.hideLoadingDialog();
                 Utils.showInfoAlertDialog(
                     "Your account is inactive. Please contact your administrator.");
               } else {
@@ -122,17 +122,20 @@ class AuthController extends GetxController {
                 await jsonFileOperations.offlineLoadSuppliersData();
                 await jsonFileOperations.offlineLoadCarriersData();
                 await jsonFileOperations.offlineLoadCommodityData();
-
+                await Utils.hideLoadingDialog();
                 Get.offAll(() => const DashboardScreen());
               }
             } else {
+              await Utils.hideLoadingDialog();
               Get.offAll(() => SetupScreen());
             }
           } else {
+            await Utils.hideLoadingDialog();
             // show error alert dialog
-            Utils.showErrorAlert("0");
+            Utils.showErrorAlert(AppStrings.invalidUsernamePassword);
           }
         } else {
+          await Utils.hideLoadingDialog();
           // show Info Alert Dialog
           Utils.showInfoAlertDialog(AppStrings.turnOnWifi);
         }
@@ -150,27 +153,30 @@ class AuthController extends GetxController {
             if (offlineUser != null && offlineUser.isSubscriptionExpired ||
                 offlineUser?.status == 3) {
               // show Info Alert Dialog
+              await Utils.hideLoadingDialog();
               Utils.showInfoAlertDialog(
                   "Your account is inactive. Please contact your administrator.");
             } else {
               await jsonFileOperations.offlineLoadSuppliersData();
               await jsonFileOperations.offlineLoadCarriersData();
               await jsonFileOperations.offlineLoadCommodityData();
+              await Utils.hideLoadingDialog();
               Get.offAll(() => const DashboardScreen());
             }
           } else {
+            await Utils.hideLoadingDialog();
             Get.offAll(() => SetupScreen());
           }
         } else {
-          Utils.showErrorAlert("0");
+          await Utils.hideLoadingDialog();
+          Utils.showErrorAlert(AppStrings.invalidUsernamePassword);
         }
       } else {
+        await Utils.hideLoadingDialog();
         // show Info Alert Dialog
         Utils.showInfoAlertDialog(AppStrings.turnOnWifi);
       }
     }
-
-    isLoading = false;
 
     return null;
   }
@@ -234,11 +240,12 @@ class AuthController extends GetxController {
     if (appStorage.getBool(StorageKey.kIsCSVDownloaded1) == false) {
       if (await Utils.hasInternetConnection()) {
         if (wifiLevel >= 2) {
-          appStorage.setBool(StorageKey.kIsCSVDownloaded1, true);
-          appStorage.setInt(
+          await appStorage.setBool(StorageKey.kIsCSVDownloaded1, true);
+          await appStorage.setInt(
               StorageKey.kCacheDate, DateTime.now().millisecondsSinceEpoch);
           await appStorage.setBool(StorageKey.kIsCSVDownloaded1, true);
-          await Get.to(() => const CacheDownloadScreen());
+          Get.offAll(() => const CacheDownloadScreen());
+          return;
         } else {
           Utils.showInfoAlertDialog(AppStrings.downloadWifiError);
         }
@@ -247,6 +254,7 @@ class AuthController extends GetxController {
       }
     } else {
       Get.offAll(() => const DashboardScreen());
+      return;
     }
   }
 }

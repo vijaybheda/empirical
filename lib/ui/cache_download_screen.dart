@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/cache_download_controller.dart';
+import 'package:pverify/utils/app_strings.dart';
 
 class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
   const CacheDownloadScreen({super.key});
@@ -11,23 +12,30 @@ class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
         init: CacheDownloadController(),
         builder: (controller) {
           return Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.background,
+            backgroundColor: Get.theme.colorScheme.background,
             appBar: AppBar(
+              leading: const Offstage(),
               title: const Text('Cache Download'),
             ),
-            body: const Center(
+            body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   /// loading indicator
-
-                  Center(
+                  const Center(
                     child: SizedBox(
                       height: 50,
                       width: 50,
-                      child: CircularProgressIndicator(),
+                      child: CircularProgressIndicator.adaptive(),
                     ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    AppStrings.cacheDataForOffline,
+                    style: Get.textTheme.titleLarge,
                   ),
                 ],
               ),
