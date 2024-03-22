@@ -1,9 +1,9 @@
 class InspectionAttachment {
   int? id; // SQLite row id
-  int inspectionId;
-  String title;
-  int createdTime;
-  String fileLocation;
+  int? inspectionId;
+  String? title;
+  int? createdTime;
+  String? fileLocation;
 
   InspectionAttachment({
     this.id,

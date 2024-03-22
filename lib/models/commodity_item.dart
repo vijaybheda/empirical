@@ -3,8 +3,8 @@ import 'package:pverify/models/document_item.dart';
 import 'package:pverify/models/severity_defect.dart';
 
 class CommodityItem {
-  int id;
-  String name;
+  int? id;
+  String? name;
   int? numberSamplesSet;
   int? sampleSizeByCount;
   double? sampleSizeByWeight;

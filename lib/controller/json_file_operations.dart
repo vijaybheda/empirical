@@ -374,14 +374,17 @@ class JsonFileOperations {
       List<dynamic> jsonArray = jsonDecode(specificationBannerJsonContent);
 
       for (var element in jsonArray) {
-        String specificationNumber = element['specificationNumber'];
-        String specificationVersion = element['specificationVersion'];
-        String commodityId = element['commodityId'];
-        String varietyId = element['varietyId'];
-        String varietyName = element['varietyName'];
+        String? specificationNumber = element['specificationNumber'];
+        String? specificationVersion = element['specificationVersion'];
+        int? commodityId = element['commodityId'];
+        int? varietyId = element['varietyId'];
+        String? varietyName = element['varietyName'];
 
-        CommodityVarietyData commodityVarietyData =
-            CommodityVarietyData(commodityId, varietyId, varietyName);
+        CommodityVarietyData commodityVarietyData = CommodityVarietyData(
+          commodityId: commodityId,
+          varietyId: varietyId,
+          varietyName: varietyName,
+        );
 
         if (element['documents'] != null) {
           for (var doc in element['documents']) {

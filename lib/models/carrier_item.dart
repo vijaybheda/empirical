@@ -1,11 +1,11 @@
 class CarrierItem {
-  final int id;
-  final String name;
-  final double redPercentage;
-  final double yellowPercentage;
-  final double orangePercentage;
-  final double greenPercentage;
-  final String recordType;
+  final int? id;
+  final String? name;
+  final double? redPercentage;
+  final double? yellowPercentage;
+  final double? orangePercentage;
+  final double? greenPercentage;
+  final String? recordType;
 
   CarrierItem(
     this.id,

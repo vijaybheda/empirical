@@ -29,15 +29,15 @@ class AuthController extends GetxController {
   final AppStorage appStorage = AppStorage.instance;
   final JsonFileOperations jsonFileOperations = JsonFileOperations.instance;
 
-  int wifiLevel = 0;
+  int wifiLevel = 3;
 
   @override
   void onInit() {
     super.onInit();
-    Utils.checkWifiLevel().then((value) {
-      wifiLevel = value;
-    });
-    // FIXME: change below logic
+    // Utils.checkWifiLevel().then((value) {
+    //   wifiLevel = value;
+    // });
+    // FIXME: Vijay change below logic
     // if (isLoggedIn()) {
     //   Get.offAll(() => const DashboardScreen());
     // }

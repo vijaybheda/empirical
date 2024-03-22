@@ -25,18 +25,24 @@ class ApplicationDao {
   final dbProvider = DatabaseHelper.instance;
 
   Future<int> createOrUpdateUser(User user) async {
-    final db = await DatabaseHelper.instance.database;
-    if (user.id == null) {
-      // Insert
-      return await db.insert(DBTables.USER, user.toJson());
-    } else {
-      // Update
-      return await db.update(
-        DBTables.USER,
-        user.toJson(),
-        where: '${UserColumn.ID} = ?',
-        whereArgs: [user.id],
-      );
+    try {
+      final db = await DatabaseHelper.instance.database;
+      if (user.id == null) {
+        // Insert
+        return await db.insert(DBTables.USER, user.toJson());
+      } else {
+        // Update
+        return await db.update(
+          DBTables.USER,
+          user.toJson(),
+          where: '${BaseColumns.ID} = ?',
+          whereArgs: [user.id],
+        );
+      }
+    } catch (e) {
+      print(e);
+      print('failed to add-update user');
+      return -1;
     }
   }
 

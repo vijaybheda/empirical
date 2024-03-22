@@ -1,9 +1,9 @@
 class InspectionSpecification {
   int? id; // SQLite's row ID.
-  int inspectionID;
-  String number;
-  String version;
-  String name;
+  int? inspectionID;
+  String? number;
+  String? version;
+  String? name;
 
   InspectionSpecification({
     this.id,
@@ -15,7 +15,7 @@ class InspectionSpecification {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id, // Note: 'id' is managed by SQLite.
+      '_id': id,
       'Inspection_ID': inspectionID,
       'Number': number,
       'Version': version,
@@ -25,7 +25,7 @@ class InspectionSpecification {
 
   factory InspectionSpecification.fromMap(Map<String, dynamic> map) {
     return InspectionSpecification(
-      id: map['id'],
+      id: map['_id'],
       inspectionID: map['Inspection_ID'],
       number: map['Number'],
       version: map['Version'],
