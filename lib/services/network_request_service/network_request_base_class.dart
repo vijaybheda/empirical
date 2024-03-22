@@ -64,6 +64,40 @@ class BaseRequestService extends GetConnect {
     }
   }
 
+  Future<Map<String, dynamic>> errorHandlerDynamicResponse(
+      Response response) async {
+    switch (response.statusCode) {
+      case 200:
+        Map<String, dynamic>? responseJson = response.body;
+        return responseJson!;
+      case 400:
+        throw CustomException(response
+            .body?["message"]); //user phone/otp number not registered/wrong
+      case 401:
+        String message = response.body?["message"];
+        // await LoginServices.unAuthorizedRedirection(message);
+        throw CustomException(unAuthorizedMessage);
+      case 404:
+        throw throw CustomException(response.body?["message"]);
+      case 500:
+        throw CustomException(response.body?["message"]);
+      case 403:
+        String message = response.body?["message"];
+        // await LoginServices.unAuthorizedRedirection(message);
+        throw CustomException(unAuthorizedMessage);
+      case null:
+        if ((response.statusText ?? "").contains(timeOut) ||
+            (response.statusText ?? "").contains(timeOut2)) {
+          throw CustomException("Timeout, Please try again after some time.");
+        } else if ((response.statusText ?? "").startsWith(platformException)) {
+          throw CustomException("Please check your internet connection.");
+        }
+        throw Exception(response.statusText);
+      default:
+        throw Exception(response.statusText);
+    }
+  }
+
   String? getString(String key) => GetStorage().read(key);
 
   // global get request
@@ -89,6 +123,31 @@ class BaseRequestService extends GetConnect {
       return response;
     } else {
       throw await errorHandler(response);
+    }
+  }
+
+  // get dynamic Response
+  Future<Response> getCallResponse(
+    String url, {
+    Map<String, dynamic>? query,
+    Map<String, dynamic>? headers,
+  }) async {
+    Map<String, String>? headersMap;
+
+    if (headers != null && headers.isNotEmpty) {
+      headersMap = headers.map((key, value) {
+        return MapEntry(key, value.toString());
+      });
+    }
+    Response response = await super.get(
+      url,
+      query: query,
+      headers: headersMap,
+    );
+    if (response.isOk) {
+      return response;
+    } else {
+      throw await errorHandlerDynamicResponse(response);
     }
   }
 }

@@ -1,6 +1,6 @@
 class OfflineCommodity {
-  int id;
-  String name;
+  int? id;
+  String? name;
   String? keywords;
 
   OfflineCommodity({

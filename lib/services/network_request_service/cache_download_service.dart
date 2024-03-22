@@ -190,16 +190,15 @@ class CacheDownloadService extends BaseRequestService {
   Future<bool> downloadAllUsers(
       String requestUrl, Map<String, dynamic> headerMap) async {
     try {
-      final response = await getCall(requestUrl, headers: headerMap);
+      final response = await getCallResponse(requestUrl, headers: headerMap);
 
       if (response.statusCode == HttpStatus.ok) {
         try {
-          List<Map<String, dynamic>> usersArray =
-              jsonDecode(response.bodyString!);
-          for (Map<String, dynamic> item in usersArray) {
-            String userId = item["userName"];
-            String access = item["access1"];
-            String status = item["status"];
+          List<dynamic> usersArray = jsonDecode(response.bodyString!);
+          for (var item in usersArray) {
+            String? userId = item["userName"];
+            String? access = item["access1"];
+            String? status = item["status"];
             int enterpriseId = 0;
             if (item["enterpriseId"] != null) {
               enterpriseId = item["enterpriseId"];
@@ -213,11 +212,11 @@ class CacheDownloadService extends BaseRequestService {
               headquarterSupplierId = item["headquarterSupplierId"];
             }
 
-            String subscriptionExpirationDateString =
-                item["subscriptionExpirationDateString"];
+            // String subscriptionExpirationDateString =
+            //     item["subscriptionExpirationDateString"];
             int subscriptionExpirationDate = item["subscriptionExpirationDate"];
             bool isExpired = false;
-            DateTime strDate = DateTime.parse(subscriptionExpirationDateString);
+            // DateTime strDate = DateTime.parse(subscriptionExpirationDateString);
             if (DateTime.now().millisecondsSinceEpoch >
                 subscriptionExpirationDate) {
               isExpired = true;
@@ -229,10 +228,10 @@ class CacheDownloadService extends BaseRequestService {
             }
 
             await ApplicationDao().createOrUpdateOfflineUser(
-                userId.toLowerCase(),
-                access,
+                userId.toString().toLowerCase(),
+                access!,
                 enterpriseId,
-                status,
+                status!,
                 isExpired,
                 supplierId,
                 headquarterSupplierId,

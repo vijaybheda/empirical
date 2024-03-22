@@ -136,13 +136,13 @@ class JsonFileOperations {
 
       for (int i = 0; i < partnersArray.length; i++) {
         Map<String, dynamic> item = partnersArray[i];
-        int id = item["id"];
-        String name = item["name"];
-        double redPercentage = item["redPercentage"];
-        double yellowPercentage = item["yellowPercentage"];
-        double orangePercentage = item["orangePercentage"];
-        double greenPercentage = item["greenPercentage"];
-        String recordType = item["recordType"];
+        int? id = item["id"];
+        String? name = item["name"];
+        double? redPercentage = item["redPercentage"];
+        double? yellowPercentage = item["yellowPercentage"];
+        double? orangePercentage = item["orangePercentage"];
+        double? greenPercentage = item["greenPercentage"];
+        String? recordType = item["recordType"];
 
         PartnerItem listItem = PartnerItem(
           id: id,
@@ -172,13 +172,13 @@ class JsonFileOperations {
 
       for (int i = 0; i < partnersArray.length; i++) {
         Map<String, dynamic> item = partnersArray[i];
-        int id = item["id"];
-        String name = item["name"];
-        double redPercentage = item["redPercentage"];
-        double yellowPercentage = item["yellowPercentage"];
-        double orangePercentage = item["orangePercentage"];
-        double greenPercentage = item["greenPercentage"];
-        String recordType = item["recordType"];
+        int? id = item["id"];
+        String? name = item["name"];
+        double? redPercentage = item["redPercentage"];
+        double? yellowPercentage = item["yellowPercentage"];
+        double? orangePercentage = item["orangePercentage"];
+        double? greenPercentage = item["greenPercentage"];
+        String? recordType = item["recordType"];
 
         CarrierItem listItem = CarrierItem(id, name, redPercentage,
             yellowPercentage, orangePercentage, greenPercentage, recordType);
@@ -197,21 +197,24 @@ class JsonFileOperations {
     var jsonResponse = jsonDecode(response);
     var commodityArray = jsonResponse['commodities'];
 
+    log('parseCommodityJson of commodities called');
     for (var item in commodityArray) {
       List<DefectItem> defectList = [];
       List<SeverityDefect> severityDefectList = [];
       List<DocumentItem> documents = [];
 
-      int id = item['id'];
-      String name = item['name'];
+      int? id = item['id'];
+      String? name = item['name'];
       int? numberSamplesSet = item['numberSamplesSet'];
       int? sampleSizeByCount = item['minSampleSetByCount'];
       double? sampleSizeByWeight = item['sampleSizeByWeight'];
       String? keywords = item['keywords'];
 
+      log('parseCommodityJson of defectList called');
+
       // Parsing defectList
       for (var defectItem in item['defectList']) {
-        int dId = defectItem['id'];
+        int? dId = defectItem['id'];
         String? dName = defectItem['name'];
         String? dInstruction = defectItem['inspectionInstruction'];
 
@@ -234,14 +237,15 @@ class JsonFileOperations {
 
       // Parsing severityDefectList
       for (var severityDefectItem in item['severityDefectList']) {
-        int sdId = severityDefectItem['id'];
+        int? sdId = severityDefectItem['id'];
         String? sdName = severityDefectItem['name'];
         severityDefectList.add(SeverityDefect(id: sdId, name: sdName));
       }
 
+      log('parseCommodityJson of documents called');
       // Parsing documents
       for (var documentItem in item['documents']) {
-        String type = documentItem['type'];
+        String? type = documentItem['type'];
         String? fileContent = documentItem['fileContent'];
 
         if (fileContent != null) {
@@ -278,11 +282,11 @@ class JsonFileOperations {
     List<DefectItem> list = [];
     var jsonResponse = jsonDecode(response);
     var defectArray = jsonResponse['defects'];
-
+    log('parseDefectListJson called');
     for (var defectObject in defectArray) {
       List<DefectInstructionAttachment> attachments = [];
       String? name;
-      int id = defectObject['id'];
+      int? id = defectObject['id'];
 
       if (defectObject.containsKey('name')) {
         name = defectObject['name'];
@@ -321,10 +325,10 @@ class JsonFileOperations {
     List<SeverityDefect>? list;
     var jsonResponse = jsonDecode(response);
     var defectArray = jsonResponse['severityDefects'];
-
+    log('parseSeverityDefectJson called');
     for (var defectObject in defectArray) {
       String? name;
-      int id = defectObject['id'];
+      int? id = defectObject['id'];
 
       if (defectObject.containsKey('name')) {
         name = defectObject['name'];
@@ -341,11 +345,11 @@ class JsonFileOperations {
     List<OfflineCommodity>? list;
     var jsonObject = jsonDecode(response);
     var jsonResponse = jsonObject['commodities'];
-
+    log('parseOfflineCommodityID called');
     for (var item in jsonResponse) {
-      int id = item['id'];
-      String name = item['name'];
-      String keywords = item['keywords'];
+      int? id = item['id'];
+      String? name = item['name'];
+      String? keywords = item['keywords'];
       list ??= [];
       list.add(OfflineCommodity(id: id, name: name, keywords: keywords));
     }
@@ -373,6 +377,7 @@ class JsonFileOperations {
     try {
       List<dynamic> jsonArray = jsonDecode(specificationBannerJsonContent);
 
+      log('offlineLoadSpecificationBannerData called');
       for (var element in jsonArray) {
         String? specificationNumber = element['specificationNumber'];
         String? specificationVersion = element['specificationVersion'];
@@ -388,18 +393,19 @@ class JsonFileOperations {
 
         if (element['documents'] != null) {
           for (var doc in element['documents']) {
-            String type = doc['type'];
+            String? type = doc['type'];
             String? fileContent = doc['fileContent'];
 
             DocumentItemData docItem = DocumentItemData(
                 type: type, fileURL: doc['fileURL'], fileContent: fileContent);
             commodityVarietyData.addDocumentItem(docItem);
 
-            File pdfFile = File(type == 'SPEC'
-                ? 'SPEC_$commodityId.pdf'
-                : 'OTHER_$commodityId.pdf');
+            File pdfFile = File(join(
+                directory.path,
+                type == 'SPEC'
+                    ? 'SPEC_$commodityId.pdf'
+                    : 'OTHER_$commodityId.pdf'));
 
-            log(" inside commodityvarietyData - ${pdfFile.path}");
             if (fileContent != null) {
               pdfFile.writeAsStringSync(fileContent);
             }
@@ -408,9 +414,9 @@ class JsonFileOperations {
 
         if (element['exception'] != null) {
           for (var ex in element['exception']) {
-            String shortDescription = ex['shortDescription'];
-            String longDescription = ex['longDescription'];
-            String expirationDate = ex['expirationDateStr'];
+            String? shortDescription = ex['shortDescription'];
+            String? longDescription = ex['longDescription'];
+            String? expirationDate = ex['expirationDateStr'];
 
             ExceptionItem exItem = ExceptionItem(
               shortDescription: shortDescription,
@@ -423,10 +429,10 @@ class JsonFileOperations {
 
         String name = '${specificationNumber}_$specificationVersion';
         name = name.replaceAll(' ', '');
-        String filename =
-            '${FileManString.specificationBannerDataJson.replaceAll('.json', '').toString()}_$name.json';
+        String filename = '${'specificationBannerData'}_$name.json';
 
-        File(filename).writeAsStringSync(jsonEncode(element));
+        await File(join(directory.path, filename))
+            .writeAsString(jsonEncode(element));
         list ??= [];
         list.add(commodityVarietyData);
       }

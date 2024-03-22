@@ -154,7 +154,6 @@ class LoginScreen extends GetView<AuthController> {
             await authController.jsonFileOperations.offlineLoadCommodityData();
 
             await authController.downloadCloudData();
-            Utils.hideLoadingDialog();
           }
         } else {
           Utils.hideLoadingDialog();
