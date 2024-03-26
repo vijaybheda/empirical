@@ -15,7 +15,11 @@ class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
             backgroundColor: Get.theme.colorScheme.background,
             appBar: AppBar(
               leading: const Offstage(),
-              title: const Text('Cache Download'),
+              title: Text('Cache Download',
+                  style: Get.textTheme.titleMedium
+                      ?.copyWith(color: Colors.white, fontSize: 18)),
+              backgroundColor: Get.theme.colorScheme.background,
+              foregroundColor: Get.theme.colorScheme.background,
             ),
             body: Center(
               child: Column(
@@ -27,7 +31,10 @@ class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
                     child: SizedBox(
                       height: 50,
                       width: 50,
-                      child: CircularProgressIndicator.adaptive(),
+                      child: CircularProgressIndicator.adaptive(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        backgroundColor: Colors.white,
+                      ),
                     ),
                   ),
                   const SizedBox(
@@ -36,7 +43,10 @@ class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
                   Text(
                     AppStrings.cacheDataForOffline,
                     textAlign: TextAlign.center,
-                    style: Get.textTheme.titleLarge,
+                    style: Get.textTheme.titleLarge?.copyWith(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
                   ),
                 ],
               ),
