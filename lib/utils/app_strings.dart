@@ -1,7 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
 class AppStrings {
-
   static const String platformEventIOS = 'ver-ify/wifi-channel';
   static const String appName = 'p-ver-ify';
   static const String actionSettings = 'Settings';

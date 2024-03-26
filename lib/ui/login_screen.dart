@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/auth_controller.dart';
-import 'package:pverify/ui/setup_platfrom/setup.dart';
+import 'package:pverify/models/login_data.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';
+import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
 import 'package:pverify/utils/images.dart';
-import 'package:pverify/utils/theme/color});
+import 'package:pverify/utils/theme/colors.dart';
+import 'package:pverify/utils/utils.dart';
+
+class LoginScreen extends GetView<AuthController> {
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +74,7 @@ import 'package:pverify/utils/theme/color});
                         BoxTextFieldLogin(
                           isMulti: false,
                           controller:
-                          authController.passwordTextController.value,
+                              authController.passwordTextController.value,
                           onTap: () {},
                           errorText: '',
                           onEditingCompleted: () {},
@@ -93,8 +99,8 @@ import 'package:pverify/utils/theme/color});
                         .displayMedium!
                         .copyWith(fontSize: 25.sp),
                     onClickAction: () async {
-                      TextInput.finishAutofillContext(),
-                    await doLoginAction(authController, isLoginButton: true);
+                      TextInput.finishAutofillContext();
+                      await doLoginAction(authController, isLoginButton: true);
                     },
                   ),
                   SizedBox(
@@ -108,10 +114,9 @@ import 'package:pverify/utils/theme/color});
                       Theme.of(context)
                           .textTheme
                           .displayMedium!
-                          .copyWith(fontSize: 25.sp),
-                      onClickAction: () async {
-                        await doLoginAction(authController, isLoginButton: false);
-                      }),
+                          .copyWith(fontSize: 25.sp), onClickAction: () async {
+                    await doLoginAction(authController, isLoginButton: false);
+                  }),
                 ],
               ),
             ),
