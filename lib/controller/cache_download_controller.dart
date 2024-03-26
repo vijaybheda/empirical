@@ -357,7 +357,7 @@ class CacheDownloadController extends GetxController {
   Future<File?> downloadZipFile() async {
     String language = getLanguage();
     String requestUrl =
-        "${ApiUrls.serverUrl}${ApiUrls.OFFLINE_CSV_DATA_REQUEST}?lang=$language";
+        "${const String.fromEnvironment('API_HOST')}${ApiUrls.OFFLINE_CSV_DATA_REQUEST}?lang=$language";
 
     try {
       File? file = await CacheDownloadService.instance.downloadZip(requestUrl);
@@ -372,7 +372,7 @@ class CacheDownloadController extends GetxController {
   Future<File?> downloadJSONFile() async {
     String language = getLanguage();
     String requestUrl =
-        "${ApiUrls.serverUrl}${ApiUrls.OFFLINE_JSON_DATA_REQUEST}?lang=$language";
+        "${const String.fromEnvironment('API_HOST')}${ApiUrls.OFFLINE_JSON_DATA_REQUEST}?lang=$language";
 
     try {
       return await CacheDownloadService.instance.downloadJSON(requestUrl);
@@ -386,7 +386,7 @@ class CacheDownloadController extends GetxController {
   Future<bool> downloadAllUsers() async {
     String language = getLanguage();
     String requestUrl =
-        "${ApiUrls.serverUrl}${ApiUrls.GET_USERS}?lang=$language";
+        "${const String.fromEnvironment('API_HOST')}${ApiUrls.GET_USERS}?lang=$language";
 
     Map<String, dynamic> headerMap = appStorage.getHeaderMap();
 

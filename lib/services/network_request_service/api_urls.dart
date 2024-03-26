@@ -1,5 +1,5 @@
 class ApiUrls {
-  static const String serverUrl = "https://appqa.share-ify.com/PM/rest/ws/";
+  // static const String serverUrl = "https://appqa.share-ify.com/PM/rest/ws/";
 
   static const String LOGIN_REQUEST = "user/validateUser";
   static const String GET_USERS = "user/users";

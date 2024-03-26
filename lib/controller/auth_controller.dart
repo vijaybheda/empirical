@@ -94,7 +94,9 @@ class AuthController extends GetxController {
           await Utils.hideLoadingDialog();
           Utils.showErrorAlert(AppStrings.invalidUsernamePassword);
         }
-      } else {
+      }
+      /*// todo remove below code
+      else {
         String mUsername = emailTextController.value.text.trim();
         String mPassword = passwordTextController.value.text;
         String? userHash =
@@ -137,13 +139,13 @@ class AuthController extends GetxController {
           // show Info Alert Dialog
           Utils.showInfoAlertDialog(AppStrings.turnOnWifi);
         }
-      }
+      }*/
     } else {
       String? userHash =
           await ApplicationDao().getOfflineUserHash(mUsername.toLowerCase());
 
       if (userHash != null && userHash.isNotEmpty) {
-        if (SecurePassword().validatePasswordHash(mPassword, userHash)) {
+        if (SecurePassword.validatePasswordHash(mPassword, userHash)) {
           UserOffline? offlineUser = await ApplicationDao()
               .getOfflineUserData(mUsername.toLowerCase());
           await persistUserName();
@@ -179,7 +181,8 @@ class AuthController extends GetxController {
     return null;
   }
 
-  String get loginRequestUrl => ApiUrls.serverUrl + ApiUrls.LOGIN_REQUEST;
+  String get loginRequestUrl =>
+      const String.fromEnvironment('API_HOST') + ApiUrls.LOGIN_REQUEST;
 
   Future<void> persistUserName() async {
     LoginData? loginData = appStorage.getLoginData();

@@ -1,11 +1,13 @@
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/user.dart';
 import 'package:pverify/services/custom_exception/custom_exception.dart';
 import 'package:pverify/services/network_request_service/network_request_base_class.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/theme/theme.dart';
 import 'package:pverify/utils/utils.dart';
 
 class UserService extends BaseRequestService {
@@ -58,7 +60,14 @@ class UserService extends BaseRequestService {
       if (e is CustomException) {
         //handled exception
         Utils.hideLoadingDialog();
-        showInSnackBar(e.message, title: "Error");
+        Get.showSnackbar(GetSnackBar(
+          title: 'Error',
+          message: e.message,
+          backgroundColor: AppColors.red,
+          icon: const Icon(Icons.error_outline_rounded),
+          duration: const Duration(seconds: 1, milliseconds: 500),
+          key: const Key('error'),
+        ));
         throw Exception(e.message);
       } else {
         // internal exception

@@ -8,7 +8,7 @@
 PRODUCT_NAME = pverify
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.pverify.app.pverify
+PRODUCT_BUNDLE_IDENTIFIER = com.trt.verify
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2024 com.pverify.app. All rights reserved.

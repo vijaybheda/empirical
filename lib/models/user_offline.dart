@@ -3,7 +3,7 @@ class UserOffline {
   String userId;
   String userHash;
   int enterpriseId;
-  int? status;
+  String? status;
   bool isSubscriptionExpired;
   int supplierId;
   int headquarterSupplierId;
@@ -55,7 +55,7 @@ class UserOffline {
     String? userId,
     String? userHash,
     int? enterpriseId,
-    int? status,
+    String? status,
     bool? isSubscriptionExpired,
     int? supplierId,
     int? headquarterSupplierId,

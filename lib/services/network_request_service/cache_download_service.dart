@@ -3,11 +3,16 @@ import 'dart:developer';
 import 'dart:io' show Directory, File, FileSystemEntity, HttpStatus;
 
 import 'package:archive/archive_io.dart';
-import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' show Dio, Options, Response, ResponseType;
+import 'package:flutter/material.dart';
+import 'package:get/get.dart' as getx;
 import 'package:path/path.dart';
+import 'package:pverify/services/custom_exception/custom_exception.dart'
+    show CustomException;
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/services/network_request_service/network_request_base_class.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/theme/theme.dart' show AppColors;
 import 'package:pverify/utils/utils.dart' show Utils;
 
 class CacheDownloadService extends BaseRequestService {
@@ -269,6 +274,18 @@ class CacheDownloadService extends BaseRequestService {
     } catch (e) {
       log('Error in downloadAllUsers');
       log(e.toString());
+      if (e is CustomException) {
+        Utils.hideLoadingDialog();
+        getx.Get.showSnackbar(getx.GetSnackBar(
+          title: 'Error',
+          message: e.message,
+          backgroundColor: AppColors.red,
+          icon: const Icon(Icons.error_outline_rounded),
+          duration: const Duration(seconds: 1, milliseconds: 500),
+          key: const Key('error'),
+        ));
+        throw Exception(e.message);
+      }
       return false;
     }
   }

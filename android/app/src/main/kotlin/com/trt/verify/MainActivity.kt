@@ -1,4 +1,4 @@
-package com.pverify.app.pverify
+package com.trt.verify
 
 import io.flutter.embedding.android.FlutterActivity
 

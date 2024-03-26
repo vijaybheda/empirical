@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pverify/services/custom_exception/custom_exception.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/app_strings.dart';
 
 class BaseRequestService extends GetConnect {
   static const String timeOut = "timed out";
@@ -16,7 +17,7 @@ class BaseRequestService extends GetConnect {
 
   @override
   void onInit() {
-    httpClient.baseUrl = ApiUrls.serverUrl;
+    httpClient.baseUrl = const String.fromEnvironment('API_HOST');
     // final String authToken = appStorage.read(StorageKey.jwtToken) ?? "";
     httpClient.defaultContentType = "application/json";
     httpClient.timeout = const Duration(seconds: 60);
@@ -74,11 +75,11 @@ class BaseRequestService extends GetConnect {
       case 400:
         throw CustomException(extractMessage(response.body));
       case 401:
-        String message = extractMessage(response.body);
+        String message = AppStrings.invalidUsernamePassword;
         // await LoginServices.unAuthorizedRedirection(message);
-        throw CustomException(message);
+        throw CustomException(message, code: 401);
       case 404:
-        throw throw CustomException(extractMessage(response.body));
+        throw throw CustomException(extractMessage(response.body), code: 404);
       case 500:
         throw CustomException(extractMessage(response.body));
       case 403:
