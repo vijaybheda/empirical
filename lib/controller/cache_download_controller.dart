@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/json_file_operations.dart';
@@ -9,6 +10,7 @@ import 'package:pverify/services/network_request_service/api_urls.dart';
 import 'package:pverify/services/network_request_service/cache_download_service.dart';
 import 'package:pverify/ui/dashboard_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/theme/colors.dart';
 
 class CacheDownloadController extends GetxController {
   final ApplicationDao dao = ApplicationDao();
@@ -57,7 +59,14 @@ class CacheDownloadController extends GetxController {
         return;
       } else {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, true);
-        Get.snackbar('Success', 'Cache updated successfully');
+        Get.showSnackbar(GetSnackBar(
+          title: 'Success',
+          message: 'Cache updated successfully',
+          backgroundColor: AppColors.primaryColor,
+          icon: const Icon(Icons.check),
+          duration: const Duration(seconds: 1),
+          key: const Key('cacheUpdated'),
+        ));
         Get.offAll(() => const DashboardScreen());
       }
     });
@@ -75,12 +84,30 @@ class CacheDownloadController extends GetxController {
       Get.snackbar('Error', 'Failed to download zip file');
       return false;
     }
+    Get.showSnackbar(GetSnackBar(
+      title: 'Success',
+      message: 'CSV files downloaded successfully',
+      backgroundColor: AppColors.primaryColor,
+      icon: const Icon(Icons.check),
+      duration: const Duration(seconds: 1),
+      key: const Key('csvDownloaded'),
+    ));
     bool processCsv = await processCsvAndInsertToDatabase();
     if (!processCsv) {
       // Helly change this message UI
       Get.snackbar('Error', 'Failed to insert csv data to database');
       return false;
     }
+    // show snackbar with success icon and green background
+    Get.showSnackbar(GetSnackBar(
+      title: 'Success',
+      message: 'CSV files data added successfully',
+      backgroundColor: AppColors.primaryColor,
+      icon: const Icon(Icons.check),
+      duration: const Duration(seconds: 1),
+      key: const Key('csvInserted'),
+    ));
+
     return true;
   }
 
@@ -91,6 +118,14 @@ class CacheDownloadController extends GetxController {
       Get.snackbar('Error', 'Failed to download json file');
       return false;
     }
+    Get.showSnackbar(GetSnackBar(
+      title: 'Success',
+      message: 'JSON file downloaded successfully.',
+      backgroundColor: AppColors.primaryColor,
+      icon: const Icon(Icons.check),
+      duration: const Duration(seconds: 1),
+      key: const Key('jsonDownloaded'),
+    ));
     var allFunctions = [
       jsonFileOperations.offlineLoadSuppliersData(),
       jsonFileOperations.offlineLoadCarriersData(),
@@ -103,6 +138,15 @@ class CacheDownloadController extends GetxController {
       Get.snackbar('Error', 'Failed to insert json data to database');
       return false;
     }
+
+    Get.showSnackbar(GetSnackBar(
+      title: 'Success',
+      message: 'JSON file data saved to device storage.',
+      backgroundColor: AppColors.primaryColor,
+      icon: const Icon(Icons.check),
+      duration: const Duration(seconds: 1),
+      key: const Key('jsonInserted'),
+    ));
     return true;
   }
 

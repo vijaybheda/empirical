@@ -6,6 +6,7 @@ import 'package:pverify/models/user.dart';
 import 'package:pverify/services/custom_exception/custom_exception.dart';
 import 'package:pverify/services/network_request_service/network_request_base_class.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/utils.dart';
 
 class UserService extends BaseRequestService {
   late int phoneNumber;
@@ -35,7 +36,7 @@ class UserService extends BaseRequestService {
   Future<LoginData?> checkLogin(String requestUrl, String mUsername,
       String mPassword, bool isLoginButton) async {
     try {
-      final Response<Map<String, dynamic>> result = await get(
+      final Response result = await getCallResponse(
         requestUrl,
         headers: {
           'username': mUsername,
@@ -43,7 +44,8 @@ class UserService extends BaseRequestService {
         },
       );
       log('result is ${result.body}');
-      final Map<String, dynamic> data = await errorHandler(result);
+      final Map<String, dynamic> data =
+          await errorHandlerDynamicResponse(result);
       LoginData currentUser = LoginData.fromJson(data);
       await AppStorage.instance.setLoginData(currentUser);
       await AppStorage.instance.setHeaderMap({
@@ -55,11 +57,14 @@ class UserService extends BaseRequestService {
       log(e.toString(), error: e, name: "[checkLogin]");
       if (e is CustomException) {
         //handled exception
+        Utils.hideLoadingDialog();
+        showInSnackBar(e.message, title: "Error");
         throw Exception(e.message);
       } else {
         // internal exception
         throw Exception('Oops! Something went wrong.');
       }
+      return null;
     }
   }
 }

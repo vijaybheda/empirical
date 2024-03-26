@@ -1,7 +1,8 @@
+import 'dart:convert';
+
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pverify/services/custom_exception/custom_exception.dart';
-import 'package:pverify/services/network_request_service/api_urls.dart';
 import 'package:pverify/utils/app_storage.dart';
 
 class BaseRequestService extends GetConnect {
@@ -71,20 +72,19 @@ class BaseRequestService extends GetConnect {
         Map<String, dynamic>? responseJson = response.body;
         return responseJson!;
       case 400:
-        throw CustomException(response
-            .body?["message"]); //user phone/otp number not registered/wrong
+        throw CustomException(extractMessage(response.body));
       case 401:
-        String message = response.body?["message"];
+        String message = extractMessage(response.body);
         // await LoginServices.unAuthorizedRedirection(message);
-        throw CustomException(unAuthorizedMessage);
+        throw CustomException(message);
       case 404:
-        throw throw CustomException(response.body?["message"]);
+        throw throw CustomException(extractMessage(response.body));
       case 500:
-        throw CustomException(response.body?["message"]);
+        throw CustomException(extractMessage(response.body));
       case 403:
-        String message = response.body?["message"];
+        String message = extractMessage(response.body);
         // await LoginServices.unAuthorizedRedirection(message);
-        throw CustomException(unAuthorizedMessage);
+        throw CustomException(message);
       case null:
         if ((response.statusText ?? "").contains(timeOut) ||
             (response.statusText ?? "").contains(timeOut2)) {
@@ -92,9 +92,9 @@ class BaseRequestService extends GetConnect {
         } else if ((response.statusText ?? "").startsWith(platformException)) {
           throw CustomException("Please check your internet connection.");
         }
-        throw Exception(response.statusText);
+        throw CustomException(response.statusText!);
       default:
-        throw Exception(response.statusText);
+        throw CustomException(response.statusText!);
     }
   }
 
@@ -148,6 +148,24 @@ class BaseRequestService extends GetConnect {
       return response;
     } else {
       throw await errorHandlerDynamicResponse(response);
+    }
+  }
+
+  String extractMessage(var content) {
+    String htmlContent;
+    if (content is String) {
+      htmlContent = content.toString();
+      // Find the start and end index of the message
+      int startIndex = htmlContent.indexOf('<title>');
+      int endIndex = htmlContent.indexOf('</title>', startIndex);
+
+      // Extract the title
+      String title = htmlContent.substring(startIndex + 7, endIndex);
+
+      return title;
+    } else {
+      Map data = jsonDecode(content);
+      return data['message'];
     }
   }
 }
