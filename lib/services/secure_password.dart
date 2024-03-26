@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:bcrypt/bcrypt.dart';
 import 'package:crypto/crypto.dart';
 
 class SecurePassword {
   String hashPassword(String password) {
+    return BCrypt.hashpw(password, BCrypt.gensalt());
     // Create a SHA-256 hash
     var bytes = utf8.encode(password);
     var digest = sha256.convert(bytes);

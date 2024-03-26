@@ -9,6 +9,8 @@ class UserColumn {
   static const String ADDRESS = 'Address';
   static const String CREATED_AT = 'Created_At';
   static const String UPDATED_AT = 'Updated_At';
+  static const String LOGIN_TIME = 'Login_Time';
+  static const String LANGUAGE = 'Language';
 }
 
 class UserOfflineColumn {

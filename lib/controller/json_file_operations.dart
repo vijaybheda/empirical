@@ -253,7 +253,8 @@ class JsonFileOperations {
           String directoryPath =
               await Utils.createCommodityVarietyDocumentDirectory();
           File pdfFile = File('$directoryPath/${type}_$id.pdf');
-          pdfFile.writeAsStringSync(fileContent);
+          // await pdfFile.writeAsString(fileContent);
+          base64ToFile(fileContent, pdfFile.path);
 
           documents.add(DocumentItem(
               type: type,
@@ -441,5 +442,14 @@ class JsonFileOperations {
       return false;
     }
     return list != null && list.isNotEmpty;
+  }
+
+  File base64ToFile(String base64String, String filePath) {
+    List<int> bytes = base64.decode(base64String);
+
+    File file = File(filePath);
+    file.writeAsBytesSync(bytes);
+
+    return file;
   }
 }

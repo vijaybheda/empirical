@@ -149,14 +149,15 @@ class LoginScreen extends GetView<AuthController> {
           } else {
             await authController.persistUserName();
 
-            await authController.jsonFileOperations.offlineLoadSuppliersData();
-            await authController.jsonFileOperations.offlineLoadCarriersData();
-            await authController.jsonFileOperations.offlineLoadCommodityData();
+            // TODO: unnecessary
+            // await authController.jsonFileOperations.offlineLoadSuppliersData();
+            // await authController.jsonFileOperations.offlineLoadCarriersData();
+            // await authController.jsonFileOperations.offlineLoadCommodityData();
 
             await authController.downloadCloudData();
           }
         } else {
-          Utils.hideLoadingDialog();
+          // Utils.hideLoadingDialog();
         }
       } catch (e) {
         print(e);

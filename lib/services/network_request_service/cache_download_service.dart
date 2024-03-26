@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io' show Directory, File, HttpStatus;
+import 'dart:io' show Directory, File, FileSystemEntity, HttpStatus;
 
 import 'package:archive/archive_io.dart';
 import 'package:dio/dio.dart';
@@ -23,7 +23,29 @@ class CacheDownloadService extends BaseRequestService {
       final Directory directory =
           Directory("$storagePath${FileManString.csvFilesCache}/");
       if (directory.existsSync()) {
-        directory.deleteSync(recursive: true);
+        List<FileSystemEntity> files = directory.listSync(recursive: true);
+
+        // Iterate over each file and delete it
+        for (FileSystemEntity file in files) {
+          try {
+            if (file is File) {
+              await file.delete();
+              print('Deleted file: ${file.path}');
+            }
+          } catch (e) {
+            print('Error deleting file ${file.path}: $e');
+          }
+        }
+
+        // Delete the directory itself
+        try {
+          await directory.delete();
+          print('Deleted directory: ${directory.path}');
+          return null;
+        } catch (e) {
+          print('Error deleting directory ${directory.path}: $e');
+          return null;
+        }
       }
       directory.createSync(recursive: true);
 

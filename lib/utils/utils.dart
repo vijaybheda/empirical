@@ -438,24 +438,23 @@ class Utils {
 
   Future<String> getExternalStoragePath() async {
     if (Platform.isAndroid) {
-      return '/storage/emulated/0/';
-      // var externalStoragePath =
-      //     await getExternalStorageDirectory().then((value) => value!.path);
-      // return externalStoragePath;
+      // return '/storage/emulated/0/';
+      var externalStoragePath =
+          await getApplicationSupportDirectory().then((value) => value.path);
+      return '$externalStoragePath/';
     } else if (Platform.isIOS) {
       var externalStoragePath =
           await getApplicationDocumentsDirectory().then((value) => value.path);
-      return externalStoragePath;
+      return '$externalStoragePath/';
     } else {
       return "";
     }
   }
 
   static Future<String> createCommodityVarietyDocumentDirectory() async {
-    var externalStoragePath =
-        await getExternalStorageDirectory().then((value) => value!.path);
+    String externalStoragePath = await Utils().getExternalStoragePath();
     var directory = Directory(
-        '$externalStoragePath${FileManString.commodityVarietyDocument}/');
+        '$externalStoragePath${FileManString.commodityVarietyDocument}');
     if (!directory.existsSync()) {
       directory.createSync(recursive: true);
     }
