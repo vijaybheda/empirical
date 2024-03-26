@@ -11,6 +11,8 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class AppIcon {
@@ -362,24 +364,40 @@ class Utils {
     );
   }
 
-  static void showInfoAlertDialog(String message) {
+  static void showInfoAlertDialog(String message,
+      {Widget? additionalButton, Function? onOk}) {
     // Helly redesign this dialog based on client requirement, change text style and color
     Get.defaultDialog(
       title: "Info",
-      content: Text(
-        message,
-        style: TextStyle(fontSize: 16),
+      content: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          alignment: WrapAlignment.center,
+          runAlignment: WrapAlignment.center,
+          children: [
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(
           onPressed: () {
             Get.back();
+            if (onOk != null) {
+              onOk();
+            }
           },
           child: Text(
-            'OK',
+            'Cancel',
             style: TextStyle(color: AppColors.primary),
           ),
         ),
+        additionalButton ?? Container(),
       ],
     );
   }
@@ -404,6 +422,73 @@ class Utils {
         ),
       ],
     );
+  }
+
+  static Future<int> checkWifiLevel() async {
+    int level = 0;
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.wifi) {
+      level = 3;
+      // FIXME: check wifi level
+    } else {
+      level = 0;
+    }
+    return level;
+  }
+
+  Future<String> getExternalStoragePath() async {
+    if (Platform.isAndroid) {
+      // return '/storage/emulated/0/';
+      var externalStoragePath =
+          await getApplicationSupportDirectory().then((value) => value.path);
+      return '$externalStoragePath/';
+    } else if (Platform.isIOS) {
+      var externalStoragePath =
+          await getApplicationDocumentsDirectory().then((value) => value.path);
+      return '$externalStoragePath/';
+    } else {
+      return "";
+    }
+  }
+
+  static Future<String> createCommodityVarietyDocumentDirectory() async {
+    String externalStoragePath = await Utils().getExternalStoragePath();
+    var directory = Directory(
+        '$externalStoragePath${FileManString.commodityVarietyDocument}');
+    if (!directory.existsSync()) {
+      directory.createSync(recursive: true);
+    }
+    return directory.path;
+  }
+
+  double parseDoubleDefault(String value) {
+    RegExp regExp = RegExp(r'(\d+(\.\d+)?)');
+    String numericPart = regExp.firstMatch(value)?.group(0) ?? '0';
+
+    return double.parse(numericPart);
+  }
+
+  static Future<void> showLoadingDialog() async {
+    await Future.delayed(const Duration(milliseconds: 10));
+    Get.dialog(
+      const Center(
+        child: CircularProgressIndicator.adaptive(),
+      ),
+      barrierDismissible: false,
+      transitionCurve: Curves.easeInOut,
+      navigatorKey: Get.key,
+      transitionDuration: const Duration(milliseconds: 200),
+    );
+
+    await Future.delayed(const Duration(milliseconds: 10));
+  }
+
+  // hide loading dialog using navigatorKey
+  static Future<void> hideLoadingDialog() async {
+    if (Get.isDialogOpen ?? false) {
+      Get.back();
+    }
+    await Future.delayed(const Duration(milliseconds: 10));
   }
 }
 

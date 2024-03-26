@@ -2,19 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/auth_controller.dart';
-import 'package:pverify/ui/home/home.dart';
 import 'package:pverify/ui/setup_platfrom/setup.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';
-import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
 import 'package:pverify/utils/images.dart';
-import 'package:pverify/utils/theme/colors.dart';
-import 'package:flutter/services.dart';
-
-class LoginScreen extends GetView<AuthController> {
-  const LoginScreen({super.key});
+import 'package:pverify/utils/theme/color});
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +68,7 @@ class LoginScreen extends GetView<AuthController> {
                         BoxTextFieldLogin(
                           isMulti: false,
                           controller:
-                              authController.passwordTextController.value,
+                          authController.passwordTextController.value,
                           onTap: () {},
                           errorText: '',
                           onEditingCompleted: () {},
@@ -98,11 +92,9 @@ class LoginScreen extends GetView<AuthController> {
                         .textTheme
                         .displayMedium!
                         .copyWith(fontSize: 25.sp),
-                    onClickAction: () => {
+                    onClickAction: () async {
                       TextInput.finishAutofillContext(),
-                      Get.to(() => Home())
-                      // if (authController.isLoginFieldsValidate() == true)
-                      //   {Get.to(() => Home())}
+                    await doLoginAction(authController, isLoginButton: true);
                     },
                   ),
                   SizedBox(
@@ -117,10 +109,9 @@ class LoginScreen extends GetView<AuthController> {
                           .textTheme
                           .displayMedium!
                           .copyWith(fontSize: 25.sp),
-                      onClickAction: () => {
-                            if (authController.isLoginFieldsValidate() == true)
-                              {Get.to(() => SetupScreen())}
-                          }),
+                      onClickAction: () async {
+                        await doLoginAction(authController, isLoginButton: false);
+                      }),
                 ],
               ),
             ),
@@ -128,5 +119,53 @@ class LoginScreen extends GetView<AuthController> {
         );
       },
     );
+  }
+
+  Future<void> doLoginAction(
+    AuthController authController, {
+    required bool isLoginButton,
+  }) async {
+    if (authController.isLoginFieldsValidate()) {
+      try {
+        Utils.showLoadingDialog();
+        LoginData? loginData =
+            await authController.loginUser(isLoginButton: isLoginButton);
+        if (loginData != null) {
+          if (loginData.subscriptionExpired ?? false) {
+            // dismissible info dialog
+            Utils.hideLoadingDialog();
+            Get.snackbar(
+              AppStrings.error,
+              "User is not active.",
+              backgroundColor: AppColors.red,
+              colorText: AppColors.white,
+            );
+          } else if (loginData.status == 3) {
+            // "Account is not active." dialog
+            Utils.hideLoadingDialog();
+            Get.snackbar(
+              AppStrings.error,
+              "Account is not active.",
+              backgroundColor: AppColors.red,
+              colorText: AppColors.white,
+            );
+          } else {
+            await authController.persistUserName();
+
+            // TODO: unnecessary
+            // await authController.jsonFileOperations.offlineLoadSuppliersData();
+            // await authController.jsonFileOperations.offlineLoadCarriersData();
+            // await authController.jsonFileOperations.offlineLoadCommodityData();
+
+            await authController.downloadCloudData();
+          }
+        } else {
+          // Utils.hideLoadingDialog();
+        }
+      } catch (e) {
+        print(e);
+        Utils.hideLoadingDialog();
+      }
+    }
   }
 }

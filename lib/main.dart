@@ -1,4 +1,4 @@
-// ignore_for_file: unused_element, prefer_const_constructors, unused_import, unused_local_variable
+// ignore_for_file: unused_element, prefer_const_constructors, unused_import
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,14 +10,15 @@ import 'package:pverify/services/database/database_helper.dart';
 import 'package:pverify/ui/splash_screen.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/enumeration.dart';
 import 'package:pverify/utils/theme/app_theme.dart';
 import 'package:pverify/utils/theme/colors_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final db = await DatabaseHelper.instance.database;
-
+  await DatabaseHelper.instance.database;
+  await AppStorage.instance.initStorage();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -27,12 +28,6 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  void initState() {
-    Size size = WidgetsBinding.instance.window.physicalSize;
-    double width = size.width;
-    double height = size.height;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +45,7 @@ class MyApp extends StatelessWidget {
           themeMode: ThemeMode.dark,
           debugShowCheckedModeBanner: false,
           enableLog: true,
+          locale: Get.deviceLocale ?? Locale('en', 'US'),
           initialRoute: '/',
           useInheritedMediaQuery: true,
           title: AppStrings.appName,

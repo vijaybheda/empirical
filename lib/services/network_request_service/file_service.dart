@@ -69,7 +69,7 @@ class FileService {
             path: fileResult?.files.first.path);
         return model;
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       log(e.toString(), error: e, name: "[uploadFile]");
       AppSnackBar.getCustomSnackBar("Error", "Something went wrong",
           isSuccess: false);
@@ -135,7 +135,7 @@ class FileService {
         //         body: 'Download complete'),
         //     data: {'type': 'open_file', 'path': file.path}));
       });
-    } catch (e, stackTrace) {
+    } catch (e) {
       log(e.toString(), error: e, name: "[fileDownload]");
 
       AppSnackBar.getCustomSnackBar("Error", "Something went wrong",
@@ -159,7 +159,7 @@ class FileService {
           checkPermission = await Permission.storage.request().then((value) {
             return value.isGranted;
           });
-        } catch (e, stackTrace) {
+        } catch (e) {
           log(e.toString(), error: e, name: "[requestFilePermission]");
         }
       }
@@ -273,7 +273,7 @@ class FileService {
       //     notification:
       //         RemoteNotification(title: filename, body: 'Download complete'),
       //     data: {'type': 'open_file', 'path': file.path}));
-    } catch (e, stackTrace) {
+    } catch (e) {
       log(e.toString(), error: e, name: "[fileDownload]");
       AppSnackBar.getCustomSnackBar("Error", "Something went wrong",
           isSuccess: false);

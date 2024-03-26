@@ -88,4 +88,48 @@ class InspectionSample {
       'inspectorTime': inspectorTime,
     };
   }
+
+  InspectionSample copyWith({
+    String? id,
+    String? name,
+    String? description,
+    String? imageUrl,
+    String? location,
+    String? date,
+    String? time,
+    String? status,
+    String? inspector,
+    String? inspectorId,
+    String? inspectorImageUrl,
+    String? inspectorEmail,
+    String? inspectorPhone,
+    String? inspectorLocation,
+    String? inspectorDepartment,
+    String? inspectorPosition,
+    String? inspectorStatus,
+    String? inspectorDate,
+    String? inspectorTime,
+  }) {
+    return InspectionSample(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      imageUrl: imageUrl ?? this.imageUrl,
+      location: location ?? this.location,
+      date: date ?? this.date,
+      time: time ?? this.time,
+      status: status ?? this.status,
+      inspector: inspector ?? this.inspector,
+      inspectorId: inspectorId ?? this.inspectorId,
+      inspectorImageUrl: inspectorImageUrl ?? this.inspectorImageUrl,
+      inspectorEmail: inspectorEmail ?? this.inspectorEmail,
+      inspectorPhone: inspectorPhone ?? this.inspectorPhone,
+      inspectorLocation: inspectorLocation ?? this.inspectorLocation,
+      inspectorDepartment: inspectorDepartment ?? this.inspectorDepartment,
+      inspectorPosition: inspectorPosition ?? this.inspectorPosition,
+      inspectorStatus: inspectorStatus ?? this.inspectorStatus,
+      inspectorDate: inspectorDate ?? this.inspectorDate,
+      inspectorTime: inspectorTime ?? this.inspectorTime,
+    );
+  }
 }

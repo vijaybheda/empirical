@@ -1,11 +1,9 @@
 // ignore_for_file: constant_identifier_names
 
 class AppStrings {
-//  static const String appName = 'Ver-ify 10.19.7';
 
   static const String platformEventIOS = 'ver-ify/wifi-channel';
   static const String appName = 'p-ver-ify';
-  static const String appNameN2N = 'Share-ify';
   static const String actionSettings = 'Settings';
   static const String copyright =
       'Copyright \u00A9 2015 Share-ify, Inc. All Rights Reserved.';
@@ -110,6 +108,9 @@ class AppStrings {
   static const String notReadyForOffline =
       'Not ready for offline - Please turn WiFi on.';
 
+  static const String turnOnWifi =
+      'Please go to your hotspot and turn WiFi on - need to update data with first login.';
+
   static const String inspectionsAccessAlert =
       'You are not authorized to access Inspections';
   static const String ripeningAccessAlert =
@@ -139,6 +140,8 @@ class AppStrings {
   static const String dateFormat = 'Date Format';
   static const String downloadWifiError =
       'Please go to your hotspot, turn WiFi on - need to update data with new version.';
+  static const String betterWifiConnWarning =
+      'Need better WiFi connection to update data now.';
   static const String appUpdateWifiError =
       'Please turn Wifi On to Update Application.';
   static const String banner1Url = 'Banner 1';
@@ -155,6 +158,9 @@ class AppStrings {
       'Note - Only Commodities that have Varieties are shown.';
 
   static const String downloadingVarietyList = 'Downloading variety list.';
+
+  static String storageDeniedMessage =
+      "External Storage permission required for this app.\nPlease go to Settings and enable permissions to continue.";
 
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';
@@ -389,7 +395,7 @@ class AppStrings {
       'Storage and Camera Permissions are required for this app.\nPlease click ALLOW button to continue.';
 
   static const String appPermissionNecessary =
-      'Storage and Camera Permissions are required for this app.\nPlease go to Settings and enable permissions to continue."';
+      'Storage and Camera Permissions are required for this app.\nPlease go to Settings and enable permissions to continue.';
 
   static const String target = 'Target';
   static const String targetText = 'Text';
@@ -453,4 +459,16 @@ class AppStrings {
     'dd-mm-yyyy',
     'yyyy-mm-dd'
   ];
+}
+
+class FileManString {
+  static const String csvFilesCache = 'csvfilescache';
+  static const String jsonFilesCache = 'jsonfilescache';
+  static const String commodityVarietyDocument = 'commodity';
+
+  static const String suppliersJson = 'suppliers.json';
+  static const String carriersJson = 'carriers.json';
+  static const String commodityJson = 'commodity.json';
+  static const String specificationBannerDataJson =
+      'specificationBannerData.json';
 }

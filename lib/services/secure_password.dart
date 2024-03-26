@@ -1,12 +1,20 @@
+import 'dart:convert';
+
+import 'package:bcrypt/bcrypt.dart';
+import 'package:crypto/crypto.dart';
+
 class SecurePassword {
   String hashPassword(String password) {
-    // FIXME: Vijay change logic as per the android
-    return password;
+    return BCrypt.hashpw(password, BCrypt.gensalt());
+    // Create a SHA-256 hash
+    var bytes = utf8.encode(password);
+    var digest = sha256.convert(bytes);
+    return digest.toString();
   }
 
   bool validatePasswordHash(String password, String userHash) {
-    // FIXME: Vijay change logic as per the android
-    return true;
+    // Validate password hash
+    return hashPassword(password) == userHash;
   }
 
 // Constant-time comparison to prevent timing attacks

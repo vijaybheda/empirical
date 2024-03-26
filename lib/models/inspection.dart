@@ -1,34 +1,34 @@
 class Inspection {
   int? id; // For SQLite row id
-  String userId;
-  String partnerId;
-  String carrierId;
-  int commodityId;
-  int varietyId;
-  String varietyName;
-  int createdTime;
-  String status;
-  bool isComplete;
-  int gradeId;
-  String downloadId;
-  int uploadStatus;
-  String specificationName;
-  String specificationVersion;
-  String specificationNumber;
-  String specificationTypeName;
-  String lotNo;
-  String packDate;
-  int sampleSizeByCount;
-  String itemSKU;
-  int itemSKUId;
-  String commodityName;
-  String poNumber;
-  int rating;
-  String poLineNo;
-  String partnerName;
-  int toLocationId;
-  String cteType;
-  String itemSkuName;
+  String? userId;
+  String? partnerId;
+  String? carrierId;
+  int? commodityId;
+  int? varietyId;
+  String? varietyName;
+  int? createdTime;
+  String? status;
+  bool? isComplete;
+  int? gradeId;
+  String? downloadId;
+  int? uploadStatus;
+  String? specificationName;
+  String? specificationVersion;
+  String? specificationNumber;
+  String? specificationTypeName;
+  String? lotNo;
+  String? packDate;
+  int? sampleSizeByCount;
+  String? itemSKU;
+  int? itemSKUId;
+  String? commodityName;
+  String? poNumber;
+  int? rating;
+  String? poLineNo;
+  String? partnerName;
+  int? toLocationId;
+  String? cteType;
+  String? itemSkuName;
 
   Inspection({
     this.id,
@@ -128,4 +128,72 @@ class Inspection {
         "cte_type": cteType,
         "item_sku_name": itemSkuName,
       };
+
+  // copyWith
+  Inspection copyWith({
+    int? id,
+    String? userId,
+    String? partnerId,
+    String? carrierId,
+    int? commodityId,
+    int? varietyId,
+    String? varietyName,
+    int? createdTime,
+    String? status,
+    bool? isComplete,
+    int? gradeId,
+    String? downloadId,
+    int? uploadStatus,
+    String? specificationName,
+    String? specificationVersion,
+    String? specificationNumber,
+    String? specificationTypeName,
+    String? lotNo,
+    String? packDate,
+    int? sampleSizeByCount,
+    String? itemSKU,
+    int? itemSKUId,
+    String? commodityName,
+    String? poNumber,
+    int? rating,
+    String? poLineNo,
+    String? partnerName,
+    int? toLocationId,
+    String? cteType,
+    String? itemSkuName,
+  }) {
+    return Inspection(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      partnerId: partnerId ?? this.partnerId,
+      carrierId: carrierId ?? this.carrierId,
+      commodityId: commodityId ?? this.commodityId,
+      varietyId: varietyId ?? this.varietyId,
+      varietyName: varietyName ?? this.varietyName,
+      createdTime: createdTime ?? this.createdTime,
+      status: status ?? this.status,
+      isComplete: isComplete ?? this.isComplete,
+      gradeId: gradeId ?? this.gradeId,
+      downloadId: downloadId ?? this.downloadId,
+      uploadStatus: uploadStatus ?? this.uploadStatus,
+      specificationName: specificationName ?? this.specificationName,
+      specificationVersion: specificationVersion ?? this.specificationVersion,
+      specificationNumber: specificationNumber ?? this.specificationNumber,
+      specificationTypeName:
+          specificationTypeName ?? this.specificationTypeName,
+      lotNo: lotNo ?? this.lotNo,
+      packDate: packDate ?? this.packDate,
+      sampleSizeByCount: sampleSizeByCount ?? this.sampleSizeByCount,
+      itemSKU: itemSKU ?? this.itemSKU,
+      itemSKUId: itemSKUId ?? this.itemSKUId,
+      commodityName: commodityName ?? this.commodityName,
+      poNumber: poNumber ?? this.poNumber,
+      rating: rating ?? this.rating,
+      poLineNo: poLineNo ?? this.poLineNo,
+      partnerName: partnerName ?? this.partnerName,
+      toLocationId: toLocationId ?? this.toLocationId,
+      cteType: cteType ?? this.cteType,
+      itemSkuName: itemSkuName ?? this.itemSkuName,
+    );
+  }
 }

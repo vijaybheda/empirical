@@ -28,4 +28,15 @@ class Specification {
       'value': value,
     };
   }
+
+  // copyWith
+  Specification copyWith({
+    String? name,
+    String? value,
+  }) {
+    return Specification(
+      name: name ?? this.name,
+      value: value ?? this.value,
+    );
+  }
 }

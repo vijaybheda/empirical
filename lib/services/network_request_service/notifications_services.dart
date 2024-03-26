@@ -13,7 +13,7 @@ class NotificationApiService extends BaseRequestService {
       final Map<String, dynamic> data = await errorHandler(response);
 
       return data['message'];
-    } catch (e, stackTrace) {
+    } catch (e) {
       log(e.toString(), error: e, name: "[clearAllNotification]");
 
       if (e is CustomException) {
@@ -40,7 +40,7 @@ class NotificationApiService extends BaseRequestService {
       log('Response Mark Notification : $data');
 
       return data['message'];
-    } catch (e, stackTrace) {
+    } catch (e) {
       log(e.toString(), error: e, name: "[markNotificationRead]");
 
       if (e is CustomException) {

@@ -23,30 +23,31 @@ class InspectionDefect {
   final String? updatedAt;
   final String? deletedAt;
 
-  InspectionDefect(
-      {this.id,
-      this.name,
-      this.description,
-      this.status,
-      this.inspectionId,
-      this.defectId,
-      this.defectName,
-      this.defectDescription,
-      this.defectStatus,
-      this.defectType,
-      this.defectTypeId,
-      this.defectTypeName,
-      this.defectTypeDescription,
-      this.defectTypeStatus,
-      this.defectTypeCreatedAt,
-      this.defectTypeUpdatedAt,
-      this.defectTypeDeletedAt,
-      this.defectCreatedAt,
-      this.defectUpdatedAt,
-      this.defectDeletedAt,
-      this.createdAt,
-      this.updatedAt,
-      this.deletedAt});
+  InspectionDefect({
+    this.id,
+    this.name,
+    this.description,
+    this.status,
+    this.inspectionId,
+    this.defectId,
+    this.defectName,
+    this.defectDescription,
+    this.defectStatus,
+    this.defectType,
+    this.defectTypeId,
+    this.defectTypeName,
+    this.defectTypeDescription,
+    this.defectTypeStatus,
+    this.defectTypeCreatedAt,
+    this.defectTypeUpdatedAt,
+    this.defectTypeDeletedAt,
+    this.defectCreatedAt,
+    this.defectUpdatedAt,
+    this.defectDeletedAt,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
+  });
 
   factory InspectionDefect.fromJson(Map<String, dynamic> json) {
     return InspectionDefect(
@@ -101,5 +102,59 @@ class InspectionDefect {
       'updated_at': updatedAt,
       'deleted_at': deletedAt
     };
+  }
+
+  // copyWith
+  InspectionDefect copyWith({
+    String? id,
+    String? name,
+    String? description,
+    String? status,
+    String? inspectionId,
+    String? defectId,
+    String? defectName,
+    String? defectDescription,
+    String? defectStatus,
+    String? defectType,
+    String? defectTypeId,
+    String? defectTypeName,
+    String? defectTypeDescription,
+    String? defectTypeStatus,
+    String? defectTypeCreatedAt,
+    String? defectTypeUpdatedAt,
+    String? defectTypeDeletedAt,
+    String? defectCreatedAt,
+    String? defectUpdatedAt,
+    String? defectDeletedAt,
+    String? createdAt,
+    String? updatedAt,
+    String? deletedAt,
+  }) {
+    return InspectionDefect(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      status: status ?? this.status,
+      inspectionId: inspectionId ?? this.inspectionId,
+      defectId: defectId ?? this.defectId,
+      defectName: defectName ?? this.defectName,
+      defectDescription: defectDescription ?? this.defectDescription,
+      defectStatus: defectStatus ?? this.defectStatus,
+      defectType: defectType ?? this.defectType,
+      defectTypeId: defectTypeId ?? this.defectTypeId,
+      defectTypeName: defectTypeName ?? this.defectTypeName,
+      defectTypeDescription:
+          defectTypeDescription ?? this.defectTypeDescription,
+      defectTypeStatus: defectTypeStatus ?? this.defectTypeStatus,
+      defectTypeCreatedAt: defectTypeCreatedAt ?? this.defectTypeCreatedAt,
+      defectTypeUpdatedAt: defectTypeUpdatedAt ?? this.defectTypeUpdatedAt,
+      defectTypeDeletedAt: defectTypeDeletedAt ?? this.defectTypeDeletedAt,
+      defectCreatedAt: defectCreatedAt ?? this.defectCreatedAt,
+      defectUpdatedAt: defectUpdatedAt ?? this.defectUpdatedAt,
+      defectDeletedAt: defectDeletedAt ?? this.defectDeletedAt,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+    );
   }
 }
