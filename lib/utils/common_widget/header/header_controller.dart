@@ -4,8 +4,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_internet_signal/flutter_internet_signal.dart';
 import 'package:get/get.dart';
+import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -16,13 +19,27 @@ class HeaderController extends GetxController {
   var appVersion = ''.obs;
   HeaderController();
 
+  ValueNotifier<int> rssiValueNotifier = ValueNotifier(-120);
+  static const stream = EventChannel(AppStrings.platformEventIOS);
+
+  late StreamSubscription _streamSubscription;
+
   @override
   void onInit() {
     super.onInit();
     appversion();
     snetwork();
+    _eventChannelStartListener();
   }
 
+  void _eventChannelStartListener() {
+    _streamSubscription = stream.receiveBroadcastStream().listen(_listenStream);
+  }
+
+  void _listenStream(value) {
+    debugPrint("Received From Native wifi value :  $value\n");
+    rssiValueNotifier.value = value == 0 ? -120 : value;
+  }
   // FETCHED APPVERSION
 
   void appversion() {

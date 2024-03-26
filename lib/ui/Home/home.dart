@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, avoid_types_as_parameter_names, must_be_immutable, avoid_unnecessary_containers, unrelated_type_equality_checks, unused_element
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -294,6 +295,7 @@ class Home extends GetView<HomeController> {
                         child: Text(
                           AppStrings.trsSupplier,
                           textAlign: TextAlign.center,
+                          maxLines: 1,
                           style: GoogleFonts.poppins(
                               fontSize: 30.sp,
                               fontWeight: FontWeight.w600,
@@ -462,25 +464,49 @@ class Home extends GetView<HomeController> {
                           style: Theme.of(context).textTheme.displayMedium,
                         ),
                       ),
-                      Container(
-                        alignment: Alignment.center,
-                        width: MediaQuery.of(context).size.width / 5.61,
-                        padding: EdgeInsets.symmetric(vertical: 15.h),
-                        decoration: BoxDecoration(
-                            border: Border(
-                                right: BorderSide(
-                                  color: AppColors.black,
-                                  width: 2.0,
-                                ),
-                                bottom: BorderSide(
-                                  color: AppColors.black,
-                                  width: 2.0,
-                                ))),
-                        child: Text(
-                          Controller.listOfInspection[position]['Supplier'] ??
-                              '',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.displayMedium,
+                      GestureDetector(
+                        onTap: () {
+                          if (Controller.expandContents.contains(
+                              Controller.listOfInspection[position]['ID'] ??
+                                  '')) {
+                            Controller.expandContents.remove(
+                                Controller.listOfInspection[position]['ID'] ??
+                                    '');
+                          } else {
+                            Controller.expandContents.add(
+                                Controller.listOfInspection[position]['ID'] ??
+                                    '');
+                          }
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: MediaQuery.of(context).size.width / 5.61,
+                          padding: EdgeInsets.symmetric(vertical: 15.h),
+                          decoration: BoxDecoration(
+                              border: Border(
+                                  right: BorderSide(
+                                    color: AppColors.black,
+                                    width: 2.0,
+                                  ),
+                                  bottom: BorderSide(
+                                    color: AppColors.black,
+                                    width: 2.0,
+                                  ))),
+                          child: Obx(
+                            () => Text(
+                              Controller.listOfInspection[position]
+                                      ['Supplier'] ??
+                                  '',
+                              textAlign: TextAlign.center,
+                              overflow: Controller.expandContents.contains(
+                                      Controller.listOfInspection[position]
+                                              ['ID'] ??
+                                          '')
+                                  ? TextOverflow.visible
+                                  : TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
+                          ),
                         ),
                       ),
                       Container(

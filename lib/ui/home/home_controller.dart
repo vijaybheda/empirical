@@ -21,7 +21,7 @@ class HomeController extends GetxController {
       "Item": "6443101",
       "Res": "AC",
       "GR": "Asparagus",
-      "Supplier": "A A Organic",
+      "Supplier": "A A Organicfsdfsfdsfsd",
       "Status": "Done"
     },
     {
@@ -30,7 +30,7 @@ class HomeController extends GetxController {
       "Item": "6443102",
       "Res": "AC",
       "GR": "Asparagus",
-      "Supplier": "A A Organic",
+      "Supplier": "A A Organicfsdfsfdsfsd",
       "Status": "Done"
     },
     {
@@ -63,6 +63,7 @@ class HomeController extends GetxController {
   ].obs;
   var bannersCurrentPage = 0.obs;
   List selectedIDsInspection = [].obs;
+  List expandContents = [].obs;
   var sortType = ''.obs;
 
   selectInspectionForDownload(String id, bool isSelectAll) {

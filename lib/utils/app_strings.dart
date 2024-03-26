@@ -2,6 +2,8 @@
 
 class AppStrings {
 //  static const String appName = 'Ver-ify 10.19.7';
+
+  static const String platformEventIOS = 'ver-ify/wifi-channel';
   static const String appName = 'p-ver-ify';
   static const String appNameN2N = 'Share-ify';
   static const String actionSettings = 'Settings';
