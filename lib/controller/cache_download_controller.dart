@@ -8,7 +8,7 @@ import 'package:pverify/controller/json_file_operations.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/services/network_request_service/api_urls.dart';
 import 'package:pverify/services/network_request_service/cache_download_service.dart';
-import 'package:pverify/ui/dashboard_screen.dart';
+import 'package:pverify/ui/Home/home.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
@@ -67,7 +67,7 @@ class CacheDownloadController extends GetxController {
           duration: const Duration(seconds: 1),
           key: const Key('cacheUpdated'),
         ));
-        Get.offAll(() => const DashboardScreen());
+        Get.offAll(() => Home());
       }
     });
   }

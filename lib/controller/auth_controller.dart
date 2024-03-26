@@ -12,8 +12,8 @@ import 'package:pverify/services/network_request_service/api_urls.dart';
 import 'package:pverify/services/network_request_service/user_network_service.dart';
 import 'package:pverify/services/permission_service.dart';
 import 'package:pverify/services/secure_password.dart';
+import 'package:pverify/ui/Home/home.dart';
 import 'package:pverify/ui/cache_download_screen.dart';
-import 'package:pverify/ui/dashboard_screen.dart';
 import 'package:pverify/ui/setup_platfrom/setup.dart';
 import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
@@ -161,7 +161,7 @@ class AuthController extends GetxController {
               await jsonFileOperations.offlineLoadCarriersData();
               await jsonFileOperations.offlineLoadCommodityData();
               await Utils.hideLoadingDialog();
-              Get.offAll(() => const DashboardScreen());
+              Get.offAll(() => Home());
             }
           } else {
             await Utils.hideLoadingDialog();
@@ -255,7 +255,7 @@ class AuthController extends GetxController {
         Utils.showInfoAlertDialog(AppStrings.betterWifiConnWarning);
       }
     } else {
-      Get.offAll(() => const DashboardScreen());
+      Get.offAll(() => Home());
       return;
     }
   }
