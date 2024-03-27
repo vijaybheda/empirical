@@ -31,7 +31,9 @@ class GlobalConfigController extends GetxController {
   void onInit() {
     log('GlobalConfigController onInit');
     checkInternet();
-    _eventChannelStartListener();
+    if (Platform.isIOS) {
+      _eventChannelStartListener();
+    }
     super.onInit();
   }
 
