@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:pverify/controller/auth_controller.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/services/database/database_helper.dart';
-import 'package:pverify/ui/splash_screen.dart';
+import 'package:pverify/ui/login_screen.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -55,9 +55,9 @@ class MyApp extends StatelessWidget {
           popGesture: Get.isPopGestureEnable,
           transitionDuration: const Duration(milliseconds: 500),
           defaultGlobalState: true,
-          home: const SplashScreen(),
+          home: const LoginScreen(),
         ),
-        child: SplashScreen(),
+        child: LoginScreen(),
       ),
     );
   }

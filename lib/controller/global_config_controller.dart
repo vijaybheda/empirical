@@ -35,6 +35,11 @@ class GlobalConfigController extends GetxController {
       _eventChannelStartListener();
     }
     super.onInit();
+    Future.delayed(const Duration(milliseconds: 200)).then((value) {
+      wifiLevelStream.listen((wifiLevel) {
+        print('_wifiLevel $wifiLevel');
+      });
+    });
   }
 
   void _eventChannelStartListener() {

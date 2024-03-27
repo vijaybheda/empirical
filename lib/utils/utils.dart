@@ -472,7 +472,10 @@ class Utils {
     await Future.delayed(const Duration(milliseconds: 10));
     Get.dialog(
       const Center(
-        child: CircularProgressIndicator.adaptive(),
+        child: CircularProgressIndicator.adaptive(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          backgroundColor: Colors.white,
+        ),
       ),
       barrierDismissible: false,
       transitionCurve: Curves.easeInOut,

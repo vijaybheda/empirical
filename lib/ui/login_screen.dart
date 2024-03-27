@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/auth_controller.dart';
-import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/login_data.dart';
+import 'package:pverify/ui/setup_platfrom/setup.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
@@ -19,10 +19,6 @@ class LoginScreen extends GetView<AuthController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.find<GlobalConfigController>().wifiLevelStream.listen((value) {
-      debugPrint('wifiLevel $value');
-    });
-
     return GetBuilder(
       init: AuthController(),
       builder: (authController) {
@@ -141,6 +137,11 @@ class LoginScreen extends GetView<AuthController> {
         LoginData? loginData =
             await authController.loginUser(isLoginButton: isLoginButton);
         if (loginData != null) {
+          if (!isLoginButton) {
+            Utils.hideLoadingDialog();
+            await Get.to(() => SetupScreen());
+            return;
+          }
           if (loginData.subscriptionExpired ?? false) {
             // dismissible info dialog
             Utils.hideLoadingDialog();

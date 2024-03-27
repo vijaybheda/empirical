@@ -47,7 +47,7 @@ Widget baseHeaderView(String title, bool isVersionShow) {
                       ),
                     )
                   : Container(),
-              isVersionShow ? getEnvText() : Container(),
+              // isVersionShow ? getEnvText() : Container(),
               SizedBox(
                 width: 40.w,
               ),

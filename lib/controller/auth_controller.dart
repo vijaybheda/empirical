@@ -29,14 +29,16 @@ class AuthController extends GetxController {
   bool socialButtonVisible = true;
   final AppStorage appStorage = AppStorage.instance;
   final JsonFileOperations jsonFileOperations = JsonFileOperations.instance;
-  final GlobalConfigController globalConfigController =
-      Get.find<GlobalConfigController>();
 
   int wifiLevel = 0;
 
   @override
   void onInit() {
     super.onInit();
+    Get.lazyPut(() => GlobalConfigController(), fenix: true);
+    final GlobalConfigController globalConfigController =
+        Get.find<GlobalConfigController>();
+
     globalConfigController.wifiLevelStream.listen((value) {
       wifiLevel = value;
     });
