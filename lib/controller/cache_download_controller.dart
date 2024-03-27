@@ -64,7 +64,7 @@ class CacheDownloadController extends GetxController {
           message: 'Cache updated successfully',
           backgroundColor: AppColors.primaryColor,
           icon: const Icon(Icons.check),
-          duration: const Duration(seconds: 1),
+          duration: const Duration(seconds: 2),
           key: const Key('cacheUpdated'),
         ));
         Get.offAll(() => Home());
@@ -89,7 +89,7 @@ class CacheDownloadController extends GetxController {
       message: 'CSV files downloaded successfully',
       backgroundColor: AppColors.primaryColor,
       icon: const Icon(Icons.check),
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 2),
       key: const Key('csvDownloaded'),
     ));
     bool processCsv = await processCsvAndInsertToDatabase();
@@ -104,7 +104,7 @@ class CacheDownloadController extends GetxController {
       message: 'CSV files data added successfully',
       backgroundColor: AppColors.primaryColor,
       icon: const Icon(Icons.check),
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 2),
       key: const Key('csvInserted'),
     ));
 
@@ -123,7 +123,7 @@ class CacheDownloadController extends GetxController {
       message: 'JSON file downloaded successfully.',
       backgroundColor: AppColors.primaryColor,
       icon: const Icon(Icons.check),
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 2),
       key: const Key('jsonDownloaded'),
     ));
     var allFunctions = [
@@ -144,7 +144,7 @@ class CacheDownloadController extends GetxController {
       message: 'JSON file data saved to device storage.',
       backgroundColor: AppColors.primaryColor,
       icon: const Icon(Icons.check),
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 2),
       key: const Key('jsonInserted'),
     ));
     return true;

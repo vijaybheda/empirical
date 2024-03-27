@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
+import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/controller/json_file_operations.dart';
 import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/user.dart';
@@ -28,19 +29,17 @@ class AuthController extends GetxController {
   bool socialButtonVisible = true;
   final AppStorage appStorage = AppStorage.instance;
   final JsonFileOperations jsonFileOperations = JsonFileOperations.instance;
+  final GlobalConfigController globalConfigController =
+      Get.find<GlobalConfigController>();
 
-  int wifiLevel = 3;
+  int wifiLevel = 0;
 
   @override
   void onInit() {
     super.onInit();
-    // Utils.checkWifiLevel().then((value) {
-    //   wifiLevel = value;
-    // });
-    // FIXME: Vijay change below logic
-    // if (isLoggedIn()) {
-    //   Get.offAll(() => const DashboardScreen());
-    // }
+    globalConfigController.wifiLevelStream.listen((value) {
+      wifiLevel = value;
+    });
 
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       // request for storage permission
