@@ -53,11 +53,7 @@ Widget baseHeaderView(String title, bool isVersionShow) {
               ),
               Obx(
                 () => Image.asset(
-                  Platform.isAndroid
-                      ? controller.wifiImage1.value
-                      : controller.isConnectedToNetwork_iOS.value == true
-                          ? AppImages.ic_Wifi_bar_3
-                          : AppImages.ic_Wifi_off,
+                  controller.wifiImage1.value,
                   width: 70.w,
                   height: 70.w,
                 ),

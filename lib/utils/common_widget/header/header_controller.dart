@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_internet_signal/flutter_internet_signal.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -18,6 +17,11 @@ class HeaderController extends GetxController {
   final wifiImage1 = AppImages.ic_Wifi_off.obs;
   final isConnectedToNetwork_iOS = false.obs;
   var appVersion = ''.obs;
+  final Connectivity _networkConnectivityIOS = Connectivity();
+  final FlutterInternetSignal internetSignal = FlutterInternetSignal();
+  RxBool hasStableInternet = false.obs;
+  final StreamController<bool> _hasStableInternetController = StreamController<bool>.broadcast();
+  final StreamController<int> _wifiLevelController = StreamController<int>.broadcast();
   HeaderController();
 
   ValueNotifier<int> rssiValueNotifier = ValueNotifier(-120);
@@ -33,18 +37,25 @@ class HeaderController extends GetxController {
     if (Platform.isAndroid) {
       snetwork();
     } else if (Platform.isIOS) {
-      _eventChannelStartListener();
+      checkInternet();
     }
   }
 
-  void _eventChannelStartListener() {
-    _streamSubscription = stream.receiveBroadcastStream().listen(_listenStream);
+  Future<void> checkInternet() async {
+
+    _networkConnectivityIOS.onConnectivityChanged.listen((result) async {
+        ConnectivityResult connectivityResult =
+        await Connectivity().checkConnectivity();
+        hasStableInternet.value =
+        (connectivityResult == ConnectivityResult.wifi);
+
+        wifiImage1.value = hasStableInternet.value ? AppImages.ic_Wifi_bar_3 : AppImages.ic_Wifi_off;
+        _hasStableInternetController.add(hasStableInternet.value);
+
+    });
   }
 
-  void _listenStream(value) async {
-    isConnectedToNetwork_iOS.value = value;
-  }
-  // FETCHED APPVERSION
+ // FETCHED APPVERSION
 
   void appversion() {
     PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
