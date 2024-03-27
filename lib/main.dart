@@ -66,6 +66,6 @@ class MyApp extends StatelessWidget {
 class GlobalBindings extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() => GlobalConfigController(), fenix: true);
+    Get.put(() => GlobalConfigController(), permanent: true);
   }
 }

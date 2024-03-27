@@ -45,6 +45,7 @@ Widget baseHeaderView(String title, bool isVersionShow) {
                       ),
                     )
                   : Container(),
+              isVersionShow ? getEnvText() : Container(),
               SizedBox(
                 width: 40.w,
               ),
@@ -59,4 +60,27 @@ Widget baseHeaderView(String title, bool isVersionShow) {
           ),
         );
       });
+}
+
+Widget getEnvText() {
+  String apiHost = const String.fromEnvironment('API_HOST');
+  String env = '';
+  if (apiHost.contains('appqa')) {
+    env = ' QA';
+  } else if (apiHost.contains('stage')) {
+    env = ' STAGE';
+  } else if (apiHost.contains('demo')) {
+    env = ' DEMO';
+  }
+
+  if (env.isEmpty) {
+    return const Offstage();
+  }
+  return Text(
+    env,
+    style: GoogleFonts.poppins(
+        fontSize: 20.sp,
+        fontWeight: FontWeight.bold,
+        textStyle: TextStyle(color: AppColors.white)),
+  );
 }
