@@ -2,7 +2,7 @@
 
 class AppStrings {
   static const String platformEventIOS = 'ver-ify/wifi-channel';
-  static const String appName = 'p-ver-ify';
+  static const String appName = 'Ver-ify';
   static const String actionSettings = 'Settings';
   static const String copyright =
       'Copyright \u00A9 2015 Share-ify, Inc. All Rights Reserved.';
