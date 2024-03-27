@@ -6,13 +6,14 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pverify/utils/images.dart';
 
 class HomeController extends GetxController {
   PageController pageController = PageController();
 
   List<String> bannerImages = [
-    'https://images.pexels.com/photos/6889088/pexels-photo-6889088.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    'https://images.pexels.com/photos/10643964/pexels-photo-10643964.jpeg?auto=compress&cs=tinysrgb&w=600',
+    AppImages.img_banner,
+    AppImages.img_banner
   ];
   List<Map<String, String>> listOfInspection = [
     {

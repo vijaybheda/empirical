@@ -1,12 +1,16 @@
 import UIKit
 import Flutter
+import CoreLocation
+import Network
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate, FlutterStreamHandler{
     
     var flutterEventChannel = FlutterEventChannel()
     var eventSink: FlutterEventSink?
-    
+    let monitor = NWPathMonitor()
+    var isConnected = false
+
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -14,16 +18,25 @@ import Flutter
         GeneratedPluginRegistrant.register(with: self)
         
         let flutterViewController : FlutterViewController = window?.rootViewController as! FlutterViewController
-        
         flutterEventChannel = FlutterEventChannel(name: "ver-ify/wifi-channel", binaryMessenger: flutterViewController.binaryMessenger)
         flutterEventChannel.setStreamHandler(self)
-        
+
+        monitor.start(queue: DispatchQueue(label: "NetworkMonitor"))
+        monitor.pathUpdateHandler = { (path) in
+            if path.status == .satisfied {
+                print("Connected")
+                self.sendEventToFlutter(rssi: true)
+            } else {
+                print("Not Connected")
+                self.sendEventToFlutter(rssi: false)
+            }
+        }
+
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
     func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
         eventSink = events
-        self.sendEventToFlutter(rssi: AppDelegate.getSignal())
         return nil
     }
     
@@ -32,74 +45,17 @@ import Flutter
         return nil
     }
     
-    func sendEventToFlutter(rssi: Int) {
+    func sendEventToFlutter(rssi: Bool) {
         print("RSSI ==========>>>>>>>>>> ", rssi)
         eventSink?(rssi)
     }
-    
 }
 
 // MARK: Get singal strenght
 
-extension AppDelegate
+extension AppDelegate : CLLocationManagerDelegate
 {
-    static func getSignal() -> Int {
-        if #available(iOS 13.0, *) {
-            if let statusBarManager = UIApplication.shared.keyWindow?.windowScene?.statusBarManager,
-               let localStatusBar = statusBarManager.value(forKey: "createLocalStatusBar") as? NSObject,
-               let statusBar = localStatusBar.value(forKey: "statusBar") as? NSObject,
-               let _statusBar = statusBar.value(forKey: "_statusBar") as? UIView,
-               let currentData = _statusBar.value(forKey: "currentData")  as? NSObject,
-               let celluar = currentData.value(forKey: "cellularEntry") as? NSObject,
-               let signalStrength = celluar.value(forKey: "displayValue") as? Int {
-                return signalStrength
-            } else {
-                return 0
-            }
-        } else {
-            var signalStrength = -1
-            let application = UIApplication.shared
-            let statusBarView = application.value(forKey: "statusBar") as! UIView
-            let foregroundView = statusBarView.value(forKey: "foregroundView") as! UIView
-            let foregroundViewSubviews = foregroundView.subviews
-            var dataNetworkItemView: UIView!
-            for subview in foregroundViewSubviews {
-                if subview.isKind(of: NSClassFromString("UIStatusBarSignalStrengthItemView")!) {
-                    dataNetworkItemView = subview
-                    break
-                } else {
-                    signalStrength = -1
-                }
-            }
-            signalStrength = dataNetworkItemView.value(forKey: "signalStrengthBars") as! Int
-            if signalStrength == -1 {
-                return 0
-            } else {
-                return signalStrength
-            }
-        }
-    }
-}
-
-
-extension UIApplication {
-    var statusBarUIView: UIView? {
-        if #available(iOS 13.0, *) {
-            let tag = 38482458385
-            if let statusBar = self.keyWindow?.viewWithTag(tag) {
-                return statusBar
-            } else {
-                let statusBarView = UIView(frame: UIApplication.shared.statusBarFrame)
-                statusBarView.tag = tag
-                
-                self.keyWindow?.addSubview(statusBarView)
-                return statusBarView
-            }
-        } else {
-            if responds(to: Selector(("statusBar"))) {
-                return value(forKey: "statusBar") as? UIView
-            }
-        }
-        return nil
+    func isConnectedToNetwork() -> Bool {
+        return self.isConnected
     }
 }

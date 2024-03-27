@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
       child: ScreenUtilInit(
         designSize: Size(1200, 2670),
         builder: (context, child) => GetMaterialApp(
-          theme: AppThemeData.mThemeData(context, isDark: true),
+          theme: AppThemeData.mThemeData(context, isDark: false),
           darkTheme: AppThemeData.mThemeData(context, isDark: true),
           themeMode: ThemeMode.dark,
           debugShowCheckedModeBanner: false,

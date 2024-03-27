@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, avoid_types_as_parameter_names, must_be_immutable, avoid_unnecessary_containers, unrelated_type_equality_checks, unused_element
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, avoid_types_as_parameter_names, must_be_immutable, avoid_unnecessary_containers, unrelated_type_equality_checks, unused_element, sized_box_for_whitespace
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/ui/Home/home_controller.dart';
+import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
@@ -31,7 +32,9 @@ class Home extends GetView<HomeController> {
               backgroundColor: AppColors.primary,
               title: baseHeaderView(AppStrings.home, false),
             ),
-            body: contentView(context),
+            body: Container(
+                color: Theme.of(context).colorScheme.background,
+                child: contentView(context)),
           );
         });
   }
@@ -41,10 +44,9 @@ class Home extends GetView<HomeController> {
       children: [
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.all(15),
+            padding: EdgeInsets.all(35.h),
             child: Container(
               width: ResponsiveHelper.getDeviceWidth(context),
-              color: Theme.of(context).colorScheme.background,
               child: Column(
                 children: [
                   bannersView(),
@@ -336,7 +338,7 @@ class Home extends GetView<HomeController> {
                 fontSize: 38.sp,
                 fontWeight: FontWeight.w600,
                 textStyle: TextStyle(color: AppColors.white)),
-            onClickAction: () => {}),
+            onClickAction: () => {Get.to(QualityControlHeader())}),
         SizedBox(
           height: 35.h,
         ),
@@ -584,7 +586,7 @@ class Home extends GetView<HomeController> {
               Controller.bannersCurrentPage.value = value;
             },
             itemBuilder: (context, index) {
-              return Image.network(
+              return Image.asset(
                 Controller.bannerImages[index],
                 fit: BoxFit.cover,
               );

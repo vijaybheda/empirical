@@ -154,7 +154,7 @@ class BoxTextField1 extends StatelessWidget {
               style: GoogleFonts.poppins(
                   fontSize: 30.sp,
                   fontWeight: FontWeight.normal,
-                  textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+                  textStyle: TextStyle(color: AppColors.white)),
               cursorColor: Theme.of(context).textSelectionTheme.cursorColor,
               decoration: InputDecoration(
                 enabledBorder: UnderlineInputBorder(

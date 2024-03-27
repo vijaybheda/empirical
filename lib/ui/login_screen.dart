@@ -168,7 +168,6 @@ class LoginScreen extends GetView<AuthController> {
           // Utils.hideLoadingDialog();
         }
       } catch (e) {
-        print(e);
         Utils.hideLoadingDialog();
       }
     }

@@ -1,5 +1,7 @@
 // ignore_for_file: void_checks, dead_code, unused_element
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -29,8 +31,8 @@ Widget baseHeaderView(String title, bool isVersionShow) {
               Text(
                 title,
                 style: GoogleFonts.poppins(
-                    fontSize: 40.sp,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 38.sp,
+                    fontWeight: FontWeight.w600,
                     textStyle: TextStyle(color: AppColors.white)),
               ),
               const Spacer(),
@@ -50,7 +52,11 @@ Widget baseHeaderView(String title, bool isVersionShow) {
               ),
               Obx(
                 () => Image.asset(
-                  controller.wifiImage1.value,
+                  Platform.isAndroid
+                      ? controller.wifiImage1.value
+                      : controller.isConnectedToNetwork_iOS.value == true
+                          ? AppImages.ic_Wifi_bar_3
+                          : AppImages.ic_Wifi_off,
                   width: 70.w,
                   height: 70.w,
                 ),

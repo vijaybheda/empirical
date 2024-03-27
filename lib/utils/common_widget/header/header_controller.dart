@@ -1,13 +1,13 @@
-// ignore_for_file: unused_field, prefer_final_fields, unused_local_variable
+// ignore_for_file: unused_field, prefer_final_fields, unused_local_variable, non_constant_identifier_names
 
 import 'dart:async';
 import 'dart:io';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_internet_signal/flutter_internet_signal.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -16,6 +16,7 @@ class HeaderController extends GetxController {
   final NetworkConnectivity _networkConnectivity = NetworkConnectivity.instance;
   Map _source = {ConnectivityResult.none: false};
   final wifiImage1 = AppImages.ic_Wifi_off.obs;
+  final isConnectedToNetwork_iOS = false.obs;
   var appVersion = ''.obs;
   HeaderController();
 
@@ -28,17 +29,20 @@ class HeaderController extends GetxController {
   void onInit() {
     super.onInit();
     appversion();
-    snetwork();
-    _eventChannelStartListener();
+
+    if (Platform.isAndroid) {
+      snetwork();
+    } else if (Platform.isIOS) {
+      _eventChannelStartListener();
+    }
   }
 
   void _eventChannelStartListener() {
     _streamSubscription = stream.receiveBroadcastStream().listen(_listenStream);
   }
 
-  void _listenStream(value) {
-    debugPrint("Received From Native wifi value :  $value\n");
-    rssiValueNotifier.value = value == 0 ? -120 : value;
+  void _listenStream(value) async {
+    isConnectedToNetwork_iOS.value = value;
   }
   // FETCHED APPVERSION
 

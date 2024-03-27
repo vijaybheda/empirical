@@ -11,6 +11,7 @@ class AppImages {
   static const String ic_download = 'assets/images/ic_download.png';
   static const String ic_unSelectCheckbox = 'assets/images/uncheck.png';
   static const String ic_SelectedCheckbox = 'assets/images/checkbox.png';
+  static const String img_banner = 'assets/images/banner_image.jpg';
 
   static const String ic_sortNone = 'assets/images/sort_none_selected.png';
   static const String ic_sortUp = 'assets/images/sort_up_selected.png';
