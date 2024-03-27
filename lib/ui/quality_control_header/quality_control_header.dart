@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable, non_constant_identifier_names, avoid_types_as_parameter_names, prefer_const_constructors, unrelated_type_equality_checks
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -46,17 +47,17 @@ class QualityControlHeader extends GetView<HomeController> {
   Widget contentView(BuildContext context) {
     return Column(
       children: [
-        mainContentUI(context),
+        Expanded(child: mainContentUI(context)),
         Container(
           height: 150.h,
           color: AppColors.primaryColor,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               customButton(
                   AppColors.white,
                   AppStrings.trailerTemp,
-                  ((ResponsiveHelper.getDeviceWidth(context) - 180) / 2) - 50.w,
+                  (MediaQuery.of(context).size.width / 2).w,
                   115,
                   GoogleFonts.poppins(
                       fontSize: 35.sp,
@@ -73,8 +74,7 @@ class QualityControlHeader extends GetView<HomeController> {
                     Controller.isShortForm == true
                         ? AppStrings.shortForm
                         : AppStrings.detailedForm,
-                    ((ResponsiveHelper.getDeviceWidth(context) - 180) / 2) -
-                        50.w,
+                    (MediaQuery.of(context).size.width / 2).w,
                     115,
                     GoogleFonts.poppins(
                         fontSize: 35.sp,
