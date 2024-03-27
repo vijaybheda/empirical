@@ -1,5 +1,5 @@
 {
-  "API_HOST": "https://appqa.share-ify.com/PM/rest/ws/",
+  "API_HOST": "https://stage.share-ify.com/PM/rest/ws/",
   "ANDROID_APPLICATION_ID": "com.trt",
   "APP_SUFFIX": ".verify",
   "APP_NAME": "Pverify QA"

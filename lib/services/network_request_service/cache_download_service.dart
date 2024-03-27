@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io' show Directory, File, FileSystemEntity, HttpStatus;
@@ -14,6 +15,7 @@ import 'package:pverify/services/network_request_service/network_request_base_cl
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/theme.dart' show AppColors;
 import 'package:pverify/utils/utils.dart' show Utils;
+import 'package:flutter/material.dart';
 
 class CacheDownloadService extends BaseRequestService {
   static CacheDownloadService get instance => _instance;
@@ -35,20 +37,20 @@ class CacheDownloadService extends BaseRequestService {
           try {
             if (file is File) {
               await file.delete();
-              print('Deleted file: ${file.path}');
+              log('Deleted file: ${file.path}');
             }
           } catch (e) {
-            print('Error deleting file ${file.path}: $e');
+            log('Error deleting file ${file.path}: $e');
           }
         }
 
         // Delete the directory itself
         try {
           await directory.delete();
-          print('Deleted directory: ${directory.path}');
+          log('Deleted directory: ${directory.path}');
           return null;
         } catch (e) {
-          print('Error deleting directory ${directory.path}: $e');
+          log('Error deleting directory ${directory.path}: $e');
           return null;
         }
       }
@@ -299,7 +301,7 @@ class CacheDownloadService extends BaseRequestService {
 
     try {
       Map<String, dynamic> headers = appStorage.getHeaderMap();
-      print('headerMap $headers');
+      log('headerMap $headers');
 
       Response? response = await dio.get(
         url,
@@ -315,11 +317,11 @@ class CacheDownloadService extends BaseRequestService {
       // Write the file
       File file = File(join(savePath, fileName));
       await file.writeAsBytes(response.data);
-      print('File downloaded to: $savePath');
+      log('File downloaded to: $savePath');
 
       return file;
     } catch (e) {
-      print('Error downloading file: $e');
+      log('Error downloading file: $e');
       return null;
     }
   }

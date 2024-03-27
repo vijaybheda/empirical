@@ -237,6 +237,7 @@ class AppStrings {
       'Defect entries cannot be repeated in a sample set.';
   static const String removeSample =
       'Are you sure you want to remove this sample?';
+  static const String logoutConfirmation = 'Confirm log out. Data may be lost.';
 
   static const String sealNumber = 'Seal #';
   static const String addMoreItems = 'Quick Add';
@@ -433,6 +434,7 @@ class AppStrings {
   static const String QCDOPEN1 = 'Temp Recorder Present';
   static const String quality_control_header = 'Quality Control Header';
   static const String qc_header = 'QC Header';
+  static const String orderNo = 'Order No *';
 
   static const String pieces = 'Yes';
   static const String whole = 'No';
@@ -443,6 +445,7 @@ class AppStrings {
       'QC_Details_short_form';
   static const String next = 'Next';
   static const String previous = 'Previous';
+  static const String truckTempOK = 'Truck Temp Ok?';
 
   static const String banner1Blank = 'Banner 1 cannot be blank';
   static const String banner2Blank = 'Banner 2 cannot be blank';
@@ -457,6 +460,16 @@ class AppStrings {
     'mm-dd-yyyy',
     'dd-mm-yyyy',
     'yyyy-mm-dd'
+  ];
+
+  static const List<String> truckTempOk = [
+    'Yes',
+    'No',
+  ];
+
+  static const List<String> types = [
+    'Quality Assurance',
+    'Transfer',
   ];
 }
 

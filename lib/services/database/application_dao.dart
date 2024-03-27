@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:csv/csv.dart';
+import 'package:flutter/material.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/models/inspection_defect.dart';
@@ -40,8 +41,7 @@ class ApplicationDao {
         );
       }
     } catch (e) {
-      print(e);
-      print('failed to add-update user');
+      log('failed to add-update user');
       return -1;
     }
   }
@@ -657,7 +657,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.ITEM_GROUP1}');
-        print('fields ${fields.length} ${DBTables.ITEM_GROUP1}');
+        debugPrint('fields ${fields.length} ${DBTables.ITEM_GROUP1}');
         for (var row in fields.skip(1).toList()) {
           // log('rowData $row');
           int igrId = row[0];
@@ -698,7 +698,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportItemSKU() async {
-    print('Importing Item SKU');
+    debugPrint('Importing Item SKU');
 
     try {
       Database db = await dbProvider.database;
@@ -718,7 +718,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.ITEM_SKU}');
-        print('fields ${fields.length} ${DBTables.ITEM_SKU}');
+        debugPrint('fields ${fields.length} ${DBTables.ITEM_SKU}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSkuData = {
             ItemSkuColumn.SKU_ID: row[0],
@@ -745,7 +745,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item SKU $e');
@@ -754,7 +754,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportAgency() async {
-    print('Importing Item Agency');
+    debugPrint('Importing Item Agency');
 
     try {
       Database db = await dbProvider.database;
@@ -774,7 +774,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.AGENCY}');
-        print('fields ${fields.length} ${DBTables.AGENCY}');
+        debugPrint('fields ${fields.length} ${DBTables.AGENCY}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemAgencyData = {
             AgencyColumn.ID: row[0],
@@ -785,7 +785,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Agency $e');
@@ -794,7 +794,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportGrade() async {
-    print('Importing Item Grade');
+    debugPrint('Importing Item Grade');
 
     try {
       Database db = await dbProvider.database;
@@ -814,7 +814,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.GRADE}');
-        print('fields ${fields.length} ${DBTables.GRADE}');
+        debugPrint('fields ${fields.length} ${DBTables.GRADE}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemGradeData = {
             GradeColumn.ID: row[0],
@@ -826,7 +826,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Grade $e');
@@ -835,7 +835,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportGradeCommodity() async {
-    print('Importing Item Grade Commodity');
+    debugPrint('Importing Item Grade Commodity');
 
     try {
       Database db = await dbProvider.database;
@@ -855,7 +855,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.GRADE_COMMODITY}');
-        print('fields ${fields.length} ${DBTables.GRADE_COMMODITY}');
+        debugPrint('fields ${fields.length} ${DBTables.GRADE_COMMODITY}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemGradeCommodityData = {
             GradeCommodityColumn.ID: row[0],
@@ -867,7 +867,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Grade Commodity $e');
@@ -876,7 +876,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportGradeCommodityDetail() async {
-    print('Importing Item Grade Commodity Detail');
+    debugPrint('Importing Item Grade Commodity Detail');
 
     try {
       Database db = await dbProvider.database;
@@ -896,7 +896,8 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.GRADE_COMMODITY_DETAIL}');
-        print('fields ${fields.length} ${DBTables.GRADE_COMMODITY_DETAIL}');
+        debugPrint(
+            'fields ${fields.length} ${DBTables.GRADE_COMMODITY_DETAIL}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemGradeCommodityDetailData = {
             GradeCommodityDetailColumn.ID: row[0],
@@ -911,7 +912,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Grade Commodity Detail $e');
@@ -920,7 +921,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportSpecification() async {
-    print('Importing Item specification');
+    debugPrint('Importing Item specification');
 
     try {
       Database db = await dbProvider.database;
@@ -940,7 +941,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION}');
-        print('fields ${fields.length} ${DBTables.SPECIFICATION}');
+        debugPrint('fields ${fields.length} ${DBTables.SPECIFICATION}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationData = {
             SpecificationColumn.NUMBER: row[0],
@@ -955,7 +956,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item specification $e');
@@ -964,7 +965,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportMaterialSpecification() async {
-    print('Importing Item Material Specification');
+    debugPrint('Importing Item Material Specification');
 
     try {
       Database db = await dbProvider.database;
@@ -984,7 +985,8 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.MATERIAL_SPECIFICATION}');
-        print('fields ${fields.length} ${DBTables.MATERIAL_SPECIFICATION}');
+        debugPrint(
+            'fields ${fields.length} ${DBTables.MATERIAL_SPECIFICATION}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemMaterialSpecificationData = {
             MaterialSpecificationColumn.NUMBER_SPECIFICATION: row[0],
@@ -998,7 +1000,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Material Specification $e');
@@ -1007,7 +1009,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportSpecificationSupplier() async {
-    print('Importing Item Specification Supplier');
+    debugPrint('Importing Item Specification Supplier');
 
     try {
       Database db = await dbProvider.database;
@@ -1027,7 +1029,8 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION_SUPPLIER}');
-        print('fields ${fields.length} ${DBTables.SPECIFICATION_SUPPLIER}');
+        debugPrint(
+            'fields ${fields.length} ${DBTables.SPECIFICATION_SUPPLIER}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationSupplierData = {
             SpecificationSupplierColumn.NUMBER_SPECIFICATION: row[0],
@@ -1045,7 +1048,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Specification Supplier $e');
@@ -1054,7 +1057,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportSpecificationGradeTolerance() async {
-    print('Importing Item Specification Grade Tolerance');
+    debugPrint('Importing Item Specification Grade Tolerance');
 
     try {
       Database db = await dbProvider.database;
@@ -1075,7 +1078,7 @@ class ApplicationDao {
       await db.transaction((txn) async {
         await txn
             .rawDelete('DELETE FROM ${DBTables.SPECIFICATION_GRADE_TOLERANCE}');
-        print(
+        debugPrint(
             'fields ${fields.length} ${DBTables.SPECIFICATION_GRADE_TOLERANCE}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationGradeToleranceData = {
@@ -1100,7 +1103,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Specification Grade Tolerance $e');
@@ -1109,7 +1112,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportSpecificationAnalytical() async {
-    print('Importing Item Specification Analytical');
+    debugPrint('Importing Item Specification Analytical');
 
     try {
       Database db = await dbProvider.database;
@@ -1129,7 +1132,8 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION_ANALYTICAL}');
-        print('fields ${fields.length} ${DBTables.SPECIFICATION_ANALYTICAL}');
+        debugPrint(
+            'fields ${fields.length} ${DBTables.SPECIFICATION_ANALYTICAL}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationAnalyticalData = {
             SpecificationAnalyticalColumn.NUMBER_SPECIFICATION: row[0],
@@ -1156,7 +1160,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Specification Analytical $e');
@@ -1165,7 +1169,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportSpecificationPackagingFinishedGoods() async {
-    print('Importing Item Specification Analytical');
+    debugPrint('Importing Item Specification Analytical');
 
     try {
       Database db = await dbProvider.database;
@@ -1186,7 +1190,7 @@ class ApplicationDao {
       await db.transaction((txn) async {
         await txn.rawDelete(
             'DELETE FROM ${DBTables.SPECIFICATION_PACKAGING_FINISHED_GOODS}');
-        print(
+        debugPrint(
             'fields ${fields.length} ${DBTables.SPECIFICATION_PACKAGING_FINISHED_GOODS}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationAnalyticalData = {
@@ -1203,7 +1207,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Specification Analytical $e');
@@ -1212,7 +1216,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportSpecificationType() async {
-    print('Importing Item Specification Type');
+    debugPrint('Importing Item Specification Type');
 
     try {
       Database db = await dbProvider.database;
@@ -1232,7 +1236,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION_TYPE}');
-        print('fields ${fields.length} ${DBTables.SPECIFICATION_TYPE}');
+        debugPrint('fields ${fields.length} ${DBTables.SPECIFICATION_TYPE}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationTypeData = {
             SpecificationTypeColumn.SPECIFICATION_TYPE_ID: row[0],
@@ -1244,7 +1248,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Specification Type $e');
@@ -1253,7 +1257,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportCommodity() async {
-    print('Importing Item Commodity');
+    debugPrint('Importing Item Commodity');
 
     try {
       Database db = await dbProvider.database;
@@ -1273,7 +1277,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.COMMODITY}');
-        print('fields ${fields.length} ${DBTables.COMMODITY}');
+        debugPrint('fields ${fields.length} ${DBTables.COMMODITY}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemCommodityData = {
             CommodityColumn.ID: row[0],
@@ -1286,7 +1290,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Commodity $e');
@@ -1295,7 +1299,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportCommodityKeywords() async {
-    print('Importing Item Commodity Keywords');
+    debugPrint('Importing Item Commodity Keywords');
 
     try {
       Database db = await dbProvider.database;
@@ -1315,7 +1319,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.COMMODITY_KEYWORDS}');
-        print('fields ${fields.length} ${DBTables.COMMODITY_KEYWORDS}');
+        debugPrint('fields ${fields.length} ${DBTables.COMMODITY_KEYWORDS}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemCommodityKeywordsData = {
             CommodityKeywordsColumn.ID: row[0],
@@ -1327,7 +1331,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Commodity Keywords $e');
@@ -1336,7 +1340,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportPOHeader() async {
-    print('Importing Item POHeader');
+    debugPrint('Importing Item POHeader');
 
     try {
       Database db = await dbProvider.database;
@@ -1356,7 +1360,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.PO_HEADER}');
-        print('fields ${fields.length} ${DBTables.PO_HEADER}');
+        debugPrint('fields ${fields.length} ${DBTables.PO_HEADER}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemPOHeaderData = {
             POHeaderColumn.PO_HEADER_ID: row[0],
@@ -1371,7 +1375,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item POHeader $e');
@@ -1380,7 +1384,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportPODetail() async {
-    print('Importing Item PODetail');
+    debugPrint('Importing Item PODetail');
 
     try {
       Database db = await dbProvider.database;
@@ -1400,7 +1404,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.PO_DETAIL}');
-        print('fields ${fields.length} ${DBTables.PO_DETAIL}');
+        debugPrint('fields ${fields.length} ${DBTables.PO_DETAIL}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemPODetailData = {
             PODetailColumn.PO_DETAIL_ID: row[0],
@@ -1425,7 +1429,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item PODetail $e');
@@ -1434,7 +1438,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportSpecificationSupplierGtins() async {
-    print('Importing Item Specification SupplierGtins');
+    debugPrint('Importing Item Specification SupplierGtins');
 
     try {
       Database db = await dbProvider.database;
@@ -1455,7 +1459,7 @@ class ApplicationDao {
       await db.transaction((txn) async {
         await txn
             .rawDelete('DELETE FROM ${DBTables.SPECIFICATION_SUPPLIER_GTIN}');
-        print(
+        debugPrint(
             'fields ${fields.length} ${DBTables.SPECIFICATION_SUPPLIER_GTIN}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationSupplierGtinsData = {
@@ -1468,7 +1472,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Specification Supplier Gtins $e');
@@ -1477,7 +1481,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportCommodityCTE() async {
-    print('Importing Item Commodity CTE');
+    debugPrint('Importing Item Commodity CTE');
 
     try {
       Database db = await dbProvider.database;
@@ -1497,7 +1501,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.COMMODITY_CTE}');
-        print('fields ${fields.length} ${DBTables.COMMODITY_CTE}');
+        debugPrint('fields ${fields.length} ${DBTables.COMMODITY_CTE}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemCommodityCteData = {
             CommodityCteColumn.ID: row[0],
@@ -1510,7 +1514,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      print('File operation failed: $e');
+      debugPrint('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Commodity CTE $e');
