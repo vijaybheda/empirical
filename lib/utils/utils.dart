@@ -365,7 +365,7 @@ class Utils {
     );
   }
 
-  static void showInfoAlertDialog(String message,
+  /*static void showInfoAlertDialog(String message,
       {Widget? additionalButton, Function? onOk}) {
     // Helly redesign this dialog based on client requirement, change text style and color
     Get.defaultDialog(
@@ -402,7 +402,7 @@ class Utils {
       ],
     );
   }
-
+*/
   static void showErrorAlertDialog(String message,
       {Widget? additionalButton, Function? onOk}) {
     // Helly redesign this dialog based on client requirement, change text style and color

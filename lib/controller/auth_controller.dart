@@ -156,7 +156,7 @@ class AuthController extends GetxController {
                   offlineUser?.status == 3) {
                 // show Info Alert Dialog
                 await Utils.hideLoadingDialog();
-                Utils.showInfoAlertDialog(
+                Utils.showErrorAlertDialog(
                     "Your account is inactive. Please contact your administrator.");
               } else {
                 await jsonFileOperations.offlineLoadSuppliersData();
@@ -176,7 +176,7 @@ class AuthController extends GetxController {
         } else {
           await Utils.hideLoadingDialog();
           // show Info Alert Dialog
-          Utils.showInfoAlertDialog(AppStrings.turnOnWifi);
+          Utils.showErrorAlertDialog(AppStrings.turnOnWifi);
         }
       }
 
@@ -255,10 +255,10 @@ class AuthController extends GetxController {
           Get.offAll(() => const CacheDownloadScreen());
           return;
         } else {
-          Utils.showInfoAlertDialog(AppStrings.downloadWifiError);
+          Utils.showErrorAlertDialog(AppStrings.downloadWifiError);
         }
       } else {
-        Utils.showInfoAlertDialog(AppStrings.betterWifiConnWarning);
+        Utils.showErrorAlertDialog(AppStrings.betterWifiConnWarning);
       }
     } else {
       Get.offAll(() => Home());
