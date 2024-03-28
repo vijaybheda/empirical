@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_internet_signal/flutter_internet_signal.dart';
 import 'package:get/get.dart';
@@ -37,7 +38,7 @@ class GlobalConfigController extends GetxController {
     super.onInit();
     Future.delayed(const Duration(milliseconds: 200)).then((value) {
       wifiLevelStream.listen((wifiLevel) {
-        print('_wifiLevel $wifiLevel');
+        debugPrint('_wifiLevel $wifiLevel');
       });
     });
   }

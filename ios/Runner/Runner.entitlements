@@ -4,5 +4,16 @@
 <dict>
 	<key>aps-environment</key>
 	<string>development</string>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>webcredentials:example.com</string>
+		<string>applinks:trt.com</string>
+	</array>
+	<key>com.apple.developer.authentication-services.autofill-credential-provider</key>
+	<true/>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)com.trt.verify</string>
+	</array>
 </dict>
 </plist>

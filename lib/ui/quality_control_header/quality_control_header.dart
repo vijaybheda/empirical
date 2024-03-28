@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable, non_constant_identifier_names, avoid_types_as_parameter_names, prefer_const_constructors, unrelated_type_equality_checks
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,8 +15,6 @@ import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
-
-import '../../utils/app_const.dart';
 
 class QualityControlHeader extends GetView<HomeController> {
   QualityControlHeader({super.key});
@@ -49,15 +48,16 @@ class QualityControlHeader extends GetView<HomeController> {
       children: [
         Expanded(child: mainContentUI(context)),
         Container(
+          padding: EdgeInsets.only(left: 50.w, right: 50.w),
           height: 150.h,
           color: AppColors.primaryColor,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               customButton(
                   AppColors.white,
                   AppStrings.trailerTemp,
-                  (MediaQuery.of(context).size.width / 2).w,
+                  (MediaQuery.of(context).size.width / 2.3),
                   115,
                   GoogleFonts.poppins(
                       fontSize: 35.sp,
@@ -66,7 +66,7 @@ class QualityControlHeader extends GetView<HomeController> {
                           TextStyle(color: AppColors.textFieldText_Color)),
                   onClickAction: () => {}),
               SizedBox(
-                width: 50.w,
+                width: 38.w,
               ),
               Obx(
                 () => customButton(
@@ -74,7 +74,7 @@ class QualityControlHeader extends GetView<HomeController> {
                     Controller.isShortForm == true
                         ? AppStrings.shortForm
                         : AppStrings.detailedForm,
-                    (MediaQuery.of(context).size.width / 2).w,
+                    (MediaQuery.of(context).size.width / 2.3),
                     115,
                     GoogleFonts.poppins(
                         fontSize: 35.sp,
@@ -94,16 +94,19 @@ class QualityControlHeader extends GetView<HomeController> {
         SizedBox(
           height: 25.h,
         ),
-        customButton(
-            AppColors.white,
-            AppStrings.save,
-            MediaQuery.of(context).size.width,
-            115,
-            GoogleFonts.poppins(
-                fontSize: 35.sp,
-                fontWeight: FontWeight.w600,
-                textStyle: TextStyle(color: AppColors.textFieldText_Color)),
-            onClickAction: () => {}),
+        Padding(
+          padding: EdgeInsets.only(left: 50.w, right: 50.w),
+          child: customButton(
+              AppColors.white,
+              AppStrings.save,
+              (MediaQuery.of(context).size.width),
+              115,
+              GoogleFonts.poppins(
+                  fontSize: 35.sp,
+                  fontWeight: FontWeight.w600,
+                  textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+              onClickAction: () => {}),
+        ),
         SizedBox(
           height: 25.h,
         ),
@@ -262,28 +265,31 @@ class QualityControlHeader extends GetView<HomeController> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          labelTitle,
-          style: GoogleFonts.poppins(
-              fontSize: 28.sp,
-              fontWeight: FontWeight.w500,
-              textStyle: TextStyle(color: AppColors.white)),
+        Expanded(
+          flex: 2,
+          child: Text(
+            labelTitle,
+            style: GoogleFonts.poppins(
+                fontSize: 31.sp,
+                fontWeight: FontWeight.w700,
+                textStyle: TextStyle(color: AppColors.white)),
+          ),
         ),
-        SizedBox(
-          width: 30.w,
-        ),
-        SizedBox(
-          width: 350.w,
-          child: BoxTextField1(
-            isMulti: false,
-            controller: controller,
-            onTap: () {},
-            errorText: '',
-            onEditingCompleted: () {},
-            onChanged: (value) {},
-            keyboardType: TextInputType.name,
-            hintText: placeHolder,
-            isPasswordField: true,
+        Expanded(
+          flex: 2,
+          child: SizedBox(
+            width: 350.w,
+            child: BoxTextField1(
+              isMulti: false,
+              controller: controller,
+              onTap: () {},
+              errorText: '',
+              onEditingCompleted: () {},
+              onChanged: (value) {},
+              keyboardType: TextInputType.name,
+              hintText: placeHolder,
+              isPasswordField: true,
+            ),
           ),
         ),
       ],
@@ -296,18 +302,18 @@ class QualityControlHeader extends GetView<HomeController> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          labelTitle,
-          style: GoogleFonts.poppins(
-              fontSize: 28.sp,
-              fontWeight: FontWeight.w500,
-              textStyle: TextStyle(color: AppColors.white)),
+        Expanded(
+          flex: 2,
+          child: Text(
+            labelTitle,
+            style: GoogleFonts.poppins(
+                fontSize: 31.sp,
+                fontWeight: FontWeight.w700,
+                textStyle: TextStyle(color: AppColors.white)),
+          ),
         ),
-        SizedBox(
-          width: 30.w,
-        ),
-        SizedBox(
-          width: 350.w,
+        Expanded(
+          flex: 2,
           child: Obx(
             () => DropdownButtonFormField<String>(
               decoration: InputDecoration(border: InputBorder.none),
@@ -351,50 +357,5 @@ class QualityControlHeader extends GetView<HomeController> {
         ),
       ],
     );
-  }
-
-  void showLogoutConfirmation(BuildContext context) {
-    return customAlert(context,
-        title: Text(
-          AppStrings.alert,
-          style: GoogleFonts.poppins(
-              fontSize: 28.sp,
-              fontWeight: FontWeight.w500,
-              textStyle: TextStyle(color: AppColors.white)),
-        ),
-        content: Text(
-          AppStrings.logoutConfirmation,
-          style: GoogleFonts.poppins(
-              fontSize: 25.sp,
-              fontWeight: FontWeight.normal,
-              textStyle: TextStyle(color: AppColors.white)),
-        ),
-        actions: [
-          InkWell(
-              onTap: () {
-                Get.back();
-              },
-              child: Text(
-                AppStrings.cancel,
-                style: GoogleFonts.poppins(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.primary)),
-              )),
-          SizedBox(
-            width: 10.w,
-          ),
-          InkWell(
-              onTap: () {
-                Get.back();
-              },
-              child: Text(
-                AppStrings.yes,
-                style: GoogleFonts.poppins(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.primary)),
-              )),
-        ]);
   }
 }
