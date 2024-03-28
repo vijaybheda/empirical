@@ -1,8 +1,5 @@
 // ignore_for_file: prefer_final_fields, unused_field, non_constant_identifier_names, unnecessary_this, unrelated_type_equality_checks
 
-import 'dart:async';
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,10 +8,7 @@ import 'package:pverify/utils/images.dart';
 class HomeController extends GetxController {
   PageController pageController = PageController();
 
-  List<String> bannerImages = [
-    AppImages.img_banner,
-    AppImages.img_banner
-  ];
+  List<String> bannerImages = [AppImages.img_banner, AppImages.img_banner];
   List<Map<String, String>> listOfInspection = [
     {
       "ID": "1",
@@ -96,5 +90,11 @@ class HomeController extends GetxController {
           .sort((a, b) => a['Item'].toString().compareTo(b['Item'].toString()));
     }
     update();
+  }
+
+  @override
+  void onInit() {
+    // Get.put(() => InspectionController(), permanent: true);
+    super.onInit();
   }
 }

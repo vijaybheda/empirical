@@ -1,215 +1,323 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:pverify/controller/select_supplier_screen_controller.dart';
+import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/ui/components/app_name_header.dart';
+import 'package:pverify/ui/components/footer_content_view.dart';
+import 'package:pverify/ui/components/header_content_view.dart';
+import 'package:pverify/ui/components/progress_adaptive.dart';
+import 'package:pverify/ui/components/scan_barcode_view.dart';
+import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/theme/colors.dart';
 
-class SelectSupplierScreen extends StatefulWidget {
+class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
   const SelectSupplierScreen({super.key});
 
   @override
-  State<SelectSupplierScreen> createState() => _SelectSupplierScreenState();
-}
-
-class _SelectSupplierScreenState extends State<SelectSupplierScreen> {
-  final ScrollController _scrollController = ScrollController();
-  final List<String> _allSuppliers = [
-    'A Organic Farms Corp',
-    'Acme Open Supplier',
-    'Alpine Foods',
-    'Alsum Farms & Produce Inc',
-    'Alta Dena Certified Dairy',
-    'Applegate Open Farms',
-    'Aqua Star',
-    'Aramark',
-    'Baldor Specialty Foods',
-    'Bee Sweet Citrus',
-    'Bee Sweet Citrus',
-    'Bee Sweet Citrus',
-    'Cargill',
-    'Dole',
-    'Ecolab',
-    'Ferrero',
-    'Foster Farms',
-    'Frito-Lay',
-    'Goya Foods',
-    'Green Giant',
-    'Hormel Foods',
-    'Hudsonville Ice Cream',
-    'JBS USA',
-    'Jennie-O',
-    'Kellogg',
-    'Kraft Heinz',
-    'Land O’Lakes',
-    'Lassonde Pappas',
-    'McCormick & Company',
-    'McDonald’s',
-    'Nestlé',
-    'Nestlé Purina PetCare',
-    'O-I',
-    'Olam International',
-    'Owens-Illinois',
-    'Perdue Farms',
-    'PepsiCo',
-    'Quaker Oats',
-    'Rich Products',
-    'Richelieu Foods',
-    'Saputo',
-    'Smithfield Foods',
-    'Snyder’s-Lance',
-    'Tyson Foods',
-    'T Marzetti',
-    'Unilever',
-    'US Foods',
-    'V & V Supremo Foods',
-    'Vermont Creamery',
-    'Vermont Smoke & Cure',
-    'Wegmans Food Markets',
-    'Wendy’s',
-    'Yoplait',
-    'Zentis',
-  ];
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Select Supplier'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              showSearch(
-                context: context,
-                delegate: SupplierSearchDelegate(_allSuppliers),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        child: Row(
+    return GetBuilder<SelectSupplierScreenController>(
+        init: SelectSupplierScreenController(),
+        builder: (controller) {
+          return Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.background,
+            resizeToAvoidBottomInset: false,
+            appBar: AppBar(
+              toolbarHeight: 150.h,
+              leading: const Offstage(),
+              leadingWidth: 0,
+              centerTitle: false,
+              backgroundColor: Theme.of(context).primaryColor,
+              title: const AppNameHeader(),
+            ),
+            body: Column(
+              children: [
+                HeaderContentView(
+                  title: AppStrings.selectPartner,
+                  isVersionShow: false,
+                ),
+                const SearchSupplierWidget(),
+                Expanded(flex: 10, child: _partnerListSection()),
+                ScanBarcodeView(
+                  onBarcodeScanned: (String barcode) {
+                    // controller.searchAndAssignPartner(barcode);
+                  },
+                ),
+                FooterContentView(
+                  onDownloadTap: () {
+                    // TODO: implement download functionality
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  GetBuilder<SelectSupplierScreenController> _partnerListSection() {
+    return GetBuilder<SelectSupplierScreenController>(
+      id: 'partnerList',
+      builder: (controller) {
+        List<String> alphabets = controller.getListOfAlphabets();
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
           children: [
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                itemCount: _allSuppliers.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(_allSuppliers[index]),
-                  );
-                },
-              ),
-            ),
-            Container(
-              alignment: Alignment.center,
-              width: 40,
-              child: ListView.builder(
-                itemCount: 26,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  String letter = String.fromCharCode(index + 65); // ASCII A-Z
-                  return Container(
-                    height: MediaQuery.of(context).size.height / 26,
-                    child: GestureDetector(
-                      onTap: () {
-                        int targetIndex = _allSuppliers.indexWhere(
-                            (supplier) => supplier.startsWith(letter));
-                        if (targetIndex != -1) {
-                          _scrollController.animateTo(
-                            targetIndex *
-                                56.0, // Assuming a constant height per item
-                            duration: Duration(milliseconds: 300),
-                            curve: Curves.easeIn,
-                          );
-                        }
-                      },
-                      child: Container(
-                        height: 20,
-                        child: Text(
-                          letter,
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+            controller.listAssigned.value
+                ? Expanded(
+                    flex: 10,
+                    child: controller.filteredPartnerList.isNotEmpty
+                        ? partnerListView(controller)
+                        : noDataFoundWidget(),
+                  )
+                : const Center(
+                    child: SizedBox(
+                        height: 100, width: 100, child: ProgressAdaptive())),
+            if (controller.listAssigned.value && alphabets.isNotEmpty)
+              Flexible(
+                flex: 0,
+                child: listAlphabetsWidget(controller, alphabets),
+              )
+            else
+              const Offstage(),
           ],
+        );
+      },
+    );
+  }
+
+  Container listAlphabetsWidget(
+    SelectSupplierScreenController controller,
+    List<String> alphabets,
+  ) {
+    return Container(
+      alignment: Alignment.center,
+      width: 40.sp,
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: ListView.builder(
+        itemCount: alphabets.length,
+        shrinkWrap: false,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          String letter = alphabets.elementAt(index);
+          // bool isDragging = false;
+
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * .75 / alphabets.length,
+            child: GestureDetector(
+              onTap: () {
+                controller.scrollToSection(letter, index);
+              },
+              /*onVerticalDragStart: (_) {
+                isDragging = true; // Set flag on drag start
+              },
+              onVerticalDragUpdate: (details) {
+                // Calculate the target index only if dragging
+                if (isDragging) {
+                  double offsetY = details.localPosition.dy;
+                  int targetIndex =
+                      (offsetY / listHeight * alphabets.length).toInt();
+                  targetIndex = targetIndex.clamp(0, alphabets.length - 1);
+                  _scrollToListSection(controller, alphabets[targetIndex]);
+                }
+
+                */ /*int targetIndex = controller.filteredPartnerList.indexWhere(
+                    (supplier) => supplier.name!.startsWith(letter));
+                if (targetIndex != -1) {
+                  controller.scrollController.animateTo(
+                    (targetIndex * listHeight) + (index * (listHeight * .45)),
+                    duration: const Duration(milliseconds: 10),
+                    curve: Curves.easeIn,
+                  );
+                }*/ /*
+              },*/
+              child: SizedBox(
+                height: 20,
+                child: Text(
+                  letter,
+                  style: Get.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.white,
+                      fontSize: 45.h,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Center noDataFoundWidget() {
+    return Center(
+      child: Text(
+        'No data found',
+        style: Get.textTheme.displayMedium?.copyWith(
+          color: Colors.white,
         ),
       ),
     );
   }
+
+  ListView partnerListView(SelectSupplierScreenController controller) {
+    return ListView.builder(
+      controller: controller.scrollController,
+      itemCount: controller.filteredPartnerList.length,
+      itemBuilder: (context, index) {
+        PartnerItem partner = controller.filteredPartnerList.elementAt(index);
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Column(
+            children: [
+              getAlphabetContent(controller.filteredPartnerList, index),
+              SizedBox(
+                height: controller.listHeight,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            partner.name ?? '-',
+                            style: Get.textTheme.bodyMedium?.copyWith(
+                                color: AppColors.white, fontSize: 45.h),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 100,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisSize: MainAxisSize.max,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              if ((partner.greenPercentage ?? 0) != 0)
+                                _buildBar(
+                                    Colors.green, partner.greenPercentage ?? 0),
+                              if ((partner.yellowPercentage ?? 0) != 0)
+                                _buildBar(Colors.yellow,
+                                    partner.yellowPercentage ?? 0),
+                              if ((partner.orangePercentage ?? 0) != 0)
+                                _buildBar(Colors.orange,
+                                    partner.orangePercentage ?? 0),
+                              if ((partner.redPercentage ?? 0) != 0)
+                                _buildBar(
+                                    Colors.red, partner.redPercentage ?? 0),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildBar(Color color, double percentage) {
+    return Container(
+      width: 100,
+      height: 20,
+      alignment: Alignment.topRight,
+      child: FractionallySizedBox(
+        widthFactor: (percentage / 100),
+        child: Container(
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  Widget getAlphabetContent(List<PartnerItem> allSuppliers, int index) {
+    String alphabet = '';
+    PartnerItem itemData = allSuppliers[index];
+
+    if (allSuppliers.isNotEmpty && index == 0) {
+      alphabet = allSuppliers.first.name![0];
+    } else if (itemData.name![0] !=
+        allSuppliers.elementAt(index - 1).name![0]) {
+      alphabet = itemData.name![0];
+    }
+
+    if (alphabet.isNotEmpty) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            alphabet,
+            style: Get.textTheme.headlineMedium?.copyWith(
+              color: Colors.red,
+              fontSize: 45.h,
+            ),
+          ),
+          const Divider(
+            height: 10,
+            indent: 0,
+            endIndent: 0,
+            color: Colors.red,
+            thickness: 1,
+          )
+        ],
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  void _scrollToListSection(
+      SelectSupplierScreenController controller, String letter) {
+    int listTargetIndex = controller.filteredPartnerList
+        .indexWhere((supplier) => supplier.name!.startsWith(letter));
+    if (listTargetIndex != -1) {
+      // controller.scrollController.jumpTo(listTargetIndex * listHeight);
+      controller.scrollController
+          .jumpTo((listTargetIndex * controller.listHeight) + listTargetIndex);
+    }
+  }
 }
 
-class SupplierSearchDelegate extends SearchDelegate<String> {
-  final List<String> suppliers;
-
-  SupplierSearchDelegate(this.suppliers);
+class SearchSupplierWidget extends StatelessWidget {
+  const SearchSupplierWidget({super.key});
 
   @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-          showSuggestions(context);
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 25.h),
+      child: TextField(
+        onChanged: (value) {
+          Get.find<SelectSupplierScreenController>()
+              .searchAndAssignPartner(value);
         },
+        decoration: InputDecoration(
+          hintText: AppStrings.searchPartner,
+          hintStyle: Get.textTheme.bodyLarge,
+          isDense: true,
+          contentPadding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
+          prefixIcon: Icon(Icons.search, color: AppColors.white),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(5),
+            borderSide: BorderSide(color: AppColors.white),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(5),
+            borderSide: BorderSide(color: AppColors.white),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(5),
+            borderSide: BorderSide(color: AppColors.white),
+          ),
+        ),
       ),
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.arrow_back),
-      onPressed: () {
-        close(context, '');
-      },
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    final results = suppliers
-        .where(
-            (supplier) => supplier.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-
-    return ListView.builder(
-      itemCount: results.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(results[index]),
-          onTap: () {
-            close(context, results[index]);
-          },
-        );
-      },
-    );
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    final suggestions = suppliers
-        .where((supplier) =>
-            supplier.toLowerCase().startsWith(query.toLowerCase()))
-        .toList();
-
-    return ListView.builder(
-      itemCount: suggestions.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(suggestions[index]),
-          onTap: () {
-            query = suggestions[index];
-            showResults(context);
-          },
-        );
-      },
     );
   }
 }
