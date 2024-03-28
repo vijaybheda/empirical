@@ -176,7 +176,7 @@ class LoginScreen extends GetView<AuthController> {
         }
       } catch (e) {
         Utils.hideLoadingDialog();
-        print('doLoginAction ${e.toString()}');
+        debugPrint('doLoginAction ${e.toString()}');
         if (e is CustomException) {
           // info alert dialog
           Utils.showErrorAlertDialog(e.message);

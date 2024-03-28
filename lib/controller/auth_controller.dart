@@ -182,7 +182,7 @@ class AuthController extends GetxController {
 
       return null;
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       rethrow;
     }
   }
