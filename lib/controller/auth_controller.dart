@@ -65,57 +65,96 @@ class AuthController extends GetxController {
 
   // loginUser
   Future<LoginData?> loginUser({required bool isLoginButton}) async {
-    String mUsername = emailTextController.value.text.trim();
-    String mPassword = passwordTextController.value.text;
-    if (await Utils.hasInternetConnection()) {
-      LoginData? userData = await UserService()
-          .checkLogin(loginRequestUrl, mUsername, mPassword, isLoginButton);
+    try {
+      String mUsername = emailTextController.value.text.trim();
+      String mPassword = passwordTextController.value.text;
+      if (await Utils.hasInternetConnection()) {
+        LoginData? userData = await UserService()
+            .checkLogin(loginRequestUrl, mUsername, mPassword, isLoginButton);
 
-      if (userData != null) {
-        try {
-          int userid =
-              await ApplicationDao().getEnterpriseIdByUserId(mUsername);
-          if (userid == 0) {
-            int? _id = await ApplicationDao().createOrUpdateOfflineUser(
-              mUsername.toLowerCase(),
-              userData.access1!,
-              userData.enterpriseId!,
-              userData.status == 3 ? "Inactive" : "Active",
-              userData.subscriptionExpired ?? false,
-              userData.supplierId!,
-              userData.headquarterSupplierId!,
-              userData.gtinScanning!,
-            );
+        if (userData != null) {
+          try {
+            int userid =
+                await ApplicationDao().getEnterpriseIdByUserId(mUsername);
+            if (userid == 0) {
+              int? _id = await ApplicationDao().createOrUpdateOfflineUser(
+                mUsername.toLowerCase(),
+                userData.access1!,
+                userData.enterpriseId!,
+                userData.status == 3 ? "Inactive" : "Active",
+                userData.subscriptionExpired ?? false,
+                userData.supplierId!,
+                userData.headquarterSupplierId!,
+                userData.gtinScanning!,
+              );
 
-            return userData;
-          } else {
-            return userData;
+              return userData;
+            } else {
+              return userData;
+            }
+          } catch (e) {
+            await Utils.hideLoadingDialog();
+            Utils.showErrorAlertDialog(AppStrings.invalidUsernamePassword);
           }
-        } catch (e) {
-          await Utils.hideLoadingDialog();
-          Utils.showErrorAlert(AppStrings.invalidUsernamePassword);
         }
-      }
-      /*// todo remove below code
-      else {
-        String mUsername = emailTextController.value.text.trim();
-        String mPassword = passwordTextController.value.text;
+        /*// todo remove below code
+            else {
+              String mUsername = emailTextController.value.text.trim();
+              String mPassword = passwordTextController.value.text;
+              String? userHash =
+                  await ApplicationDao().getOfflineUserHash(mUsername.toLowerCase());
+
+              if (userHash != null && userHash.isNotEmpty) {
+                if (SecurePassword().validatePasswordHash(mPassword, userHash)) {
+                  List<String> features = [];
+                  features.add("pfg");
+
+                  await ApplicationDao().getOfflineUserData(mUsername.toLowerCase());
+
+                  await persistUserName();
+
+                  if (isLoginButton) {
+                    LoginData? userData = appStorage.getLoginData();
+                    if ((userData?.subscriptionExpired ?? true) ||
+                        userData?.status == 3) {
+                      await Utils.hideLoadingDialog();
+                      Utils.showInfoAlertDialog(
+                          "Your account is inactive. Please contact your administrator.");
+                    } else {
+                      await jsonFileOperations.offlineLoadSuppliersData();
+                      await jsonFileOperations.offlineLoadCarriersData();
+                      await jsonFileOperations.offlineLoadCommodityData();
+                      await Utils.hideLoadingDialog();
+                      Get.offAll(() => const DashboardScreen());
+                    }
+                  } else {
+                    await Utils.hideLoadingDialog();
+                    Get.offAll(() => SetupScreen());
+                  }
+                } else {
+                  await Utils.hideLoadingDialog();
+                  // show error alert dialog
+                  Utils.showErrorAlert(AppStrings.invalidUsernamePassword);
+                }
+              } else {
+                await Utils.hideLoadingDialog();
+                // show Info Alert Dialog
+                Utils.showInfoAlertDialog(AppStrings.turnOnWifi);
+              }
+            }*/
+      } else {
         String? userHash =
             await ApplicationDao().getOfflineUserHash(mUsername.toLowerCase());
 
         if (userHash != null && userHash.isNotEmpty) {
-          if (SecurePassword().validatePasswordHash(mPassword, userHash)) {
-            List<String> features = [];
-            features.add("pfg");
-
-            await ApplicationDao().getOfflineUserData(mUsername.toLowerCase());
-
+          if (SecurePassword.validatePasswordHash(mPassword, userHash)) {
+            UserOffline? offlineUser = await ApplicationDao()
+                .getOfflineUserData(mUsername.toLowerCase());
             await persistUserName();
-
             if (isLoginButton) {
-              LoginData? userData = appStorage.getLoginData();
-              if ((userData?.subscriptionExpired ?? true) ||
-                  userData?.status == 3) {
+              if (offlineUser != null && offlineUser.isSubscriptionExpired ||
+                  offlineUser?.status == 3) {
+                // show Info Alert Dialog
                 await Utils.hideLoadingDialog();
                 Utils.showInfoAlertDialog(
                     "Your account is inactive. Please contact your administrator.");
@@ -124,7 +163,7 @@ class AuthController extends GetxController {
                 await jsonFileOperations.offlineLoadCarriersData();
                 await jsonFileOperations.offlineLoadCommodityData();
                 await Utils.hideLoadingDialog();
-                Get.offAll(() => const DashboardScreen());
+                Get.offAll(() => Home());
               }
             } else {
               await Utils.hideLoadingDialog();
@@ -132,54 +171,20 @@ class AuthController extends GetxController {
             }
           } else {
             await Utils.hideLoadingDialog();
-            // show error alert dialog
-            Utils.showErrorAlert(AppStrings.invalidUsernamePassword);
+            Utils.showErrorAlertDialog(AppStrings.invalidUsernamePassword);
           }
         } else {
           await Utils.hideLoadingDialog();
           // show Info Alert Dialog
           Utils.showInfoAlertDialog(AppStrings.turnOnWifi);
         }
-      }*/
-    } else {
-      String? userHash =
-          await ApplicationDao().getOfflineUserHash(mUsername.toLowerCase());
-
-      if (userHash != null && userHash.isNotEmpty) {
-        if (SecurePassword.validatePasswordHash(mPassword, userHash)) {
-          UserOffline? offlineUser = await ApplicationDao()
-              .getOfflineUserData(mUsername.toLowerCase());
-          await persistUserName();
-          if (isLoginButton) {
-            if (offlineUser != null && offlineUser.isSubscriptionExpired ||
-                offlineUser?.status == 3) {
-              // show Info Alert Dialog
-              await Utils.hideLoadingDialog();
-              Utils.showInfoAlertDialog(
-                  "Your account is inactive. Please contact your administrator.");
-            } else {
-              await jsonFileOperations.offlineLoadSuppliersData();
-              await jsonFileOperations.offlineLoadCarriersData();
-              await jsonFileOperations.offlineLoadCommodityData();
-              await Utils.hideLoadingDialog();
-              Get.offAll(() => Home());
-            }
-          } else {
-            await Utils.hideLoadingDialog();
-            Get.offAll(() => SetupScreen());
-          }
-        } else {
-          await Utils.hideLoadingDialog();
-          Utils.showErrorAlert(AppStrings.invalidUsernamePassword);
-        }
-      } else {
-        await Utils.hideLoadingDialog();
-        // show Info Alert Dialog
-        Utils.showInfoAlertDialog(AppStrings.turnOnWifi);
       }
-    }
 
-    return null;
+      return null;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
   }
 
   String get loginRequestUrl =>
