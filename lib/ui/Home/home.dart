@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, avoid_types_as_parameter_names, must_be_immutable, avoid_unnecessary_containers, unrelated_type_equality_checks, unused_element, sized_box_for_whitespace
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -9,6 +8,7 @@ import 'package:pverify/ui/Home/home_controller.dart';
 import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/common_widget/alert.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/images.dart';
@@ -62,7 +62,7 @@ class Home extends GetView<HomeController> {
                         children: [
                           Container(
                             alignment: Alignment.center,
-                            width: MediaQuery.of(context).size.width / 2.5,
+                            width: (MediaQuery.of(context).size.width / 2.5),
                             padding: EdgeInsets.symmetric(vertical: 15.h),
                             decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.secondary,
@@ -86,7 +86,7 @@ class Home extends GetView<HomeController> {
                             ),
                           ),
                           Container(
-                            width: MediaQuery.of(context).size.width / 4.3,
+                            width: (MediaQuery.of(context).size.width / 4.3),
                             padding: EdgeInsets.symmetric(vertical: 15.h),
                             decoration: BoxDecoration(
                                 color: AppColors.white,
@@ -117,7 +117,7 @@ class Home extends GetView<HomeController> {
                           ),
                           Container(
                             alignment: Alignment.centerLeft,
-                            width: MediaQuery.of(context).size.width / 3.09,
+                            width: (MediaQuery.of(context).size.width / 3.09),
                             padding: EdgeInsets.symmetric(
                                 vertical: 15.h, horizontal: 10),
                             decoration: BoxDecoration(
@@ -332,7 +332,7 @@ class Home extends GetView<HomeController> {
         customButton(
             AppColors.primary,
             AppStrings.inspectNewProduct.toUpperCase(),
-            1000.w,
+            320,
             125,
             GoogleFonts.poppins(
                 fontSize: 38.sp,
@@ -342,7 +342,7 @@ class Home extends GetView<HomeController> {
         SizedBox(
           height: 35.h,
         ),
-        bottomContent()
+        bottomContent(context)
       ],
     );
   }
@@ -444,7 +444,9 @@ class Home extends GetView<HomeController> {
                             style: Theme.of(context)
                                 .textTheme
                                 .displayMedium
-                                ?.copyWith(color: AppColors.primary)),
+                                ?.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w800)),
                       ),
                       Container(
                         alignment: Alignment.center,
@@ -536,7 +538,8 @@ class Home extends GetView<HomeController> {
                               style: Theme.of(context)
                                   .textTheme
                                   .displayMedium
-                                  ?.copyWith(color: AppColors.primary),
+                                  ?.copyWith(color: AppColors.primary,
+                                  fontWeight: FontWeight.w800),
                             ),
                             InkWell(
                               onTap: () {
@@ -626,7 +629,7 @@ class Home extends GetView<HomeController> {
 
   // BOTTOM VIEW
 
-  Widget bottomContent() {
+  Widget bottomContent(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(left: 15, right: 15),
       height: 120.h,
@@ -659,7 +662,7 @@ class Home extends GetView<HomeController> {
           const Spacer(),
           InkWell(
             onTap: () {
-              debugPrint('Logout button tap.');
+              showLogoutConfirmation(context);
             },
             child: Text(
               AppStrings.logOut,

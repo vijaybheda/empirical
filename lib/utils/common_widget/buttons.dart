@@ -18,7 +18,7 @@ Widget customButton(
     child: Container(
       alignment: Alignment.center,
       height: height.h,
-      width: width.w,
+      width: width,
       decoration: BoxDecoration(
           color: backgroundColor, borderRadius: BorderRadius.circular(45.r)),
       child: Text(
