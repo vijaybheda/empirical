@@ -28,9 +28,30 @@ class ScanBarcodeView extends StatelessWidget {
         children: [
           Center(
             child: TextButton(
-              onPressed: () {
-                // TODO: Implement barcode scanning
-                onBarcodeScanned?.call('1234567890');
+              onPressed: () async {
+                // TODO: uncomment this code to enable barcode scanning
+
+                /*String? res = await Get.to(() => SimpleBarcodeScannerPage(
+                      scanType: ScanType.barcode,
+                      centerTitle: true,
+                      appBarTitle: 'Scan a Barcode',
+                      cancelButtonText: 'Cancel',
+                      isShowFlashIcon: true,
+                      lineColor: AppColors.primaryColor.value.toString(),
+                    ));
+                if (res != null) {
+                  if (onBarcodeScanned != null) {
+                    onBarcodeScanned!(res);
+                  }
+                  'Scanned: $res'
+                } else {
+                'Cancelled'
+
+                }*/
+
+                if (onBarcodeScanned != null) {
+                  onBarcodeScanned!('(01)1233455566778(13)090818(10)912');
+                }
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(AppColors.white),

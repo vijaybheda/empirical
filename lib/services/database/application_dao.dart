@@ -1521,4 +1521,110 @@ class ApplicationDao {
       return false;
     }
   }
+
+  /*Future<List<SpecificationSupplierGTIN>> getSpecificationSupplierGTINFromTable(
+      String gtin) async {
+    List<SpecificationSupplierGTIN> itemSKUList = [];
+    SpecificationSupplierGTIN item;
+    Database db = await dbProvider.database;
+
+    try {
+      String? specNo = "";
+      String? specVersion = "";
+
+      String query =
+          "Select distinct number_specification, version_specification from Specification_Supplier ss " +
+              "inner join specification_supplier_gtin sgtin on sgtin.Specification_Supplier_ID=ss.Specification_Supplier_ID " +
+              "where sgtin.gtin='" +
+              gtin +
+              "'";
+
+      db.rawQuery(query).then((cursor) {
+        if (cursor.isNotEmpty) {
+          for (var row in cursor) {
+            specNo = row["number_specification"] as String?;
+            specVersion = row["version_specification"] as String?;
+          }
+        }
+      });
+
+      String query2 = "SELECT SP.NUMBER, SP.VERSION, SP.NAME, SS.SUPPLIER_ID, SGTIN.GTIN, SPECTYPE.NAME AS SPECIFICATION_TYPE," +
+          "SKU.SKU_ID AS ITEM_SKU_ID, SKU.NAME AS ITEM_SKU_NAME, SKU.CODE AS ITEM_SKU_CODE," +
+          "COMMODITY.ID AS COMMODITY_ID, COMMODITY.NAME AS COMMODITY_NAME, COMMODITY.Sample_Size_By_Count," +
+          "VARIETY.Group1_ID AS VARIETY_ID, VARIETY.NAME AS VARIETY_NAME, GRADE.ID AS GRADE_ID, GRADE.NAME AS GRADE_NAME, AGENCY.ID AS AGENCY_ID, AGENCY.NAME AS AGENCY_NAME " +
+          "FROM SPECIFICATION_SUPPLIER SS JOIN SPECIFICATION SP ON (SS.NUMBER_SPECIFICATION,SS.VERSION_SPECIFICATION)=(SP.NUMBER,SP.VERSION) " +
+          "INNER JOIN SPECIFICATION_SUPPLIER_GTIN SGTIN ON SGTIN.SPECIFICATION_SUPPLIER_ID=SS.Specification_Supplier_ID " +
+          "JOIN MATERIAL_SPECIFICATION MS ON (SP.NUMBER,SP.VERSION)=(MS.NUMBER_SPECIFICATION,MS.VERSION_SPECIFICATION) " +
+          "JOIN SPECIFICATION_TYPE SPECTYPE ON SP.SPECIFICATION_TYPE_ID=SPECTYPE.Specification_Type_ID " +
+          "LEFT JOIN ITEM_SKU SKU ON SS.ITEM_SKU_ID=SKU.SKU_ID " +
+          "LEFT JOIN COMMODITY COMMODITY ON SP.COMMODITY_ID = COMMODITY.ID " +
+          "LEFT JOIN ItemGroup1 VARIETY ON SP.Item_Group1_ID=VARIETY.Group1_ID " +
+          "LEFT JOIN GRADE ON MS.GRADE_ID=GRADE.ID " +
+          "LEFT JOIN AGENCY ON GRADE.AGENCY_ID=AGENCY.ID " +
+          "WHERE SGTIN.GTIN='" +
+          gtin +
+          "'";
+
+      db.rawQuery(query2).then((cursorList) {
+        if (cursorList.isNotEmpty) {
+          for (var cursor in cursorList) {
+            item = SpecificationSupplierGTIN();
+            item.specificationNumber = cursor[0];
+            item.specificationVersion = cursor[1];
+            item.specificationName = cursor[2];
+            item.supplierId = cursor[3];
+            item.specificationTypeName = cursor[5];
+            item.itemSkuId = cursor[6];
+            item.itemSkuName = cursor[7];
+            item.itemSkuCode = cursor[8];
+            item.commodityId = cursor[9];
+            item.commodityName = cursor[10];
+            item.varietyId = cursor[11];
+            item.varietyName = cursor[12];
+            item.gradeId = cursor[13];
+            item.gradeName = cursor[14];
+            item.agencyId = cursor[15];
+            item.agencyName = cursor[16];
+
+            for (PartnerItem partnerItem in AppInfo.partnersList) {
+              if (partnerItem.getId() != null &&
+                  partnerItem.getId() == item.getSupplierId()) {
+                item.setSupplierName(partnerItem.getName());
+                break;
+              }
+            }
+
+            SpecificationSupplierGTIN listItem = SpecificationSupplierGTIN(
+              specificationNumber: item.specificationNumber,
+              specificationVersion: item.specificationVersion,
+              specificationName: item.specificationName,
+              supplierName: item.supplierName,
+              supplierId: item.supplierId,
+              varietyId: item.varietyId,
+              varietyName: item.varietyName,
+              commodityId: item.commodityId,
+              commodityName: item.commodityName,
+              gtin: gtin,
+              itemSkuId: item.itemSkuId,
+              itemSkuName: item.itemSkuName,
+              agencyId: item.agencyId,
+              agencyName: item.agencyName,
+              gradeId: item.gradeId,
+              gradeName: item.gradeName,
+              samplesizecount: item.samplesizecount,
+              specificationTypeName: item.specificationTypeName,
+              itemSkuCode: item.itemSkuCode,
+            );
+
+            itemSKUList.add(listItem);
+          }
+        }
+      });
+    } catch (e) {
+      print("Error has occurred while finding quality control items.");
+      print(e);
+    }
+
+    return itemSKUList;
+  }*/
 }

@@ -7,6 +7,7 @@ import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/offline_commodity.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/severity_defect.dart';
+import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/models/user.dart';
 
 class AppStorage extends GetxController {
@@ -196,6 +197,32 @@ class AppStorage extends GetxController {
     return offlineCommodityList;
   }
 
+  Future<void> saveSpecificationSupplierGTINList(
+      List<SpecificationSupplierGTIN> specificationSupplierGTINList) {
+    // list to String
+    List<Map<String, dynamic>> specificationSupplierGTINListString =
+        specificationSupplierGTINList.map((e) => e.toJson()).toList();
+    return write(StorageKey.kSpecificationSupplierGTINList,
+        specificationSupplierGTINListString);
+  }
+
+  List<SpecificationSupplierGTIN>? getSpecificationSupplierGTINList() {
+    // read String data and convert to List<SpecificationSupplierGTINItem> list
+    var specificationSupplierGTINListString =
+        read(StorageKey.kSpecificationSupplierGTINList);
+    if (specificationSupplierGTINListString == null) {
+      return null;
+    }
+
+    List<dynamic> decodedData = specificationSupplierGTINListString;
+    List<SpecificationSupplierGTIN> specificationSupplierGTINList = decodedData
+        .map((item) => SpecificationSupplierGTIN.fromJson(item))
+        .toList()
+        .cast<SpecificationSupplierGTIN>();
+
+    return specificationSupplierGTINList;
+  }
+
   Future<void> setLoginData(LoginData loginData) async {
     await write(StorageKey.kLoginUserData, loginData.toJson());
     return;
@@ -278,4 +305,6 @@ class StorageKey {
   static const String kDefectList = 'defectList';
   static const String kSeverityDefectList = 'severityDefect';
   static const String kOfflineCommodityList = 'offlineCommodity';
+  static const String kSpecificationSupplierGTINList =
+      'specificationSupplierGTIN';
 }

@@ -39,8 +39,8 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
                 const SearchSupplierWidget(),
                 Expanded(flex: 10, child: _partnerListSection()),
                 ScanBarcodeView(
-                  onBarcodeScanned: (String barcode) {
-                    // controller.searchAndAssignPartner(barcode);
+                  onBarcodeScanned: (String barcode) async {
+                    // await controller.scanGTINResultContents(barcode);
                   },
                 ),
                 FooterContentView(
