@@ -15,9 +15,10 @@ class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
             backgroundColor: Get.theme.colorScheme.background,
             appBar: AppBar(
               leading: const Offstage(),
+              leadingWidth: 0,
               title: Text('Cache Download',
                   style: Get.textTheme.titleMedium
-                      ?.copyWith(color: Colors.white, fontSize: 18)),
+                      ?.copyWith(color: Colors.white, fontSize: 30)),
               backgroundColor: Get.theme.colorScheme.background,
               foregroundColor: Get.theme.colorScheme.background,
             ),
@@ -27,13 +28,17 @@ class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   /// loading indicator
-                  const Center(
+                  Center(
                     child: SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: CircularProgressIndicator.adaptive(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        backgroundColor: Colors.white,
+                      height: 150,
+                      width: 200,
+                      child: Transform.scale(
+                        scale: 3,
+                        child: CircularProgressIndicator.adaptive(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                          backgroundColor: Colors.white,
+                        ),
                       ),
                     ),
                   ),
@@ -45,7 +50,7 @@ class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
                     textAlign: TextAlign.center,
                     style: Get.textTheme.titleLarge?.copyWith(
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 27,
                     ),
                   ),
                 ],
