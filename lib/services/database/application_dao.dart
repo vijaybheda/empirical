@@ -10,12 +10,15 @@ import 'package:pverify/models/inspection_defect.dart';
 import 'package:pverify/models/inspection_sample.dart';
 import 'package:pverify/models/inspection_specification.dart';
 import 'package:pverify/models/my_inspection_48hour_item.dart';
+import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/specification.dart';
+import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/models/user.dart';
 import 'package:pverify/models/user_offline.dart';
 import 'package:pverify/services/database/column_names.dart';
 import 'package:pverify/services/database/database_helper.dart';
 import 'package:pverify/services/database/db_tables.dart';
+import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/utils.dart';
 import 'package:sqflite/sqflite.dart';
@@ -24,6 +27,9 @@ class ApplicationDao {
   // instance
 
   final dbProvider = DatabaseHelper.instance;
+
+  final AppStorage _appStorage = AppStorage.instance;
+  AppStorage get appStorage => _appStorage;
 
   Future<int> createOrUpdateUser(User user) async {
     try {
@@ -1522,11 +1528,11 @@ class ApplicationDao {
     }
   }
 
-  /*Future<List<SpecificationSupplierGTIN>> getSpecificationSupplierGTINFromTable(
-      String gtin) async {
+  Future<List<SpecificationSupplierGTIN>?>
+      getSpecificationSupplierGTINFromTable(String gtin) async {
     List<SpecificationSupplierGTIN> itemSKUList = [];
     SpecificationSupplierGTIN item;
-    Database db = await dbProvider.database;
+    final db = await dbProvider.database;
 
     try {
       String? specNo = "";
@@ -1569,27 +1575,26 @@ class ApplicationDao {
         if (cursorList.isNotEmpty) {
           for (var cursor in cursorList) {
             item = SpecificationSupplierGTIN();
-            item.specificationNumber = cursor[0];
-            item.specificationVersion = cursor[1];
-            item.specificationName = cursor[2];
-            item.supplierId = cursor[3];
-            item.specificationTypeName = cursor[5];
-            item.itemSkuId = cursor[6];
-            item.itemSkuName = cursor[7];
-            item.itemSkuCode = cursor[8];
-            item.commodityId = cursor[9];
-            item.commodityName = cursor[10];
-            item.varietyId = cursor[11];
-            item.varietyName = cursor[12];
-            item.gradeId = cursor[13];
-            item.gradeName = cursor[14];
-            item.agencyId = cursor[15];
-            item.agencyName = cursor[16];
-
-            for (PartnerItem partnerItem in AppInfo.partnersList) {
-              if (partnerItem.getId() != null &&
-                  partnerItem.getId() == item.getSupplierId()) {
-                item.setSupplierName(partnerItem.getName());
+            // item.specificationNumber = cursor[0];
+            // item.specificationVersion = cursor[1];
+            // item.specificationName = cursor[2];
+            // item.supplierId = cursor[3];
+            // item.specificationTypeName = cursor[5];
+            // item.itemSkuId = cursor[6];
+            // item.itemSkuName = cursor[7];
+            // item.itemSkuCode = cursor[8];
+            // item.commodityId = cursor[9];
+            // item.commodityName = cursor[10];
+            // item.varietyId = cursor[11];
+            // item.varietyName = cursor[12];
+            // item.gradeId = cursor[13];
+            // item.gradeName = cursor[14];
+            // item.agencyId = cursor[15];
+            // item.agencyName = cursor[16];
+            List<PartnerItem> partnersList = appStorage.getPartnerList() ?? [];
+            for (PartnerItem partnerItem in partnersList) {
+              if (partnerItem.id != null && partnerItem.id == item.supplierId) {
+                item.supplierName = partnerItem.name;
                 break;
               }
             }
@@ -1623,8 +1628,45 @@ class ApplicationDao {
     } catch (e) {
       print("Error has occurred while finding quality control items.");
       print(e);
+      return null;
     }
 
     return itemSKUList;
-  }*/
+  }
+
+  Future<int> deleteRowsTempTrailerTable() async {
+    try {
+      Database db = await dbProvider.database;
+      return await db.transaction((txn) async {
+        return await txn.delete(DBTables.TEMP_TRAILER_TEMPERATURE);
+      });
+    } catch (e) {
+      log('Error has deleting temp trailer temperature table: ${e.toString()}');
+      return -1;
+    }
+  }
+
+  Future<int> deleteTempTrailerTemperatureDetails() async {
+    try {
+      Database db = await dbProvider.database;
+      return await db.transaction((txn) async {
+        return await txn.delete(DBTables.TEMP_TRAILER_TEMPERATURE_DETAILS);
+      });
+    } catch (e) {
+      log('Error has deleting temp trailer temperature details: ${e.toString()}');
+      return -1;
+    }
+  }
+
+  Future<int> deleteSelectedItemSKUList() async {
+    try {
+      Database db = await dbProvider.database;
+      return await db.transaction((txn) async {
+        return await txn.delete(DBTables.SELECTED_ITEM_SKU_LIST);
+      });
+    } catch (e) {
+      print('Error has occurred while deleting selected item SKU list: $e');
+      return -1;
+    }
+  }
 }

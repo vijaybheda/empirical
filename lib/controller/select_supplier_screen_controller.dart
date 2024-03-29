@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/ui/scorecard/scorecard_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/utils.dart';
 
 class SelectSupplierScreenController extends GetxController {
   final ScrollController scrollController = ScrollController();
@@ -85,7 +89,7 @@ class SelectSupplierScreenController extends GetxController {
     }
   }
 
-  /*Future<void> scanGTINResultContents(String contents) async {
+  Future<void> scanGTINResultContents(String contents) async {
     String barcodeResult = contents;
 
     print(barcodeResult);
@@ -152,7 +156,7 @@ class SelectSupplierScreenController extends GetxController {
 
                   if (isOnline) {
                     // TODO: implement online flow
-                    */ /*WSSpecificationSupplierGTIN webservice =
+                    /*WSSpecificationSupplierGTIN webservice =
                         WSSpecificationSupplierGTIN(context);
                     webservice.RequestSpecificationSupplierGTIN(
                         gtinStr,
@@ -163,20 +167,22 @@ class SelectSupplierScreenController extends GetxController {
                         lotNumber,
                         packDate,
                         "",
-                        dateType);*/ /*
+                        dateType);*/
                   } else {
-                    List<SpecificationSupplierGTIN>
+                    List<SpecificationSupplierGTIN>?
                         specificationSupplierGTINList = await ApplicationDao()
                             .getSpecificationSupplierGTINFromTable(gtinStr);
-                    appStorage.saveSpecificationSupplierGTINList(
-                        specificationSupplierGTINList);
-                    loadGtinOfflineMode(dateType);
+                    if (specificationSupplierGTINList != null) {
+                      appStorage.saveSpecificationSupplierGTINList(
+                          specificationSupplierGTINList);
+                      loadGtinOfflineMode(dateType);
+                    }
                   }
                 } else {
-                  Utils.showErrorAlert("Error reading GTIN Barcode");
+                  Utils.showInfoAlertDialog("Error reading GTIN Barcode");
                 }
               } else {
-                Utils.showErrorAlert("Error reading GTIN Barcode");
+                Utils.showInfoAlertDialog("Error reading GTIN Barcode");
               }
             } else if (check02 == "10") {
               lotNumber = barcodeResult.substring(22);
@@ -184,7 +190,7 @@ class SelectSupplierScreenController extends GetxController {
 
               if (isOnline) {
                 // TODO: implement online flow
-                */ /*WSSpecificationSupplierGTIN webservice =
+                /*WSSpecificationSupplierGTIN webservice =
                     WSSpecificationSupplierGTIN(context);
                 webservice.RequestSpecificationSupplierGTIN(
                     gtinStr,
@@ -195,23 +201,25 @@ class SelectSupplierScreenController extends GetxController {
                     lotNumber,
                     packDate,
                     "",
-                    dateType);*/ /*
+                    dateType);*/
               } else {
                 var specificationSupplierGTINList =
                     await dao.getSpecificationSupplierGTINFromTable(gtinStr);
 
-                appStorage.saveSpecificationSupplierGTINList(
-                    specificationSupplierGTINList ?? []);
-                loadGtinOfflineMode(dateType);
+                if (specificationSupplierGTINList != null) {
+                  appStorage.saveSpecificationSupplierGTINList(
+                      specificationSupplierGTINList);
+                  loadGtinOfflineMode(dateType);
+                }
               }
             } else {
-              Utils.showErrorAlert("Error reading GTIN Barcode");
+              Utils.showInfoAlertDialog("Error reading GTIN Barcode");
             }
           } else {
-            Utils.showErrorAlert("Error reading GTIN Barcode");
+            Utils.showInfoAlertDialog("Error reading GTIN Barcode");
           }
         } else {
-          Utils.showErrorAlert("Error reading GTIN Barcode");
+          Utils.showInfoAlertDialog("Error reading GTIN Barcode");
         }
       } else {
         check01 = barcodeResult.substring(0, 2);
@@ -259,7 +267,7 @@ class SelectSupplierScreenController extends GetxController {
 
               if (isOnline) {
                 // TODO: implement online flow
-                */ /*WSSpecificationSupplierGTIN webservice =
+                /*WSSpecificationSupplierGTIN webservice =
                     WSSpecificationSupplierGTIN(context);
                 webservice.RequestSpecificationSupplierGTIN(
                     gtinStr,
@@ -270,17 +278,19 @@ class SelectSupplierScreenController extends GetxController {
                     lotNumber,
                     packDate,
                     "",
-                    dateType);*/ /*
+                    dateType);*/
               } else {
                 var specificationSupplierGTINList =
                     await dao.getSpecificationSupplierGTINFromTable(gtinStr);
 
-                appStorage.saveSpecificationSupplierGTINList(
-                    specificationSupplierGTINList ?? []);
-                loadGtinOfflineMode(dateType);
+                if (specificationSupplierGTINList != null) {
+                  appStorage.saveSpecificationSupplierGTINList(
+                      specificationSupplierGTINList);
+                  loadGtinOfflineMode(dateType);
+                }
               }
             } else {
-              Utils.showErrorAlert("Error reading GTIN Barcode");
+              Utils.showInfoAlertDialog("Error reading GTIN Barcode");
             }
           } else if (check02 == "10") {
             lotNumber = barcodeResult.substring(22);
@@ -288,7 +298,7 @@ class SelectSupplierScreenController extends GetxController {
 
             if (isOnline) {
               // TODO: implement online flow
-              */ /*WSSpecificationSupplierGTIN webservice =
+              /*WSSpecificationSupplierGTIN webservice =
                   WSSpecificationSupplierGTIN(context);
               webservice.RequestSpecificationSupplierGTIN(
                   gtinStr,
@@ -299,32 +309,36 @@ class SelectSupplierScreenController extends GetxController {
                   lotNumber,
                   packDate,
                   "",
-                  dateType);*/ /*
+                  dateType);*/
             } else {
               var specificationSupplierGTINList =
                   await dao.getSpecificationSupplierGTINFromTable(gtinStr);
 
-              appStorage.saveSpecificationSupplierGTINList(
-                  specificationSupplierGTINList ?? []);
-              loadGtinOfflineMode(dateType);
+              if (specificationSupplierGTINList != null) {
+                appStorage.saveSpecificationSupplierGTINList(
+                    specificationSupplierGTINList);
+                loadGtinOfflineMode(dateType);
+              }
             }
           } else {
-            Utils.showErrorAlert("Error reading GTIN Barcode");
+            Utils.showInfoAlertDialog("Error reading GTIN Barcode");
           }
         } else {
-          Utils.showErrorAlert("Error reading GTIN Barcode");
+          Utils.showInfoAlertDialog("Error reading GTIN Barcode");
         }
       }
     } else {
-      Utils.showErrorAlert("Error reading GTIN Barcode");
+      Utils.showInfoAlertDialog("Error reading GTIN Barcode");
     }
-  }*/
+  }
 
-  /*Future<void> loadGtinOfflineMode(String dateType) async {
-    List<SpecificationSupplierGTIN> specificationSupplierGTINList =
-        appStorage.getSpecificationSupplierGTINList() ?? [];
+  Future<void> loadGtinOfflineMode(String dateType) async {
+    List<SpecificationSupplierGTIN>? specificationSupplierGTINList =
+        appStorage.getSpecificationSupplierGTINList();
 
-    if (specificationSupplierGTINList.length > 1) {
+    print(
+        'specificationSupplierGTINList ${specificationSupplierGTINList?.length}');
+    /*if (specificationSupplierGTINList.length > 1) {
       List<FinishedGoodsItemSKU> list = [];
       for (int i = 0; i < specificationSupplierGTINList.length; i++) {
         FinishedGoodsItemSKU listItem = FinishedGoodsItemSKU(
@@ -495,6 +509,10 @@ class SelectSupplierScreenController extends GetxController {
           );
         }
       }
-    }
-  }*/
+    }*/
+  }
+
+  void navigateToPartnerDetails(PartnerItem partner) {
+    Get.to(() => ScorecardScreen(partner: partner));
+  }
 }

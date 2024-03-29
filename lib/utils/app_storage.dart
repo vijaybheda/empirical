@@ -10,6 +10,8 @@ import 'package:pverify/models/severity_defect.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/models/user.dart';
 
+import '../models/finished_goods_item_sku.dart';
+
 class AppStorage extends GetxController {
   // ignore: prefer_function_declarations_over_variables
   final storageBox = () => GetStorage(StorageKey.kAppStorageKey);
@@ -173,6 +175,28 @@ class AppStorage extends GetxController {
     return severityDefectList;
   }
 
+  Future<void> saveItemSKUList(List<FinishedGoodsItemSKU> itemSKUList) {
+    // list to String
+    List<Map<String, dynamic>> itemSKUListString =
+        itemSKUList.map((e) => e.toMap()).toList();
+    return write(StorageKey.kFinishedGoodsItemSKUList, itemSKUListString);
+  }
+
+  List<FinishedGoodsItemSKU>? getItemSKUList() {
+    var itemSKUListString = read(StorageKey.kFinishedGoodsItemSKUList);
+    if (itemSKUListString == null) {
+      return null;
+    }
+
+    List<dynamic> decodedData = itemSKUListString;
+    List<FinishedGoodsItemSKU> itemSKUList = decodedData
+        .map((item) => FinishedGoodsItemSKU.fromMap(item))
+        .toList()
+        .cast<FinishedGoodsItemSKU>();
+
+    return itemSKUList;
+  }
+
   Future<void> saveOfflineCommodityList(
       List<OfflineCommodity> offlineCommodityList) {
     // list to String
@@ -265,7 +289,7 @@ class AppStorage extends GetxController {
     return;
   }
 
-  Future<int?> getInt(String key) async {
+  int? getInt(String key) {
     return read(key);
   }
 
@@ -283,6 +307,10 @@ class AppStorage extends GetxController {
 
   Map<String, dynamic> getHeaderMap() {
     return read(StorageKey.kHeaderMap) ?? {};
+  }
+
+  Future<void> removeDataByKey(String key) {
+    return storageBox().remove(key);
   }
 }
 
@@ -307,4 +335,5 @@ class StorageKey {
   static const String kOfflineCommodityList = 'offlineCommodity';
   static const String kSpecificationSupplierGTINList =
       'specificationSupplierGTIN';
+  static const String kFinishedGoodsItemSKUList = 'finishedGoodsItemSKUList';
 }

@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:pverify/controller/select_supplier_screen_controller.dart';
-import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/controller/select_carrier_screen_controller.dart';
+import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/ui/components/app_name_header.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
-import 'package:pverify/ui/components/scan_barcode_view.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
-class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
-  const SelectSupplierScreen({super.key});
+class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
+  const SelectCarrierScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<SelectSupplierScreenController>(
-        init: SelectSupplierScreenController(),
+    return GetBuilder<SelectCarrierScreenController>(
+        init: SelectCarrierScreenController(),
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -33,16 +32,11 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
             body: Column(
               children: [
                 HeaderContentView(
-                  title: AppStrings.selectPartner,
+                  title: AppStrings.selectCarrier,
                   isVersionShow: false,
                 ),
-                const SearchSupplierWidget(),
-                Expanded(flex: 10, child: _partnerListSection()),
-                ScanBarcodeView(
-                  onBarcodeScanned: (String barcode) async {
-                    await controller.scanGTINResultContents(barcode);
-                  },
-                ),
+                const SearchCarrierWidget(),
+                Expanded(flex: 10, child: _carrierListSection()),
                 FooterContentView(),
               ],
             ),
@@ -50,9 +44,9 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
         });
   }
 
-  GetBuilder<SelectSupplierScreenController> _partnerListSection() {
-    return GetBuilder<SelectSupplierScreenController>(
-      id: 'partnerList',
+  GetBuilder<SelectCarrierScreenController> _carrierListSection() {
+    return GetBuilder<SelectCarrierScreenController>(
+      id: 'carrierList',
       builder: (controller) {
         List<String> alphabets = controller.getListOfAlphabets();
         return Container(
@@ -65,8 +59,8 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
               controller.listAssigned.value
                   ? Expanded(
                       flex: 10,
-                      child: controller.filteredPartnerList.isNotEmpty
-                          ? partnerListView(controller)
+                      child: controller.filteredCarrierList.isNotEmpty
+                          ? carrierListView(controller)
                           : noDataFoundWidget(),
                     )
                   : const Center(
@@ -87,7 +81,7 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
   }
 
   Container listAlphabetsWidget(
-    SelectSupplierScreenController controller,
+    SelectCarrierScreenController controller,
     List<String> alphabets,
   ) {
     return Container(
@@ -121,7 +115,7 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
                   _scrollToListSection(controller, alphabets[targetIndex]);
                 }
 
-                */ /*int targetIndex = controller.filteredPartnerList.indexWhere(
+                */ /*int targetIndex = controller.filteredCarrierList.indexWhere(
                     (supplier) => supplier.name!.startsWith(letter));
                 if (targetIndex != -1) {
                   controller.scrollController.animateTo(
@@ -160,17 +154,17 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
     );
   }
 
-  ListView partnerListView(SelectSupplierScreenController controller) {
+  ListView carrierListView(SelectCarrierScreenController controller) {
     return ListView.builder(
       controller: controller.scrollController,
-      itemCount: controller.filteredPartnerList.length,
+      itemCount: controller.filteredCarrierList.length,
       itemBuilder: (context, index) {
-        PartnerItem partner = controller.filteredPartnerList.elementAt(index);
+        CarrierItem carrier = controller.filteredCarrierList.elementAt(index);
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             children: [
-              getAlphabetContent(controller.filteredPartnerList, index),
+              getAlphabetContent(controller.filteredCarrierList, index),
               SizedBox(
                 height: controller.listHeight,
                 child: Column(
@@ -183,14 +177,14 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
                       children: [
                         Expanded(
                           child: Text(
-                            partner.name ?? '-',
+                            carrier.name ?? '-',
                             style: Get.textTheme.bodyMedium?.copyWith(
                                 color: AppColors.white, fontSize: 45.h),
                           ),
                         ),
                         GestureDetector(
                           onTap: () {
-                            controller.navigateToPartnerDetails(partner);
+                            // controller.navigateToCarrierDetails(carrier);
                           },
                           child: SizedBox(
                             width: 100,
@@ -199,18 +193,18 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
                               mainAxisSize: MainAxisSize.max,
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                if ((partner.greenPercentage ?? 0) != 0)
+                                if ((carrier.greenPercentage ?? 0) != 0)
                                   _buildBar(Colors.green,
-                                      partner.greenPercentage ?? 0),
-                                if ((partner.yellowPercentage ?? 0) != 0)
+                                      carrier.greenPercentage ?? 0),
+                                if ((carrier.yellowPercentage ?? 0) != 0)
                                   _buildBar(Colors.yellow,
-                                      partner.yellowPercentage ?? 0),
-                                if ((partner.orangePercentage ?? 0) != 0)
+                                      carrier.yellowPercentage ?? 0),
+                                if ((carrier.orangePercentage ?? 0) != 0)
                                   _buildBar(Colors.orange,
-                                      partner.orangePercentage ?? 0),
-                                if ((partner.redPercentage ?? 0) != 0)
+                                      carrier.orangePercentage ?? 0),
+                                if ((carrier.redPercentage ?? 0) != 0)
                                   _buildBar(
-                                      Colors.red, partner.redPercentage ?? 0),
+                                      Colors.red, carrier.redPercentage ?? 0),
                               ],
                             ),
                           ),
@@ -241,14 +235,13 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
     );
   }
 
-  Widget getAlphabetContent(List<PartnerItem> allSuppliers, int index) {
+  Widget getAlphabetContent(List<CarrierItem> allCarriers, int index) {
     String alphabet = '';
-    PartnerItem itemData = allSuppliers[index];
+    CarrierItem itemData = allCarriers[index];
 
-    if (allSuppliers.isNotEmpty && index == 0) {
-      alphabet = allSuppliers.first.name![0];
-    } else if (itemData.name![0] !=
-        allSuppliers.elementAt(index - 1).name![0]) {
+    if (allCarriers.isNotEmpty && index == 0) {
+      alphabet = allCarriers.first.name![0];
+    } else if (itemData.name![0] != allCarriers.elementAt(index - 1).name![0]) {
       alphabet = itemData.name![0];
     }
 
@@ -279,9 +272,9 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
   }
 
   void _scrollToListSection(
-      SelectSupplierScreenController controller, String letter) {
-    int listTargetIndex = controller.filteredPartnerList
-        .indexWhere((supplier) => supplier.name!.startsWith(letter));
+      SelectCarrierScreenController controller, String letter) {
+    int listTargetIndex = controller.filteredCarrierList
+        .indexWhere((carrier) => carrier.name!.startsWith(letter));
     if (listTargetIndex != -1) {
       // controller.scrollController.jumpTo(listTargetIndex * listHeight);
       controller.scrollController
@@ -290,8 +283,8 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
   }
 }
 
-class SearchSupplierWidget extends StatelessWidget {
-  const SearchSupplierWidget({super.key});
+class SearchCarrierWidget extends StatelessWidget {
+  const SearchCarrierWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -299,11 +292,11 @@ class SearchSupplierWidget extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 25.h),
       child: TextField(
         onChanged: (value) {
-          Get.find<SelectSupplierScreenController>()
-              .searchAndAssignPartner(value);
+          Get.find<SelectCarrierScreenController>()
+              .searchAndAssignCarrier(value);
         },
         decoration: InputDecoration(
-          hintText: AppStrings.searchPartner,
+          hintText: AppStrings.searchCarrier,
           hintStyle: Get.textTheme.bodyLarge,
           isDense: true,
           contentPadding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),

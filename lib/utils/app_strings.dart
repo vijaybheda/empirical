@@ -161,6 +161,8 @@ class AppStrings {
   static String storageDeniedMessage =
       "External Storage permission required for this app.\nPlease go to Settings and enable permissions to continue.";
 
+  static String updateDataConfirmation = "Update Data?";
+
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';
 

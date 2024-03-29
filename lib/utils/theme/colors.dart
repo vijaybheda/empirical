@@ -51,7 +51,7 @@ class AppColors {
   static Color lightGrey = const Color(0xffBABABA);
   static Color darkGrey = const Color(0xdd4B5665);
   static Color lightSky = const Color(0xffE8F5F5);
-  static Color red = const Color(0xffea4001);
+  static Color red = const Color(0xffFA0000);
   static Color blue = const Color(0xff0064B2);
   static Color purple = const Color(0xff5D5DFF);
 
@@ -78,4 +78,7 @@ class AppColors {
   static Color background = AppConst.AppTheme == ThemeType.dark
       ? const Color(0xff5f5f5f)
       : const Color(0xff5f5f5f);
+
+  static Color orange = const Color(0xffFFA500);
+  static Color yellow = const Color(0xffFFFF00);
 }

@@ -50,7 +50,49 @@ class ScanBarcodeView extends StatelessWidget {
                 }*/
 
                 if (onBarcodeScanned != null) {
-                  onBarcodeScanned!('(01)1233455566778(13)090818(10)912');
+                  // onBarcodeScanned!('(01)1233455566778(13)090818(10)912');
+
+                  // /// Production Date= 11 > Yellow Peppers Bulk
+                  // onBarcodeScanned!('(01)10012345612340(11)180322(10)01234');
+
+                  // /// Due Date= 12 > Yellow Peppers Bulk
+                  // onBarcodeScanned!('(01)10012345612340(12)180322(10)01234');
+                  //
+                  // /// Pack Date= 13 > Yellow Peppers Bulk
+                  // onBarcodeScanned!('(01)10012345612340(13)180322(10)01234');
+                  //
+                  /// Date does not change represented by = 14 > Only displays GTIN# > Yellow Peppers Bulk
+                  onBarcodeScanned!('(01)10012345612340(14)180322(10)01234');
+                  //
+                  // /// Best Used Before Date= 15 > Yellow Peppers Bulk
+                  // onBarcodeScanned!('(01)10012345612340(15)180322(10)01234');
+                  //
+                  // /// Sell By Date= 16 > Yellow Peppers Bulk
+                  // onBarcodeScanned!('(01)10012345612340(16)180322(10)01234');
+                  //
+                  // /// Expiration Date= 17 > Yellow Peppers Bulk
+                  // onBarcodeScanned!('(01)10012345612340(17)180322(10)01234');
+                  //
+                  // /// Production Date= 11 > Tomato Beef STK
+                  // onBarcodeScanned!('(01)10851059002829(11)240101(10)99123');
+                  //
+                  // /// Due Date= 12 > Tomato Beef STK
+                  // onBarcodeScanned!('(01)10851059002829(12)240101(10)99123');
+                  //
+                  // /// Pack Date= 13 > Tomato Beef STK
+                  // onBarcodeScanned!('(01)10851059002829(13)240101(10)99123');
+                  //
+                  // /// Date does not change represented by = 14 > Only displays GTIN# > > Tomato Beef STK
+                  // onBarcodeScanned!('(01)10851059002829(14)240101(10)99123');
+                  //
+                  // /// Best Used Before Date= 15 > Tomato Beef STK
+                  // onBarcodeScanned!('(01)10851059002829(15)240101(10)99123');
+                  //
+                  // /// Sell By Date= 16 > Tomato Beef STK
+                  // onBarcodeScanned!('(01)10851059002829(16)240101(10)99123');
+                  //
+                  // /// Expiration Date= 17 > Tomato Beef STK
+                  // onBarcodeScanned!('(01)10851059002829(17)240101(10)99123');
                 }
               },
               style: ButtonStyle(
