@@ -1,7 +1,6 @@
-// ignore_for_file: must_be_immutable, non_constant_identifier_names, avoid_types_as_parameter_names, prefer_const_constructors, unrelated_type_equality_checks
+// ignore_for_file: must_be_immutable, non_constant_identifier_names, avoid_types_as_parameter_names, prefer_const_constructors, unrelated_type_equality_checks, unused_local_variable
 
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -17,7 +16,11 @@ import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class QualityControlHeader extends GetView<HomeController> {
-  QualityControlHeader({super.key});
+  final String carreerName;
+  final int careerID;
+
+  QualityControlHeader(
+      {super.key, required this.carreerName, required this.careerID});
   QualityControl_Controller Controller = QualityControl_Controller();
 
   @override
@@ -26,24 +29,26 @@ class QualityControlHeader extends GetView<HomeController> {
         init: QualityControl_Controller(),
         builder: (QualityControl_Controller) {
           return Scaffold(
-            backgroundColor: AppColors.white,
-            resizeToAvoidBottomInset: false,
-            appBar: AppBar(
-              automaticallyImplyLeading: false,
-              toolbarHeight: 150.h,
-              backgroundColor: AppColors.primary,
-              title: baseHeaderView(AppStrings.quality_control_header, false),
-            ),
-            body: Container(
-                color: Theme.of(context).colorScheme.background,
-                child: contentView(context)),
-          );
+              backgroundColor: AppColors.white,
+              resizeToAvoidBottomInset: false,
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                toolbarHeight: 150.h,
+                backgroundColor: AppColors.primary,
+                title: baseHeaderView(AppStrings.quality_control_header, false),
+              ),
+              body: Container(
+                  color: Theme.of(context).colorScheme.background,
+                  child: contentView(context, carreerName, careerID)));
         });
   }
 
   // CONTENT'S VIEW
 
-  Widget contentView(BuildContext context) {
+  Widget contentView(BuildContext context, String careerName, int careerID) {
+    debugPrint(careerName);
+    debugPrint('data:${careerID}');
+
     return Column(
       children: [
         Expanded(child: mainContentUI(context)),
@@ -106,9 +111,8 @@ class QualityControlHeader extends GetView<HomeController> {
                   fontWeight: FontWeight.w600,
                   textStyle: TextStyle(color: AppColors.textFieldText_Color)),
               onClickAction: () => {
-                    Controller.saveAction()
-                    // if (Controller.isQualityControlFields_Validate(context))
-                    //   {Controller.saveAction()}
+                    if (Controller.isQualityControlFields_Validate(context))
+                      {Controller.saveAction(careerName, careerID)}
                   }),
         ),
         SizedBox(

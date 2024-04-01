@@ -53,28 +53,28 @@ class TableHeader extends GetWidget<ScorecardScreenController> {
           HeaderCell(
             title: 'Date',
             onTapped: () {
-              print('Date');
+              debugPrint('Date');
             },
             shortType: controller.dateSort,
           ),
           HeaderCell(
             title: 'Commodity',
             onTapped: () {
-              print('Commodity tapped');
+              debugPrint('Commodity tapped');
             },
             shortType: controller.commoditySort,
           ),
           HeaderCell(
             title: 'Result',
             onTapped: () {
-              print('Result tapped');
+              debugPrint('Result tapped');
             },
             shortType: controller.resultSort,
           ),
           HeaderCell(
             title: 'Reason',
             onTapped: () {
-              print('Reason tapped');
+              debugPrint('Reason tapped');
             },
             shortType: controller.reasonSort,
           ),

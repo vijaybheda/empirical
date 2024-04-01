@@ -9,6 +9,7 @@ import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/severity_defect.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/models/user.dart';
+import 'package:pverify/models/user_offline.dart';
 
 import '../models/finished_goods_item_sku.dart';
 

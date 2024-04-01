@@ -92,7 +92,7 @@ class SelectSupplierScreenController extends GetxController {
   Future<void> scanGTINResultContents(String contents) async {
     String barcodeResult = contents;
 
-    print(barcodeResult);
+    debugPrint(barcodeResult);
 
     bool isOnline = globalConfigController.hasStableInternet.value;
 
@@ -108,15 +108,15 @@ class SelectSupplierScreenController extends GetxController {
         check01 = barcodeResult.substring(1, 3);
         if (check01 == "01") {
           gtinStr = barcodeResult.substring(4, 18);
-          print("gtin = $gtinStr");
+          debugPrint("gtin = $gtinStr");
 
           if (barcodeResult.length >= 28) {
             String check02 = barcodeResult.substring(19, 21);
-            print("gtin 1 = $check02");
+            debugPrint("gtin 1 = $check02");
 
             if (["11", "12", "13", "15", "16", "17"].contains(check02)) {
               packDate = barcodeResult.substring(22, 28);
-              print("gtin 2 = $packDate");
+              debugPrint("gtin 2 = $packDate");
 
               dateType = check02;
               switch (check02) {
@@ -146,7 +146,7 @@ class SelectSupplierScreenController extends GetxController {
               try {
                 packDate = myFormat.format(fromUser.parse(packDate));
               } catch (e) {
-                print(e);
+                debugPrint(e as String?);
               }
 
               if (barcodeResult.length >= 32) {
@@ -186,7 +186,7 @@ class SelectSupplierScreenController extends GetxController {
               }
             } else if (check02 == "10") {
               lotNumber = barcodeResult.substring(22);
-              print("gtin 3 = $lotNumber");
+              debugPrint("gtin 3 = $lotNumber");
 
               if (isOnline) {
                 // TODO: implement online flow
@@ -225,14 +225,14 @@ class SelectSupplierScreenController extends GetxController {
         check01 = barcodeResult.substring(0, 2);
         if (check01 == "01") {
           gtinStr = barcodeResult.substring(2, 16);
-          print("gtin = $gtinStr");
+          debugPrint("gtin = $gtinStr");
 
           String check02 = barcodeResult.substring(16, 18);
-          print("gtin 1 = $check02");
+          debugPrint("gtin 1 = $check02");
 
           if (["11", "12", "13", "15", "16", "17"].contains(check02)) {
             packDate = barcodeResult.substring(18, 24);
-            print("gtin 2 = $packDate");
+            debugPrint("gtin 2 = $packDate");
 
             dateType = check02;
             switch (check02) {
@@ -260,10 +260,10 @@ class SelectSupplierScreenController extends GetxController {
             packDate = formatter.format(DateTime.parse(packDate));
 
             String check03 = barcodeResult.substring(24, 26);
-            print("gtin 3 = $check03");
+            debugPrint("gtin 3 = $check03");
             if (check03 == "10") {
               lotNumber = barcodeResult.substring(26);
-              print("gtin 3 = $lotNumber");
+              debugPrint("gtin 3 = $lotNumber");
 
               if (isOnline) {
                 // TODO: implement online flow
@@ -294,7 +294,7 @@ class SelectSupplierScreenController extends GetxController {
             }
           } else if (check02 == "10") {
             lotNumber = barcodeResult.substring(22);
-            print("gtin 3 = $lotNumber");
+            debugPrint("gtin 3 = $lotNumber");
 
             if (isOnline) {
               // TODO: implement online flow
@@ -336,7 +336,7 @@ class SelectSupplierScreenController extends GetxController {
     List<SpecificationSupplierGTIN>? specificationSupplierGTINList =
         appStorage.getSpecificationSupplierGTINList();
 
-    print(
+    debugPrint(
         'specificationSupplierGTINList ${specificationSupplierGTINList?.length}');
     /*if (specificationSupplierGTINList.length > 1) {
       List<FinishedGoodsItemSKU> list = [];

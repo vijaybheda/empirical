@@ -1,4 +1,4 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers
+// ignore_for_file: no_leading_underscores_for_local_identifiers, use_rethrow_when_possible
 
 import 'dart:convert';
 import 'dart:developer';
@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/models/inspection_defect.dart';
@@ -1676,45 +1677,57 @@ class ApplicationDao {
     return ttId;
   }
 
-  Future<void> updateTempQCHeaderDetailsToQCHeaderDetails(
-    int inspectionID,
-    String poNumber,
+  Future<void> updateTempQCHeaderDetails(
+    int baseId,
+    String poNo,
+    String sealNo,
+    String qchOpen1,
+    String qchOpen2,
+    String qchOpen3,
+    String qchOpen4,
+    String qchOpen5,
+    String qchOpen6,
+    String qchOpen9,
+    String qchOpen10,
+    String truckTempOk,
+    String productTransfer,
+    String cteType,
   ) async {
-    final _db = await DatabaseHelper.instance.database;
+    // Open the database
+    final Database database = await openDatabase(
+      join(await getDatabasesPath(), 'your_database.db'),
+    );
+
     try {
-      await _db.transaction((txn) async {
-        List<Map<String, dynamic>> results = await txn.query(
+      // Begin a transaction
+      await database.transaction((txn) async {
+        await txn.update(
           DBTables.TEMP_QC_HEADER_DETAILS,
-          where: '${TempQcHeaderDetailsColumn.PO_NUMBER} = ?',
-          whereArgs: [poNumber],
+          {
+            TempQcHeaderDetailsColumn.PO_NUMBER: poNo,
+            TempQcHeaderDetailsColumn.SEAL_NUMBER: sealNo,
+            TempQcHeaderDetailsColumn.QCH_OPEN1: qchOpen1,
+            TempQcHeaderDetailsColumn.QCH_OPEN2: qchOpen2,
+            TempQcHeaderDetailsColumn.QCH_OPEN3: qchOpen3,
+            TempQcHeaderDetailsColumn.QCH_OPEN4: qchOpen4,
+            TempQcHeaderDetailsColumn.QCH_OPEN5: qchOpen5,
+            TempQcHeaderDetailsColumn.QCH_OPEN6: qchOpen6,
+            TempQcHeaderDetailsColumn.QCH_OPEN9: qchOpen9,
+            TempQcHeaderDetailsColumn.QCH_OPEN10: qchOpen10,
+            TempQcHeaderDetailsColumn.TRUCK_TEMP_OK: truckTempOk,
+            TempQcHeaderDetailsColumn.PRODUCT_TRANSFER: productTransfer,
+            TempQcHeaderDetailsColumn.CTE_TYPE: cteType,
+          },
+          where: 'id = ?',
+          whereArgs: [baseId],
         );
-        if (results.isNotEmpty) {
-          Map<String, dynamic> row = results.first;
-          await txn.update(
-            DBTables.QC_HEADER_DETAILS,
-            {
-              QcHeaderDetailsColumn.INSPECTION_ID: inspectionID,
-              QcHeaderDetailsColumn.PO_NUMBER: row['po_no'],
-              QcHeaderDetailsColumn.SEAL_NUMBER: row['seal_no'],
-              QcHeaderDetailsColumn.QCH_OPEN1: row['qch_open1'],
-              QcHeaderDetailsColumn.QCH_OPEN2: row['qch_open2'],
-              QcHeaderDetailsColumn.QCH_OPEN3: row['qch_open3'],
-              QcHeaderDetailsColumn.QCH_OPEN4: row['qch_open4'],
-              QcHeaderDetailsColumn.QCH_OPEN5: row['qch_open5'],
-              QcHeaderDetailsColumn.QCH_OPEN6: row['qch_open6'],
-              QcHeaderDetailsColumn.QCH_OPEN9: row['qch_open9'],
-              QcHeaderDetailsColumn.QCH_OPEN10: row['qch_open10'],
-              QcHeaderDetailsColumn.QCH_TRUCK_TEMP_OK: row['truck_temp_ok'],
-            },
-            where: 'inspection_id = ?',
-            whereArgs: [inspectionID],
-          );
-        }
       });
     } catch (e) {
-      debugPrint(
-          'Error has occurred while updating temp QC header details: $e');
-      rethrow;
+      debugPrint('Error has occurred while updating a trailer temperature: $e');
+      throw e;
+    } finally {
+      // Close the database
+      await database.close();
     }
   }
 
@@ -1816,8 +1829,8 @@ class ApplicationDao {
         }
       });
     } catch (e) {
-      print("Error has occurred while finding quality control items.");
-      print(e);
+      debugPrint("Error has occurred while finding quality control items.");
+      debugPrint(e as String?);
       return null;
     }
 
@@ -1855,7 +1868,8 @@ class ApplicationDao {
         return await txn.delete(DBTables.SELECTED_ITEM_SKU_LIST);
       });
     } catch (e) {
-      print('Error has occurred while deleting selected item SKU list: $e');
+      debugPrint(
+          'Error has occurred while deleting selected item SKU list: $e');
       return -1;
     }
   }

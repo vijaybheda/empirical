@@ -7,6 +7,8 @@ import 'package:pverify/ui/components/app_name_header.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
+import 'package:pverify/ui/quality_control_header/quality_control_controller.dart';
+import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
@@ -171,45 +173,52 @@ class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            carrier.name ?? '-',
-                            style: Get.textTheme.bodyMedium?.copyWith(
-                                color: AppColors.white, fontSize: 45.h),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            // controller.navigateToCarrierDetails(carrier);
-                          },
-                          child: SizedBox(
-                            width: 100,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              mainAxisSize: MainAxisSize.max,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                if ((carrier.greenPercentage ?? 0) != 0)
-                                  _buildBar(Colors.green,
-                                      carrier.greenPercentage ?? 0),
-                                if ((carrier.yellowPercentage ?? 0) != 0)
-                                  _buildBar(Colors.yellow,
-                                      carrier.yellowPercentage ?? 0),
-                                if ((carrier.orangePercentage ?? 0) != 0)
-                                  _buildBar(Colors.orange,
-                                      carrier.orangePercentage ?? 0),
-                                if ((carrier.redPercentage ?? 0) != 0)
-                                  _buildBar(
-                                      Colors.red, carrier.redPercentage ?? 0),
-                              ],
+                    InkWell(
+                      onTap: () {
+                        Get.to(QualityControlHeader(
+                            carreerName: carrier.name ?? '',
+                            careerID: carrier.id ?? 0));
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              carrier.name ?? '-',
+                              style: Get.textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.white, fontSize: 45.h),
                             ),
                           ),
-                        ),
-                      ],
+                          GestureDetector(
+                            onTap: () {
+                              // controller.navigateToCarrierDetails(carrier);
+                            },
+                            child: SizedBox(
+                              width: 100,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  if ((carrier.greenPercentage ?? 0) != 0)
+                                    _buildBar(Colors.green,
+                                        carrier.greenPercentage ?? 0),
+                                  if ((carrier.yellowPercentage ?? 0) != 0)
+                                    _buildBar(Colors.yellow,
+                                        carrier.yellowPercentage ?? 0),
+                                  if ((carrier.orangePercentage ?? 0) != 0)
+                                    _buildBar(Colors.orange,
+                                        carrier.orangePercentage ?? 0),
+                                  if ((carrier.redPercentage ?? 0) != 0)
+                                    _buildBar(
+                                        Colors.red, carrier.redPercentage ?? 0),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

@@ -1,4 +1,6 @@
-// ignore_for_file: camel_case_types, non_constant_identifier_names, unrelated_type_equality_checks, unnecessary_brace_in_string_interps, unused_local_variable, unnecessary_null_comparison
+// ignore_for_file: camel_case_types, non_constant_identifier_names, unrelated_type_equality_checks, unnecessary_brace_in_string_interps, unused_local_variable, unnecessary_null_comparison, no_leading_underscores_for_local_identifiers
+
+import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -37,7 +39,8 @@ class QualityControl_Controller extends GetxController {
 
   final ApplicationDao dao = ApplicationDao();
 
-  // private List<PurchaseOrderDetails> purchaseOrderDetails;
+  String callerActivity = '';
+  String cteType = ''; // As per Android Dev, Right now this value is blank.
 
   void setSelected(String value, String type) {
     if (type == 'TruckTempOK') {
@@ -118,29 +121,152 @@ class QualityControl_Controller extends GetxController {
     }
   }
 
-  saveAction() {
+  saveAction(String _careername, int careerid) async {
     qcHeaderDetails =
         dao.findTempQCHeaderDetails(orderNoTextController.value.text);
 
-    var supplierID = 0;
-    if (supplierID != 0) {
+    if (AppStorage.instance.getLoginData()!.supplierId != 0) {
       purchaseOrderDetails = dao.getPODetailsFromTable(
           orderNoTextController.value.text,
-          supplierID); // Here need to pass actual SupplierID instead of 0.
+          AppStorage.instance.getLoginData()!.supplierId ?? 0);
 
       inspIDs = dao
           .getPartnerSKUInspectionIDsByPONo(orderNoTextController.value.text);
     }
 
     if (qcHeaderDetails == null) {
-      //dao.createTempQCHeaderDetails(partnerID, poNo, sealNo, qchOpen1, qchOpen2, qchOpen3, qchOpen4, qchOpen5, qchOpen6, qchOpen9, qchOpen10, truckTempOk, productTransfer, cteType);
+      dao.createTempQCHeaderDetails(
+          careerid, // Carrier ID
+          orderNoTextController.value.text,
+          sealTextController.value.text,
+          certificateDepartureTextController.value.text,
+          factoryReferenceTextController.value.text,
+          usdaReferenceTextController.value.text,
+          containerTextController.value.text,
+          totalQuantityTextController.value.text,
+          selectetdloadType.value,
+          transportConditionTextController.value.text,
+          commentTextController.value.text,
+          selectetdTruckTempOK.value,
+          selectetdTypes.value,
+          cteType);
     } else {
-      // dao.updateTempQCHeaderDetailsToQCHeaderDetails(inspectionID, orderNoTextController.value.text);
+      QCHeaderDetails? headerDetails = await qcHeaderDetails;
+      dao.updateTempQCHeaderDetails(
+          headerDetails?.id ?? 0, // baseID
+          orderNoTextController.value.text,
+          sealTextController.value.text,
+          certificateDepartureTextController.value.text,
+          factoryReferenceTextController.value.text,
+          usdaReferenceTextController.value.text,
+          containerTextController.value.text,
+          containerTextController.value.text,
+          totalQuantityTextController.value.text,
+          selectetdloadType.value,
+          transportConditionTextController.value.text,
+          selectetdTruckTempOK.value,
+          selectetdTypes.value,
+          cteType);
     }
 
     if (purchaseOrderDetails != null) {
     } else {
       // Here need to call showPurchaseOrder function.
+      showPurchaseOrder();
+    }
+  }
+
+  void showPurchaseOrder() {
+    if (callerActivity.isNotEmpty) {
+      if (callerActivity == "QualityControlHeaderActivity") {
+        // CallerActivity are blank now.
+        Get.back();
+      } else {
+        if (selectetdTypes.value == "Transfer") {
+          /*
+          Get.to(() => DeliveredFromActivity(), arguments: {
+            'poNumber': orderNoTextController.value.text,
+            'sealNumber': sealTextController.value.text,
+            'carrierName': 'carrierName', // Need to pass dynamic value
+            'carrierID': 'carrierID', // Need to pass dynamic value
+            'productTransfer': productTransfer,
+          });
+          */
+        } else if (selectetdTypes.value == "CTE") {
+          if (cteType == "Shipping") {
+            /*
+            Get.to(() => PartnerActivityCTE(), arguments: {
+              'poNumber': orderNoTextController.value.text,
+              'sealNumber': sealTextController.value.text,
+              'carrierName': 'carrierName', // Need to pass dynamic value
+              'carrierID': 'carrierID', // Need to pass dynamic value
+              'cteType': cteType,
+            });
+            */
+          } else {
+            /*
+            Get.to(() => SourceLocationActivity(), arguments: {
+              'poNumber': orderNoTextController.value.text,
+              'sealNumber': sealTextController.value.text,
+              'carrierName': 'carrierName', // Need to pass dynamic value
+              'carrierID': 'carrierID', // Need to pass dynamic value
+              'cteType': cteType,
+            });
+            */
+          }
+        } else {
+          /*
+          Get.to(() => PartnerActivity(), arguments: {
+            'poNumber': orderNoTextController.value.text,
+            'sealNumber': sealTextController.value.text,
+            'carrierName': 'carrierName', // Need to pass dynamic value
+            'carrierID': 'carrierID', // Need to pass dynamic value
+          });
+          */
+        }
+      }
+    } else {
+      if (selectetdTypes.value == "Transfer") {
+        /*
+        Get.to(() => DeliveredFromActivity(), arguments: {
+          'poNumber': orderNoTextController.value.text,
+          'sealNumber': sealTextController.value.text,
+          'carrierName': 'carrierName', // Need to pass dynamic value
+          'carrierID': 'carrierID', // Need to pass dynamic value
+        });
+        */
+      } else if (selectetdTypes.value == "CTE") {
+        if (cteType == "Shipping") {
+          /*
+          Get.to(() => PartnerActivityCTE(), arguments: {
+            'poNumber': orderNoTextController.value.text,
+            'sealNumber': sealTextController.value.text,
+            'carrierName': 'carrierName', // Need to pass dynamic value
+            'carrierID': 'carrierID', // Need to pass dynamic value
+            'cteType': cteType,
+          });
+          */
+        } else {
+          /*
+          Get.to(() => SourceLocationActivity(), arguments: {
+            'poNumber': orderNoTextController.value.text,
+            'sealNumber': sealTextController.value.text,
+            'carrierName': 'carrierName', // Need to pass dynamic value
+            'carrierID': 'carrierID', // Need to pass dynamic value
+            'cteType': cteType,
+          });
+          */
+        }
+      } else {
+        /*
+        Get.to(() => PartnerActivity(), arguments: {
+          'poNumber': orderNoTextController.value.text,
+          'sealNumber': sealTextController.value.text,
+          'carrierName': 'carrierName', // Need to pass dynamic value
+          'carrierID': 'carrierID', // Need to pass dynamic value
+        });
+        */
+      }
     }
   }
 }

@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/ui/quality_control_header/quality_control_controller.dart';
+import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
 import 'package:pverify/utils/app_storage.dart';
 
 class SelectCarrierScreenController extends GetxController {
@@ -18,7 +22,7 @@ class SelectCarrierScreenController extends GetxController {
   RxList<CarrierItem> carriersList = <CarrierItem>[].obs;
   RxBool listAssigned = false.obs;
 
-  double get listHeight => 180.h;
+  double get listHeight => 190.h;
 
   @override
   void onInit() {
@@ -45,6 +49,7 @@ class SelectCarrierScreenController extends GetxController {
       listAssigned.value = true;
       update(['carrierList']);
     }
+    checkCarrierData();
   }
 
   void searchAndAssignCarrier(String searchValue) {
@@ -82,6 +87,16 @@ class SelectCarrierScreenController extends GetxController {
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeIn,
       );
+    }
+  }
+
+  checkCarrierData() {
+    if (filteredCarrierList.length == 1) {
+      Timer(Duration(seconds: 1), () {
+        Get.to(QualityControlHeader(
+            carreerName: filteredCarrierList[0].name ?? '',
+            careerID: filteredCarrierList[0].id ?? 0));
+      });
     }
   }
 }
