@@ -23,7 +23,9 @@ class SelectSupplierScreenController extends GetxController {
   // constructor
   SelectSupplierScreenController({required this.carrier});
 
-  final TextEditingController searchOpenSuppController =
+  final TextEditingController searchSuppController = TextEditingController();
+
+  final TextEditingController searchNonOpenSuppController =
       TextEditingController();
   final RxInt selectedIndex = RxInt(-1);
 
@@ -49,10 +51,17 @@ class SelectSupplierScreenController extends GetxController {
       partnersList.value = [];
       filteredPartnerList.value = [];
       listAssigned.value = true;
+
+      filteredNonOpenPartnersList.clear();
+      nonOpenPartnersList.clear();
+
       update(['partnerList']);
     } else {
-      partnersList.value = [];
-      filteredPartnerList.value = [];
+      partnersList.clear();
+      filteredPartnerList.clear();
+
+      filteredNonOpenPartnersList.clear();
+      nonOpenPartnersList.clear();
 
       partnersList.addAll(_partnersList);
 
@@ -72,6 +81,16 @@ class SelectSupplierScreenController extends GetxController {
     }
   }
 
+  void clearSearch() {
+    searchSuppController.clear();
+    searchAndAssignPartner('');
+  }
+
+  void clearOpenSearch() {
+    searchNonOpenSuppController.clear();
+    searchAndAssignNonOpenPartner('');
+  }
+
   void searchAndAssignPartner(String searchValue) {
     filteredPartnerList.clear();
     if (searchValue.isEmpty) {
@@ -86,6 +105,7 @@ class SelectSupplierScreenController extends GetxController {
   }
 
   void searchAndAssignNonOpenPartner(String searchValue) {
+    selectedIndex.value = -1;
     filteredNonOpenPartnersList.clear();
     if (searchValue.isEmpty) {
       filteredNonOpenPartnersList.addAll(nonOpenPartnersList);
@@ -550,12 +570,19 @@ class SelectSupplierScreenController extends GetxController {
     Get.to(() => ScorecardScreen(partner: partner));
   }
 
-  void navigateToCommodityIdScreen(BuildContext context, PartnerItem partner) {
+  Future<void> navigateToCommodityIdScreen(
+      BuildContext context, PartnerItem partner) async {
     if (partner.name != null &&
         partner.name!.isNotEmpty &&
         partner.name!.toLowerCase().contains("open")) {
-      SupplierListDialog.show(context);
+      selectedIndex.value = -1;
+      PartnerItem? selectedPartner = await SupplierListDialog.show(context);
+      if (selectedPartner != null) {
+        clearSearch();
+        Get.to(() => CommodityIDScreen(partner: selectedPartner));
+      }
     } else {
+      clearSearch();
       Get.to(() => CommodityIDScreen(partner: partner));
     }
   }

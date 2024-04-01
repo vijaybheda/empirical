@@ -306,6 +306,8 @@ class SearchSupplierWidget extends StatelessWidget {
           Get.find<SelectSupplierScreenController>()
               .searchAndAssignPartner(value);
         },
+        controller:
+            Get.find<SelectSupplierScreenController>().searchSuppController,
         decoration: InputDecoration(
           hintText: AppStrings.searchPartner,
           hintStyle: Get.textTheme.bodyLarge,
@@ -323,6 +325,15 @@ class SearchSupplierWidget extends StatelessWidget {
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(5),
             borderSide: BorderSide(color: AppColors.white),
+          ),
+          suffixIcon: IconButton(
+            onPressed: () {
+              Get.find<SelectSupplierScreenController>().clearSearch();
+            },
+            icon: Icon(
+              Icons.clear,
+              color: AppColors.white,
+            ),
           ),
         ),
       ),

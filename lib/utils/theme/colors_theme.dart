@@ -223,14 +223,14 @@ class AppThemeData {
           color: AppColors.grey,
           fontWeight: FontWeight.w500),
       titleLarge: TextStyle(
-          fontSize: 13,
+          fontSize: 40.sp,
           fontFamily: AppFont.fontMedium,
           height: 1.4,
           letterSpacing: 0,
-          color: AppColors.darkPrimaryColor,
+          color: isDark ? Colors.white : AppColors.black,
           fontWeight: FontWeight.w500),
       bodyLarge: TextStyle(
-        fontSize: 14.5,
+        fontSize: 20.sp,
         fontFamily: AppFont.fontMedium,
         letterSpacing: 0,
         fontWeight: FontWeight.w500,
