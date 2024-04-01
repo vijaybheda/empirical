@@ -179,10 +179,10 @@ class SelectSupplierScreenController extends GetxController {
                     }
                   }
                 } else {
-                  Utils.showInfoAlertDialog("Error reading GTIN Barcode");
+                  Utils.showErrorAlertDialog("Error reading GTIN Barcode");
                 }
               } else {
-                Utils.showInfoAlertDialog("Error reading GTIN Barcode");
+                Utils.showErrorAlertDialog("Error reading GTIN Barcode");
               }
             } else if (check02 == "10") {
               lotNumber = barcodeResult.substring(22);
@@ -213,13 +213,13 @@ class SelectSupplierScreenController extends GetxController {
                 }
               }
             } else {
-              Utils.showInfoAlertDialog("Error reading GTIN Barcode");
+              Utils.showErrorAlertDialog("Error reading GTIN Barcode");
             }
           } else {
-            Utils.showInfoAlertDialog("Error reading GTIN Barcode");
+            Utils.showErrorAlertDialog("Error reading GTIN Barcode");
           }
         } else {
-          Utils.showInfoAlertDialog("Error reading GTIN Barcode");
+          Utils.showErrorAlertDialog("Error reading GTIN Barcode");
         }
       } else {
         check01 = barcodeResult.substring(0, 2);
@@ -290,7 +290,7 @@ class SelectSupplierScreenController extends GetxController {
                 }
               }
             } else {
-              Utils.showInfoAlertDialog("Error reading GTIN Barcode");
+              Utils.showErrorAlertDialog("Error reading GTIN Barcode");
             }
           } else if (check02 == "10") {
             lotNumber = barcodeResult.substring(22);
@@ -321,14 +321,14 @@ class SelectSupplierScreenController extends GetxController {
               }
             }
           } else {
-            Utils.showInfoAlertDialog("Error reading GTIN Barcode");
+            Utils.showErrorAlertDialog("Error reading GTIN Barcode");
           }
         } else {
-          Utils.showInfoAlertDialog("Error reading GTIN Barcode");
+          Utils.showErrorAlertDialog("Error reading GTIN Barcode");
         }
       }
     } else {
-      Utils.showInfoAlertDialog("Error reading GTIN Barcode");
+      Utils.showErrorAlertDialog("Error reading GTIN Barcode");
     }
   }
 
