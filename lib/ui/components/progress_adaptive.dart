@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class ProgressAdaptive extends StatelessWidget {
@@ -7,10 +9,14 @@ class ProgressAdaptive extends StatelessWidget {
   Widget build(BuildContext context) {
     return Transform.scale(
       scale: 2,
-      child: const CircularProgressIndicator.adaptive(
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-        backgroundColor: Colors.white,
-      ),
+      child: Platform.isIOS
+          ? const CircularProgressIndicator.adaptive(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              backgroundColor: Colors.white,
+            )
+          : const CircularProgressIndicator.adaptive(
+              backgroundColor: Colors.white,
+            ),
     );
   }
 }

@@ -31,8 +31,8 @@ class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
                   /// loading indicator
                   const Center(
                     child: SizedBox(
-                      height: 150,
-                      width: 200,
+                      height: 25,
+                      width: 25,
                       child: ProgressAdaptive(),
                     ),
                   ),
