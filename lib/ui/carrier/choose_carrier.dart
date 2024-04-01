@@ -171,61 +171,66 @@ class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
         itemCount: controller.filteredCarrierList.length,
         itemBuilder: (context, index) {
           CarrierItem carrier = controller.filteredCarrierList.elementAt(index);
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Column(
-              children: [
-                getAlphabetContent(controller.filteredCarrierList, index),
-                SizedBox(
-                  height: controller.listHeight,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              carrier.name ?? '-',
-                              style: Get.textTheme.bodyMedium?.copyWith(
-                                  color: AppColors.white, fontSize: 45.h),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              // controller.navigateToCarrierDetails(carrier);
-                            },
-                            child: SizedBox(
-                              width: 100,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                mainAxisSize: MainAxisSize.max,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  if ((carrier.greenPercentage ?? 0) != 0)
-                                    _buildBar(Colors.green,
-                                        carrier.greenPercentage ?? 0),
-                                  if ((carrier.yellowPercentage ?? 0) != 0)
-                                    _buildBar(Colors.yellow,
-                                        carrier.yellowPercentage ?? 0),
-                                  if ((carrier.orangePercentage ?? 0) != 0)
-                                    _buildBar(Colors.orange,
-                                        carrier.orangePercentage ?? 0),
-                                  if ((carrier.redPercentage ?? 0) != 0)
-                                    _buildBar(
-                                        Colors.red, carrier.redPercentage ?? 0),
-                                ],
+          return GestureDetector(
+            onTap: () {
+              controller.navigateToPartner(carrier);
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                children: [
+                  getAlphabetContent(controller.filteredCarrierList, index),
+                  SizedBox(
+                    height: controller.listHeight,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                carrier.name ?? '-',
+                                style: Get.textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.white, fontSize: 45.h),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                            GestureDetector(
+                              onTap: () {
+                                // controller.navigateToCarrierDetails(carrier);
+                              },
+                              child: SizedBox(
+                                width: 100,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  mainAxisSize: MainAxisSize.max,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    if ((carrier.greenPercentage ?? 0) != 0)
+                                      _buildBar(Colors.green,
+                                          carrier.greenPercentage ?? 0),
+                                    if ((carrier.yellowPercentage ?? 0) != 0)
+                                      _buildBar(Colors.yellow,
+                                          carrier.yellowPercentage ?? 0),
+                                    if ((carrier.orangePercentage ?? 0) != 0)
+                                      _buildBar(Colors.orange,
+                                          carrier.orangePercentage ?? 0),
+                                    if ((carrier.redPercentage ?? 0) != 0)
+                                      _buildBar(Colors.red,
+                                          carrier.redPercentage ?? 0),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

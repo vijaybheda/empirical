@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/select_supplier_screen_controller.dart';
+import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/ui/components/app_name_header.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
@@ -12,12 +13,13 @@ import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
-  const SelectSupplierScreen({super.key});
+  final CarrierItem carrier;
+  const SelectSupplierScreen({super.key, required this.carrier});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SelectSupplierScreenController>(
-        init: SelectSupplierScreenController(),
+        init: SelectSupplierScreenController(carrier: carrier),
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -67,7 +69,7 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
                   ? Expanded(
                       flex: 10,
                       child: controller.filteredPartnerList.isNotEmpty
-                          ? partnerListView(controller)
+                          ? partnerListView(context, controller)
                           : noDataFoundWidget(),
                     )
                   : const Center(
@@ -148,67 +150,73 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
     );
   }
 
-  Widget partnerListView(SelectSupplierScreenController controller) {
+  Widget partnerListView(
+      BuildContext context, SelectSupplierScreenController controller) {
     return ListView.builder(
       controller: controller.scrollController,
       itemCount: controller.filteredPartnerList.length,
       itemBuilder: (context, index) {
         PartnerItem partner = controller.filteredPartnerList.elementAt(index);
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Column(
-            children: [
-              getAlphabetContent(controller.filteredPartnerList, index),
-              SizedBox(
-                height: controller.listHeight,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            partner.name ?? '-',
-                            style: Get.textTheme.bodyMedium?.copyWith(
-                                color: AppColors.white, fontSize: 50.h),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            controller.navigateToPartnerDetails(partner);
-                          },
-                          child: SizedBox(
-                            width: 100,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              mainAxisSize: MainAxisSize.max,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                if ((partner.greenPercentage ?? 0) != 0)
-                                  _buildBar(Colors.green,
-                                      partner.greenPercentage ?? 0),
-                                if ((partner.yellowPercentage ?? 0) != 0)
-                                  _buildBar(Colors.yellow,
-                                      partner.yellowPercentage ?? 0),
-                                if ((partner.orangePercentage ?? 0) != 0)
-                                  _buildBar(Colors.orange,
-                                      partner.orangePercentage ?? 0),
-                                if ((partner.redPercentage ?? 0) != 0)
-                                  _buildBar(
-                                      Colors.red, partner.redPercentage ?? 0),
-                              ],
+        return GestureDetector(
+          onTap: () {
+            controller.navigateToCommodityIdScreen(context, partner);
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Column(
+              children: [
+                getAlphabetContent(controller.filteredPartnerList, index),
+                SizedBox(
+                  height: controller.listHeight,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              partner.name ?? '-',
+                              style: Get.textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.white, fontSize: 50.h),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          GestureDetector(
+                            onTap: () {
+                              controller.navigateToPartnerDetails(partner);
+                            },
+                            child: SizedBox(
+                              width: 100,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  if ((partner.greenPercentage ?? 0) != 0)
+                                    _buildBar(Colors.green,
+                                        partner.greenPercentage ?? 0),
+                                  if ((partner.yellowPercentage ?? 0) != 0)
+                                    _buildBar(Colors.yellow,
+                                        partner.yellowPercentage ?? 0),
+                                  if ((partner.orangePercentage ?? 0) != 0)
+                                    _buildBar(Colors.orange,
+                                        partner.orangePercentage ?? 0),
+                                  if ((partner.redPercentage ?? 0) != 0)
+                                    _buildBar(
+                                        Colors.red, partner.redPercentage ?? 0),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
