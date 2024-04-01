@@ -1,9 +1,8 @@
 // ignore_for_file: camel_case_types, non_constant_identifier_names, unrelated_type_equality_checks, unnecessary_brace_in_string_interps, unused_local_variable, unnecessary_null_comparison, no_leading_underscores_for_local_identifiers
 
-import 'dart:ffi';
-
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/purchase_order_details.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/services/database/application_dao.dart';
@@ -121,7 +120,7 @@ class QualityControl_Controller extends GetxController {
     }
   }
 
-  saveAction(String _careername, int careerid) async {
+  Future<void> saveAction(CarrierItem carrier) async {
     qcHeaderDetails =
         dao.findTempQCHeaderDetails(orderNoTextController.value.text);
 
@@ -135,8 +134,8 @@ class QualityControl_Controller extends GetxController {
     }
 
     if (qcHeaderDetails == null) {
-      dao.createTempQCHeaderDetails(
-          careerid, // Carrier ID
+      await dao.createTempQCHeaderDetails(
+          carrier.id!, // Carrier ID
           orderNoTextController.value.text,
           sealTextController.value.text,
           certificateDepartureTextController.value.text,
@@ -152,7 +151,7 @@ class QualityControl_Controller extends GetxController {
           cteType);
     } else {
       QCHeaderDetails? headerDetails = await qcHeaderDetails;
-      dao.updateTempQCHeaderDetails(
+      await dao.updateTempQCHeaderDetails(
           headerDetails?.id ?? 0, // baseID
           orderNoTextController.value.text,
           sealTextController.value.text,

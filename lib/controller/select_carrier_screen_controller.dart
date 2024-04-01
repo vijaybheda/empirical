@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
-import 'package:pverify/ui/quality_control_header/quality_control_controller.dart';
 import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
 import 'package:pverify/utils/app_storage.dart';
 
@@ -92,10 +91,8 @@ class SelectCarrierScreenController extends GetxController {
 
   checkCarrierData() {
     if (filteredCarrierList.length == 1) {
-      Timer(Duration(seconds: 1), () {
-        Get.to(QualityControlHeader(
-            carreerName: filteredCarrierList[0].name ?? '',
-            careerID: filteredCarrierList[0].id ?? 0));
+      Future.delayed(const Duration(milliseconds: 100), () {
+        Get.to(QualityControlHeader(carrier: carriersList.first));
       });
     }
   }
