@@ -37,7 +37,7 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
                   isVersionShow: false,
                 ),
                 const SearchSupplierWidget(),
-                Expanded(flex: 10, child: _partnerListSection()),
+                Expanded(flex: 10, child: _partnerListSection(context)),
                 ScanBarcodeView(
                   onBarcodeScanned: (String barcode) async {
                     await controller.scanGTINResultContents(barcode);
@@ -50,7 +50,8 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
         });
   }
 
-  GetBuilder<SelectSupplierScreenController> _partnerListSection() {
+  GetBuilder<SelectSupplierScreenController> _partnerListSection(
+      BuildContext context) {
     return GetBuilder<SelectSupplierScreenController>(
       id: 'partnerList',
       builder: (controller) {
@@ -75,7 +76,7 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
               if (controller.listAssigned.value && alphabets.isNotEmpty)
                 Flexible(
                   flex: 0,
-                  child: listAlphabetsWidget(controller, alphabets),
+                  child: listAlphabetsWidget(controller, alphabets, context),
                 )
               else
                 const Offstage(),
@@ -86,65 +87,52 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
     );
   }
 
-  Container listAlphabetsWidget(
+  Widget listAlphabetsWidget(
     SelectSupplierScreenController controller,
     List<String> alphabets,
+    BuildContext context,
   ) {
     return Container(
       alignment: Alignment.center,
       width: 60.sp,
       // padding: const EdgeInsets.symmetric(vertical: 10),
-      child: ListView.builder(
-        itemCount: alphabets.length,
-        shrinkWrap: false,
-        physics: const NeverScrollableScrollPhysics(),
-        itemBuilder: (context, index) {
-          String letter = alphabets.elementAt(index);
-          // bool isDragging = false;
-
-          return SizedBox(
-            height: MediaQuery.of(context).size.height * .70 / alphabets.length,
-            child: GestureDetector(
-              onTap: () {
-                controller.scrollToSection(letter, index);
-              },
-              /*onVerticalDragStart: (_) {
-                isDragging = true; // Set flag on drag start
-              },
-              onVerticalDragUpdate: (details) {
-                // Calculate the target index only if dragging
-                if (isDragging) {
-                  double offsetY = details.localPosition.dy;
-                  int targetIndex =
-                      (offsetY / listHeight * alphabets.length).toInt();
-                  targetIndex = targetIndex.clamp(0, alphabets.length - 1);
-                  _scrollToListSection(controller, alphabets[targetIndex]);
-                }
-
-                */ /*int targetIndex = controller.filteredPartnerList.indexWhere(
-                    (supplier) => supplier.name!.startsWith(letter));
-                if (targetIndex != -1) {
-                  controller.scrollController.animateTo(
-                    (targetIndex * listHeight) + (index * (listHeight * .45)),
-                    duration: const Duration(milliseconds: 10),
-                    curve: Curves.easeIn,
-                  );
-                }*/ /*
-              },*/
-              child: SizedBox(
-                height: 20,
-                child: Text(
-                  letter,
-                  style: Get.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.white,
-                      fontSize: 60.h,
-                      fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
+      child: GestureDetector(
+        onVerticalDragUpdate: (details) {
+          int index = _calculateIndexFromDragPosition(
+              details.localPosition.dy, alphabets.length, context);
+          if (index >= 0 && index < alphabets.length) {
+            String letter = alphabets[index];
+            controller.scrollToSection(letter, index);
+          }
+        },
+        child: ListView.builder(
+          itemCount: alphabets.length,
+          shrinkWrap: false,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            String letter = alphabets.elementAt(index);
+            return SizedBox(
+              height:
+                  MediaQuery.of(context).size.height * .70 / alphabets.length,
+              child: GestureDetector(
+                onTap: () {
+                  controller.scrollToSection(letter, index);
+                },
+                child: SizedBox(
+                  height: 20,
+                  child: Text(
+                    letter,
+                    style: Get.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.white,
+                        fontSize: 60.h,
+                        fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -160,7 +148,7 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
     );
   }
 
-  ListView partnerListView(SelectSupplierScreenController controller) {
+  Widget partnerListView(SelectSupplierScreenController controller) {
     return ListView.builder(
       controller: controller.scrollController,
       itemCount: controller.filteredPartnerList.length,
@@ -185,7 +173,7 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
                           child: Text(
                             partner.name ?? '-',
                             style: Get.textTheme.bodyMedium?.copyWith(
-                                color: AppColors.white, fontSize: 45.h),
+                                color: AppColors.white, fontSize: 50.h),
                           ),
                         ),
                         GestureDetector(
@@ -287,6 +275,14 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
       controller.scrollController
           .jumpTo((listTargetIndex * controller.listHeight) + listTargetIndex);
     }
+  }
+
+  int _calculateIndexFromDragPosition(
+      double dragPosition, int itemCount, BuildContext context) {
+    double totalHeight = MediaQuery.of(context).size.height * .70;
+    double itemHeight = totalHeight / itemCount;
+    int index = (dragPosition / itemHeight).floor();
+    return index;
   }
 }
 

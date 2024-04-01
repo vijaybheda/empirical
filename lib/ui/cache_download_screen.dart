@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/cache_download_controller.dart';
+import 'package:pverify/ui/components/progress_adaptive.dart';
 import 'package:pverify/utils/app_strings.dart';
 
 class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
@@ -28,18 +29,11 @@ class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   /// loading indicator
-                  Center(
+                  const Center(
                     child: SizedBox(
                       height: 150,
                       width: 200,
-                      child: Transform.scale(
-                        scale: 3,
-                        child: CircularProgressIndicator.adaptive(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
-                          backgroundColor: Colors.white,
-                        ),
-                      ),
+                      child: ProgressAdaptive(),
                     ),
                   ),
                   const SizedBox(

@@ -1,19 +1,16 @@
 // ignore_for_file: must_be_immutable, non_constant_identifier_names, avoid_types_as_parameter_names, prefer_const_constructors, unrelated_type_equality_checks
 
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/ui/Home/home_controller.dart';
+import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/quality_control_header/quality_control_controller.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
-import 'package:pverify/utils/dialogs/user_logout.dart';
-import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class QualityControlHeader extends GetView<HomeController> {
@@ -114,7 +111,7 @@ class QualityControlHeader extends GetView<HomeController> {
         SizedBox(
           height: 25.h,
         ),
-        bottomContent(context)
+        FooterContentView()
       ],
     );
   }
@@ -195,70 +192,6 @@ class QualityControlHeader extends GetView<HomeController> {
                 : Container())
           ],
         ),
-      ),
-    );
-  }
-
-  // BOTTOM VIEW
-
-  Widget bottomContent(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(left: 15, right: 15),
-      height: 120.h,
-      color: AppColors.primary,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          InkWell(
-            onTap: () {
-              Get.back();
-            },
-            child: Text(
-              AppStrings.cancel,
-              style: GoogleFonts.poppins(
-                  fontSize: 35.sp,
-                  fontWeight: FontWeight.bold,
-                  textStyle: TextStyle(color: AppColors.textFieldText_Color)),
-            ),
-          ),
-          const Spacer(),
-          Text(
-            AppStrings.data0DaysOld,
-            style: GoogleFonts.poppins(
-                fontSize: 40.sp,
-                fontWeight: FontWeight.bold,
-                textStyle: TextStyle(color: AppColors.white)),
-          ),
-          SizedBox(
-            width: 40.w,
-          ),
-          InkWell(
-            onTap: () {
-              debugPrint('Download button tap.');
-            },
-            child: Image.asset(
-              AppImages.ic_download,
-              width: 80.w,
-              height: 80.h,
-            ),
-          ),
-          const Spacer(),
-          InkWell(
-            onTap: () {
-              UserLogoutDialog.showLogoutConfirmation(context, onYesTap: () {
-                log('Logout button tap.');
-              });
-            },
-            child: Text(
-              AppStrings.logOut,
-              style: GoogleFonts.poppins(
-                  fontSize: 35.sp,
-                  fontWeight: FontWeight.bold,
-                  textStyle: TextStyle(color: AppColors.textFieldText_Color)),
-            ),
-          )
-        ],
       ),
     );
   }

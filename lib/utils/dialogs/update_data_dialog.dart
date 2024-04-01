@@ -53,7 +53,7 @@ class UpdateDataAlert {
                 AppStrings.ok,
                 style: GoogleFonts.poppins(
                     fontSize: 26.sp,
-                    fontWeight: FontWeight.normal,
+                    fontWeight: FontWeight.bold,
                     textStyle: TextStyle(color: AppColors.primary)),
               )),
         ]);

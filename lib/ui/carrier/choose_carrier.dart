@@ -36,7 +36,7 @@ class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
                   isVersionShow: false,
                 ),
                 const SearchCarrierWidget(),
-                Expanded(flex: 10, child: _carrierListSection()),
+                Expanded(flex: 10, child: _carrierListSection(context)),
                 FooterContentView(),
               ],
             ),
@@ -44,7 +44,8 @@ class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
         });
   }
 
-  GetBuilder<SelectCarrierScreenController> _carrierListSection() {
+  GetBuilder<SelectCarrierScreenController> _carrierListSection(
+      BuildContext context) {
     return GetBuilder<SelectCarrierScreenController>(
       id: 'carrierList',
       builder: (controller) {
@@ -60,7 +61,7 @@ class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
                   ? Expanded(
                       flex: 10,
                       child: controller.filteredCarrierList.isNotEmpty
-                          ? carrierListView(controller)
+                          ? carrierListView(controller, alphabets, context)
                           : noDataFoundWidget(),
                     )
                   : const Center(
@@ -154,70 +155,81 @@ class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
     );
   }
 
-  ListView carrierListView(SelectCarrierScreenController controller) {
-    return ListView.builder(
-      controller: controller.scrollController,
-      itemCount: controller.filteredCarrierList.length,
-      itemBuilder: (context, index) {
-        CarrierItem carrier = controller.filteredCarrierList.elementAt(index);
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Column(
-            children: [
-              getAlphabetContent(controller.filteredCarrierList, index),
-              SizedBox(
-                height: controller.listHeight,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            carrier.name ?? '-',
-                            style: Get.textTheme.bodyMedium?.copyWith(
-                                color: AppColors.white, fontSize: 45.h),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            // controller.navigateToCarrierDetails(carrier);
-                          },
-                          child: SizedBox(
-                            width: 100,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              mainAxisSize: MainAxisSize.max,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                if ((carrier.greenPercentage ?? 0) != 0)
-                                  _buildBar(Colors.green,
-                                      carrier.greenPercentage ?? 0),
-                                if ((carrier.yellowPercentage ?? 0) != 0)
-                                  _buildBar(Colors.yellow,
-                                      carrier.yellowPercentage ?? 0),
-                                if ((carrier.orangePercentage ?? 0) != 0)
-                                  _buildBar(Colors.orange,
-                                      carrier.orangePercentage ?? 0),
-                                if ((carrier.redPercentage ?? 0) != 0)
-                                  _buildBar(
-                                      Colors.red, carrier.redPercentage ?? 0),
-                              ],
+  Widget carrierListView(SelectCarrierScreenController controller,
+      List<String> alphabets, BuildContext context) {
+    return GestureDetector(
+      onVerticalDragUpdate: (details) {
+        int index = _calculateIndexFromDragPosition(
+            details.localPosition.dy, alphabets.length, context);
+        if (index >= 0 && index < alphabets.length) {
+          String letter = alphabets[index];
+          controller.scrollToSection(letter, index);
+        }
+      },
+      child: ListView.builder(
+        controller: controller.scrollController,
+        itemCount: controller.filteredCarrierList.length,
+        itemBuilder: (context, index) {
+          CarrierItem carrier = controller.filteredCarrierList.elementAt(index);
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Column(
+              children: [
+                getAlphabetContent(controller.filteredCarrierList, index),
+                SizedBox(
+                  height: controller.listHeight,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              carrier.name ?? '-',
+                              style: Get.textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.white, fontSize: 45.h),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          GestureDetector(
+                            onTap: () {
+                              // controller.navigateToCarrierDetails(carrier);
+                            },
+                            child: SizedBox(
+                              width: 100,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  if ((carrier.greenPercentage ?? 0) != 0)
+                                    _buildBar(Colors.green,
+                                        carrier.greenPercentage ?? 0),
+                                  if ((carrier.yellowPercentage ?? 0) != 0)
+                                    _buildBar(Colors.yellow,
+                                        carrier.yellowPercentage ?? 0),
+                                  if ((carrier.orangePercentage ?? 0) != 0)
+                                    _buildBar(Colors.orange,
+                                        carrier.orangePercentage ?? 0),
+                                  if ((carrier.redPercentage ?? 0) != 0)
+                                    _buildBar(
+                                        Colors.red, carrier.redPercentage ?? 0),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
-      },
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -280,6 +292,14 @@ class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
       controller.scrollController
           .jumpTo((listTargetIndex * controller.listHeight) + listTargetIndex);
     }
+  }
+
+  int _calculateIndexFromDragPosition(
+      double dragPosition, int itemCount, BuildContext context) {
+    double totalHeight = MediaQuery.of(context).size.height * .70;
+    double itemHeight = totalHeight / itemCount;
+    int index = (dragPosition / itemHeight).floor();
+    return index;
   }
 }
 
