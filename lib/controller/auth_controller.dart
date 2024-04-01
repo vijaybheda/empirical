@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -19,6 +21,7 @@ import 'package:pverify/ui/setup_platfrom/setup.dart';
 import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/common_widget/alert.dart';
 import 'package:pverify/utils/constants.dart';
 import 'package:pverify/utils/utils.dart';
 
@@ -64,7 +67,8 @@ class AuthController extends GetxController {
   }
 
   // loginUser
-  Future<LoginData?> loginUser({required bool isLoginButton}) async {
+  Future<LoginData?> loginUser(
+      {required bool isLoginButton, required BuildContext context}) async {
     try {
       String mUsername = emailTextController.value.text.trim();
       String mPassword = passwordTextController.value.text;
@@ -94,7 +98,8 @@ class AuthController extends GetxController {
             }
           } catch (e) {
             await Utils.hideLoadingDialog();
-            Utils.showErrorAlertDialog(AppStrings.invalidUsernamePassword);
+            validateAlerts(
+                context, AppStrings.error, AppStrings.invalidUsernamePassword);
           }
         }
         /*// todo remove below code
@@ -156,8 +161,8 @@ class AuthController extends GetxController {
                   offlineUser?.status == 3) {
                 // show Info Alert Dialog
                 await Utils.hideLoadingDialog();
-                Utils.showErrorAlertDialog(
-                    "Your account is inactive. Please contact your administrator.");
+                validateAlerts(
+                    context, AppStrings.error, AppStrings.accountInactive);
               } else {
                 await jsonFileOperations.offlineLoadSuppliersData();
                 await jsonFileOperations.offlineLoadCarriersData();
@@ -171,15 +176,15 @@ class AuthController extends GetxController {
             }
           } else {
             await Utils.hideLoadingDialog();
-            Utils.showErrorAlertDialog(AppStrings.invalidUsernamePassword);
+            validateAlerts(
+                context, AppStrings.error, AppStrings.invalidUsernamePassword);
           }
         } else {
           await Utils.hideLoadingDialog();
           // show Info Alert Dialog
-          Utils.showErrorAlertDialog(AppStrings.turnOnWifi);
+          validateAlerts(context, AppStrings.error, AppStrings.turnOnWifi);
         }
       }
-
       return null;
     } catch (e) {
       debugPrint(e.toString());
@@ -213,28 +218,24 @@ class AuthController extends GetxController {
 
   // LOGIN SCREEN VALIDATION'S
 
-  bool isLoginFieldsValidate() {
+  bool isLoginFieldsValidate(BuildContext context) {
     if (emailTextController.value.text.trim().isEmpty) {
-      AppSnackBar.getCustomSnackBar(AppStrings.userNameBlank, AppStrings.error,
-          isSuccess: false);
+      validateAlerts(context, AppStrings.error, AppStrings.userNameBlank);
       return false;
     }
     if (validateEmail(emailTextController.value.text) == true) {
-      AppSnackBar.getCustomSnackBar(
-          AppStrings.invalidUsername, AppStrings.error,
-          isSuccess: false);
+      validateAlerts(context, AppStrings.error, AppStrings.invalidUsername);
       return false;
     }
     if (passwordTextController.value.text.trim().isEmpty) {
-      AppSnackBar.getCustomSnackBar(AppStrings.passwordBlank, AppStrings.error,
-          isSuccess: false);
+      validateAlerts(context, AppStrings.error, AppStrings.passwordBlank);
       return false;
     }
-    if (checkPassword(passwordTextController.value.text) == false) {
-      AppSnackBar.getCustomSnackBar(AppStrings.passwordValid, AppStrings.error,
-          isSuccess: false);
-      return false;
-    }
+    // if (checkPassword(passwordTextController.value.text) == false) {
+    //   AppSnackBar.getCustomSnackBar(AppStrings.passwordValid, AppStrings.error,
+    //       isSuccess: false);
+    //   return false;
+    // }
     return true;
   }
 
@@ -244,7 +245,7 @@ class AuthController extends GetxController {
     // updateWebservice.RequestUpdateInfo();
   }
 
-  Future<void> downloadCloudData() async {
+  Future<void> downloadCloudData(BuildContext context) async {
     if (appStorage.getBool(StorageKey.kIsCSVDownloaded1) == false) {
       if (await Utils.hasInternetConnection()) {
         if (wifiLevel >= 2) {
@@ -255,10 +256,12 @@ class AuthController extends GetxController {
           Get.offAll(() => const CacheDownloadScreen());
           return;
         } else {
-          Utils.showErrorAlertDialog(AppStrings.downloadWifiError);
+          validateAlerts(
+              context, AppStrings.error, AppStrings.downloadWifiError);
         }
       } else {
-        Utils.showErrorAlertDialog(AppStrings.betterWifiConnWarning);
+        validateAlerts(
+            context, AppStrings.error, AppStrings.betterWifiConnWarning);
       }
     } else {
       Get.offAll(() => Home());

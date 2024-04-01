@@ -1,11 +1,13 @@
 // ignore_for_file: must_be_immutable, non_constant_identifier_names, avoid_types_as_parameter_names, prefer_const_constructors, unrelated_type_equality_checks
 
-import 'package:flutter/cupertino.dart';
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pverify/models/purchase_order_details.dart';
+import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/ui/Home/home_controller.dart';
 import 'package:pverify/ui/quality_control_header/quality_control_controller.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -105,7 +107,11 @@ class QualityControlHeader extends GetView<HomeController> {
                   fontSize: 35.sp,
                   fontWeight: FontWeight.w600,
                   textStyle: TextStyle(color: AppColors.textFieldText_Color)),
-              onClickAction: () => {}),
+              onClickAction: () => {
+                    Controller.saveAction()
+                    // if (Controller.isQualityControlFields_Validate(context))
+                    //   {Controller.saveAction()}
+                  }),
         ),
         SizedBox(
           height: 25.h,
@@ -181,11 +187,11 @@ class QualityControlHeader extends GetView<HomeController> {
                       ),
                       commonRowDropDownView(context, AppStrings.QCHOPEN6,
                           Controller.loadType, AppStrings.QCHOPEN6),
-                      SizedBox(
-                        height: Controller.spacingBetweenFields.h,
-                      ),
-                      commonRowTextFieldView(context, AppStrings.QCHOPEN9, '',
-                          Controller.transportConditionTextController.value),
+                      // SizedBox(
+                      //   height: Controller.spacingBetweenFields.h,
+                      // ),
+                      // commonRowTextFieldView(context, AppStrings.QCHOPEN9, '',
+                      //     Controller.transportConditionTextController.value),
                     ],
                   )
                 : Container())

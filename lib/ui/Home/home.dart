@@ -338,7 +338,8 @@ class Home extends GetView<HomeController> {
                 fontSize: 38.sp,
                 fontWeight: FontWeight.w600,
                 textStyle: TextStyle(color: AppColors.white)),
-            onClickAction: () => {Get.to(QualityControlHeader())}),
+            onClickAction: () =>
+                {Controller.refresh(), Get.to(QualityControlHeader())}),
         SizedBox(
           height: 35.h,
         ),
@@ -351,26 +352,158 @@ class Home extends GetView<HomeController> {
     return Expanded(
       child: Obx(() => ListView.builder(
             itemCount: Controller.listOfInspection.length,
+            physics: ClampingScrollPhysics(),
             itemBuilder: (context, position) {
-              return Container(
-                color: position % 2 == 0
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.secondary,
-                child: IntrinsicHeight(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Container(
+              return IntrinsicHeight(
+                child: Row(
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width / 10.2,
+                      padding: EdgeInsets.symmetric(vertical: 15.h),
+                      decoration: BoxDecoration(
+                          color: position % 2 == 0
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.secondary,
+                          border: Border(
+                              right: BorderSide(
+                                color: AppColors.black,
+                                width: 2.0,
+                              ),
+                              left: BorderSide(
+                                color: AppColors.black,
+                                width: 2.0,
+                              ),
+                              bottom: BorderSide(
+                                color: AppColors.black,
+                                width: 2.0,
+                              ))),
+                      child: Text(
+                        Controller.listOfInspection[position]['ID'] ?? '',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.displayMedium,
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width / 7.25,
+                      padding: EdgeInsets.symmetric(vertical: 15.h),
+                      decoration: BoxDecoration(
+                          color: position % 2 == 0
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.secondary,
+                          border: Border(
+                              right: BorderSide(
+                                color: AppColors.black,
+                                width: 2.0,
+                              ),
+                              bottom: BorderSide(
+                                color: AppColors.black,
+                                width: 2.0,
+                              ))),
+                      child: Text(
+                        Controller.listOfInspection[position]['PO'] ?? '',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.displayMedium,
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width / 6.9,
+                      padding: EdgeInsets.symmetric(vertical: 15.h),
+                      decoration: BoxDecoration(
+                          color: position % 2 == 0
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.secondary,
+                          border: Border(
+                              right: BorderSide(
+                                color: AppColors.black,
+                                width: 2.0,
+                              ),
+                              bottom: BorderSide(
+                                color: AppColors.black,
+                                width: 2.0,
+                              ))),
+                      child: Text(
+                        Controller.listOfInspection[position]['Item'] ?? '',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.displayMedium,
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width / 14.5,
+                      padding: EdgeInsets.symmetric(vertical: 15.h),
+                      decoration: BoxDecoration(
+                          color: position % 2 == 0
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.secondary,
+                          border: Border(
+                              right: BorderSide(
+                                color: AppColors.black,
+                                width: 2.0,
+                              ),
+                              bottom: BorderSide(
+                                color: AppColors.black,
+                                width: 2.0,
+                              ))),
+                      child: Text(
+                          Controller.listOfInspection[position]['Res'] ?? '',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context)
+                              .textTheme
+                              .displayMedium
+                              ?.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w800)),
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width / 6.1,
+                      padding: EdgeInsets.symmetric(vertical: 15.h),
+                      decoration: BoxDecoration(
+                          color: position % 2 == 0
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.secondary,
+                          border: Border(
+                              right: BorderSide(
+                                color: AppColors.black,
+                                width: 2.0,
+                              ),
+                              bottom: BorderSide(
+                                color: AppColors.black,
+                                width: 2.0,
+                              ))),
+                      child: Text(
+                        Controller.listOfInspection[position]['GR'] ?? '',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.displayMedium,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        if (Controller.expandContents.contains(
+                            Controller.listOfInspection[position]['ID'] ??
+                                '')) {
+                          Controller.expandContents.remove(
+                              Controller.listOfInspection[position]['ID'] ??
+                                  '');
+                        } else {
+                          Controller.expandContents.add(
+                              Controller.listOfInspection[position]['ID'] ??
+                                  '');
+                        }
+                      },
+                      child: Container(
                         alignment: Alignment.center,
-                        width: MediaQuery.of(context).size.width / 10.2,
+                        width: MediaQuery.of(context).size.width / 5.61,
                         padding: EdgeInsets.symmetric(vertical: 15.h),
                         decoration: BoxDecoration(
+                            color: position % 2 == 0
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.secondary,
                             border: Border(
                                 right: BorderSide(
-                                  color: AppColors.black,
-                                  width: 2.0,
-                                ),
-                                left: BorderSide(
                                   color: AppColors.black,
                                   width: 2.0,
                                 ),
@@ -378,194 +511,77 @@ class Home extends GetView<HomeController> {
                                   color: AppColors.black,
                                   width: 2.0,
                                 ))),
-                        child: Text(
-                          Controller.listOfInspection[position]['ID'] ?? '',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.displayMedium,
+                        child: Obx(
+                          () => Text(
+                            Controller.listOfInspection[position]['Supplier'] ??
+                                '',
+                            textAlign: TextAlign.center,
+                            overflow: Controller.expandContents.contains(
+                                    Controller.listOfInspection[position]
+                                            ['ID'] ??
+                                        '')
+                                ? TextOverflow.visible
+                                : TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.displayMedium,
+                          ),
                         ),
                       ),
-                      Container(
-                        alignment: Alignment.center,
-                        width: MediaQuery.of(context).size.width / 7.25,
-                        padding: EdgeInsets.symmetric(vertical: 15.h),
-                        decoration: BoxDecoration(
-                            border: Border(
-                                right: BorderSide(
-                                  color: AppColors.black,
-                                  width: 2.0,
-                                ),
-                                bottom: BorderSide(
-                                  color: AppColors.black,
-                                  width: 2.0,
-                                ))),
-                        child: Text(
-                          Controller.listOfInspection[position]['PO'] ?? '',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.displayMedium,
-                        ),
-                      ),
-                      Container(
-                        alignment: Alignment.center,
-                        width: MediaQuery.of(context).size.width / 6.9,
-                        padding: EdgeInsets.symmetric(vertical: 15.h),
-                        decoration: BoxDecoration(
-                            border: Border(
-                                right: BorderSide(
-                                  color: AppColors.black,
-                                  width: 2.0,
-                                ),
-                                bottom: BorderSide(
-                                  color: AppColors.black,
-                                  width: 2.0,
-                                ))),
-                        child: Text(
-                          Controller.listOfInspection[position]['Item'] ?? '',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.displayMedium,
-                        ),
-                      ),
-                      Container(
-                        alignment: Alignment.center,
-                        width: MediaQuery.of(context).size.width / 14.5,
-                        padding: EdgeInsets.symmetric(vertical: 15.h),
-                        decoration: BoxDecoration(
-                            border: Border(
-                                right: BorderSide(
-                                  color: AppColors.black,
-                                  width: 2.0,
-                                ),
-                                bottom: BorderSide(
-                                  color: AppColors.black,
-                                  width: 2.0,
-                                ))),
-                        child: Text(
-                            Controller.listOfInspection[position]['Res'] ?? '',
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width / 6.1,
+                      padding: EdgeInsets.symmetric(
+                          vertical: 15.h, horizontal: 15.w),
+                      decoration: BoxDecoration(
+                          color: position % 2 == 0
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.secondary,
+                          border: Border(
+                              right: BorderSide(
+                                color: AppColors.black,
+                                width: 2.0,
+                              ),
+                              bottom: BorderSide(
+                                color: AppColors.black,
+                                width: 2.0,
+                              ))),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            Controller.listOfInspection[position]['Status'] ??
+                                '',
                             textAlign: TextAlign.center,
                             style: Theme.of(context)
                                 .textTheme
                                 .displayMedium
                                 ?.copyWith(
                                     color: AppColors.primary,
-                                    fontWeight: FontWeight.w800)),
-                      ),
-                      Container(
-                        alignment: Alignment.center,
-                        width: MediaQuery.of(context).size.width / 6.1,
-                        padding: EdgeInsets.symmetric(vertical: 15.h),
-                        decoration: BoxDecoration(
-                            border: Border(
-                                right: BorderSide(
-                                  color: AppColors.black,
-                                  width: 2.0,
-                                ),
-                                bottom: BorderSide(
-                                  color: AppColors.black,
-                                  width: 2.0,
-                                ))),
-                        child: Text(
-                          Controller.listOfInspection[position]['GR'] ?? '',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.displayMedium,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          if (Controller.expandContents.contains(
-                              Controller.listOfInspection[position]['ID'] ??
-                                  '')) {
-                            Controller.expandContents.remove(
-                                Controller.listOfInspection[position]['ID'] ??
-                                    '');
-                          } else {
-                            Controller.expandContents.add(
-                                Controller.listOfInspection[position]['ID'] ??
-                                    '');
-                          }
-                        },
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: MediaQuery.of(context).size.width / 5.61,
-                          padding: EdgeInsets.symmetric(vertical: 15.h),
-                          decoration: BoxDecoration(
-                              border: Border(
-                                  right: BorderSide(
-                                    color: AppColors.black,
-                                    width: 2.0,
-                                  ),
-                                  bottom: BorderSide(
-                                    color: AppColors.black,
-                                    width: 2.0,
-                                  ))),
-                          child: Obx(
-                            () => Text(
-                              Controller.listOfInspection[position]
-                                      ['Supplier'] ??
-                                  '',
-                              textAlign: TextAlign.center,
-                              overflow: Controller.expandContents.contains(
-                                      Controller.listOfInspection[position]
-                                              ['ID'] ??
-                                          '')
-                                  ? TextOverflow.visible
-                                  : TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.displayMedium,
-                            ),
+                                    fontWeight: FontWeight.w800),
                           ),
-                        ),
+                          InkWell(
+                            onTap: () {
+                              Controller.selectInspectionForDownload(
+                                  Controller.listOfInspection[position]['ID'] ??
+                                      '',
+                                  false);
+                            },
+                            child: Obx(() => Image.asset(
+                                  Controller.selectedIDsInspection.contains(
+                                          Controller.listOfInspection[position]
+                                                  ['ID'] ??
+                                              '')
+                                      ? AppImages.ic_SelectedCheckbox
+                                      : AppImages.ic_unSelectCheckbox,
+                                  width: 60.w,
+                                  height: 60.h,
+                                  color: AppColors.white,
+                                )),
+                          )
+                        ],
                       ),
-                      Container(
-                        alignment: Alignment.center,
-                        width: MediaQuery.of(context).size.width / 6.1,
-                        padding: EdgeInsets.symmetric(
-                            vertical: 15.h, horizontal: 15.w),
-                        decoration: BoxDecoration(
-                            border: Border(
-                                right: BorderSide(
-                                  color: AppColors.black,
-                                  width: 2.0,
-                                ),
-                                bottom: BorderSide(
-                                  color: AppColors.black,
-                                  width: 2.0,
-                                ))),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              Controller.listOfInspection[position]['Status'] ??
-                                  '',
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .displayMedium
-                                  ?.copyWith(color: AppColors.primary,
-                                  fontWeight: FontWeight.w800),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                Controller.selectInspectionForDownload(
-                                    Controller.listOfInspection[position]
-                                            ['ID'] ??
-                                        '',
-                                    false);
-                              },
-                              child: Obx(() => Image.asset(
-                                    Controller.selectedIDsInspection.contains(
-                                            Controller.listOfInspection[
-                                                    position]['ID'] ??
-                                                '')
-                                        ? AppImages.ic_SelectedCheckbox
-                                        : AppImages.ic_unSelectCheckbox,
-                                    width: 60.w,
-                                    height: 60.h,
-                                    color: AppColors.white,
-                                  )),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                    )
+                  ],
                 ),
               );
             },

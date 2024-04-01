@@ -2,8 +2,10 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/common_widget/alert.dart';
 
 class SetupController extends GetxController {
   List dateformats = AppStrings.dateFormats;
@@ -23,20 +25,17 @@ class SetupController extends GetxController {
 
   // SETUP SCREEN VALIDATION'S
 
-  bool isSetupFieldsValidate() {
+  bool isSetupFieldsValidate(BuildContext context) {
     if (banner1TextController.value.text.trim().isEmpty) {
-      AppSnackBar.getCustomSnackBar(AppStrings.banner1Blank, AppStrings.error,
-          isSuccess: false);
+      validateAlerts(context, AppStrings.error, AppStrings.banner1Blank);
       return false;
     }
     if (banner2TextController.value.text.trim().isEmpty) {
-      AppSnackBar.getCustomSnackBar(AppStrings.banner2Blank, AppStrings.error,
-          isSuccess: false);
+      validateAlerts(context, AppStrings.error, AppStrings.banner2Blank);
       return false;
     }
     if (banner3TextController.value.text.trim().isEmpty) {
-      AppSnackBar.getCustomSnackBar(AppStrings.serverUrlBlank, AppStrings.error,
-          isSuccess: false);
+      validateAlerts(context, AppStrings.error, AppStrings.serverUrlBlank);
       return false;
     }
     return true;

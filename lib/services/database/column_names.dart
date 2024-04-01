@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names, unused_field
+
 import 'package:pverify/services/database/database_helper.dart';
 
 class UserColumn {

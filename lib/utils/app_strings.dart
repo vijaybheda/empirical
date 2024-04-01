@@ -29,6 +29,7 @@ class AppStrings {
 
   static const String cancel = 'Cancel';
   static const String ok = 'OK';
+  static const String okSmall = 'Ok';
   static const String yes = 'Yes';
   static const String no = 'No';
   static const String logOut = 'Log out';
@@ -99,8 +100,8 @@ class AppStrings {
   static const String passwordBlank = 'Password cannot be blank';
   static const String passwordValid =
       'Password must be at least 8 characters long, contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character.';
-  static const String userNameBlank = 'Email cannot be blank';
-  static const String invalidUsername = 'Invalid email. Please try again.';
+  static const String userNameBlank = 'Username cannot be blank';
+  static const String invalidUsername = 'Invalid username. Please try again.';
   static const String couldNotConnect =
       'Could not connect to webservice. Please contact Administrator.';
   static const String validateCredential = 'Validating user credentials';
@@ -115,6 +116,8 @@ class AppStrings {
   static const String ripeningAccessAlert =
       'You are not authorized to access Ripening';
 
+  static const String accountInactive =
+      "Your account is inactive. Please contact your administrator.";
   static const String ID = 'ID';
   static const String deviceId = 'Device ID';
   static const String wsUrl = 'Server Address';
@@ -435,6 +438,20 @@ class AppStrings {
   static const String quality_control_header = 'Quality Control Header';
   static const String qc_header = 'QC Header';
   static const String orderNo = 'Order No *';
+  static const String orderNoBlank = 'Order No cannot be blank';
+  static const String orderNoInvalid =
+      'Order Number should not exceed 20 characters';
+  static const String sealInvalid = 'Seal No should not exceed 15 characters';
+  static const String certificateInvalid =
+      'Certificate Of Departure should not exceed 20 characters';
+  static const String factoryReferenceInvalid =
+      'Factory Reference # should not exceed 20 characters';
+  static const String usdaReferenceInvalid =
+      'USDA Reference # should not exceed 20 characters';
+  static const String containerInvalid =
+      'Container # should not exceed 20 characters';
+  static const String totalQuantityInvalid =
+      'Total Quantity should not exceed 20 characters';
 
   static const String pieces = 'Yes';
   static const String whole = 'No';

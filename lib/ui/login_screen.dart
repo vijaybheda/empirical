@@ -1,13 +1,17 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:path/path.dart';
 import 'package:pverify/controller/auth_controller.dart';
 import 'package:pverify/models/login_data.dart';
 import 'package:pverify/services/custom_exception/custom_exception.dart';
 import 'package:pverify/ui/setup_platfrom/setup.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/common_widget/alert.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
@@ -102,7 +106,8 @@ class LoginScreen extends GetView<AuthController> {
                         .copyWith(fontSize: 25.sp),
                     onClickAction: () async {
                       TextInput.finishAutofillContext();
-                      await doLoginAction(authController, isLoginButton: true);
+                      await doLoginAction(authController,
+                          isLoginButton: true, context: context);
                     },
                   ),
                   SizedBox(
@@ -117,7 +122,8 @@ class LoginScreen extends GetView<AuthController> {
                           .textTheme
                           .displayMedium!
                           .copyWith(fontSize: 25.sp), onClickAction: () async {
-                    await doLoginAction(authController, isLoginButton: false);
+                    await doLoginAction(authController,
+                        isLoginButton: false, context: context);
                   }),
                 ],
               ),
@@ -128,15 +134,13 @@ class LoginScreen extends GetView<AuthController> {
     );
   }
 
-  Future<void> doLoginAction(
-    AuthController authController, {
-    required bool isLoginButton,
-  }) async {
-    if (authController.isLoginFieldsValidate()) {
+  Future<void> doLoginAction(AuthController authController,
+      {required bool isLoginButton, required BuildContext context}) async {
+    if (authController.isLoginFieldsValidate(context)) {
       try {
         Utils.showLoadingDialog();
-        LoginData? loginData =
-            await authController.loginUser(isLoginButton: isLoginButton);
+        LoginData? loginData = await authController.loginUser(
+            isLoginButton: isLoginButton, context: context);
         if (loginData != null) {
           if (!isLoginButton) {
             Utils.hideLoadingDialog();
@@ -169,7 +173,7 @@ class LoginScreen extends GetView<AuthController> {
             // await authController.jsonFileOperations.offlineLoadCarriersData();
             // await authController.jsonFileOperations.offlineLoadCommodityData();
 
-            await authController.downloadCloudData();
+            await authController.downloadCloudData(context);
           }
         } else {
           // Utils.hideLoadingDialog();
@@ -179,7 +183,7 @@ class LoginScreen extends GetView<AuthController> {
         debugPrint('doLoginAction ${e.toString()}');
         if (e is CustomException) {
           // info alert dialog
-          Utils.showErrorAlertDialog(e.message);
+          validateAlerts(context, AppStrings.error, e.message);
         }
       }
     }

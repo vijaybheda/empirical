@@ -1,6 +1,4 @@
-// ignore_for_file: void_checks, dead_code, unused_element
-
-import 'dart:io';
+// ignore_for_file: void_checks, dead_code, unused_element, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,6 +9,8 @@ import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 Widget baseHeaderView(String title, bool isVersionShow) {
+  var headerController = Get.put(HeaderController());
+
   return GetBuilder(
       id: "wifiLevel",
       init: HeaderController(),
@@ -39,7 +39,7 @@ Widget baseHeaderView(String title, bool isVersionShow) {
               isVersionShow
                   ? Obx(
                       () => Text(
-                        controller.appVersion.value,
+                        headerController.appVersion.value,
                         style: GoogleFonts.poppins(
                             fontSize: 40.sp,
                             fontWeight: FontWeight.bold,
@@ -53,7 +53,7 @@ Widget baseHeaderView(String title, bool isVersionShow) {
               ),
               Obx(
                 () => Image.asset(
-                  controller.wifiImage1.value,
+                  headerController.wifiImage1.value,
                   width: 70.w,
                   height: 70.w,
                 ),

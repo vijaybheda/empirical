@@ -1,4 +1,4 @@
-// ignore_for_file: unused_field, prefer_final_fields, unused_local_variable, non_constant_identifier_names
+// ignore_for_file: unused_field, prefer_final_fields, unused_local_variable, non_constant_identifier_names, prefer_const_constructors
 
 import 'dart:async';
 import 'dart:io';
@@ -14,15 +14,16 @@ import 'package:package_info_plus/package_info_plus.dart';
 class HeaderController extends GetxController {
   final NetworkConnectivity _networkConnectivity = NetworkConnectivity.instance;
   Map _source = {ConnectivityResult.none: false};
-  final wifiImage1 = AppImages.ic_Wifi_off.obs;
+  var wifiImage1 = AppImages.ic_Wifi_off.obs;
   final isConnectedToNetwork_iOS = false.obs;
   var appVersion = ''.obs;
   final Connectivity _networkConnectivityIOS = Connectivity();
   final FlutterInternetSignal internetSignal = FlutterInternetSignal();
   RxBool hasStableInternet = false.obs;
-  final StreamController<bool> _hasStableInternetController = StreamController<bool>.broadcast();
-  final StreamController<int> _wifiLevelController = StreamController<int>.broadcast();
-  HeaderController();
+  final StreamController<bool> _hasStableInternetController =
+      StreamController<bool>.broadcast();
+  final StreamController<int> _wifiLevelController =
+      StreamController<int>.broadcast();
 
   ValueNotifier<int> rssiValueNotifier = ValueNotifier(-120);
   static const stream = EventChannel(AppStrings.platformEventIOS);
@@ -33,7 +34,6 @@ class HeaderController extends GetxController {
   void onInit() {
     super.onInit();
     appversion();
-
     if (Platform.isAndroid) {
       snetwork();
     } else if (Platform.isIOS) {
@@ -42,20 +42,46 @@ class HeaderController extends GetxController {
   }
 
   Future<void> checkInternet() async {
+    _networkConnectivityIOS.onConnectivityChanged.listen(
+      (result) async {
+        try {
+          ConnectivityResult connectivityResult =
+              await Connectivity().checkConnectivity();
+          hasStableInternet.value =
+              (connectivityResult == ConnectivityResult.wifi);
 
-    _networkConnectivityIOS.onConnectivityChanged.listen((result) async {
-        ConnectivityResult connectivityResult =
-        await Connectivity().checkConnectivity();
-        hasStableInternet.value =
-        (connectivityResult == ConnectivityResult.wifi);
-
-        wifiImage1.value = hasStableInternet.value ? AppImages.ic_Wifi_bar_3 : AppImages.ic_Wifi_off;
-        _hasStableInternetController.add(hasStableInternet.value);
-
-    });
+          wifiImage1.value = hasStableInternet.value
+              ? AppImages.ic_Wifi_bar_3
+              : AppImages.ic_Wifi_off;
+          _hasStableInternetController.add(hasStableInternet.value);
+        } catch (e) {
+          debugPrint('Error occurred during connectivity check: $e');
+          // Handle error here if needed
+        }
+      },
+      onError: (error) {
+        debugPrint('Error occurred in stream subscription: $error');
+        // Handle error here if needed
+      },
+    );
   }
 
- // FETCHED APPVERSION
+  // Future<void> checkInternet() async {
+  //   _networkConnectivityIOS.onConnectivityChanged
+  //       .listen((result, {error}) async {
+  //     debugPrint(error);
+  //     ConnectivityResult connectivityResult =
+  //         await Connectivity().checkConnectivity();
+  //     hasStableInternet.value = (connectivityResult == ConnectivityResult.wifi);
+  //
+  //     wifiImage1.value = hasStableInternet.value
+  //         ? AppImages.ic_Wifi_bar_3
+  //         : AppImages.ic_Wifi_off;
+  //     _hasStableInternetController.add(hasStableInternet.value);
+  //   });
+  // }
+
+  // FETCHED APPVERSION
 
   void appversion() {
     PackageInfo.fromPlatform().then((PackageInfo packageInfo) {

@@ -75,7 +75,7 @@ class SetupScreen extends GetView<SetupController> {
                           fontWeight: FontWeight.w500,
                           textStyle: TextStyle(color: AppColors.white)),
                       onClickAction: () => {
-                            if (Controller.isSetupFieldsValidate())
+                            if (Controller.isSetupFieldsValidate(context))
                               {debugPrint('All Fields Are Validate')}
                           }),
                   SizedBox(

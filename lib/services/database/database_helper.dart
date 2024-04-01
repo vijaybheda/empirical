@@ -1,5 +1,8 @@
+// ignore_for_file: unnecessary_brace_in_string_interps
+
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:pverify/services/database/column_names.dart';
 import 'package:pverify/services/database/db_tables.dart';
@@ -26,6 +29,7 @@ class DatabaseHelper {
 
   Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), _databaseName);
+    debugPrint('path:${path}');
     return await openDatabase(
       path,
       version: _databaseVersion,

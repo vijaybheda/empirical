@@ -42,6 +42,37 @@ void customAlert(
         );
 }
 
+void validateAlerts(BuildContext context, String title, String message) {
+  customAlert(context,
+      title: Text(
+        title,
+        style: GoogleFonts.poppins(
+            fontSize: 28.sp,
+            fontWeight: FontWeight.w500,
+            textStyle: TextStyle(color: AppColors.white)),
+      ),
+      content: Text(
+        message,
+        style: GoogleFonts.poppins(
+            fontSize: 25.sp,
+            fontWeight: FontWeight.normal,
+            textStyle: TextStyle(color: AppColors.white)),
+      ),
+      actions: [
+        TextButton(
+            onPressed: () {
+              navigator?.pop();
+            },
+            child: Text(
+              AppStrings.ok,
+              style: GoogleFonts.poppins(
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.normal,
+                  textStyle: TextStyle(color: AppColors.primary)),
+            )),
+      ]);
+}
+
 void showLogoutConfirmation(BuildContext context) {
   return customAlert(context,
       title: Text(
@@ -78,7 +109,7 @@ void showLogoutConfirmation(BuildContext context) {
               navigator?.pop();
             },
             child: Text(
-              AppStrings.yes,
+              AppStrings.okSmall,
               style: GoogleFonts.poppins(
                   fontSize: 26.sp,
                   fontWeight: FontWeight.normal,
