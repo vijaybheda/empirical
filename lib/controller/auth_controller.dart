@@ -90,7 +90,6 @@ class AuthController extends GetxController {
                 userData.headquarterSupplierId!,
                 userData.gtinScanning!,
               );
-
               return userData;
             } else {
               return userData;
