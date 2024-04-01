@@ -3,11 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pverify/controller/global_config_controller.dart';
+import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/ui/commodity/commodity_id_screen.dart';
 import 'package:pverify/ui/scorecard/scorecard_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/dialogs/supplier_list_dialog.dart';
 import 'package:pverify/utils/utils.dart';
 
 class SelectSupplierScreenController extends GetxController {
@@ -15,11 +18,21 @@ class SelectSupplierScreenController extends GetxController {
   final AppStorage appStorage = AppStorage.instance;
   final GlobalConfigController globalConfigController =
       Get.find<GlobalConfigController>();
+  final CarrierItem carrier;
+
+  // constructor
+  SelectSupplierScreenController({required this.carrier});
+
+  final TextEditingController searchOpenSuppController =
+      TextEditingController();
+  final RxInt selectedIndex = RxInt(-1);
 
   final ApplicationDao dao = ApplicationDao();
 
   RxList<PartnerItem> filteredPartnerList = <PartnerItem>[].obs;
   RxList<PartnerItem> partnersList = <PartnerItem>[].obs;
+  RxList<PartnerItem> filteredNonOpenPartnersList = <PartnerItem>[].obs;
+  RxList<PartnerItem> nonOpenPartnersList = <PartnerItem>[].obs;
   RxBool listAssigned = false.obs;
 
   double get listHeight => 180.h;
@@ -42,6 +55,14 @@ class SelectSupplierScreenController extends GetxController {
       filteredPartnerList.value = [];
 
       partnersList.addAll(_partnersList);
+
+      List<PartnerItem> nonOpenPartners = _partnersList
+          .where((element) => (element.name != null &&
+              !(element.name!.toLowerCase().contains("open"))))
+          .toList();
+      filteredNonOpenPartnersList.addAll(nonOpenPartners);
+      nonOpenPartnersList.addAll(nonOpenPartners);
+
       partnersList.sort((a, b) => a.name!.compareTo(b.name!));
 
       filteredPartnerList.addAll(_partnersList);
@@ -62,6 +83,19 @@ class SelectSupplierScreenController extends GetxController {
           .toList();
     }
     update(['partnerList']);
+  }
+
+  void searchAndAssignNonOpenPartner(String searchValue) {
+    filteredNonOpenPartnersList.clear();
+    if (searchValue.isEmpty) {
+      filteredNonOpenPartnersList.addAll(nonOpenPartnersList);
+    } else {
+      filteredNonOpenPartnersList.value = nonOpenPartnersList
+          .where((element) =>
+              element.name!.toLowerCase().contains(searchValue.toLowerCase()))
+          .toList();
+    }
+    update(['nonOpenPartnerList']);
   }
 
   List<String> getListOfAlphabets() {
@@ -514,5 +548,15 @@ class SelectSupplierScreenController extends GetxController {
 
   void navigateToPartnerDetails(PartnerItem partner) {
     Get.to(() => ScorecardScreen(partner: partner));
+  }
+
+  void navigateToCommodityIdScreen(BuildContext context, PartnerItem partner) {
+    if (partner.name != null &&
+        partner.name!.isNotEmpty &&
+        partner.name!.toLowerCase().contains("open")) {
+      SupplierListDialog.show(context);
+    } else {
+      Get.to(() => CommodityIDScreen(partner: partner));
+    }
   }
 }

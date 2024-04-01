@@ -7,6 +7,7 @@ import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
+import 'package:pverify/ui/supplier/choose_supplier.dart';
 import 'package:pverify/utils/app_storage.dart';
 
 class SelectCarrierScreenController extends GetxController {
@@ -47,6 +48,10 @@ class SelectCarrierScreenController extends GetxController {
       filteredCarrierList.sort((a, b) => a.name!.compareTo(b.name!));
       listAssigned.value = true;
       update(['carrierList']);
+
+      if (filteredCarrierList.length == 1) {
+        navigateToPartner(filteredCarrierList.first);
+      }
     }
     checkCarrierData();
   }
@@ -95,5 +100,11 @@ class SelectCarrierScreenController extends GetxController {
         Get.to(QualityControlHeader(carrier: carriersList.first));
       });
     }
+  }
+
+  void navigateToPartner(CarrierItem carrier) {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) {
+      Get.to(() => SelectSupplierScreen(carrier: carrier));
+    });
   }
 }

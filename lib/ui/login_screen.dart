@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -26,6 +27,11 @@ class LoginScreen extends GetView<AuthController> {
     return GetBuilder(
       init: AuthController(),
       builder: (authController) {
+        if (kDebugMode) {
+          authController.emailTextController.value.text =
+              'nirali.talavia@gmail.com';
+          authController.passwordTextController.value.text = 'Niralishah@1234';
+        }
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.background,
           resizeToAvoidBottomInset: false,
