@@ -31,10 +31,9 @@ class QualityControl_Controller extends GetxController {
   var selectetdTypes = 'Quality Assurance'.obs;
   var spacingBetweenFields = 10;
   final AppStorage appStorage = AppStorage.instance;
-  late Future<List<PurchaseOrderDetails>> purchaseOrderDetails =
-      Future.value([]);
-  late Future<QCHeaderDetails?> qcHeaderDetails;
-  late Future<List<int>> inspIDs;
+  List<PurchaseOrderDetails> purchaseOrderDetails = [];
+  QCHeaderDetails? qcHeaderDetails;
+  List<int> inspIDs = [];
 
   final ApplicationDao dao = ApplicationDao();
 
@@ -122,14 +121,14 @@ class QualityControl_Controller extends GetxController {
 
   Future<void> saveAction(CarrierItem carrier) async {
     qcHeaderDetails =
-        dao.findTempQCHeaderDetails(orderNoTextController.value.text);
+        await dao.findTempQCHeaderDetails(orderNoTextController.value.text);
 
     if (AppStorage.instance.getLoginData()!.supplierId != 0) {
-      purchaseOrderDetails = dao.getPODetailsFromTable(
+      purchaseOrderDetails = await dao.getPODetailsFromTable(
           orderNoTextController.value.text,
           AppStorage.instance.getLoginData()!.supplierId ?? 0);
 
-      inspIDs = dao
+      inspIDs = await dao
           .getPartnerSKUInspectionIDsByPONo(orderNoTextController.value.text);
     }
 
@@ -150,7 +149,7 @@ class QualityControl_Controller extends GetxController {
           selectetdTypes.value,
           cteType);
     } else {
-      QCHeaderDetails? headerDetails = await qcHeaderDetails;
+      QCHeaderDetails? headerDetails = qcHeaderDetails;
       await dao.updateTempQCHeaderDetails(
           headerDetails?.id ?? 0, // baseID
           orderNoTextController.value.text,

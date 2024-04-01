@@ -7,7 +7,6 @@ import 'package:pverify/ui/components/app_name_header.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
-import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
@@ -179,7 +178,7 @@ class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
                 getAlphabetContent(controller.filteredCarrierList, index),
                 GestureDetector(
                   onTap: () {
-                    Get.to(QualityControlHeader(carrier: carrier));
+                    controller.navigateToQcHeader(carrier);
                   },
                   child: SizedBox(
                     height: controller.listHeight,

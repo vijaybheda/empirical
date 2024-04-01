@@ -6,7 +6,6 @@ import 'dart:io';
 
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/models/inspection_defect.dart';
@@ -1597,16 +1596,16 @@ class ApplicationDao {
     */
 
     try {
-      List<Map<String, dynamic>> results = await _db.rawQuery('''
-        SELECT ${POHeaderColumn.PO_NUMBER}, ${POHeaderColumn.PO_DELIVER_TO_ID}, ${POHeaderColumn.PO_DELIVER_TO_NAME}, ${POHeaderColumn.PO_PARTNER_ID}, 
-        ${POHeaderColumn.PO_PARTNER_NAME},
-        ${PODetailColumn.PO_LINE_NUMBER}, ${PODetailColumn.PO_ITEM_SKU_ID}, ${PODetailColumn.PO_ITEM_SKU_CODE}, ${PODetailColumn.PO_ITEM_SKU_NAME},
-        ${PODetailColumn.PO_QUANTITY}, ${PODetailColumn.PO_QTY_UOM_ID}, ${PODetailColumn.PO_QTY_UOM_NAME},
-        ${PODetailColumn.PO_NUMBER_SPEC}, ${PODetailColumn.PO_VERSION_SPEC}, ${PODetailColumn.PO_COMMODITY_ID}, ${PODetailColumn.PO_COMMODITY_NAME} 
-        FROM ${DBTables.PO_DETAIL} pod 
-        INNER JOIN PO_Header poh ON ${PODetailColumn.PO_HEADER_ID}=${POHeaderColumn.PO_HEADER_ID} 
-        WHERE ${POHeaderColumn.PO_NUMBER}='$poNumber' AND ${POHeaderColumn.PO_DELIVER_TO_ID}=$inspectorSupplierId
-      ''');
+      List<Map<String, dynamic>> results = await _db.rawQuery(
+        "SELECT ${POHeaderColumn.PO_NUMBER}, ${POHeaderColumn.PO_DELIVER_TO_ID}, ${POHeaderColumn.PO_DELIVER_TO_NAME}, ${POHeaderColumn.PO_PARTNER_ID}, "
+        "${POHeaderColumn.PO_PARTNER_NAME}, "
+        "${PODetailColumn.PO_LINE_NUMBER}, ${PODetailColumn.PO_ITEM_SKU_ID}, ${PODetailColumn.PO_ITEM_SKU_CODE}, ${PODetailColumn.PO_ITEM_SKU_NAME}, "
+        "${PODetailColumn.PO_QUANTITY}, ${PODetailColumn.PO_QTY_UOM_ID}, ${PODetailColumn.PO_QTY_UOM_NAME}, "
+        "${PODetailColumn.PO_NUMBER_SPEC}, ${PODetailColumn.PO_VERSION_SPEC}, ${PODetailColumn.PO_COMMODITY_ID}, ${PODetailColumn.PO_COMMODITY_NAME} "
+        "FROM ${DBTables.PO_DETAIL} pod "
+        "INNER JOIN PO_Header poh ON ${PODetailColumn.PO_HEADER_ID}=${POHeaderColumn.PO_HEADER_ID} "
+        "WHERE ${POHeaderColumn.PO_NUMBER}='$poNumber' AND ${POHeaderColumn.PO_DELIVER_TO_ID}=$inspectorSupplierId",
+      );
       for (var result in results) {
         purchaseOrderDetailsList.add(PurchaseOrderDetails.fromMap(result));
       }
@@ -1693,14 +1692,12 @@ class ApplicationDao {
     String productTransfer,
     String cteType,
   ) async {
-    // Open the database
-    final Database database = await openDatabase(
-      join(await getDatabasesPath(), 'your_database.db'),
-    );
+    // Open the db
+    Database db = await dbProvider.database;
 
     try {
       // Begin a transaction
-      await database.transaction((txn) async {
+      await db.transaction((txn) async {
         await txn.update(
           DBTables.TEMP_QC_HEADER_DETAILS,
           {
@@ -1718,16 +1715,13 @@ class ApplicationDao {
             TempQcHeaderDetailsColumn.PRODUCT_TRANSFER: productTransfer,
             TempQcHeaderDetailsColumn.CTE_TYPE: cteType,
           },
-          where: 'id = ?',
+          where: '${BaseColumns.ID} = ?',
           whereArgs: [baseId],
         );
       });
     } catch (e) {
       debugPrint('Error has occurred while updating a trailer temperature: $e');
       throw e;
-    } finally {
-      // Close the database
-      await database.close();
     }
   }
 
