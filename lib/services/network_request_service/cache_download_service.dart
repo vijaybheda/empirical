@@ -15,12 +15,12 @@ import 'package:pverify/services/network_request_service/network_request_base_cl
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/theme.dart' show AppColors;
 import 'package:pverify/utils/utils.dart' show Utils;
-import 'package:flutter/material.dart';
 
 class CacheDownloadService extends BaseRequestService {
   static CacheDownloadService get instance => _instance;
   static final CacheDownloadService _instance =
       CacheDownloadService._internal();
+
   CacheDownloadService._internal();
 
   /// download Zip File

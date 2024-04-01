@@ -6,11 +6,10 @@ import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/adaptive_alert.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
-class UpdateDataAlert {
-  static void showUpdateDataDialog(
+class UserLogoutDialog {
+  static void showLogoutConfirmation(
     BuildContext context, {
-    String? message,
-    Function()? onOkPressed,
+    required Function()? onYesTap,
   }) {
     return AdaptiveAlert.customAlert(context,
         title: Text(
@@ -21,7 +20,7 @@ class UpdateDataAlert {
               textStyle: TextStyle(color: AppColors.white)),
         ),
         content: Text(
-          message ?? AppStrings.updateDataConfirmation,
+          AppStrings.logoutConfirmation,
           style: GoogleFonts.poppins(
               fontSize: 25.sp,
               fontWeight: FontWeight.normal,
@@ -43,17 +42,17 @@ class UpdateDataAlert {
             width: 10.w,
           ),
           TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Get.back();
-                if (onOkPressed != null) {
-                  onOkPressed();
+                if (onYesTap != null) {
+                  onYesTap();
                 }
               },
               child: Text(
-                AppStrings.ok,
+                AppStrings.yes,
                 style: GoogleFonts.poppins(
                     fontSize: 26.sp,
-                    fontWeight: FontWeight.normal,
+                    fontWeight: FontWeight.bold,
                     textStyle: TextStyle(color: AppColors.primary)),
               )),
         ]);

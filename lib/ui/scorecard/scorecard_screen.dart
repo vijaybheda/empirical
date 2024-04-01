@@ -20,6 +20,7 @@ class ScorecardScreen extends GetWidget<ScorecardScreenController> {
         init: ScorecardScreenController(partner),
         builder: (controller) {
           return Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.background,
             body: Column(
               children: <Widget>[
                 HeaderContentView(

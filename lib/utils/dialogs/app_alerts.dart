@@ -1,27 +1,26 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/adaptive_alert.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
-class UpdateDataAlert {
-  static void showUpdateDataDialog(
-    BuildContext context, {
-    String? message,
-    Function()? onOkPressed,
-  }) {
-    return AdaptiveAlert.customAlert(context,
+class AppAlertDialog {
+  static void validateAlerts(
+      BuildContext context, String title, String message) {
+    AdaptiveAlert.customAlert(context,
         title: Text(
-          AppStrings.alert,
+          title,
           style: GoogleFonts.poppins(
               fontSize: 28.sp,
               fontWeight: FontWeight.w500,
               textStyle: TextStyle(color: AppColors.white)),
         ),
         content: Text(
-          message ?? AppStrings.updateDataConfirmation,
+          message,
           style: GoogleFonts.poppins(
               fontSize: 25.sp,
               fontWeight: FontWeight.normal,
@@ -30,24 +29,7 @@ class UpdateDataAlert {
         actions: [
           TextButton(
               onPressed: () {
-                Get.back();
-              },
-              child: Text(
-                AppStrings.cancel,
-                style: GoogleFonts.poppins(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.primary)),
-              )),
-          SizedBox(
-            width: 10.w,
-          ),
-          TextButton(
-              onPressed: () {
-                Get.back();
-                if (onOkPressed != null) {
-                  onOkPressed();
-                }
+                navigator?.pop();
               },
               child: Text(
                 AppStrings.ok,

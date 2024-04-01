@@ -455,6 +455,11 @@ class AppStrings {
   static const String totalQuantityInvalid =
       'Total Quantity should not exceed 20 characters';
 
+  String getDayMessage(int days) =>
+      "Data has not been updated in $days days; need to update. \nPlease go to your hotspot and update data now.";
+  String getDayMessage1(int days) =>
+      "Data has not been updated in $days days; need to update. \nPlease go to your hotspot, turn WiFi on and update data now.";
+
   static const String pieces = 'Yes';
   static const String whole = 'No';
 

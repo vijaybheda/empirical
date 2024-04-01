@@ -18,11 +18,10 @@ import 'package:pverify/services/secure_password.dart';
 import 'package:pverify/ui/Home/home.dart';
 import 'package:pverify/ui/cache_download_screen.dart';
 import 'package:pverify/ui/setup_platfrom/setup.dart';
-import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
-import 'package:pverify/utils/common_widget/alert.dart';
 import 'package:pverify/utils/constants.dart';
+import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/utils.dart';
 
 class AuthController extends GetxController {
@@ -98,7 +97,7 @@ class AuthController extends GetxController {
             }
           } catch (e) {
             await Utils.hideLoadingDialog();
-            validateAlerts(
+            AppAlertDialog.validateAlerts(
                 context, AppStrings.error, AppStrings.invalidUsernamePassword);
           }
         }
@@ -161,7 +160,7 @@ class AuthController extends GetxController {
                   offlineUser?.status == 3) {
                 // show Info Alert Dialog
                 await Utils.hideLoadingDialog();
-                validateAlerts(
+                AppAlertDialog.validateAlerts(
                     context, AppStrings.error, AppStrings.accountInactive);
               } else {
                 await jsonFileOperations.offlineLoadSuppliersData();
@@ -176,13 +175,14 @@ class AuthController extends GetxController {
             }
           } else {
             await Utils.hideLoadingDialog();
-            validateAlerts(
+            AppAlertDialog.validateAlerts(
                 context, AppStrings.error, AppStrings.invalidUsernamePassword);
           }
         } else {
           await Utils.hideLoadingDialog();
           // show Info Alert Dialog
-          validateAlerts(context, AppStrings.error, AppStrings.turnOnWifi);
+          AppAlertDialog.validateAlerts(
+              context, AppStrings.error, AppStrings.turnOnWifi);
         }
       }
       return null;
@@ -220,15 +220,18 @@ class AuthController extends GetxController {
 
   bool isLoginFieldsValidate(BuildContext context) {
     if (emailTextController.value.text.trim().isEmpty) {
-      validateAlerts(context, AppStrings.error, AppStrings.userNameBlank);
+      AppAlertDialog.validateAlerts(
+          context, AppStrings.error, AppStrings.userNameBlank);
       return false;
     }
     if (validateEmail(emailTextController.value.text) == true) {
-      validateAlerts(context, AppStrings.error, AppStrings.invalidUsername);
+      AppAlertDialog.validateAlerts(
+          context, AppStrings.error, AppStrings.invalidUsername);
       return false;
     }
     if (passwordTextController.value.text.trim().isEmpty) {
-      validateAlerts(context, AppStrings.error, AppStrings.passwordBlank);
+      AppAlertDialog.validateAlerts(
+          context, AppStrings.error, AppStrings.passwordBlank);
       return false;
     }
     // if (checkPassword(passwordTextController.value.text) == false) {
@@ -256,11 +259,11 @@ class AuthController extends GetxController {
           Get.offAll(() => const CacheDownloadScreen());
           return;
         } else {
-          validateAlerts(
+          AppAlertDialog.validateAlerts(
               context, AppStrings.error, AppStrings.downloadWifiError);
         }
       } else {
-        validateAlerts(
+        AppAlertDialog.validateAlerts(
             context, AppStrings.error, AppStrings.betterWifiConnWarning);
       }
     } else {

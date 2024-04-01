@@ -4,17 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:path/path.dart';
 import 'package:pverify/controller/auth_controller.dart';
 import 'package:pverify/models/login_data.dart';
 import 'package:pverify/services/custom_exception/custom_exception.dart';
 import 'package:pverify/ui/setup_platfrom/setup.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
-import 'package:pverify/utils/common_widget/alert.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
+import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
@@ -183,7 +182,7 @@ class LoginScreen extends GetView<AuthController> {
         debugPrint('doLoginAction ${e.toString()}');
         if (e is CustomException) {
           // info alert dialog
-          validateAlerts(context, AppStrings.error, e.message);
+          AppAlertDialog.validateAlerts(context, AppStrings.error, e.message);
         }
       }
     }

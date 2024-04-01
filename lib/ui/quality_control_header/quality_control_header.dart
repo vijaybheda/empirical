@@ -1,20 +1,18 @@
 // ignore_for_file: must_be_immutable, non_constant_identifier_names, avoid_types_as_parameter_names, prefer_const_constructors, unrelated_type_equality_checks
 
-import 'dart:ffi';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pverify/models/purchase_order_details.dart';
-import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/ui/Home/home_controller.dart';
 import 'package:pverify/ui/quality_control_header/quality_control_controller.dart';
 import 'package:pverify/utils/app_strings.dart';
-import 'package:pverify/utils/common_widget/alert.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
+import 'package:pverify/utils/dialogs/user_logout.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
@@ -248,7 +246,9 @@ class QualityControlHeader extends GetView<HomeController> {
           const Spacer(),
           InkWell(
             onTap: () {
-              showLogoutConfirmation(context);
+              UserLogoutDialog.showLogoutConfirmation(context, onYesTap: () {
+                log('Logout button tap.');
+              });
             },
             child: Text(
               AppStrings.logOut,

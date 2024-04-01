@@ -1,18 +1,13 @@
 // ignore_for_file: camel_case_types, non_constant_identifier_names, unrelated_type_equality_checks, unnecessary_brace_in_string_interps, unused_local_variable, unnecessary_null_comparison
 
-import 'dart:ffi';
-
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/purchase_order_details.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/services/database/application_dao.dart';
-import 'package:pverify/services/database/column_names.dart';
-import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
-import 'package:pverify/utils/common_widget/alert.dart';
+import 'package:pverify/utils/dialogs/app_alerts.dart';
 
 class QualityControl_Controller extends GetxController {
   final orderNoTextController = TextEditingController().obs;
@@ -68,49 +63,55 @@ class QualityControl_Controller extends GetxController {
     debugPrint('isShortForm:${isShortForm}');
     if (isShortForm == true) {
       if (orderNoTextController.value.text.trim().isEmpty) {
-        validateAlerts(context, AppStrings.error, AppStrings.orderNoBlank);
+        AppAlertDialog.validateAlerts(
+            context, AppStrings.error, AppStrings.orderNoBlank);
         return false;
       }
       if (orderNoTextController.value.text.trim().length > 20) {
-        validateAlerts(context, AppStrings.error, AppStrings.orderNoInvalid);
+        AppAlertDialog.validateAlerts(
+            context, AppStrings.error, AppStrings.orderNoInvalid);
         return false;
       }
       if (sealTextController.value.text.trim().length > 15) {
-        validateAlerts(context, AppStrings.error, AppStrings.sealInvalid);
+        AppAlertDialog.validateAlerts(
+            context, AppStrings.error, AppStrings.sealInvalid);
         return false;
       }
       if (certificateDepartureTextController.value.text.trim().length > 20) {
-        validateAlerts(
+        AppAlertDialog.validateAlerts(
             context, AppStrings.error, AppStrings.certificateInvalid);
         return false;
       }
       if (factoryReferenceTextController.value.text.trim().length > 20) {
-        validateAlerts(
+        AppAlertDialog.validateAlerts(
             context, AppStrings.error, AppStrings.factoryReferenceInvalid);
         return false;
       }
       if (usdaReferenceTextController.value.text.trim().length > 20) {
-        validateAlerts(
+        AppAlertDialog.validateAlerts(
             context, AppStrings.error, AppStrings.usdaReferenceInvalid);
         return false;
       }
       if (containerTextController.value.text.trim().length > 20) {
-        validateAlerts(context, AppStrings.error, AppStrings.containerInvalid);
+        AppAlertDialog.validateAlerts(
+            context, AppStrings.error, AppStrings.containerInvalid);
         return false;
       }
       if (totalQuantityTextController.value.text.trim().length > 20) {
-        validateAlerts(
+        AppAlertDialog.validateAlerts(
             context, AppStrings.error, AppStrings.totalQuantityInvalid);
         return false;
       }
       return true;
     } else {
       if (orderNoTextController.value.text.trim().isEmpty) {
-        validateAlerts(context, AppStrings.error, AppStrings.orderNoBlank);
+        AppAlertDialog.validateAlerts(
+            context, AppStrings.error, AppStrings.orderNoBlank);
         return false;
       }
       if (orderNoTextController.value.text.trim().length > 20) {
-        validateAlerts(context, AppStrings.error, AppStrings.orderNoInvalid);
+        AppAlertDialog.validateAlerts(
+            context, AppStrings.error, AppStrings.orderNoInvalid);
         return false;
       }
       return true;
@@ -132,7 +133,7 @@ class QualityControl_Controller extends GetxController {
     }
 
     if (qcHeaderDetails == null) {
-       //dao.createTempQCHeaderDetails(partnerID, poNo, sealNo, qchOpen1, qchOpen2, qchOpen3, qchOpen4, qchOpen5, qchOpen6, qchOpen9, qchOpen10, truckTempOk, productTransfer, cteType);
+      //dao.createTempQCHeaderDetails(partnerID, poNo, sealNo, qchOpen1, qchOpen2, qchOpen3, qchOpen4, qchOpen5, qchOpen6, qchOpen9, qchOpen10, truckTempOk, productTransfer, cteType);
     } else {
       // dao.updateTempQCHeaderDetailsToQCHeaderDetails(inspectionID, orderNoTextController.value.text);
     }

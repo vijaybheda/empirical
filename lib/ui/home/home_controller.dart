@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
+import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/update_data_dialog.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/utils.dart';
@@ -94,7 +95,7 @@ class HomeController extends GetxController {
       listOfInspection
           .sort((a, b) => a['Item'].toString().compareTo(b['Item'].toString()));
     }
-    update();
+    update(['inspectionsList']);
   }
 
   @override
@@ -107,17 +108,13 @@ class HomeController extends GetxController {
         UpdateDataAlert.showUpdateDataDialog(Get.context!, onOkPressed: () {
           debugPrint('Download button tap.');
           // TODO: vijay handle action as per android code
-        },
-            message:
-                "Data has not been updated in $days days; need to update. \nPlease go to your hotspot and update data now.");
+        }, message: AppStrings().getDayMessage(days));
       } else {
         UpdateDataAlert.showUpdateDataDialog(Get.context!, onOkPressed: () {
           debugPrint('Download button tap.');
           // TODO: vijay handle action as per android code
           // Get.off(() => const CacheDownloadScreen());
-        },
-            message:
-                "Data has not been updated in $days days; need to update. \nPlease go to your hotspot, turn WiFi on and update data now.");
+        }, message: AppStrings().getDayMessage1(days));
       }
     }
   }

@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:csv/csv.dart';
@@ -34,6 +33,7 @@ class ApplicationDao {
   final dbProvider = DatabaseHelper.instance;
 
   final AppStorage _appStorage = AppStorage.instance;
+
   AppStorage get appStorage => _appStorage;
 
   Future<int> createOrUpdateUser(User user) async {
@@ -1633,21 +1633,21 @@ class ApplicationDao {
   }
 
   Future<int?> createTempQCHeaderDetails(
-      int partnerID,
-      String poNo,
-      String sealNo,
-      String qchOpen1,
-      String qchOpen2,
-      String qchOpen3,
-      String qchOpen4,
-      String qchOpen5,
-      String qchOpen6,
-      String qchOpen9,
-      String qchOpen10,
-      String truckTempOk,
-      String productTransfer,
-      String cteType,
-      ) async {
+    int partnerID,
+    String poNo,
+    String sealNo,
+    String qchOpen1,
+    String qchOpen2,
+    String qchOpen3,
+    String qchOpen4,
+    String qchOpen5,
+    String qchOpen6,
+    String qchOpen9,
+    String qchOpen10,
+    String truckTempOk,
+    String productTransfer,
+    String cteType,
+  ) async {
     int? ttId;
     final _db = await DatabaseHelper.instance.database;
     try {
@@ -1677,9 +1677,9 @@ class ApplicationDao {
   }
 
   Future<void> updateTempQCHeaderDetailsToQCHeaderDetails(
-      int inspectionID,
-      String poNumber,
-      ) async {
+    int inspectionID,
+    String poNumber,
+  ) async {
     final _db = await DatabaseHelper.instance.database;
     try {
       await _db.transaction((txn) async {
@@ -1719,7 +1719,7 @@ class ApplicationDao {
   }
 
   Future<List<SpecificationSupplierGTIN>?>
-  getSpecificationSupplierGTINFromTable(String gtin) async {
+      getSpecificationSupplierGTINFromTable(String gtin) async {
     List<SpecificationSupplierGTIN> itemSKUList = [];
     SpecificationSupplierGTIN item;
     final db = await dbProvider.database;

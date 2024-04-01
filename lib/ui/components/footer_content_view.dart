@@ -10,8 +10,8 @@ import 'package:pverify/ui/cache_download_screen.dart';
 import 'package:pverify/ui/login_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
-import 'package:pverify/utils/common_widget/alert.dart';
 import 'package:pverify/utils/dialogs/update_data_dialog.dart';
+import 'package:pverify/utils/dialogs/user_logout.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
@@ -24,6 +24,7 @@ class FooterContentView extends StatelessWidget {
 
   final GlobalConfigController globalConfigController =
       Get.find<GlobalConfigController>();
+
   FooterContentView({super.key, this.onDownloadTap});
 
   @override
@@ -36,7 +37,7 @@ class FooterContentView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          InkWell(
+          GestureDetector(
             onTap: () {
               Get.back();
             },
@@ -59,7 +60,7 @@ class FooterContentView extends StatelessWidget {
           SizedBox(
             width: 40.w,
           ),
-          InkWell(
+          GestureDetector(
             onTap: () async {
               debugPrint('Download button tap.');
               if (onDownloadTap != null) {
@@ -88,9 +89,12 @@ class FooterContentView extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          InkWell(
+          GestureDetector(
             onTap: () {
-              showLogoutConfirmation(context);
+              UserLogoutDialog.showLogoutConfirmation(context,
+                  onYesTap: () async {
+                await appLogoutAction();
+              });
             },
             child: Text(
               AppStrings.logOut,
@@ -123,52 +127,6 @@ class FooterContentView extends StatelessWidget {
     } else {
       return AppColors.red;
     }
-  }
-
-  void showLogoutConfirmation(BuildContext context) {
-    return customAlert(context,
-        title: Text(
-          AppStrings.alert,
-          style: GoogleFonts.poppins(
-              fontSize: 28.sp,
-              fontWeight: FontWeight.w500,
-              textStyle: TextStyle(color: AppColors.white)),
-        ),
-        content: Text(
-          AppStrings.logoutConfirmation,
-          style: GoogleFonts.poppins(
-              fontSize: 25.sp,
-              fontWeight: FontWeight.normal,
-              textStyle: TextStyle(color: AppColors.white)),
-        ),
-        actions: [
-          GestureDetector(
-              onTap: () {
-                Get.back();
-              },
-              child: Text(
-                AppStrings.cancel,
-                style: GoogleFonts.poppins(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.primary)),
-              )),
-          SizedBox(
-            width: 10.w,
-          ),
-          GestureDetector(
-              onTap: () async {
-                Get.back();
-                await appLogoutAction();
-              },
-              child: Text(
-                AppStrings.yes,
-                style: GoogleFonts.poppins(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.primary)),
-              )),
-        ]);
   }
 
   Future<void> appLogoutAction() async {

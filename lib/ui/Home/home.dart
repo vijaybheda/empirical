@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, avoid_types_as_parameter_names, must_be_immutable, avoid_unnecessary_containers, unrelated_type_equality_checks, unused_element, sized_box_for_whitespace
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -8,23 +10,22 @@ import 'package:pverify/ui/Home/home_controller.dart';
 import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
-import 'package:pverify/utils/common_widget/alert.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';
+import 'package:pverify/utils/dialogs/user_logout.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class Home extends GetView<HomeController> {
-  Home({super.key});
-  HomeController Controller = HomeController();
+  const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
         init: HomeController(),
-        builder: (HomeController) {
+        builder: (controller) {
           return Scaffold(
-            backgroundColor: AppColors.white,
+            backgroundColor: Theme.of(context).colorScheme.background,
             resizeToAvoidBottomInset: false,
             appBar: AppBar(
               automaticallyImplyLeading: false,
@@ -34,12 +35,12 @@ class Home extends GetView<HomeController> {
             ),
             body: Container(
                 color: Theme.of(context).colorScheme.background,
-                child: contentView(context)),
+                child: contentView(context, controller)),
           );
         });
   }
 
-  Widget contentView(BuildContext context) {
+  Widget contentView(BuildContext context, HomeController controller) {
     return Column(
       children: [
         Expanded(
@@ -49,7 +50,7 @@ class Home extends GetView<HomeController> {
               width: ResponsiveHelper.getDeviceWidth(context),
               child: Column(
                 children: [
-                  bannersView(),
+                  bannersView(controller),
                   SizedBox(
                     height: 40.h,
                   ),
@@ -142,16 +143,16 @@ class Home extends GetView<HomeController> {
                                 ),
                                 InkWell(
                                   onTap: () {
-                                    Controller.selectInspectionForDownload(
+                                    controller.selectInspectionForDownload(
                                         'id', true);
                                   },
                                   child: Container(
                                     color: AppColors.primary,
                                     padding: EdgeInsets.all(5),
                                     child: Obx(() => Image.asset(
-                                          Controller.selectedIDsInspection
+                                          controller.selectedIDsInspection
                                                       .length ==
-                                                  Controller
+                                                  controller
                                                       .listOfInspection.length
                                               ? AppImages.ic_SelectedCheckbox
                                               : AppImages.ic_unSelectCheckbox,
@@ -211,7 +212,7 @@ class Home extends GetView<HomeController> {
                       ),
                       InkWell(
                         onTap: () {
-                          Controller.sortArray_Item();
+                          controller.sortArray_Item();
                         },
                         child: Container(
                           width: MediaQuery.of(context).size.width / 6.8,
@@ -236,9 +237,9 @@ class Home extends GetView<HomeController> {
                                 width: 3,
                               ),
                               Obx(() => Image.asset(
-                                    Controller.sortType == ''
+                                    controller.sortType == ''
                                         ? AppImages.ic_sortNone
-                                        : Controller.sortType == 'asc'
+                                        : controller.sortType == 'asc'
                                             ? AppImages.ic_sortUp
                                             : AppImages.ic_sortDown,
                                     width: 40.w,
@@ -323,7 +324,7 @@ class Home extends GetView<HomeController> {
                       )
                     ],
                   ),
-                  listViewData() // Table's All Columnns Row Data
+                  listViewData(controller) // Table's All Columnns Row Data
                 ],
               ),
             ),
@@ -338,8 +339,9 @@ class Home extends GetView<HomeController> {
                 fontSize: 38.sp,
                 fontWeight: FontWeight.w600,
                 textStyle: TextStyle(color: AppColors.white)),
-            onClickAction: () =>
-                {Controller.refresh(), Get.to(QualityControlHeader())}),
+            onClickAction: () {
+          return Get.to(QualityControlHeader());
+        }),
         SizedBox(
           height: 35.h,
         ),
@@ -348,10 +350,13 @@ class Home extends GetView<HomeController> {
     );
   }
 
-  Widget listViewData() {
+  Widget listViewData(HomeController controller) {
     return Expanded(
-      child: Obx(() => ListView.builder(
-            itemCount: Controller.listOfInspection.length,
+      child: GetBuilder<HomeController>(
+        id: 'inspectionsList',
+        builder: (controller) {
+          return ListView.builder(
+            itemCount: controller.listOfInspection.length,
             physics: ClampingScrollPhysics(),
             itemBuilder: (context, position) {
               return IntrinsicHeight(
@@ -379,7 +384,7 @@ class Home extends GetView<HomeController> {
                                 width: 2.0,
                               ))),
                       child: Text(
-                        Controller.listOfInspection[position]['ID'] ?? '',
+                        controller.listOfInspection[position]['ID'] ?? '',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.displayMedium,
                       ),
@@ -402,7 +407,7 @@ class Home extends GetView<HomeController> {
                                 width: 2.0,
                               ))),
                       child: Text(
-                        Controller.listOfInspection[position]['PO'] ?? '',
+                        controller.listOfInspection[position]['PO'] ?? '',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.displayMedium,
                       ),
@@ -425,7 +430,7 @@ class Home extends GetView<HomeController> {
                                 width: 2.0,
                               ))),
                       child: Text(
-                        Controller.listOfInspection[position]['Item'] ?? '',
+                        controller.listOfInspection[position]['Item'] ?? '',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.displayMedium,
                       ),
@@ -448,7 +453,7 @@ class Home extends GetView<HomeController> {
                                 width: 2.0,
                               ))),
                       child: Text(
-                          Controller.listOfInspection[position]['Res'] ?? '',
+                          controller.listOfInspection[position]['Res'] ?? '',
                           textAlign: TextAlign.center,
                           style: Theme.of(context)
                               .textTheme
@@ -475,22 +480,22 @@ class Home extends GetView<HomeController> {
                                 width: 2.0,
                               ))),
                       child: Text(
-                        Controller.listOfInspection[position]['GR'] ?? '',
+                        controller.listOfInspection[position]['GR'] ?? '',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.displayMedium,
                       ),
                     ),
                     GestureDetector(
                       onTap: () {
-                        if (Controller.expandContents.contains(
-                            Controller.listOfInspection[position]['ID'] ??
+                        if (controller.expandContents.contains(
+                            controller.listOfInspection[position]['ID'] ??
                                 '')) {
-                          Controller.expandContents.remove(
-                              Controller.listOfInspection[position]['ID'] ??
+                          controller.expandContents.remove(
+                              controller.listOfInspection[position]['ID'] ??
                                   '');
                         } else {
-                          Controller.expandContents.add(
-                              Controller.listOfInspection[position]['ID'] ??
+                          controller.expandContents.add(
+                              controller.listOfInspection[position]['ID'] ??
                                   '');
                         }
                       },
@@ -513,11 +518,11 @@ class Home extends GetView<HomeController> {
                                 ))),
                         child: Obx(
                           () => Text(
-                            Controller.listOfInspection[position]['Supplier'] ??
+                            controller.listOfInspection[position]['Supplier'] ??
                                 '',
                             textAlign: TextAlign.center,
-                            overflow: Controller.expandContents.contains(
-                                    Controller.listOfInspection[position]
+                            overflow: controller.expandContents.contains(
+                                    controller.listOfInspection[position]
                                             ['ID'] ??
                                         '')
                                 ? TextOverflow.visible
@@ -549,7 +554,7 @@ class Home extends GetView<HomeController> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            Controller.listOfInspection[position]['Status'] ??
+                            controller.listOfInspection[position]['Status'] ??
                                 '',
                             textAlign: TextAlign.center,
                             style: Theme.of(context)
@@ -561,14 +566,14 @@ class Home extends GetView<HomeController> {
                           ),
                           InkWell(
                             onTap: () {
-                              Controller.selectInspectionForDownload(
-                                  Controller.listOfInspection[position]['ID'] ??
+                              controller.selectInspectionForDownload(
+                                  controller.listOfInspection[position]['ID'] ??
                                       '',
                                   false);
                             },
                             child: Obx(() => Image.asset(
-                                  Controller.selectedIDsInspection.contains(
-                                          Controller.listOfInspection[position]
+                                  controller.selectedIDsInspection.contains(
+                                          controller.listOfInspection[position]
                                                   ['ID'] ??
                                               '')
                                       ? AppImages.ic_SelectedCheckbox
@@ -585,13 +590,15 @@ class Home extends GetView<HomeController> {
                 ),
               );
             },
-          )),
+          );
+        },
+      ),
     );
   }
 
   // TOP BANNER'S VIEW UI
 
-  Widget bannersView() {
+  Widget bannersView(HomeController controller) {
     return Column(
       children: [
         Container(
@@ -599,14 +606,14 @@ class Home extends GetView<HomeController> {
           decoration: BoxDecoration(
               border: Border.all(width: 3, color: AppColors.black)),
           child: PageView.builder(
-            controller: Controller.pageController,
-            itemCount: Controller.bannerImages.length,
+            controller: controller.pageController,
+            itemCount: controller.bannerImages.length,
             onPageChanged: (value) {
-              Controller.bannersCurrentPage.value = value;
+              controller.bannersCurrentPage.value = value;
             },
             itemBuilder: (context, index) {
               return Image.asset(
-                Controller.bannerImages[index],
+                controller.bannerImages[index],
                 fit: BoxFit.cover,
               );
             },
@@ -617,13 +624,13 @@ class Home extends GetView<HomeController> {
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: _buildPageIndicator(),
+          children: _buildPageIndicator(controller),
         ),
       ],
     );
   }
 
-  List<Widget> _buildPageIndicator() {
+  List<Widget> _buildPageIndicator(HomeController controller) {
     List<Widget> indicators = [];
     for (int i = 0; i < controller.bannerImages.length; i++) {
       indicators.add(
@@ -633,7 +640,7 @@ class Home extends GetView<HomeController> {
               margin: EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Controller.bannersCurrentPage == i
+                color: controller.bannersCurrentPage == i
                     ? AppColors.primary
                     : AppColors.brightGrey,
               ),
@@ -678,7 +685,9 @@ class Home extends GetView<HomeController> {
           const Spacer(),
           InkWell(
             onTap: () {
-              showLogoutConfirmation(context);
+              UserLogoutDialog.showLogoutConfirmation(context, onYesTap: () {
+                log('Logout button tap.');
+              });
             },
             child: Text(
               AppStrings.logOut,
