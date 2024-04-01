@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pverify/models/carrier_item.dart';
@@ -9,7 +7,10 @@ import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/offline_commodity.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/severity_defect.dart';
+import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/models/user.dart';
+
+import '../models/finished_goods_item_sku.dart';
 
 class AppStorage extends GetxController {
   // ignore: prefer_function_declarations_over_variables
@@ -68,12 +69,12 @@ class AppStorage extends GetxController {
 
   List<PartnerItem>? getPartnerList() {
     // read String data and convert to List<PartnerItem> list
-    String? partnerListString = read(StorageKey.kPartnerList);
+    var partnerListString = read(StorageKey.kPartnerList);
     if (partnerListString == null) {
       return null;
     }
 
-    List<dynamic> decodedData = json.decode(partnerListString);
+    List<dynamic> decodedData = partnerListString;
     List<PartnerItem> partnerList = decodedData
         .map((item) => PartnerItem.fromJson(item))
         .toList()
@@ -91,12 +92,12 @@ class AppStorage extends GetxController {
 
   List<CarrierItem>? getCarrierList() {
     // read String data and convert to List<CarrierItem> list
-    String? carrierListString = read(StorageKey.kCarrierList);
+    var carrierListString = read(StorageKey.kCarrierList);
     if (carrierListString == null) {
       return null;
     }
 
-    List<dynamic> decodedData = json.decode(carrierListString);
+    List<dynamic> decodedData = carrierListString;
     List<CarrierItem> carrierList = decodedData
         .map((item) => CarrierItem.fromJson(item))
         .toList()
@@ -114,12 +115,12 @@ class AppStorage extends GetxController {
 
   List<CommodityItem>? getCommodityList() {
     // read String data and convert to List<CommodityItem> list
-    String? commodityListString = read(StorageKey.kCommodityList);
+    var commodityListString = read(StorageKey.kCommodityList);
     if (commodityListString == null) {
       return null;
     }
 
-    List<dynamic> decodedData = json.decode(commodityListString);
+    List<dynamic> decodedData = commodityListString;
     List<CommodityItem> commodityList = decodedData
         .map((item) => CommodityItem.fromJson(item))
         .toList()
@@ -137,12 +138,12 @@ class AppStorage extends GetxController {
 
   List<DefectItem>? getDefectList() {
     // read String data and convert to List<DefectItem> list
-    String? defectListString = read(StorageKey.kDefectList);
+    var defectListString = read(StorageKey.kDefectList);
     if (defectListString == null) {
       return null;
     }
 
-    List<dynamic> decodedData = json.decode(defectListString);
+    List<dynamic> decodedData = defectListString;
     List<DefectItem> defectList = decodedData
         .map((item) => DefectItem.fromJson(item))
         .toList()
@@ -160,18 +161,40 @@ class AppStorage extends GetxController {
 
   List<SeverityDefect>? getSeverityDefectList() {
     // read String data and convert to List<SeverityDefectItem> list
-    String? severityDefectListString = read(StorageKey.kSeverityDefectList);
+    var severityDefectListString = read(StorageKey.kSeverityDefectList);
     if (severityDefectListString == null) {
       return null;
     }
 
-    List<dynamic> decodedData = json.decode(severityDefectListString);
+    List<dynamic> decodedData = severityDefectListString;
     List<SeverityDefect> severityDefectList = decodedData
         .map((item) => SeverityDefect.fromJson(item))
         .toList()
         .cast<SeverityDefect>();
 
     return severityDefectList;
+  }
+
+  Future<void> saveItemSKUList(List<FinishedGoodsItemSKU> itemSKUList) {
+    // list to String
+    List<Map<String, dynamic>> itemSKUListString =
+        itemSKUList.map((e) => e.toMap()).toList();
+    return write(StorageKey.kFinishedGoodsItemSKUList, itemSKUListString);
+  }
+
+  List<FinishedGoodsItemSKU>? getItemSKUList() {
+    var itemSKUListString = read(StorageKey.kFinishedGoodsItemSKUList);
+    if (itemSKUListString == null) {
+      return null;
+    }
+
+    List<dynamic> decodedData = itemSKUListString;
+    List<FinishedGoodsItemSKU> itemSKUList = decodedData
+        .map((item) => FinishedGoodsItemSKU.fromMap(item))
+        .toList()
+        .cast<FinishedGoodsItemSKU>();
+
+    return itemSKUList;
   }
 
   Future<void> saveOfflineCommodityList(
@@ -184,18 +207,44 @@ class AppStorage extends GetxController {
 
   List<OfflineCommodity>? getOfflineCommodityList() {
     // read String data and convert to List<OfflineCommodityItem> list
-    String? offlineCommodityListString = read(StorageKey.kOfflineCommodityList);
+    var offlineCommodityListString = read(StorageKey.kOfflineCommodityList);
     if (offlineCommodityListString == null) {
       return null;
     }
 
-    List<dynamic> decodedData = json.decode(offlineCommodityListString);
+    List<dynamic> decodedData = offlineCommodityListString;
     List<OfflineCommodity> offlineCommodityList = decodedData
         .map((item) => OfflineCommodity.fromJson(item))
         .toList()
         .cast<OfflineCommodity>();
 
     return offlineCommodityList;
+  }
+
+  Future<void> saveSpecificationSupplierGTINList(
+      List<SpecificationSupplierGTIN> specificationSupplierGTINList) {
+    // list to String
+    List<Map<String, dynamic>> specificationSupplierGTINListString =
+        specificationSupplierGTINList.map((e) => e.toJson()).toList();
+    return write(StorageKey.kSpecificationSupplierGTINList,
+        specificationSupplierGTINListString);
+  }
+
+  List<SpecificationSupplierGTIN>? getSpecificationSupplierGTINList() {
+    // read String data and convert to List<SpecificationSupplierGTINItem> list
+    var specificationSupplierGTINListString =
+        read(StorageKey.kSpecificationSupplierGTINList);
+    if (specificationSupplierGTINListString == null) {
+      return null;
+    }
+
+    List<dynamic> decodedData = specificationSupplierGTINListString;
+    List<SpecificationSupplierGTIN> specificationSupplierGTINList = decodedData
+        .map((item) => SpecificationSupplierGTIN.fromJson(item))
+        .toList()
+        .cast<SpecificationSupplierGTIN>();
+
+    return specificationSupplierGTINList;
   }
 
   Future<void> setLoginData(LoginData loginData) async {
@@ -240,7 +289,7 @@ class AppStorage extends GetxController {
     return;
   }
 
-  Future<int?> getInt(String key) async {
+  int? getInt(String key) {
     return read(key);
   }
 
@@ -258,6 +307,10 @@ class AppStorage extends GetxController {
 
   Map<String, dynamic> getHeaderMap() {
     return read(StorageKey.kHeaderMap) ?? {};
+  }
+
+  Future<void> removeDataByKey(String key) {
+    return storageBox().remove(key);
   }
 }
 
@@ -280,4 +333,7 @@ class StorageKey {
   static const String kDefectList = 'defectList';
   static const String kSeverityDefectList = 'severityDefect';
   static const String kOfflineCommodityList = 'offlineCommodity';
+  static const String kSpecificationSupplierGTINList =
+      'specificationSupplierGTIN';
+  static const String kFinishedGoodsItemSKUList = 'finishedGoodsItemSKUList';
 }

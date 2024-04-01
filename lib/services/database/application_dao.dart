@@ -13,14 +13,17 @@ import 'package:pverify/models/inspection_defect.dart';
 import 'package:pverify/models/inspection_sample.dart';
 import 'package:pverify/models/inspection_specification.dart';
 import 'package:pverify/models/my_inspection_48hour_item.dart';
+import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/purchase_order_details.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/models/specification.dart';
+import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/models/user.dart';
 import 'package:pverify/models/user_offline.dart';
 import 'package:pverify/services/database/column_names.dart';
 import 'package:pverify/services/database/database_helper.dart';
 import 'package:pverify/services/database/db_tables.dart';
+import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/utils.dart';
 import 'package:sqflite/sqflite.dart';
@@ -29,6 +32,9 @@ class ApplicationDao {
   // instance
 
   final dbProvider = DatabaseHelper.instance;
+
+  final AppStorage _appStorage = AppStorage.instance;
+  AppStorage get appStorage => _appStorage;
 
   Future<int> createOrUpdateUser(User user) async {
     try {
@@ -1578,13 +1584,13 @@ class ApplicationDao {
 
     /*
       List<Map<String, dynamic>> results = await _db.rawQuery('''
-        SELECT poh.PO_Number, poh.PO_Deliver_To_Id, poh.PO_Deliver_To_Name, poh.PO_Partner_Id, 
+        SELECT poh.PO_Number, poh.PO_Deliver_To_Id, poh.PO_Deliver_To_Name, poh.PO_Partner_Id,
         poh.PO_Partner_Name,
         pod.PO_Line_Number, pod.PO_Item_Sku_Id, pod.PO_Item_Sku_Code, pod.PO_Item_Sku_Name,
         pod.PO_Quantity, pod.PO_Qty_UOM_Id, pod.PO_Qty_UOM_Name,
-        pod.PO_Number_Spec, pod.PO_Version_Spec, pod.PO_Commodity_Id, pod.PO_Commodity_Name 
-        FROM PO_Detail pod 
-        INNER JOIN PO_Header poh ON pod.PO_Header_ID=poh.PO_Header_ID 
+        pod.PO_Number_Spec, pod.PO_Version_Spec, pod.PO_Commodity_Id, pod.PO_Commodity_Name
+        FROM PO_Detail pod
+        INNER JOIN PO_Header poh ON pod.PO_Header_ID=poh.PO_Header_ID
         WHERE poh.PO_Number='$poNumber' AND poh.PO_Deliver_To_Id=$inspectorSupplierId
       ''');
     */
@@ -1627,21 +1633,21 @@ class ApplicationDao {
   }
 
   Future<int?> createTempQCHeaderDetails(
-    int partnerID,
-    String poNo,
-    String sealNo,
-    String qchOpen1,
-    String qchOpen2,
-    String qchOpen3,
-    String qchOpen4,
-    String qchOpen5,
-    String qchOpen6,
-    String qchOpen9,
-    String qchOpen10,
-    String truckTempOk,
-    String productTransfer,
-    String cteType,
-  ) async {
+      int partnerID,
+      String poNo,
+      String sealNo,
+      String qchOpen1,
+      String qchOpen2,
+      String qchOpen3,
+      String qchOpen4,
+      String qchOpen5,
+      String qchOpen6,
+      String qchOpen9,
+      String qchOpen10,
+      String truckTempOk,
+      String productTransfer,
+      String cteType,
+      ) async {
     int? ttId;
     final _db = await DatabaseHelper.instance.database;
     try {
@@ -1671,9 +1677,9 @@ class ApplicationDao {
   }
 
   Future<void> updateTempQCHeaderDetailsToQCHeaderDetails(
-    int inspectionID,
-    String poNumber,
-  ) async {
+      int inspectionID,
+      String poNumber,
+      ) async {
     final _db = await DatabaseHelper.instance.database;
     try {
       await _db.transaction((txn) async {
@@ -1709,6 +1715,148 @@ class ApplicationDao {
       debugPrint(
           'Error has occurred while updating temp QC header details: $e');
       rethrow;
+    }
+  }
+
+  Future<List<SpecificationSupplierGTIN>?>
+  getSpecificationSupplierGTINFromTable(String gtin) async {
+    List<SpecificationSupplierGTIN> itemSKUList = [];
+    SpecificationSupplierGTIN item;
+    final db = await dbProvider.database;
+
+    try {
+      String? specNo = "";
+      String? specVersion = "";
+
+      String query =
+          "Select distinct number_specification, version_specification from Specification_Supplier ss " +
+              "inner join specification_supplier_gtin sgtin on sgtin.Specification_Supplier_ID=ss.Specification_Supplier_ID " +
+              "where sgtin.gtin='" +
+              gtin +
+              "'";
+
+      db.rawQuery(query).then((cursor) {
+        if (cursor.isNotEmpty) {
+          for (var row in cursor) {
+            specNo = row["number_specification"] as String?;
+            specVersion = row["version_specification"] as String?;
+          }
+        }
+      });
+
+      String query2 = "SELECT SP.NUMBER, SP.VERSION, SP.NAME, SS.SUPPLIER_ID, SGTIN.GTIN, SPECTYPE.NAME AS SPECIFICATION_TYPE," +
+          "SKU.SKU_ID AS ITEM_SKU_ID, SKU.NAME AS ITEM_SKU_NAME, SKU.CODE AS ITEM_SKU_CODE," +
+          "COMMODITY.ID AS COMMODITY_ID, COMMODITY.NAME AS COMMODITY_NAME, COMMODITY.Sample_Size_By_Count," +
+          "VARIETY.Group1_ID AS VARIETY_ID, VARIETY.NAME AS VARIETY_NAME, GRADE.ID AS GRADE_ID, GRADE.NAME AS GRADE_NAME, AGENCY.ID AS AGENCY_ID, AGENCY.NAME AS AGENCY_NAME " +
+          "FROM SPECIFICATION_SUPPLIER SS JOIN SPECIFICATION SP ON (SS.NUMBER_SPECIFICATION,SS.VERSION_SPECIFICATION)=(SP.NUMBER,SP.VERSION) " +
+          "INNER JOIN SPECIFICATION_SUPPLIER_GTIN SGTIN ON SGTIN.SPECIFICATION_SUPPLIER_ID=SS.Specification_Supplier_ID " +
+          "JOIN MATERIAL_SPECIFICATION MS ON (SP.NUMBER,SP.VERSION)=(MS.NUMBER_SPECIFICATION,MS.VERSION_SPECIFICATION) " +
+          "JOIN SPECIFICATION_TYPE SPECTYPE ON SP.SPECIFICATION_TYPE_ID=SPECTYPE.Specification_Type_ID " +
+          "LEFT JOIN ITEM_SKU SKU ON SS.ITEM_SKU_ID=SKU.SKU_ID " +
+          "LEFT JOIN COMMODITY COMMODITY ON SP.COMMODITY_ID = COMMODITY.ID " +
+          "LEFT JOIN ItemGroup1 VARIETY ON SP.Item_Group1_ID=VARIETY.Group1_ID " +
+          "LEFT JOIN GRADE ON MS.GRADE_ID=GRADE.ID " +
+          "LEFT JOIN AGENCY ON GRADE.AGENCY_ID=AGENCY.ID " +
+          "WHERE SGTIN.GTIN='" +
+          gtin +
+          "'";
+
+      db.rawQuery(query2).then((cursorList) {
+        if (cursorList.isNotEmpty) {
+          for (var cursor in cursorList) {
+            item = SpecificationSupplierGTIN();
+            // item.specificationNumber = cursor[0];
+            // item.specificationVersion = cursor[1];
+            // item.specificationName = cursor[2];
+            // item.supplierId = cursor[3];
+            // item.specificationTypeName = cursor[5];
+            // item.itemSkuId = cursor[6];
+            // item.itemSkuName = cursor[7];
+            // item.itemSkuCode = cursor[8];
+            // item.commodityId = cursor[9];
+            // item.commodityName = cursor[10];
+            // item.varietyId = cursor[11];
+            // item.varietyName = cursor[12];
+            // item.gradeId = cursor[13];
+            // item.gradeName = cursor[14];
+            // item.agencyId = cursor[15];
+            // item.agencyName = cursor[16];
+            List<PartnerItem> partnersList = appStorage.getPartnerList() ?? [];
+            for (PartnerItem partnerItem in partnersList) {
+              if (partnerItem.id != null && partnerItem.id == item.supplierId) {
+                item.supplierName = partnerItem.name;
+                break;
+              }
+            }
+
+            SpecificationSupplierGTIN listItem = SpecificationSupplierGTIN(
+              specificationNumber: item.specificationNumber,
+              specificationVersion: item.specificationVersion,
+              specificationName: item.specificationName,
+              supplierName: item.supplierName,
+              supplierId: item.supplierId,
+              varietyId: item.varietyId,
+              varietyName: item.varietyName,
+              commodityId: item.commodityId,
+              commodityName: item.commodityName,
+              gtin: gtin,
+              itemSkuId: item.itemSkuId,
+              itemSkuName: item.itemSkuName,
+              agencyId: item.agencyId,
+              agencyName: item.agencyName,
+              gradeId: item.gradeId,
+              gradeName: item.gradeName,
+              samplesizecount: item.samplesizecount,
+              specificationTypeName: item.specificationTypeName,
+              itemSkuCode: item.itemSkuCode,
+            );
+
+            itemSKUList.add(listItem);
+          }
+        }
+      });
+    } catch (e) {
+      print("Error has occurred while finding quality control items.");
+      print(e);
+      return null;
+    }
+
+    return itemSKUList;
+  }
+
+  Future<int> deleteRowsTempTrailerTable() async {
+    try {
+      Database db = await dbProvider.database;
+      return await db.transaction((txn) async {
+        return await txn.delete(DBTables.TEMP_TRAILER_TEMPERATURE);
+      });
+    } catch (e) {
+      log('Error has deleting temp trailer temperature table: ${e.toString()}');
+      return -1;
+    }
+  }
+
+  Future<int> deleteTempTrailerTemperatureDetails() async {
+    try {
+      Database db = await dbProvider.database;
+      return await db.transaction((txn) async {
+        return await txn.delete(DBTables.TEMP_TRAILER_TEMPERATURE_DETAILS);
+      });
+    } catch (e) {
+      log('Error has deleting temp trailer temperature details: ${e.toString()}');
+      return -1;
+    }
+  }
+
+  Future<int> deleteSelectedItemSKUList() async {
+    try {
+      Database db = await dbProvider.database;
+      return await db.transaction((txn) async {
+        return await txn.delete(DBTables.SELECTED_ITEM_SKU_LIST);
+      });
+    } catch (e) {
+      print('Error has occurred while deleting selected item SKU list: $e');
+      return -1;
     }
   }
 }

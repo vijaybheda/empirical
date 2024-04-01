@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
@@ -40,6 +41,8 @@ class Utils {
   static bool isDialogShowing = true;
 
   static final _dateFormat = DateFormat.yMMMMd('en_US');
+
+  final AppStorage _appStorage = AppStorage.instance;
 
   static DateTime fromDateTimeToUTCDateTime(
       String dateFormat, String timeFormat) {
@@ -542,6 +545,18 @@ class Utils {
     String numericPart = regExp.firstMatch(value)?.group(0) ?? '0';
 
     return double.parse(numericPart);
+  }
+
+  int checkCacheDays() {
+    DateTime currentDate = DateTime.now();
+
+    int cacheTimestamp = _appStorage.getInt(StorageKey.kCacheDate) ??
+        currentDate.millisecondsSinceEpoch;
+    DateTime cacheDate = DateTime.fromMillisecondsSinceEpoch(cacheTimestamp);
+
+    int daysDifference = currentDate.difference(cacheDate).inDays;
+
+    return daysDifference;
   }
 
   static Future<void> showLoadingDialog() async {

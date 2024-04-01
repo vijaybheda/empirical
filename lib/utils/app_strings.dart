@@ -2,7 +2,7 @@
 
 class AppStrings {
   static const String platformEventIOS = 'ver-ify/wifi-channel';
-  static const String appName = 'p-ver-ify';
+  static const String appName = 'Ver-ify';
   static const String actionSettings = 'Settings';
   static const String copyright =
       'Copyright \u00A9 2015 Share-ify, Inc. All Rights Reserved.';
@@ -163,6 +163,8 @@ class AppStrings {
 
   static String storageDeniedMessage =
       "External Storage permission required for this app.\nPlease go to Settings and enable permissions to continue.";
+
+  static String updateDataConfirmation = "Update Data?";
 
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';

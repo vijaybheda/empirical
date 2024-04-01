@@ -1,18 +1,9 @@
-// ignore_for_file: prefer_final_fields, unused_field, non_constant_identifier_names, unnecessary_this, unrelated_type_equality_checks
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pverify/controller/global_config_controller.dart';
-import 'package:pverify/utils/dialogs/update_data_dialog.dart';
+import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/utils/enumeration.dart';
 import 'package:pverify/utils/images.dart';
-import 'package:pverify/utils/utils.dart';
 
-class HomeController extends GetxController {
-  PageController pageController = PageController();
-
-  final GlobalConfigController globalConfigController =
-      Get.find<GlobalConfigController>();
+class ScorecardScreenController extends GetxController {
   List<String> bannerImages = [AppImages.img_banner, AppImages.img_banner];
   List<Map<String, String>> listOfInspection = [
     {
@@ -66,6 +57,14 @@ class HomeController extends GetxController {
   List expandContents = [].obs;
   var sortType = ''.obs;
 
+  DateSort dateSort = DateSort.asc;
+  CommoditySort commoditySort = CommoditySort.none;
+  ResultSort resultSort = ResultSort.none;
+  ReasonSort reasonSort = ReasonSort.none;
+
+  final PartnerItem partner;
+  ScorecardScreenController(this.partner);
+
   selectInspectionForDownload(String id, bool isSelectAll) {
     if (isSelectAll) {
       if (selectedIDsInspection.length != listOfInspection.length) {
@@ -95,30 +94,5 @@ class HomeController extends GetxController {
           .sort((a, b) => a['Item'].toString().compareTo(b['Item'].toString()));
     }
     update();
-  }
-
-  @override
-  void onInit() {
-    // Get.put(() => InspectionController(), permanent: true);
-    super.onInit();
-    int days = Utils().checkCacheDays();
-    if (days >= 7) {
-      if (globalConfigController.hasStableInternet.value) {
-        UpdateDataAlert.showUpdateDataDialog(Get.context!, onOkPressed: () {
-          debugPrint('Download button tap.');
-          // TODO: vijay handle action as per android code
-        },
-            message:
-                "Data has not been updated in $days days; need to update. \nPlease go to your hotspot and update data now.");
-      } else {
-        UpdateDataAlert.showUpdateDataDialog(Get.context!, onOkPressed: () {
-          debugPrint('Download button tap.');
-          // TODO: vijay handle action as per android code
-          // Get.off(() => const CacheDownloadScreen());
-        },
-            message:
-                "Data has not been updated in $days days; need to update. \nPlease go to your hotspot, turn WiFi on and update data now.");
-      }
-    }
   }
 }

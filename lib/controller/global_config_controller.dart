@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_internet_signal/flutter_internet_signal.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 
@@ -28,9 +29,12 @@ class GlobalConfigController extends GetxController {
       _hasStableInternetController.stream;
   Stream<int> get wifiLevelStream => _wifiLevelController.stream;
 
+  RxString appVersion = ''.obs;
+
   @override
   void onInit() {
     log('GlobalConfigController onInit');
+    fetchAppVersion();
     checkInternet();
     if (Platform.isIOS) {
       _eventChannelStartListener();
@@ -130,5 +134,12 @@ class GlobalConfigController extends GetxController {
   void onClose() {
     log('GlobalConfigController onClose');
     super.onClose();
+  }
+
+  void fetchAppVersion() {
+    PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+      String version = packageInfo.version;
+      appVersion.value = version;
+    });
   }
 }
