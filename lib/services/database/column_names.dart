@@ -115,6 +115,7 @@ class InspectionDefectColumn {
 
 class InspectionDefectAttachmentColumn {
   static const String ID = BaseColumns.ID;
+  static const String ATTACHMENT_ID = 'Attachment_ID';
   static const String INSPECTION_ID = 'Inspection_ID';
   static const String INSPECTION_SAMPLE_ID = 'Inspection_Sample_ID';
   static const String INSPECTION_DEFECT_ID = 'Inspection_Defect_ID';

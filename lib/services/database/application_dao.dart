@@ -6,9 +6,11 @@ import 'dart:io';
 
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
+import 'package:pverify/models/finished_goods_item_sku.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/models/inspection_defect.dart';
+import 'package:pverify/models/inspection_defect_attachment.dart';
 import 'package:pverify/models/inspection_sample.dart';
 import 'package:pverify/models/inspection_specification.dart';
 import 'package:pverify/models/my_inspection_48hour_item.dart';
@@ -1866,5 +1868,78 @@ class ApplicationDao {
           'Error has occurred while deleting selected item SKU list: $e');
       return -1;
     }
+  }
+
+  Future<List<InspectionDefectAttachment>?> findDefectAttachmentsByInspectionId(
+      int inspectionId) async {
+    Database db = await dbProvider.database;
+    final List<Map<String, dynamic>> maps = await db.query(
+        DBTables.INSPECTION_DEFECT_ATTACHMENT,
+        where: '${InspectionDefectAttachmentColumn.INSPECTION_ID} = ?',
+        whereArgs: [inspectionId]);
+    return List.generate(maps.length, (i) {
+      return InspectionDefectAttachment.fromJson(maps[i]);
+    });
+  }
+
+  Future<List<FinishedGoodsItemSKU>?> getFinishedGoodItemSkuFromTable(
+      Database database,
+      int supplierId,
+      int enterpriseId,
+      int commodityId,
+      String commodityName,
+      int supplier_Id,
+      int headquarterId,
+      String partnerName) async {
+    List<FinishedGoodsItemSKU> itemSKUList = [];
+    FinishedGoodsItemSKU? item;
+    String query;
+    try {
+      bool hqUser = supplierId == headquarterId;
+
+      if (hqUser) {
+        query = "select distinct(itemSku.SKU_ID), itemSku.Name, itemSku.Code, itemSku.FTL, itemSku.Branded from Specification_Supplier SS " +
+            "inner join Material_Specification MS on (SS.Number_Specification, SS.Version_Specification)=(MS.Number_Specification,MS.Version_Specification) " +
+            "inner join Item_SKU itemSku on SS.Item_SKU_ID=itemSku.SKU_ID " +
+            "inner join Commodity C on itemSku.Commodity_ID=C.ID " +
+            "where SS.Status='A' and SS.supplier_id=? " +
+            "AND itemSku.Usage_Type='FG' and itemSku.Status='AC' " +
+            "AND itemSku.Company_Id =? " +
+            "And MS.Status = 'A' and C.ID=?";
+      } else {
+        query = "select distinct(itemSku.SKU_ID), itemSku.Name, itemSku.Code, itemSku.FTL, itemSku.Branded from Specification_Supplier SS " +
+            "inner join Material_Specification MS on (SS.Number_Specification, SS.Version_Specification)=(MS.Number_Specification,MS.Version_Specification) " +
+            "inner join Item_SKU itemSku on SS.Item_SKU_ID=itemSku.SKU_ID " +
+            "inner join Commodity C on itemSku.Commodity_ID=C.ID " +
+            "where SS.Status='A' and SS.supplier_id=? " +
+            "AND itemSku.Usage_Type='FG' and itemSku.Status='AC' " +
+            "AND (itemSku.Company_Id =? or itemSku.Company_Id=?) " +
+            "And MS.Status = 'A' and C.ID=?";
+      }
+
+      List<dynamic> args;
+      if (hqUser) {
+        args = [supplierId, headquarterId, commodityId];
+      } else {
+        args = [supplierId, headquarterId, supplierId, commodityId];
+      }
+
+      List<Map<String, dynamic>> results = await database.rawQuery(query, args);
+
+      for (Map<String, dynamic> row in results) {
+        item = FinishedGoodsItemSKU.fromMap(row);
+        item.copyWith(
+          commodityName: commodityName,
+          partnerId: supplierId,
+          partnerName: partnerName,
+        );
+
+        itemSKUList.add(item);
+      }
+    } catch (e) {
+      print("Error occurred while finding quality control items: $e");
+      return null;
+    }
+    return itemSKUList;
   }
 }

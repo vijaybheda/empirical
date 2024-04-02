@@ -9,7 +9,7 @@ import 'package:pverify/utils/theme/colors.dart';
 
 class SupplierListDialog {
   // TODO: Vijay change message and UI according to existing app
-  static Future<PartnerItem?> show(BuildContext context) {
+  static Future<PartnerItem?> showListDialog(BuildContext context) {
     SelectSupplierScreenController controller =
         Get.find<SelectSupplierScreenController>();
     return showDialog<PartnerItem?>(

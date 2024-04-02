@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pverify/controller/dialog_progress_controller.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -593,6 +594,48 @@ class Utils {
     if (Get.isDialogOpen ?? false) {
       Get.back();
     }
+    await Future.delayed(const Duration(milliseconds: 10));
+  }
+
+  static Future<void> showLinearProgressWithMessage(
+      {String? message, required ProgressController progressController}) async {
+    // ProgressController progressController = Get.find<ProgressController>();
+    await Future.delayed(const Duration(milliseconds: 10));
+    Get.dialog(
+      Obx(() => Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(
+                child: SizedBox(
+                  height: 25,
+                  width: 25,
+                  child: Transform.scale(
+                    scale: 2,
+                    child: LinearProgressIndicator(
+                      valueColor:
+                          const AlwaysStoppedAnimation<Color>(Colors.white),
+                      backgroundColor: Colors.white,
+                      value: progressController.progress.value.toDouble(),
+                    ),
+                  ),
+                ),
+              ),
+              Text(
+                message ?? 'Loading...',
+                style: Get.textTheme.displayMedium?.copyWith(
+                  color: Colors.white,
+                  fontSize: 30.sp,
+                ),
+              )
+            ],
+          )),
+      barrierDismissible: false,
+      transitionCurve: Curves.easeInOut,
+      navigatorKey: Get.key,
+      transitionDuration: const Duration(milliseconds: 200),
+    );
+
     await Future.delayed(const Duration(milliseconds: 10));
   }
 }

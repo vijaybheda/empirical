@@ -4,7 +4,8 @@ class FinishedGoodsItemSKU {
   final String? itemSkuName;
   final int? commodityId;
   final String? commodityName;
-  final String? partnerId;
+  final int? partnerId;
+  final String? partnerName;
   final String? lotNumber;
   final String? packDate;
   final String? supplierId;
@@ -19,6 +20,7 @@ class FinishedGoodsItemSKU {
     this.commodityId,
     this.commodityName,
     this.partnerId,
+    this.partnerName,
     this.lotNumber,
     this.packDate,
     this.supplierId,
@@ -33,7 +35,8 @@ class FinishedGoodsItemSKU {
     String? itemSkuName,
     int? commodityId,
     String? commodityName,
-    String? partnerId,
+    int? partnerId,
+    String? partnerName,
     String? lotNumber,
     String? packDate,
     String? supplierId,
@@ -48,6 +51,7 @@ class FinishedGoodsItemSKU {
       commodityId: commodityId ?? this.commodityId,
       commodityName: commodityName ?? this.commodityName,
       partnerId: partnerId ?? this.partnerId,
+      partnerName: partnerName ?? this.partnerName,
       lotNumber: lotNumber ?? this.lotNumber,
       packDate: packDate ?? this.packDate,
       supplierId: supplierId ?? this.supplierId,
@@ -65,6 +69,7 @@ class FinishedGoodsItemSKU {
       'commodityId': commodityId,
       'commodityName': commodityName,
       'partnerId': partnerId,
+      'partnerName': partnerName,
       'lotNumber': lotNumber,
       'packDate': packDate,
       'supplierId': supplierId,
@@ -82,6 +87,7 @@ class FinishedGoodsItemSKU {
       commodityId: map['commodityId'],
       commodityName: map['commodityName'],
       partnerId: map['partnerId'],
+      partnerName: map['partnerName'],
       lotNumber: map['lotNumber'],
       packDate: map['packDate'],
       supplierId: map['supplierId'],

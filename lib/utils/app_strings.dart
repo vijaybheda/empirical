@@ -214,6 +214,11 @@ class AppStrings {
   static String subscriptionExpired = 'User is not active.';
   static String accountNotActive = 'Account is not active.';
 
+  static String updateDataMessage =
+      'Done inspections will be uploaded automatically and WIP inspections will be discarded?';
+
+  static String uploadError = 'Error uploading data. Please try again.';
+
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';
 

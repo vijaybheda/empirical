@@ -10,6 +10,7 @@ import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/commodity/commodity_id_screen.dart';
 import 'package:pverify/ui/scorecard/scorecard_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/dialogs/supplier_list_dialog.dart';
 import 'package:pverify/utils/utils.dart';
 
 class SelectSupplierScreenController extends GetxController {
@@ -575,14 +576,16 @@ class SelectSupplierScreenController extends GetxController {
         partner.name!.isNotEmpty &&
         partner.name!.toLowerCase().contains("open")) {
       selectedIndex.value = -1;
-      PartnerItem? selectedPartner = await SupplierListDialog.show(context);
+      PartnerItem? selectedPartner =
+          await SupplierListDialog.showListDialog(context);
       if (selectedPartner != null) {
         clearSearch();
-        Get.to(() => CommodityIDScreen(partner: selectedPartner));
+        Get.to(() =>
+            CommodityIDScreen(partner: selectedPartner, carrier: carrier));
       }
     } else {
       clearSearch();
-      Get.to(() => CommodityIDScreen(partner: partner));
+      Get.to(() => CommodityIDScreen(partner: partner, carrier: carrier));
     }
   }
 }

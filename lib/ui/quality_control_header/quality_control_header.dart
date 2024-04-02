@@ -8,6 +8,7 @@ import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/ui/Home/home_controller.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/quality_control_header/quality_control_controller.dart';
+import 'package:pverify/ui/supplier/choose_supplier.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';

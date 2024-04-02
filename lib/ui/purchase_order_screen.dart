@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pverify/controller/commodity_id_screen_controller.dart';
+import 'package:pverify/controller/purchase_order_screen_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
+import 'package:pverify/models/finished_goods_item_sku.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
@@ -12,19 +13,22 @@ import 'package:pverify/ui/components/progress_adaptive.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
-class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
+class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
   final PartnerItem partner;
   final CarrierItem carrier;
-  const CommodityIDScreen({
+  final CommodityItem commodity;
+  const PurchaseOrderScreen({
     super.key,
     required this.partner,
     required this.carrier,
+    required this.commodity,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<CommodityIDScreenController>(
-        init: CommodityIDScreenController(partner: partner, carrier: carrier),
+    return GetBuilder<PurchaseOrderScreenController>(
+        init: PurchaseOrderScreenController(
+            carrier: carrier, partner: partner, commodity: commodity),
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -49,7 +53,7 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
                   color: AppColors.textFieldText_Color,
                   width: double.infinity,
                   child: Text(
-                    "${partner.name ?? '-'} > ${carrier.name ?? '-'}",
+                    partner.name ?? '-',
                     textAlign: TextAlign.start,
                     maxLines: 3,
                     style: GoogleFonts.poppins(
@@ -62,7 +66,7 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
                 Expanded(flex: 10, child: _commodityListSection(context)),
                 FooterContentView(
                   onDownloadTap: () {
-                    controller.onDownloadTap();
+                    // TODO: Implement download functionality
                   },
                 )
               ],
@@ -71,12 +75,11 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
         });
   }
 
-  GetBuilder<CommodityIDScreenController> _commodityListSection(
+  GetBuilder<PurchaseOrderScreenController> _commodityListSection(
       BuildContext context) {
-    return GetBuilder<CommodityIDScreenController>(
+    return GetBuilder<PurchaseOrderScreenController>(
       id: 'commodityList',
       builder: (controller) {
-        List<String> alphabets = controller.getListOfAlphabets();
         return Container(
           padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 20.h),
           child: Row(
@@ -94,67 +97,10 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
                   : const Center(
                       child: SizedBox(
                           height: 25, width: 25, child: ProgressAdaptive())),
-              if (controller.listAssigned.value && alphabets.isNotEmpty)
-                Flexible(
-                  flex: 0,
-                  child: listAlphabetsWidget(controller, alphabets, context),
-                )
-              else
-                const Offstage(),
             ],
           ),
         );
       },
-    );
-  }
-
-  Widget listAlphabetsWidget(
-    CommodityIDScreenController controller,
-    List<String> alphabets,
-    BuildContext context,
-  ) {
-    return Container(
-      alignment: Alignment.center,
-      width: 60.sp,
-      // padding: const EdgeInsets.symmetric(vertical: 10),
-      child: GestureDetector(
-        onVerticalDragUpdate: (details) {
-          int index = _calculateIndexFromDragPosition(
-              details.localPosition.dy, alphabets.length, context);
-          if (index >= 0 && index < alphabets.length) {
-            String letter = alphabets[index];
-            controller.scrollToSection(letter, index);
-          }
-        },
-        child: ListView.builder(
-          itemCount: alphabets.length,
-          shrinkWrap: false,
-          physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            String letter = alphabets.elementAt(index);
-            return SizedBox(
-              height:
-                  MediaQuery.of(context).size.height * .70 / alphabets.length,
-              child: GestureDetector(
-                onTap: () {
-                  controller.scrollToSection(letter, index);
-                },
-                child: SizedBox(
-                  height: 20,
-                  child: Text(
-                    letter,
-                    style: Get.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.white,
-                        fontSize: 60.h,
-                        fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
     );
   }
 
@@ -170,43 +116,36 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
   }
 
   Widget commodityListView(
-      BuildContext context, CommodityIDScreenController controller) {
+      BuildContext context, PurchaseOrderScreenController controller) {
     return ListView.separated(
-      controller: controller.scrollController,
       itemCount: controller.filteredCommodityList.length,
       itemBuilder: (context, index) {
-        CommodityItem partner =
+        FinishedGoodsItemSKU partner =
             controller.filteredCommodityList.elementAt(index);
         return GestureDetector(
           onTap: () {
-            controller.navigateToPurchaseOrderScreen(partner);
+            // TODO:
+            // controller.navigateToPurchaseOrderScreen(partner);
           },
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 20.h),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                getAlphabetContent(controller.filteredCommodityList, index),
-                SizedBox(
-                  height: controller.listHeight,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              partner.name ?? '-',
-                              style: Get.textTheme.bodyMedium?.copyWith(
-                                  color: AppColors.white, fontSize: 50.h),
-                            ),
-                          ),
-                        ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        // TODO: Implement name as per the existing app
+                        partner.itemSkuName ?? '-',
+                        style: Get.textTheme.bodyMedium
+                            ?.copyWith(color: AppColors.white, fontSize: 50.h),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -224,51 +163,6 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
       },
     );
   }
-
-  int _calculateIndexFromDragPosition(
-      double dragPosition, int itemCount, BuildContext context) {
-    double totalHeight = MediaQuery.of(context).size.height * .70;
-    double itemHeight = totalHeight / itemCount;
-    int index = (dragPosition / itemHeight).floor();
-    return index;
-  }
-
-  Widget getAlphabetContent(List<CommodityItem> allCommodities, int index) {
-    String alphabet = '';
-    CommodityItem itemData = allCommodities[index];
-
-    if (allCommodities.isNotEmpty && index == 0) {
-      alphabet = allCommodities.first.name![0];
-    } else if (itemData.name![0] !=
-        allCommodities.elementAt(index - 1).name![0]) {
-      alphabet = itemData.name![0];
-    }
-
-    if (alphabet.isNotEmpty) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            alphabet,
-            style: Get.textTheme.headlineMedium?.copyWith(
-              color: AppColors.white,
-              fontSize: 60.h,
-            ),
-          ),
-          Divider(
-            height: 10,
-            indent: 0,
-            endIndent: 0,
-            color: AppColors.white,
-            thickness: 1,
-          )
-        ],
-      );
-    } else {
-      return Container();
-    }
-  }
 }
 
 class SearchGradingStandardWidget extends StatelessWidget {
@@ -282,11 +176,12 @@ class SearchGradingStandardWidget extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 25.h),
         child: TextField(
           onChanged: (value) {
-            Get.find<CommodityIDScreenController>()
-                .searchAndAssignCommodity(value);
+            // TODO: Implement search functionality
+            // Get.find<PurchaseOrderScreenController>()
+            //     .searchAndAssignCommodity(value);
           },
           decoration: InputDecoration(
-            hintText: AppStrings.searchCommodity,
+            hintText: AppStrings.searchItem,
             hintStyle: Get.textTheme.bodyLarge,
             isDense: true,
             contentPadding:

@@ -66,21 +66,22 @@ class FooterContentView extends StatelessWidget {
               debugPrint('Download button tap.');
               if (onDownloadTap != null) {
                 onDownloadTap!();
-              }
-
-              if (globalConfigController.hasStableInternet.value) {
-                UpdateDataAlert.showUpdateDataDialog(
-                  context,
-                  onOkPressed: () {
-                    debugPrint('Download button tap.');
-                    Get.off(() => const CacheDownloadScreen());
-                  },
-                  message: AppStrings.updateDataConfirmation,
-                );
               } else {
-                UpdateDataAlert.showUpdateDataDialog(context, onOkPressed: () {
-                  debugPrint('Download button tap.');
-                }, message: AppStrings.downloadWifiError);
+                if (globalConfigController.hasStableInternet.value) {
+                  UpdateDataAlert.showUpdateDataDialog(
+                    context,
+                    onOkPressed: () {
+                      debugPrint('Download button tap.');
+                      Get.off(() => const CacheDownloadScreen());
+                    },
+                    message: AppStrings.updateDataConfirmation,
+                  );
+                } else {
+                  UpdateDataAlert.showUpdateDataDialog(context,
+                      onOkPressed: () {
+                    debugPrint('Download button tap.');
+                  }, message: AppStrings.downloadWifiError);
+                }
               }
             },
             child: Image.asset(
