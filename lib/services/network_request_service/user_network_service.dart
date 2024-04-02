@@ -58,14 +58,6 @@ class UserService extends BaseRequestService {
         //handled exception
         rethrow;
         // Utils.hideLoadingDialog();
-        // Get.showSnackbar(GetSnackBar(
-        //   title: 'Error',
-        //   message: e.message,
-        //   backgroundColor: AppColors.red,
-        //   icon: const Icon(Icons.error_outline_rounded),
-        //   duration: const Duration(seconds: 1, milliseconds: 500),
-        //   key: const Key('error'),
-        // ));
         throw Exception(e.message);
       } else {
         // internal exception

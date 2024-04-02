@@ -24,6 +24,7 @@ class AppStrings {
 
   static const String userNameValid = 'Please enter valid username.';
   static const String error = 'Error!';
+  static const String success = 'Success';
 
   static const String inspectionMenu = 'Inspection Menu';
 
@@ -165,6 +166,53 @@ class AppStrings {
       "External Storage permission required for this app.\nPlease go to Settings and enable permissions to continue.";
 
   static String updateDataConfirmation = "Update Data?";
+
+  static String csvDownloadedSuccessfully = 'CSV files downloaded successfully';
+
+  static String jsonInsertedSuccessfully =
+      'JSON file data saved to device storage.';
+  static String jsonDownloadedSuccessfully =
+      'JSON file downloaded successfully.';
+  static String csvInsertedSuccessfully = 'CSV files data added successfully';
+  static String failedToDeletePartnerItemSKU =
+      'Deleting Partner ItemSKU failed please try again';
+  static String failedToDownloadAllUsers = 'Failed to download all users';
+  static String failedToDownloadZipFile = 'Failed to download zip file';
+  static String failedToInsertCSVData = 'Failed to insert csv data to database';
+  static String failedToDownloadJSONFile = 'Failed to download json file';
+  static String failedToInsertJSONData =
+      'Failed to insert json data to database';
+  static String failedToInsertItemGroup = 'Failed to insert item group';
+  static String failedToInsertItemSKU = 'Failed to insert item SKU';
+  static String failedToInsertAgency = 'Failed to insert agency';
+  static String failedToInsertGrade = 'Failed to insert grade';
+  static String failedToInsertGradeCommodity =
+      'Failed to insert Grade Commodity';
+  static String failedToInsertGradeCommodityDetail =
+      'Failed to insert Grade Commodity Detail';
+  static String failedToInsertSpecification = 'Failed to insert specification';
+  static String failedToInsertMaterialSpecification =
+      'Failed to insert Material Specification';
+  static String failedToInsertSpecificationSupplier =
+      'Failed to insert import Specification Supplier';
+  static String failedToInsertSpecificationGradeTolerance =
+      'Failed to insert import Specification Grade Tolerance';
+  static String failedToInsertSpecificationAnalytical =
+      'Failed to insert import Specification Analytical';
+  static String failedToInsertSpecificationPackagingFinishedGoods =
+      'Failed to insert import specification Packaging FinishedGoods';
+  static String failedToInsertSpecificationType =
+      'Failed to insert import Specification Type';
+  static String failedToInsertCommodity = 'Failed to insert import commodity';
+  static String failedToInsertCommodityKeywords =
+      'Failed to insert Commodity Keywords';
+  static String failedToInsertPOHeader = 'Failed to insert PO Header';
+  static String failedToInsertPODetail = 'Failed to insert PO Detail';
+  static String failedToInsertSpecificationSupplierGtins =
+      'Failed to insert Specification Supplier Gtins';
+  static String failedToInsertCommodityCTE = 'Failed to insert Commodity CTE';
+  static String subscriptionExpired = 'User is not active.';
+  static String accountNotActive = 'Account is not active.';
 
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';

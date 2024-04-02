@@ -155,21 +155,14 @@ class LoginScreen extends GetView<AuthController> {
           if (loginData.subscriptionExpired ?? false) {
             // dismissible info dialog
             Utils.hideLoadingDialog();
-            Get.snackbar(
-              AppStrings.error,
-              "User is not active.",
-              backgroundColor: AppColors.red,
-              colorText: AppColors.white,
-            );
+
+            AppAlertDialog.validateAlerts(
+                context, AppStrings.error, AppStrings.subscriptionExpired);
           } else if (loginData.status == 3) {
-            // "Account is not active." dialog
             Utils.hideLoadingDialog();
-            Get.snackbar(
-              AppStrings.error,
-              "Account is not active.",
-              backgroundColor: AppColors.red,
-              colorText: AppColors.white,
-            );
+
+            AppAlertDialog.validateAlerts(
+                context, AppStrings.error, AppStrings.accountNotActive);
           } else {
             await authController.persistUserName();
 

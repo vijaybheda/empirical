@@ -8,6 +8,7 @@ import 'package:pverify/utils/common_widget/custom_radio_tile.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class SupplierListDialog {
+  // TODO: Vijay change message and UI according to existing app
   static Future<PartnerItem?> show(BuildContext context) {
     SelectSupplierScreenController controller =
         Get.find<SelectSupplierScreenController>();

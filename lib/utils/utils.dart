@@ -563,11 +563,19 @@ class Utils {
     await Future.delayed(const Duration(milliseconds: 10));
     Get.dialog(
       Center(
-        child: Transform.scale(
-          scale: 2,
-          child: const CircularProgressIndicator.adaptive(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            backgroundColor: Colors.white,
+        child: SizedBox(
+          height: 25,
+          width: 25,
+          child: Transform.scale(
+            scale: 2,
+            child: Platform.isIOS
+                ? const CircularProgressIndicator.adaptive(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    backgroundColor: Colors.white,
+                  )
+                : const CircularProgressIndicator.adaptive(
+                    backgroundColor: Colors.white,
+                  ),
           ),
         ),
       ),
@@ -596,22 +604,4 @@ void unFocus() {
 enum PicDir {
   petPictures,
   profilePictures,
-}
-
-void showInSnackBar(String? message,
-    {String? title,
-    SnackPosition? position,
-    bool isSuccess = false,
-    Duration? duration,
-    Color? color}) {
-  Get.snackbar(title ?? '',
-      (message ?? '').length > 300 ? "Something went wrong" : (message ?? ''),
-      snackPosition: position ?? SnackPosition.BOTTOM,
-      snackStyle: SnackStyle.FLOATING,
-      backgroundColor: isSuccess
-          ? Colors.green.withOpacity(0.6)
-          : color ?? Colors.red.withOpacity(0.6),
-      colorText: AppColors.textColor,
-      margin: const EdgeInsets.all(10),
-      duration: duration ?? const Duration(seconds: 3));
 }

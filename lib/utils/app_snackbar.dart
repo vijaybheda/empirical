@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/utils/app_const.dart';
+import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/theme/magic_number.dart';
 import 'package:pverify/utils/theme/text_theme.dart';
@@ -91,5 +92,57 @@ class AppSnackBar {
       snackPosition: SnackPosition.BOTTOM,
       padding: const EdgeInsets.all(0),
     );
+  }
+
+  static void error({
+    String title = AppStrings.error,
+    required String message,
+    Color backgroundColor = Colors.red,
+    Icon icon = const Icon(Icons.error),
+    Duration duration = const Duration(seconds: 2),
+  }) {
+    _showSnackbar(
+      title: title,
+      message: message,
+      backgroundColor: backgroundColor,
+      icon: icon,
+      duration: duration,
+    );
+  }
+
+  static void success({
+    String title = AppStrings.success,
+    required String message,
+    Color backgroundColor = Colors.green,
+    Icon icon = const Icon(Icons.check),
+    Duration duration = const Duration(seconds: 2),
+  }) {
+    _showSnackbar(
+      title: title,
+      message: message,
+      backgroundColor: backgroundColor,
+      icon: icon,
+      duration: duration,
+    );
+  }
+
+  static void _showSnackbar({
+    required String title,
+    required String message,
+    required Color backgroundColor,
+    required Icon icon,
+    required Duration duration,
+  }) {
+    if (Get.isSnackbarOpen) {
+      Get.closeCurrentSnackbar();
+    }
+    Get.showSnackbar(GetSnackBar(
+      title: title,
+      message: message,
+      backgroundColor: backgroundColor,
+      icon: icon,
+      duration: duration,
+      key: Key(title.runtimeType.toString()),
+    ));
   }
 }

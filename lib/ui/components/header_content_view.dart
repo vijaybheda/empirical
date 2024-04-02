@@ -59,13 +59,15 @@ class HeaderContentView extends StatelessWidget {
           SizedBox(
             width: 40.w,
           ),
-          Obx(
-            () => Image.asset(
-              getWifiImagePath(),
-              width: 70.w,
-              height: 70.w,
-            ),
-          ),
+          StreamBuilder(
+              stream: globalConfigController.wifiLevelStream,
+              builder: (_, __) {
+                return Image.asset(
+                  getWifiImagePath(),
+                  width: 70.w,
+                  height: 70.w,
+                );
+              })
         ],
       ),
     );
