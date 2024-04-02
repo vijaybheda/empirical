@@ -66,12 +66,12 @@ class SupplierListDialog extends GetWidget<SelectSupplierScreenController> {
           onPressed: () {
             if (controller.selectedIndex.value != -1) {
               // Handle selection here
-              print(
+              debugPrint(
                   'Selected Supplier: ${controller.filteredNonOpenPartnersList[controller.selectedIndex.value].name}');
               Get.back(); // Close the dialog
             } else {
               // Show error message or handle invalid selection
-              print('No supplier selected');
+              debugPrint('No supplier selected');
             }
           },
           child: const Text('OK'),

@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
+
 import 'dart:developer';
 import 'dart:io';
 
@@ -10,9 +12,14 @@ import 'package:pverify/services/network_request_service/api_urls.dart';
 import 'package:pverify/services/network_request_service/cache_download_service.dart';
 import 'package:pverify/ui/Home/home.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class CacheDownloadController extends GetxController {
+  late BuildContext context;
+  CacheDownloadController(this.context);
+
   final ApplicationDao dao = ApplicationDao();
 
   final AppStorage appStorage = AppStorage.instance;
@@ -28,8 +35,7 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar(
-            'Error', 'Deleting Partner ItemSKU failed please try again');
+        Get.snackbar(AppStrings.error, AppStrings.errorPartnersku);
         return;
       }
 
@@ -55,13 +61,13 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error', 'Failed to download all users');
+        Get.snackbar(AppStrings.error, AppStrings.failUserDownload);
         return;
       } else {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, true);
         Get.showSnackbar(GetSnackBar(
-          title: 'Success',
-          message: 'Cache updated successfully',
+          title: AppStrings.success,
+          message: AppStrings.cacheupdate,
           backgroundColor: AppColors.primaryColor,
           icon: const Icon(Icons.check),
           duration: const Duration(seconds: 2),
@@ -81,12 +87,12 @@ class CacheDownloadController extends GetxController {
     File? zipDownloaded = await downloadZipFile();
     if (zipDownloaded == null) {
       // Helly change this message UI
-      Get.snackbar('Error', 'Failed to download zip file');
+      Get.snackbar(AppStrings.error, AppStrings.downloadFailzip);
       return false;
     }
     Get.showSnackbar(GetSnackBar(
-      title: 'Success',
-      message: 'CSV files downloaded successfully',
+      title: AppStrings.success,
+      message: AppStrings.csvDownload,
       backgroundColor: AppColors.primaryColor,
       icon: const Icon(Icons.check),
       duration: const Duration(seconds: 2),
@@ -95,13 +101,13 @@ class CacheDownloadController extends GetxController {
     bool processCsv = await processCsvAndInsertToDatabase();
     if (!processCsv) {
       // Helly change this message UI
-      Get.snackbar('Error', 'Failed to insert csv data to database');
+      Get.snackbar(AppStrings.error, AppStrings.failcsvData);
       return false;
     }
     // show snackbar with success icon and green background
     Get.showSnackbar(GetSnackBar(
-      title: 'Success',
-      message: 'CSV files data added successfully',
+      title: AppStrings.success,
+      message: AppStrings.downloadCSVFile,
       backgroundColor: AppColors.primaryColor,
       icon: const Icon(Icons.check),
       duration: const Duration(seconds: 2),
@@ -115,12 +121,12 @@ class CacheDownloadController extends GetxController {
     File? jsonDownloaded = await downloadJSONFile();
     if (jsonDownloaded == null) {
       // Helly change this message UI
-      Get.snackbar('Error', 'Failed to download json file');
+      Get.snackbar(AppStrings.error, AppStrings.failJsonData);
       return false;
     }
     Get.showSnackbar(GetSnackBar(
-      title: 'Success',
-      message: 'JSON file downloaded successfully.',
+      title: AppStrings.success,
+      message: AppStrings.jsonDownload,
       backgroundColor: AppColors.primaryColor,
       icon: const Icon(Icons.check),
       duration: const Duration(seconds: 2),
@@ -135,13 +141,13 @@ class CacheDownloadController extends GetxController {
     List<bool> result = await Future.wait(allFunctions);
     if (result.contains(false)) {
       // Helly change this message UI
-      Get.snackbar('Error', 'Failed to insert json data to database');
+      Get.snackbar(AppStrings.error, AppStrings.failInsertJsonDataDB);
       return false;
     }
 
     Get.showSnackbar(GetSnackBar(
-      title: 'Success',
-      message: 'JSON file data saved to device storage.',
+      title: AppStrings.success,
+      message: AppStrings.downloadJsonile,
       backgroundColor: AppColors.primaryColor,
       icon: const Icon(Icons.check),
       duration: const Duration(seconds: 2),
@@ -173,7 +179,7 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error', 'Failed to insert item group');
+        Get.snackbar(AppStrings.error, AppStrings.failedInsertItemGroup);
         return false;
       }
 
@@ -183,7 +189,7 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error', 'Failed to insert item SKU');
+        Get.snackbar(AppStrings.error, AppStrings.failInsertItemsku);
         return false;
       }
 
@@ -192,7 +198,7 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error', 'Failed to insert agency');
+        Get.snackbar(AppStrings.error, AppStrings.failInsertAgency);
         return false;
       }
 
@@ -201,7 +207,7 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error', 'Failed to insert grade');
+        Get.snackbar(AppStrings.error, AppStrings.failInsertGrade);
         return false;
       }
 
@@ -210,7 +216,7 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error', 'Failed to insert Grade Commodity');
+        Get.snackbar(AppStrings.error, AppStrings.failInsertGradeCommodity);
         return false;
       }
 
@@ -219,7 +225,8 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error', 'Failed to insert Grade Commodity Detail');
+        Get.snackbar(
+            AppStrings.error, AppStrings.failInsertGradeCommodityDetail);
         return false;
       }
 
@@ -228,7 +235,7 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error', 'Failed to insert specification');
+        Get.snackbar(AppStrings.error, AppStrings.failInsertSpecification);
         return false;
       }
 
@@ -237,7 +244,8 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error', 'Failed to insert Material Specification');
+        Get.snackbar(
+            AppStrings.error, AppStrings.failInsertMaterialSpecification);
         return false;
       }
 
@@ -247,7 +255,8 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error', 'Failed to insert import Specification Supplier');
+        Get.snackbar(
+            AppStrings.error, AppStrings.failInsertSpecificationSupplier);
         return false;
       }
 
@@ -258,7 +267,7 @@ class CacheDownloadController extends GetxController {
         Get.back();
         // Helly change this message UI
         Get.snackbar(
-            'Error', 'Failed to insert import Specification Grade Tolerance');
+            AppStrings.error, AppStrings.failInsertSpecificationGradeTolerance);
         return false;
       }
 
@@ -269,7 +278,7 @@ class CacheDownloadController extends GetxController {
         Get.back();
         // Helly change this message UI
         Get.snackbar(
-            'Error', 'Failed to insert import Specification Analytical');
+            AppStrings.error, AppStrings.failInsertSpecificationAnalytical);
         return false;
       }
 
@@ -279,8 +288,8 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error',
-            'Failed to insert import specification Packaging FinishedGoods');
+        Get.snackbar(AppStrings.error,
+            AppStrings.failInsertSpecificationPackagingFinishedGoods);
         return false;
       }
 
@@ -289,7 +298,7 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error', 'Failed to insert import Specification Type');
+        Get.snackbar(AppStrings.error, AppStrings.failInsertSpecificationType);
         return false;
       }
 
@@ -298,7 +307,7 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error', 'Failed to insert import commodity');
+        Get.snackbar(AppStrings.error, AppStrings.failInsertImportCommodity);
         return false;
       }
 
@@ -307,7 +316,7 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error', 'Failed to insert Commodity Keywords');
+        Get.snackbar(AppStrings.error, AppStrings.failInsertCommodityKeyword);
         return false;
       }
 
@@ -316,7 +325,7 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error', 'Failed to insert PO Header');
+        Get.snackbar(AppStrings.error, AppStrings.failInsertPOheader);
         return false;
       }
 
@@ -325,7 +334,7 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error', 'Failed to insert PO Detail');
+        Get.snackbar(AppStrings.error, AppStrings.failedInsertPODetails);
         return false;
       }
 
@@ -335,7 +344,7 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error', 'Failed to insert Specification Supplier Gtins');
+        Get.snackbar(AppStrings.error, AppStrings.failedInsertSupplier);
         return false;
       }
 
@@ -344,7 +353,7 @@ class CacheDownloadController extends GetxController {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, false);
         Get.back();
         // Helly change this message UI
-        Get.snackbar('Error', 'Failed to insert Commodity CTE');
+        Get.snackbar(AppStrings.error, AppStrings.failedInsertCommodity);
         return false;
       }
 

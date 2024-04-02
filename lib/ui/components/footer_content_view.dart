@@ -1,3 +1,6 @@
+// ignore_for_file: must_be_immutable
+
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -21,11 +24,12 @@ class FooterContentView extends StatelessWidget {
 
   final ApplicationDao dao = ApplicationDao();
   final AppStorage appStorage = AppStorage.instance;
+  bool? isVisibleCancel;
 
   final GlobalConfigController globalConfigController =
       Get.find<GlobalConfigController>();
 
-  FooterContentView({super.key, this.onDownloadTap});
+  FooterContentView({super.key, this.onDownloadTap, this.isVisibleCancel});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +46,7 @@ class FooterContentView extends StatelessWidget {
               Get.back();
             },
             child: Text(
-              AppStrings.cancel,
+              isVisibleCancel == true ? '' : AppStrings.cancel,
               style: GoogleFonts.poppins(
                   fontSize: 35.sp,
                   fontWeight: FontWeight.bold,

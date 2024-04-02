@@ -10,14 +10,14 @@ class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<CacheDownloadController>(
-        init: CacheDownloadController(),
+        init: CacheDownloadController(context),
         builder: (controller) {
           return Scaffold(
             backgroundColor: Get.theme.colorScheme.background,
             appBar: AppBar(
               leading: const Offstage(),
               leadingWidth: 0,
-              title: Text('Cache Download',
+              title: Text(AppStrings.cacheDownload,
                   style: Get.textTheme.titleMedium
                       ?.copyWith(color: Colors.white, fontSize: 30)),
               backgroundColor: Get.theme.colorScheme.background,

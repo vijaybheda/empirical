@@ -1555,19 +1555,19 @@ class ApplicationDao {
         Map<String, dynamic> row = result.first;
         qcItem = QCHeaderDetails(
           id: row['Temp_QCH_BASE_ID'],
-          poNo: row['Temp_QCHPoNo'],
-          sealNo: row['Temp_QCHSealNo'],
-          qchOpen1: row['Temp_QCHOPEN1'],
-          qchOpen2: row['Temp_QCHOPEN2'],
-          qchOpen3: row['Temp_QCHOPEN3'],
-          qchOpen4: row['Temp_QCHOPEN4'],
-          qchOpen5: row['Temp_QCHOPEN5'],
-          qchOpen6: row['Temp_QCHOPEN6'],
-          qchOpen9: row['Temp_QCHOPEN9'],
-          qchOpen10: row['Temp_QCHOPEN10'],
-          truckTempOk: row['Temp_TruckTempOk'],
-          productTransfer: row['Temp_ProductTransfer'],
-          cteType: row['Temp_CteType'],
+          poNo: row[TempQcHeaderDetailsColumn.PO_NUMBER],
+          sealNo: row[TempQcHeaderDetailsColumn.SEAL_NUMBER],
+          qchOpen1: row[TempQcHeaderDetailsColumn.QCH_OPEN1],
+          qchOpen2: row[TempQcHeaderDetailsColumn.QCH_OPEN2],
+          qchOpen3: row[TempQcHeaderDetailsColumn.QCH_OPEN3],
+          qchOpen4: row[TempQcHeaderDetailsColumn.QCH_OPEN4],
+          qchOpen5: row[TempQcHeaderDetailsColumn.QCH_OPEN5],
+          qchOpen6: row[TempQcHeaderDetailsColumn.QCH_OPEN6],
+          qchOpen9: row[TempQcHeaderDetailsColumn.QCH_OPEN9],
+          qchOpen10: row[TempQcHeaderDetailsColumn.QCH_OPEN10],
+          truckTempOk: row[TempQcHeaderDetailsColumn.TRUCK_TEMP_OK],
+          productTransfer: row[TempQcHeaderDetailsColumn.PRODUCT_TRANSFER],
+          cteType: row[TempQcHeaderDetailsColumn.CTE_TYPE],
         );
       }
     } catch (e) {
@@ -1582,7 +1582,7 @@ class ApplicationDao {
 
     final _db = await DatabaseHelper.instance.database;
 
-    /*
+    try {
       List<Map<String, dynamic>> results = await _db.rawQuery('''
         SELECT poh.PO_Number, poh.PO_Deliver_To_Id, poh.PO_Deliver_To_Name, poh.PO_Partner_Id,
         poh.PO_Partner_Name,
@@ -1593,19 +1593,17 @@ class ApplicationDao {
         INNER JOIN PO_Header poh ON pod.PO_Header_ID=poh.PO_Header_ID
         WHERE poh.PO_Number='$poNumber' AND poh.PO_Deliver_To_Id=$inspectorSupplierId
       ''');
-    */
 
-    try {
-      List<Map<String, dynamic>> results = await _db.rawQuery(
-        "SELECT ${POHeaderColumn.PO_NUMBER}, ${POHeaderColumn.PO_DELIVER_TO_ID}, ${POHeaderColumn.PO_DELIVER_TO_NAME}, ${POHeaderColumn.PO_PARTNER_ID}, "
-        "${POHeaderColumn.PO_PARTNER_NAME}, "
-        "${PODetailColumn.PO_LINE_NUMBER}, ${PODetailColumn.PO_ITEM_SKU_ID}, ${PODetailColumn.PO_ITEM_SKU_CODE}, ${PODetailColumn.PO_ITEM_SKU_NAME}, "
-        "${PODetailColumn.PO_QUANTITY}, ${PODetailColumn.PO_QTY_UOM_ID}, ${PODetailColumn.PO_QTY_UOM_NAME}, "
-        "${PODetailColumn.PO_NUMBER_SPEC}, ${PODetailColumn.PO_VERSION_SPEC}, ${PODetailColumn.PO_COMMODITY_ID}, ${PODetailColumn.PO_COMMODITY_NAME} "
-        "FROM ${DBTables.PO_DETAIL} pod "
-        "INNER JOIN PO_Header poh ON ${PODetailColumn.PO_HEADER_ID}=${POHeaderColumn.PO_HEADER_ID} "
-        "WHERE ${POHeaderColumn.PO_NUMBER}='$poNumber' AND ${POHeaderColumn.PO_DELIVER_TO_ID}=$inspectorSupplierId",
-      );
+      // List<Map<String, dynamic>> results = await _db.rawQuery(
+      //   "SELECT ${POHeaderColumn.PO_NUMBER}, ${POHeaderColumn.PO_DELIVER_TO_ID}, ${POHeaderColumn.PO_DELIVER_TO_NAME}, ${POHeaderColumn.PO_PARTNER_ID}, "
+      //   "${POHeaderColumn.PO_PARTNER_NAME}, "
+      //   "${PODetailColumn.PO_LINE_NUMBER}, ${PODetailColumn.PO_ITEM_SKU_ID}, ${PODetailColumn.PO_ITEM_SKU_CODE}, ${PODetailColumn.PO_ITEM_SKU_NAME}, "
+      //   "${PODetailColumn.PO_QUANTITY}, ${PODetailColumn.PO_QTY_UOM_ID}, ${PODetailColumn.PO_QTY_UOM_NAME}, "
+      //   "${PODetailColumn.PO_NUMBER_SPEC}, ${PODetailColumn.PO_VERSION_SPEC}, ${PODetailColumn.PO_COMMODITY_ID}, ${PODetailColumn.PO_COMMODITY_NAME} "
+      //   "FROM ${DBTables.PO_DETAIL} pod "
+      //   "INNER JOIN PO_Header poh ON ${PODetailColumn.PO_HEADER_ID}=${POHeaderColumn.PO_HEADER_ID} "
+      //   "WHERE ${POHeaderColumn.PO_NUMBER}='$poNumber' AND ${POHeaderColumn.PO_DELIVER_TO_ID}=$inspectorSupplierId",
+      // );
       for (var result in results) {
         purchaseOrderDetailsList.add(PurchaseOrderDetails.fromMap(result));
       }

@@ -8,6 +8,7 @@ import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/ui/Home/home_controller.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/quality_control_header/quality_control_controller.dart';
+import 'package:pverify/ui/trailer_temp/trailertemp.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';
@@ -46,9 +47,6 @@ class QualityControlHeader extends GetView<HomeController> {
   // CONTENT'S VIEW
 
   Widget contentView(BuildContext context, CarrierItem carrier) {
-    debugPrint(carrier.name ?? '---');
-    debugPrint('data:${carrier.id}');
-
     return Column(
       children: [
         Expanded(child: mainContentUI(context)),
@@ -69,7 +67,7 @@ class QualityControlHeader extends GetView<HomeController> {
                       fontWeight: FontWeight.w600,
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
-                  onClickAction: () => {}),
+                  onClickAction: () => {Get.to(() => TrailerTemp())}),
               SizedBox(
                 width: 38.w,
               ),

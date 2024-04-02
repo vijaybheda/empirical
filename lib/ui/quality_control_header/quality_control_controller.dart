@@ -1,4 +1,6 @@
-// ignore_for_file: camel_case_types, non_constant_identifier_names, unrelated_type_equality_checks, unnecessary_brace_in_string_interps, unused_local_variable, unnecessary_null_comparison, no_leading_underscores_for_local_identifiers
+// ignore_for_file: camel_case_types, non_constant_identifier_names, unrelated_type_equality_checks, unnecessary_brace_in_string_interps, unused_local_variable, unnecessary_null_comparison, no_leading_underscores_for_local_identifiers, prefer_is_empty
+
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -6,6 +8,7 @@ import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/purchase_order_details.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/ui/supplier/choose_supplier.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
@@ -167,14 +170,14 @@ class QualityControl_Controller extends GetxController {
           cteType);
     }
 
-    if (purchaseOrderDetails != null) {
+    if (purchaseOrderDetails.length != 0) {
     } else {
       // Here need to call showPurchaseOrder function.
-      showPurchaseOrder();
+      showPurchaseOrder(carrier);
     }
   }
 
-  void showPurchaseOrder() {
+  void showPurchaseOrder(CarrierItem carrier) {
     if (callerActivity.isNotEmpty) {
       if (callerActivity == "QualityControlHeaderActivity") {
         // CallerActivity are blank now.
@@ -213,6 +216,7 @@ class QualityControl_Controller extends GetxController {
             */
           }
         } else {
+          Get.to(() => SelectSupplierScreen(carrier: carrier));
           /*
           Get.to(() => PartnerActivity(), arguments: {
             'poNumber': orderNoTextController.value.text,
@@ -264,6 +268,7 @@ class QualityControl_Controller extends GetxController {
           'carrierID': 'carrierID', // Need to pass dynamic value
         });
         */
+        Get.to(() => SelectSupplierScreen(carrier: carrier));
       }
     }
   }

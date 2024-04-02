@@ -24,8 +24,49 @@ class AppStrings {
 
   static const String userNameValid = 'Please enter valid username.';
   static const String error = 'Error!';
+  static const String errorPartnersku =
+      'Deleting Partner ItemSKU failed please try again';
+  static const String failUserDownload = 'Failed to download all users';
+  static const String failcsvData = 'Failed to insert csv data to database';
+  static const String failJsonData = 'Failed to download json file';
+  static const String jsonDownload = 'JSON file downloaded successfully.';
+  static const String failInsertJsonDataDB =
+      'Failed to insert json data to database';
+  static const String failInsertItemsku = 'Failed to insert item SKU';
+  static const String failInsertAgency = 'Failed to insert agency';
+  static const String failInsertGrade = 'Failed to insert grade';
+  static const String failInsertGradeCommodity =
+      'Failed to insert Grade Commodity';
+  static const String failInsertGradeCommodityDetail =
+      'Failed to insert Grade Commodity Detail';
+  static const String failInsertSpecification =
+      'Failed to insert specification';
+  static const String failInsertMaterialSpecification =
+      'Failed to insert Material Specification';
+  static const String failInsertSpecificationSupplier =
+      'Failed to insert import Specification Supplier';
+  static const String failInsertSpecificationGradeTolerance =
+      'Failed to insert import Specification Grade Tolerance';
+  static const String failInsertSpecificationAnalytical =
+      'Failed to insert import Specification Analytical';
+  static const String failInsertSpecificationPackagingFinishedGoods =
+      'Failed to insert import specification Packaging FinishedGoods';
+  static const String failInsertSpecificationType =
+      'Failed to insert import Specification Type';
+  static const String failInsertImportCommodity =
+      'Failed to insert import commodity';
+  static const String failInsertCommodityKeyword =
+      'Failed to insert Commodity Keywords';
+  static const String failInsertPOheader = 'Failed to insert PO Header';
 
   static const String inspectionMenu = 'Inspection Menu';
+  static const String success = 'Success';
+  static const String cacheupdate = 'Cache updated successfully';
+  static const String csvDownload = 'CSV files downloaded successfully';
+  static const String failedInsertCommodity = 'Failed to insert Commodity CTE';
+  static const String failedInsertSupplier =
+      'Failed to insert Specification Supplier Gtins';
+  static const String failedInsertPODetails = 'Failed to insert PO Detail';
 
   static const String cancel = 'Cancel';
   static const String ok = 'OK';
@@ -119,6 +160,12 @@ class AppStrings {
   static const String accountInactive =
       "Your account is inactive. Please contact your administrator.";
   static const String ID = 'ID';
+  static const String downloadFailzip = 'Failed to download zip file';
+  static const String downloadCSVFile = 'CSV files data added successfully';
+  static const String downloadJsonile =
+      'JSON file data saved to device storage.';
+  static const String failedInsertItemGroup = 'Failed to insert item group';
+
   static const String deviceId = 'Device ID';
   static const String wsUrl = 'Server Address';
   static const String timeout = 'Connection Timeout';
@@ -462,6 +509,7 @@ class AppStrings {
 
   static const String pieces = 'Yes';
   static const String whole = 'No';
+  static const String cacheDownload = 'Cache Download';
 
   static const String commodities = 'Commodities';
 
