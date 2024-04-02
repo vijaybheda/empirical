@@ -29,9 +29,10 @@ class FooterContentView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double bottomPadding = MediaQuery.of(context).padding.bottom;
     return Container(
       padding: const EdgeInsets.only(left: 15, right: 15),
-      height: 120.h,
+      height: 120.h + (bottomPadding * .5),
       color: AppColors.primary,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

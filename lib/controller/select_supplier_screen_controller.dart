@@ -10,7 +10,6 @@ import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/commodity/commodity_id_screen.dart';
 import 'package:pverify/ui/scorecard/scorecard_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
-import 'package:pverify/utils/dialogs/supplier_list_dialog.dart';
 import 'package:pverify/utils/utils.dart';
 
 class SelectSupplierScreenController extends GetxController {

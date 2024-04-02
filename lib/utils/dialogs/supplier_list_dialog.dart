@@ -5,7 +5,7 @@ import 'package:pverify/utils/app_strings.dart';
 
 class SupplierListDialog extends GetWidget<SelectSupplierScreenController> {
   const SupplierListDialog({super.key});
-
+// TODO: Vijay change message and UI according to existing app
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
