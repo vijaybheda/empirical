@@ -27,7 +27,7 @@ class AdaptiveAlert {
             barrierDismissible: false,
             context: context,
             builder: (BuildContext context) => AlertDialog(
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(5))),
               backgroundColor: Theme.of(context).colorScheme.background,
               title: title,

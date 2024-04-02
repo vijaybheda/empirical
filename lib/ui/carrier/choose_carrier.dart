@@ -66,7 +66,7 @@ class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
                     )
                   : const Center(
                       child: SizedBox(
-                          height: 100, width: 100, child: ProgressAdaptive())),
+                          height: 25, width: 25, child: ProgressAdaptive())),
               if (controller.listAssigned.value && alphabets.isNotEmpty)
                 Flexible(
                   flex: 0,
