@@ -5,8 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/purchase_order_screen_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
-import 'package:pverify/models/finished_goods_item_sku.dart';
+import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/ui/components/bottom_custom_button_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
@@ -64,11 +65,14 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
                 ),
                 const SearchGradingStandardWidget(),
                 Expanded(flex: 10, child: _commodityListSection(context)),
-                FooterContentView(
-                  onDownloadTap: () {
-                    // TODO: Implement download functionality
+                BottomCustomButtonView(
+                  title: AppStrings.save,
+                  onPressed: () async {
+                    await controller.navigateToPurchaseOrderDetails(
+                        context, partner, carrier, commodity);
                   },
-                )
+                ),
+                FooterContentView()
               ],
             ),
           );
@@ -81,7 +85,7 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
       id: 'commodityList',
       builder: (controller) {
         return Container(
-          padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 20.h),
+          padding: EdgeInsets.symmetric(vertical: 20.h),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -119,42 +123,49 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
       BuildContext context, PurchaseOrderScreenController controller) {
     return ListView.separated(
       itemCount: controller.filteredCommodityList.length,
+      padding: EdgeInsets.zero,
       itemBuilder: (context, index) {
         FinishedGoodsItemSKU partner =
             controller.filteredCommodityList.elementAt(index);
-        return GestureDetector(
-          onTap: () {
-            // TODO:
-            // controller.navigateToPurchaseOrderScreen(partner);
+        return CheckboxListTile(
+          value: partner.is_Complete ?? false,
+          visualDensity: VisualDensity.compact,
+          contentPadding: EdgeInsets.zero,
+          activeColor: Colors.transparent,
+          checkColor: Colors.white,
+          fillColor: MaterialStateProperty.all((partner.is_Complete ?? false)
+              ? AppColors.textFieldText_Color
+              : Colors.transparent),
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          onChanged: (value) {
+            partner = partner.copyWith(is_Complete: (value!));
+            controller.updateCommodityItem(partner);
           },
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20.h),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        // TODO: Implement name as per the existing app
-                        partner.itemSkuName ?? '-',
-                        style: Get.textTheme.bodyMedium
-                            ?.copyWith(color: AppColors.white, fontSize: 50.h),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+          title: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: partner.sku ?? '-',
+                    style: Get.textTheme.bodyMedium
+                        ?.copyWith(color: AppColors.white, fontSize: 50.h),
+                  ),
+                  const TextSpan(text: ' '),
+                  TextSpan(
+                    text: partner.name ?? '-',
+                    style: Get.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textFieldText_Color, fontSize: 50.h),
+                  ),
+                ],
+              ),
             ),
           ),
         );
       },
       separatorBuilder: (BuildContext context, int index) {
         return Divider(
-          height: 10,
+          height: 5,
           indent: 0,
           endIndent: 0,
           color: AppColors.white,

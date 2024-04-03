@@ -6,6 +6,7 @@ import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/inspection.dart';
+import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/services/database/application_dao.dart';
@@ -32,7 +33,7 @@ class CommodityIDScreenController extends GetxController {
   RxList<CommodityItem> commodityList = <CommodityItem>[].obs;
   RxBool listAssigned = false.obs;
 
-  double get listHeight => 180.h;
+  double get listHeight => 130.h;
 
   @override
   void onInit() {
@@ -40,8 +41,19 @@ class CommodityIDScreenController extends GetxController {
     assignInitialData();
   }
 
-  void assignInitialData() {
-    List<CommodityItem>? _commoditiesList = appStorage.getCommodityList();
+  Future<void> assignInitialData() async {
+    LoginData? currentUser = appStorage.getLoginData();
+    if (currentUser == null) {
+      return;
+    }
+    int enterpriseId =
+        await dao.getEnterpriseIdByUserId(currentUser.userName!.toLowerCase());
+
+    List<CommodityItem>? _commoditiesList =
+        await dao.getCommodityByPartnerFromTable(partner.id!, enterpriseId,
+            currentUser.supplierId!, currentUser.headquarterSupplierId!);
+    appStorage.saveMainCommodityList(_commoditiesList ?? []);
+
     if (_commoditiesList == null) {
       commodityList.value = [];
       filteredCommodityList.value = [];

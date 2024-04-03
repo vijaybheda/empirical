@@ -1,3 +1,4 @@
+/*
 class FinishedGoodsItemSKU {
   final int? itemSkuId;
   final String? itemSkuCode;
@@ -97,3 +98,4 @@ class FinishedGoodsItemSKU {
     );
   }
 }
+*/

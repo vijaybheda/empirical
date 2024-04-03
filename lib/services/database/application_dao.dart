@@ -6,13 +6,14 @@ import 'dart:io';
 
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
-import 'package:pverify/models/finished_goods_item_sku.dart';
+import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/models/inspection_defect.dart';
 import 'package:pverify/models/inspection_defect_attachment.dart';
 import 'package:pverify/models/inspection_sample.dart';
 import 'package:pverify/models/inspection_specification.dart';
+import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/my_inspection_48hour_item.dart';
 import 'package:pverify/models/overridden_result_item.dart';
 import 'package:pverify/models/partner_item.dart';
@@ -1885,7 +1886,6 @@ class ApplicationDao {
   }
 
   Future<List<FinishedGoodsItemSKU>?> getFinishedGoodItemSkuFromTable(
-      Database database,
       int supplierId,
       int enterpriseId,
       int commodityId,
@@ -1897,7 +1897,7 @@ class ApplicationDao {
     FinishedGoodsItemSKU? item;
     String query;
     try {
-      bool hqUser = supplierId == headquarterId;
+      bool hqUser = (supplierId == headquarterId);
 
       if (hqUser) {
         query = "select distinct(itemSku.SKU_ID), itemSku.Name, itemSku.Code, itemSku.FTL, itemSku.Branded from Specification_Supplier SS " +
@@ -1925,12 +1925,16 @@ class ApplicationDao {
       } else {
         args = [supplierId, headquarterId, supplierId, commodityId];
       }
+      final Database db = await dbProvider.database;
 
-      List<Map<String, dynamic>> results = await database.rawQuery(query, args);
+      List<Map<String, dynamic>> results = await db.rawQuery(query, args);
 
       for (Map<String, dynamic> row in results) {
-        item = FinishedGoodsItemSKU.fromMap(row);
-        item.copyWith(
+        item = FinishedGoodsItemSKU();
+        item = item.copyWith(
+          id: row['SKU_ID'],
+          name: row['Name'],
+          sku: row['Code'],
           commodityName: commodityName,
           partnerId: supplierId,
           partnerName: partnerName,
@@ -2012,5 +2016,75 @@ class ApplicationDao {
     }
 
     return item;
+  }
+
+  Future<List<CommodityItem>?> getCommodityByPartnerFromTable(int supplierId,
+      int enterpriseId, int supplierIdParam, int headquarterId) async {
+    List<CommodityItem> itemSKUList = [];
+    CommodityItem item;
+    Database db = await dbProvider.database;
+    try {
+      bool hqUser = (supplierIdParam == headquarterId);
+      List<dynamic> args = [
+        'A',
+        supplierId,
+        'FG',
+        'AC',
+        headquarterId,
+        supplierId,
+        'A'
+      ];
+      String query1 =
+          'select distinct(c.id), c.name, c.keywords from Specification_Supplier SS '
+          'inner join Material_Specification MS on (SS.Number_Specification, SS.Version_Specification)=(MS.Number_Specification,MS.Version_Specification) '
+          'inner join Item_SKU itemSku on SS.Item_SKU_ID=itemSku.SKU_ID '
+          'inner join Commodity C on itemSku.Commodity_ID=C.ID '
+          'where SS.Status=? and SS.supplier_id=? '
+          'AND itemSku.Usage_Type=? and itemSku.Status=? '
+          'AND (itemSku.Company_Id =? or itemSku.Company_Id=?) '
+          'AND MS.Status = ?';
+
+      if (hqUser) {
+        query1 =
+            'select distinct(c.id), c.name, c.keywords from Specification_Supplier SS '
+            'inner join Material_Specification MS on (SS.Number_Specification, SS.Version_Specification)=(MS.Number_Specification,MS.Version_Specification) '
+            'inner join Item_SKU itemSku on SS.Item_SKU_ID=itemSku.SKU_ID '
+            'inner join Commodity C on itemSku.Commodity_ID=C.ID '
+            'where SS.Status=? and SS.supplier_id=? '
+            'AND itemSku.Usage_Type=? and itemSku.Status=? and itemSku.Company_Id=? '
+            'AND MS.Status = ?';
+        args = ['A', supplierId, 'FG', 'AC', headquarterId, 'A'];
+      }
+
+      List<Map<String, dynamic>> cursor = await db.rawQuery(query1, args);
+
+      for (Map<String, dynamic> row in cursor) {
+        item = CommodityItem.fromJson(row);
+        itemSKUList.add(item);
+      }
+    } catch (e) {
+      log('Error has occurred while finding quality control items: $e');
+      return null;
+    }
+    return itemSKUList;
+  }
+
+  Future<int> getHeadquarterIdByUserId(String userID) async {
+    Database db = await dbProvider.database;
+    int enterpriseId = 0;
+    List<dynamic> args = [userID];
+    try {
+      String query =
+          'SELECT * FROM ${DBTables.USER_OFFLINE} WHERE ${UserOfflineColumn.USER_ID} = ?';
+      List<Map<String, dynamic>> result = await db.rawQuery(query, args);
+
+      if (result.isNotEmpty) {
+        enterpriseId = result.first[UserOfflineColumn.HEADQUATER_SUPPLIER_ID];
+      }
+    } catch (e) {
+      print('Error has occurred while finding a user id: $e');
+      return -1;
+    }
+    return enterpriseId;
   }
 }

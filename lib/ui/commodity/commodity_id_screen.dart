@@ -182,11 +182,12 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
             controller.navigateToPurchaseOrderScreen(partner);
           },
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20.h),
+            padding: EdgeInsets.symmetric(horizontal: 25.h),
             child: Column(
               children: [
                 getAlphabetContent(controller.filteredCommodityList, index),
-                SizedBox(
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20.h),
                   height: controller.listHeight,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -215,11 +216,11 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
       },
       separatorBuilder: (BuildContext context, int index) {
         return Divider(
-          height: 10,
-          indent: 0,
-          endIndent: 0,
+          height: 5,
+          indent: 10,
+          endIndent: 10,
           color: AppColors.white,
-          thickness: 1,
+          thickness: 0.2,
         );
       },
     );
@@ -245,25 +246,34 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
     }
 
     if (alphabet.isNotEmpty) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            alphabet,
-            style: Get.textTheme.headlineMedium?.copyWith(
-              color: AppColors.white,
-              fontSize: 60.h,
+      return Container(
+        padding: EdgeInsets.symmetric(vertical: 10.h),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 10.h),
+            Align(
+              alignment: Alignment.topLeft,
+              child: Text(
+                alphabet,
+                style: Get.textTheme.headlineMedium?.copyWith(
+                  color: AppColors.white,
+                  fontSize: 60.h,
+                ),
+                textAlign: TextAlign.start,
+              ),
             ),
-          ),
-          Divider(
-            height: 10,
-            indent: 0,
-            endIndent: 0,
-            color: AppColors.white,
-            thickness: 1,
-          )
-        ],
+            Divider(
+              height: 10,
+              indent: 0,
+              endIndent: 0,
+              color: AppColors.white,
+              thickness: 0.9,
+            )
+          ],
+        ),
       );
     } else {
       return Container();

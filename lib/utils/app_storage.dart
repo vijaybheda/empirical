@@ -3,6 +3,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/defect_item.dart';
+import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/offline_commodity.dart';
 import 'package:pverify/models/partner_item.dart';
@@ -10,11 +11,11 @@ import 'package:pverify/models/severity_defect.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/models/user.dart';
 
-import '../models/finished_goods_item_sku.dart';
-
 class AppStorage extends GetxController {
   // ignore: prefer_function_declarations_over_variables
   final storageBox = () => GetStorage(StorageKey.kAppStorageKey);
+
+  List<FinishedGoodsItemSKU>? selectedItemSKUList;
 
   // instance of this class
   static AppStorage get instance => _instance;
@@ -129,6 +130,29 @@ class AppStorage extends GetxController {
     return commodityList;
   }
 
+  Future<void> saveMainCommodityList(List<CommodityItem> mainCommodityList) {
+    // list to String
+    List<Map<String, dynamic>> commodityListString =
+        mainCommodityList.map((e) => e.toJson()).toList();
+    return write(StorageKey.kMainCommodityList, commodityListString);
+  }
+
+  List<CommodityItem>? getMainCommodityList() {
+    // read String data and convert to List<CommodityItem> list
+    var commodityListString = read(StorageKey.kMainCommodityList);
+    if (commodityListString == null) {
+      return null;
+    }
+
+    List<dynamic> decodedData = commodityListString;
+    List<CommodityItem> commodityList = decodedData
+        .map((item) => CommodityItem.fromJson(item))
+        .toList()
+        .cast<CommodityItem>();
+
+    return commodityList;
+  }
+
   Future<void> saveDefectList(List<DefectItem> defectList) {
     // list to String
     List<Map<String, dynamic>> defectListString =
@@ -178,7 +202,7 @@ class AppStorage extends GetxController {
   Future<void> saveItemSKUList(List<FinishedGoodsItemSKU> itemSKUList) {
     // list to String
     List<Map<String, dynamic>> itemSKUListString =
-        itemSKUList.map((e) => e.toMap()).toList();
+        itemSKUList.map((e) => e.toJson()).toList();
     return write(StorageKey.kFinishedGoodsItemSKUList, itemSKUListString);
   }
 
@@ -190,7 +214,7 @@ class AppStorage extends GetxController {
 
     List<dynamic> decodedData = itemSKUListString;
     List<FinishedGoodsItemSKU> itemSKUList = decodedData
-        .map((item) => FinishedGoodsItemSKU.fromMap(item))
+        .map((item) => FinishedGoodsItemSKU.fromJson(item))
         .toList()
         .cast<FinishedGoodsItemSKU>();
 
@@ -329,6 +353,7 @@ class StorageKey {
   static const String kPartnerList = 'partnerList';
   static const String kCarrierList = 'carrierList';
   static const String kCommodityList = 'commodityList';
+  static const String kMainCommodityList = 'mainCommodityList';
   static const String kDefectList = 'defectList';
   static const String kSeverityDefectList = 'severityDefect';
   static const String kOfflineCommodityList = 'offlineCommodity';
