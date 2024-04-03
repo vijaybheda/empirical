@@ -167,7 +167,6 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
               children: [
                 getAlphabetContent(controller.filteredPartnerList, index),
                 SizedBox(
-                  height: controller.listHeight,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,

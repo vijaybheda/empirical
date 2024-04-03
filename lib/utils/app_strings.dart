@@ -27,6 +27,12 @@ class AppStrings {
   static const String success = 'Success';
 
   static const String inspectionMenu = 'Inspection Menu';
+  static const String cacheupdate = 'Cache updated successfully';
+  static const String csvDownload = 'CSV files downloaded successfully';
+  static const String failedInsertCommodity = 'Failed to insert Commodity CTE';
+  static const String failedInsertSupplier =
+      'Failed to insert Specification Supplier Gtins';
+  static const String failedInsertPODetails = 'Failed to insert PO Detail';
 
   static const String cancel = 'Cancel';
   static const String ok = 'OK';
@@ -515,6 +521,7 @@ class AppStrings {
 
   static const String pieces = 'Yes';
   static const String whole = 'No';
+  static const String cacheDownload = 'Cache Download';
 
   static const String commodities = 'Commodities';
 
