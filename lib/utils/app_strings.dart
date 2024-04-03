@@ -225,6 +225,9 @@ class AppStrings {
 
   static String uploadError = 'Error uploading data. Please try again.';
 
+  static String selectPartnerInfo =
+      'No supplier selected. Please select a supplier.';
+
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';
 

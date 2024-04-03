@@ -9,7 +9,6 @@ import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/severity_defect.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/models/user.dart';
-import 'package:pverify/models/user_offline.dart';
 
 import '../models/finished_goods_item_sku.dart';
 
@@ -323,7 +322,6 @@ class StorageKey {
   static const String kNotificationSettings = 'notificationSetting';
   static const String kAppLanguage = 'appLanguage';
   static const String kIsBoardWatched = 'isBoardWatched';
-  static const String jwtToken = 'jwtToken';
   static const String kBaseUrlKey = 'baseUrlKey';
   static const String kCacheDate = 'cacheDate';
   static const String kIsCSVDownloaded1 = 'isCSVDownloaded1';

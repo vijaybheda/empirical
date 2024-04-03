@@ -14,11 +14,15 @@ import 'package:pverify/models/inspection_defect_attachment.dart';
 import 'package:pverify/models/inspection_sample.dart';
 import 'package:pverify/models/inspection_specification.dart';
 import 'package:pverify/models/my_inspection_48hour_item.dart';
+import 'package:pverify/models/overridden_result_item.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/purchase_order_details.dart';
 import 'package:pverify/models/qc_header_details.dart';
+import 'package:pverify/models/quality_control_item.dart';
 import 'package:pverify/models/specification.dart';
+import 'package:pverify/models/specification_analytical_request_item.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
+import 'package:pverify/models/trailer_temperature_item.dart';
 import 'package:pverify/models/user.dart';
 import 'package:pverify/models/user_offline.dart';
 import 'package:pverify/services/database/column_names.dart';
@@ -666,7 +670,7 @@ class ApplicationDao {
           .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
           .toList();
 
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.ITEM_GROUP1}');
@@ -714,7 +718,7 @@ class ApplicationDao {
     debugPrint('Importing Item SKU');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file =
           File("$storagePath${FileManString.csvFilesCache}/item_sku.csv");
@@ -770,7 +774,7 @@ class ApplicationDao {
     debugPrint('Importing Item Agency');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file =
           File("$storagePath${FileManString.csvFilesCache}/agency.csv");
@@ -810,7 +814,7 @@ class ApplicationDao {
     debugPrint('Importing Item Grade');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file =
           File("$storagePath${FileManString.csvFilesCache}/grade.csv");
@@ -851,7 +855,7 @@ class ApplicationDao {
     debugPrint('Importing Item Grade Commodity');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/grade_commodity.csv");
@@ -892,7 +896,7 @@ class ApplicationDao {
     debugPrint('Importing Item Grade Commodity Detail');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/grade_commodity_detail.csv");
@@ -937,7 +941,7 @@ class ApplicationDao {
     debugPrint('Importing Item specification');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file =
           File("$storagePath${FileManString.csvFilesCache}/specification.csv");
@@ -981,7 +985,7 @@ class ApplicationDao {
     debugPrint('Importing Item Material Specification');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/material_specification.csv");
@@ -1025,7 +1029,7 @@ class ApplicationDao {
     debugPrint('Importing Item Specification Supplier');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/specification_supplier.csv");
@@ -1073,7 +1077,7 @@ class ApplicationDao {
     debugPrint('Importing Item Specification Grade Tolerance');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/specification_grade_tolerance.csv");
@@ -1128,7 +1132,7 @@ class ApplicationDao {
     debugPrint('Importing Item Specification Analytical');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/specification_analytical.csv");
@@ -1185,7 +1189,7 @@ class ApplicationDao {
     debugPrint('Importing Item Specification Analytical');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/specification_packaging_finished_goods.csv");
@@ -1232,7 +1236,7 @@ class ApplicationDao {
     debugPrint('Importing Item Specification Type');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/specification_type.csv");
@@ -1273,7 +1277,7 @@ class ApplicationDao {
     debugPrint('Importing Item Commodity');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file =
           File("$storagePath${FileManString.csvFilesCache}/commodity.csv");
@@ -1315,7 +1319,7 @@ class ApplicationDao {
     debugPrint('Importing Item Commodity Keywords');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/commodity_keywords.csv");
@@ -1356,7 +1360,7 @@ class ApplicationDao {
     debugPrint('Importing Item POHeader');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/purchase_order_header.csv");
@@ -1400,7 +1404,7 @@ class ApplicationDao {
     debugPrint('Importing Item PODetail');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/purchase_order_detail.csv");
@@ -1454,7 +1458,7 @@ class ApplicationDao {
     debugPrint('Importing Item Specification SupplierGtins');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/specification_supplier_gtins.csv");
@@ -1497,7 +1501,7 @@ class ApplicationDao {
     debugPrint('Importing Item Commodity CTE');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/supplier_commodity.csv");
@@ -1693,7 +1697,7 @@ class ApplicationDao {
     String cteType,
   ) async {
     // Open the db
-    Database db = await dbProvider.database;
+    final Database db = await dbProvider.database;
 
     try {
       // Begin a transaction
@@ -1833,7 +1837,7 @@ class ApplicationDao {
 
   Future<int> deleteRowsTempTrailerTable() async {
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       return await db.transaction((txn) async {
         return await txn.delete(DBTables.TEMP_TRAILER_TEMPERATURE);
       });
@@ -1845,7 +1849,7 @@ class ApplicationDao {
 
   Future<int> deleteTempTrailerTemperatureDetails() async {
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       return await db.transaction((txn) async {
         return await txn.delete(DBTables.TEMP_TRAILER_TEMPERATURE_DETAILS);
       });
@@ -1857,7 +1861,7 @@ class ApplicationDao {
 
   Future<int> deleteSelectedItemSKUList() async {
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       return await db.transaction((txn) async {
         return await txn.delete(DBTables.SELECTED_ITEM_SKU_LIST);
       });
@@ -1870,7 +1874,7 @@ class ApplicationDao {
 
   Future<List<InspectionDefectAttachment>?> findDefectAttachmentsByInspectionId(
       int inspectionId) async {
-    Database db = await dbProvider.database;
+    final Database db = await dbProvider.database;
     final List<Map<String, dynamic>> maps = await db.query(
         DBTables.INSPECTION_DEFECT_ATTACHMENT,
         where: '${InspectionDefectAttachmentColumn.INSPECTION_ID} = ?',
@@ -1939,5 +1943,74 @@ class ApplicationDao {
       return null;
     }
     return itemSKUList;
+  }
+
+  Future<QualityControlItem?> findQualityControlDetails(
+      int inspectionId) async {
+    final Database db = await dbProvider.database;
+    List<Map> results = await db.query(
+      DBTables.QUALITY_CONTROL,
+      where: '${QualityControlColumn.INSPECTION_ID} = ?',
+      whereArgs: [inspectionId],
+    );
+
+    if (results.isNotEmpty) {
+      return QualityControlItem.fromJson(results.first as Map<String, dynamic>);
+    }
+
+    return null;
+  }
+
+  Future<List<TrailerTemperatureItem>> findListTrailerTemperatureItems(
+      int inspectionId) async {
+    final Database db = await dbProvider.database;
+    List<TrailerTemperatureItem> trailerTempList = [];
+    List<Map> results = await db.query(
+      DBTables.TRAILER_TEMPERATURE,
+      where: '${TrailerTemperatureColumn.INSPECTION_ID} = ?',
+      whereArgs: [inspectionId],
+    );
+
+    for (Map<dynamic, dynamic> map in results) {
+      trailerTempList
+          .add(TrailerTemperatureItem.fromMap(map as Map<String, dynamic>));
+    }
+
+    return trailerTempList;
+  }
+
+  Future<List<SpecificationAnalyticalRequest>>
+      findSpecificationAnalyticalRequest(int inspectionId) async {
+    final Database db = await dbProvider.database;
+    List<SpecificationAnalyticalRequest> list = [];
+
+    List<Map> results = await db.query(
+      DBTables.SPECIFICATION_ATTRIBUTES,
+      where: '${SpecificationAttributesColumn.INSPECTION_ID} = ?',
+      whereArgs: [inspectionId],
+    );
+
+    for (Map<dynamic, dynamic> map in results) {
+      list.add(
+          SpecificationAnalyticalRequest.fromMap(map as Map<String, dynamic>));
+    }
+
+    return list;
+  }
+
+  Future<OverriddenResult?> getOverriddenResult(int inspectionId) async {
+    final Database db = await dbProvider.database;
+    OverriddenResult? item;
+
+    List<Map> results = await db.rawQuery(
+      'SELECT Overridden_By, Overridden_Result, Overridden_Timestamp, Overridden_Comments, Old_Result, Original_Qty_Shipped, Original_Qty_Rejected, New_Qty_Shipped, New_Qty_Rejected FROM ${DBTables.OVERRIDDEN_RESULT} WHERE Inspection_ID = ?',
+      [inspectionId.toString()],
+    );
+
+    if (results.isNotEmpty) {
+      item = OverriddenResult.fromMap(results.first as Map<String, dynamic>);
+    }
+
+    return item;
   }
 }
