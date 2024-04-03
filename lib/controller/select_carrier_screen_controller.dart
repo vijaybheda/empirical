@@ -94,7 +94,7 @@ class SelectCarrierScreenController extends GetxController {
 
   void navigateToQcHeader(CarrierItem carrier) {
     Future.delayed(const Duration(milliseconds: 100), () {
-      Get.to(QualityControlHeader(carrier: carrier));
+      Get.off(QualityControlHeader(carrier: carrier));
     });
   }
 }

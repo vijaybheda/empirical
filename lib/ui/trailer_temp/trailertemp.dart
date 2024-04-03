@@ -1,8 +1,10 @@
 // ignore_for_file: sized_box_for_whitespace, prefer_const_constructors, avoid_unnecessary_containers, non_constant_identifier_names, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
+import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/trailer_temp/trailertemp_controller.dart';
@@ -12,6 +14,7 @@ import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
+import 'package:pverify/utils/theme/theme.dart';
 
 class TrailerTemp extends GetView<TrailerTempController> {
   const TrailerTemp({super.key});
@@ -99,9 +102,10 @@ class TrailerTemp extends GetView<TrailerTempController> {
           child: Stack(
             children: [
               Obx(
-                () => Image.asset(controller.selectetdTruckArea.value == "Nose"
+                () => Image.asset(controller.selectetdTruckArea.value ==
+                        AppStrings.nose
                     ? AppImages.ic_trailerNose
-                    : controller.selectetdTruckArea.value == "Middle"
+                    : controller.selectetdTruckArea.value == AppStrings.middle
                         ? AppImages.ic_trailerMiddle
                         : AppImages.ic_trailerTail),
               ),
@@ -115,7 +119,7 @@ class TrailerTemp extends GetView<TrailerTempController> {
                   children: [
                     InkWell(
                       onTap: () {
-                        controller.selectetdTruckArea.value = "Nose";
+                        controller.selectetdTruckArea.value = AppStrings.nose;
                       },
                       child: Container(
                         width: ((MediaQuery.of(context).size.width / 3.5)).w,
@@ -123,7 +127,7 @@ class TrailerTemp extends GetView<TrailerTempController> {
                     ),
                     InkWell(
                       onTap: () {
-                        controller.selectetdTruckArea.value = "Middle";
+                        controller.selectetdTruckArea.value = AppStrings.middle;
                       },
                       child: Container(
                         width: ((MediaQuery.of(context).size.width / 3.5)).w,
@@ -131,10 +135,10 @@ class TrailerTemp extends GetView<TrailerTempController> {
                     ),
                     InkWell(
                       onTap: () {
-                        controller.selectetdTruckArea.value = "Tail";
+                        controller.selectetdTruckArea.value = AppStrings.tail;
                       },
                       child: Container(
-                        width: ((MediaQuery.of(context).size.width / 3.5)).w,
+                        width: (MediaQuery.of(context).size.width / 3.5).w,
                       ),
                     ),
                   ],
@@ -158,93 +162,72 @@ class TrailerTemp extends GetView<TrailerTempController> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            palletview(
-                controller.selectetdTruckArea.value == "Nose"
-                    ? controller.nose_pallet1_top_TextController.value
-                    : controller.selectetdTruckArea.value == "Middle"
-                        ? controller.middle_pallet1_top_TextController.value
-                        : controller.tail_pallet1_top_TextController.value,
-                controller.selectetdTruckArea.value == "Nose"
-                    ? controller.nose_pallet1_middle_TextController.value
-                    : controller.selectetdTruckArea.value == "Middle"
-                        ? controller.middle_pallet1_middle_TextController.value
-                        : controller.tail_pallet1_middle_TextController.value,
-                controller.selectetdTruckArea.value == "Nose"
-                    ? controller.nose_pallet1_bottom_TextController.value
-                    : controller.selectetdTruckArea.value == "Middle"
-                        ? controller.middle_pallet1_bottom_TextController.value
-                        : controller.tail_pallet1_bottom_TextController.value,
-                'Pallet 1'),
-
-            palletview(
-                controller.selectetdTruckArea.value == "Nose"
-                    ? controller.nose_pallet2_top_TextController.value
-                    : controller.selectetdTruckArea.value == "Middle"
-                        ? controller.middle_pallet2_top_TextController.value
-                        : controller.tail_pallet2_top_TextController.value,
-                controller.selectetdTruckArea.value == "Nose"
-                    ? controller.nose_pallet2_middle_TextController.value
-                    : controller.selectetdTruckArea.value == "Middle"
-                        ? controller.middle_pallet2_middle_TextController.value
-                        : controller.tail_pallet2_middle_TextController.value,
-                controller.selectetdTruckArea.value == "Nose"
-                    ? controller.nose_pallet2_bottom_TextController.value
-                    : controller.selectetdTruckArea.value == "Middle"
-                        ? controller.middle_pallet2_bottom_TextController.value
-                        : controller.tail_pallet2_bottom_TextController.value,
-                'Pallet 2'),
-
-            palletview(
-                controller.selectetdTruckArea.value == "Nose"
-                    ? controller.nose_pallet3_top_TextController.value
-                    : controller.selectetdTruckArea.value == "Middle"
-                        ? controller.middle_pallet3_top_TextController.value
-                        : controller.tail_pallet3_top_TextController.value,
-                controller.selectetdTruckArea.value == "Nose"
-                    ? controller.nose_pallet3_middle_TextController.value
-                    : controller.selectetdTruckArea.value == "Middle"
-                        ? controller.middle_pallet3_middle_TextController.value
-                        : controller.tail_pallet3_middle_TextController.value,
-                controller.selectetdTruckArea.value == "Nose"
-                    ? controller.nose_pallet3_bottom_TextController.value
-                    : controller.selectetdTruckArea.value == "Middle"
-                        ? controller.middle_pallet3_bottom_TextController.value
-                        : controller.tail_pallet3_bottom_TextController.value,
-                'Pallet 3'),
-
-            // palletview(
-            //     controller.selectetdTruckArea.value == "Nose"
-            //         ? controller.nose_pallet1_top_TextController.value
-            //         : controller.selectetdTruckArea.value == "Middle"
-            //             ? controller.nose_pallet1_middle_TextController.value
-            //             : controller.nose_pallet1_bottom_TextController.value,
-            //     controller.selectetdTruckArea.value == "Nose"
-            //         ? controller.nose_pallet2_top_TextController.value
-            //         : controller.selectetdTruckArea.value == "Middle"
-            //             ? controller.nose_pallet2_middle_TextController.value
-            //             : controller.nose_pallet2_bottom_TextController.value,
-            //     controller.selectetdTruckArea.value == "Nose"
-            //         ? controller.nose_pallet3_top_TextController.value
-            //         : controller.selectetdTruckArea.value == "Middle"
-            //             ? controller.nose_pallet3_middle_TextController.value
-            //             : controller.nose_pallet3_TailTextController.value,
-            //     PalletTitle)
-
-            // palletview(
-            //     controller.pallet1NoseTextController.value,
-            //     controller.pallet1MiddleTextController.value,
-            //     controller.pallet1TailTextController.value,
-            //     'Pallet 1'),
-            // palletview(
-            //     controller.pallet2NoseTextController.value,
-            //     controller.pallet2MiddleTextController.value,
-            //     controller.pallet2TailTextController.value,
-            //     'Pallet 2'),
-            // palletview(
-            //     controller.pallet3NoseTextController.value,
-            //     controller.pallet3MiddleTextController.value,
-            //     controller.pallet3TailTextController.value,
-            //     'Pallet 3'),
+            Obx(
+              () => palletview(
+                  controller.selectetdTruckArea.value == AppStrings.nose
+                      ? controller.nose_pallet1_top_TextController.value
+                      : controller.selectetdTruckArea.value == AppStrings.middle
+                          ? controller.middle_pallet1_top_TextController.value
+                          : controller.tail_pallet1_top_TextController.value,
+                  controller.selectetdTruckArea.value == AppStrings.nose
+                      ? controller.nose_pallet1_middle_TextController.value
+                      : controller.selectetdTruckArea.value == AppStrings.middle
+                          ? controller
+                              .middle_pallet1_middle_TextController.value
+                          : controller.tail_pallet1_middle_TextController.value,
+                  controller.selectetdTruckArea.value == AppStrings.nose
+                      ? controller.nose_pallet1_bottom_TextController.value
+                      : controller.selectetdTruckArea.value == AppStrings.middle
+                          ? controller
+                              .middle_pallet1_bottom_TextController.value
+                          : controller.tail_pallet1_bottom_TextController.value,
+                  AppStrings.pallet1,
+                  context),
+            ),
+            Obx(
+              () => palletview(
+                  controller.selectetdTruckArea.value == AppStrings.nose
+                      ? controller.nose_pallet2_top_TextController.value
+                      : controller.selectetdTruckArea.value == AppStrings.middle
+                          ? controller.middle_pallet2_top_TextController.value
+                          : controller.tail_pallet2_top_TextController.value,
+                  controller.selectetdTruckArea.value == AppStrings.nose
+                      ? controller.nose_pallet2_middle_TextController.value
+                      : controller.selectetdTruckArea.value == AppStrings.middle
+                          ? controller
+                              .middle_pallet2_middle_TextController.value
+                          : controller.tail_pallet2_middle_TextController.value,
+                  controller.selectetdTruckArea.value == AppStrings.nose
+                      ? controller.nose_pallet2_bottom_TextController.value
+                      : controller.selectetdTruckArea.value == AppStrings.middle
+                          ? controller
+                              .middle_pallet2_bottom_TextController.value
+                          : controller.tail_pallet2_bottom_TextController.value,
+                  AppStrings.pallet2,
+                  context),
+            ),
+            Obx(
+              () => palletview(
+                  controller.selectetdTruckArea.value == AppStrings.nose
+                      ? controller.nose_pallet3_top_TextController.value
+                      : controller.selectetdTruckArea.value == AppStrings.middle
+                          ? controller.middle_pallet3_top_TextController.value
+                          : controller.tail_pallet3_top_TextController.value,
+                  controller.selectetdTruckArea.value == AppStrings.nose
+                      ? controller.nose_pallet3_middle_TextController.value
+                      : controller.selectetdTruckArea.value == AppStrings.middle
+                          ? controller
+                              .middle_pallet3_middle_TextController.value
+                          : controller.tail_pallet3_middle_TextController.value,
+                  controller.selectetdTruckArea.value == AppStrings.nose
+                      ? controller.nose_pallet3_bottom_TextController.value
+                      : controller.selectetdTruckArea.value == AppStrings.middle
+                          ? controller
+                              .middle_pallet3_bottom_TextController.value
+                          : controller.tail_pallet3_bottom_TextController.value,
+                  AppStrings.pallet3,
+                  context),
+            ),
           ],
         ),
         SizedBox(
@@ -255,7 +238,7 @@ class TrailerTemp extends GetView<TrailerTempController> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              'Comment',
+              AppStrings.comment,
               style: GoogleFonts.poppins(
                   fontSize: 25.sp,
                   fontWeight: FontWeight.normal,
@@ -287,7 +270,8 @@ class TrailerTemp extends GetView<TrailerTempController> {
       TextEditingController topTextEditingController,
       TextEditingController middleTextEditingController,
       TextEditingController bottomTextEditingController,
-      String PalletTitle) {
+      String PalletTitle,
+      BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -308,14 +292,12 @@ class TrailerTemp extends GetView<TrailerTempController> {
               debugPrint('onTap');
             },
             errorText: '',
-            onEditingCompleted: () {
-              debugPrint('onEditingCompleted');
-            },
+            onEditingCompleted: () {},
             onChanged: (value) {
               debugPrint('onChanged');
             },
-            keyboardType: TextInputType.name,
-            hintText: 'Top',
+            keyboardType: TextInputType.number,
+            hintText: AppStrings.topCap,
             isPasswordField: true,
           ),
         ),
@@ -328,8 +310,8 @@ class TrailerTemp extends GetView<TrailerTempController> {
             errorText: '',
             onEditingCompleted: () {},
             onChanged: (value) {},
-            keyboardType: TextInputType.name,
-            hintText: 'Middle',
+            keyboardType: TextInputType.number,
+            hintText: AppStrings.middleCap,
             isPasswordField: true,
           ),
         ),
@@ -342,8 +324,8 @@ class TrailerTemp extends GetView<TrailerTempController> {
             errorText: '',
             onEditingCompleted: () {},
             onChanged: (value) {},
-            keyboardType: TextInputType.name,
-            hintText: 'Bottom',
+            keyboardType: TextInputType.number,
+            hintText: AppStrings.bottomCap,
             isPasswordField: true,
           ),
         ),
