@@ -10,7 +10,7 @@ class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<CacheDownloadController>(
-        init: CacheDownloadController(context),
+        init: CacheDownloadController(),
         builder: (controller) {
           return Scaffold(
             backgroundColor: Get.theme.colorScheme.background,

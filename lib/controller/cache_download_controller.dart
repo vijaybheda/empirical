@@ -12,9 +12,6 @@ import 'package:pverify/ui/login_screen.dart';
 import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
-import 'package:pverify/utils/app_strings.dart';
-import 'package:pverify/utils/dialogs/app_alerts.dart';
-import 'package:pverify/utils/theme/colors.dart';
 
 class CacheDownloadController extends GetxController {
   final ApplicationDao dao = ApplicationDao();
