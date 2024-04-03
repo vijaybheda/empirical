@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, unnecessary_this
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -157,6 +157,94 @@ class BoxTextField1 extends StatelessWidget {
                   textStyle: TextStyle(color: AppColors.white)),
               cursorColor: Theme.of(context).textSelectionTheme.cursorColor,
               decoration: InputDecoration(
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.hintColor),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                ),
+                hintText: hintText,
+                hintStyle: GoogleFonts.poppins(
+                    fontSize: 30.sp,
+                    fontWeight: FontWeight.normal,
+                    textStyle: TextStyle(color: AppColors.hintColor)),
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+              ),
+            ),
+          );
+        });
+  }
+
+  textFieldfocused() {}
+  errorrTextFieldBorder() {}
+}
+
+class BoxTextField2 extends StatelessWidget {
+  final TextEditingController controller;
+  final bool obsecure;
+  final bool readOnly;
+  final VoidCallback onTap;
+  final VoidCallback onEditingCompleted;
+  final TextInputType keyboardType;
+  final ValueChanged<String> onChanged;
+  final bool isMulti;
+  final bool autofocus;
+  final bool enabled;
+  final String errorText;
+  final String hintText;
+  final bool isPasswordField;
+  final FocusNode focusNode;
+
+  const BoxTextField2(
+      {Key? key,
+      required this.controller,
+      this.keyboardType = TextInputType.text,
+      this.obsecure = false,
+      required this.onTap,
+      this.isMulti = false,
+      this.readOnly = false,
+      this.hintText = "",
+      this.autofocus = false,
+      required this.errorText,
+      this.enabled = true,
+      this.isPasswordField = false,
+      required this.onEditingCompleted,
+      required this.onChanged,
+      required this.focusNode})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GetBuilder(
+        init: TextFieldController(),
+        builder: (pwdController) {
+          return Container(
+            alignment: Alignment.center,
+            height: 105.h,
+            child: TextFormField(
+              maxLength: 3,
+              focusNode: focusNode,
+              textAlignVertical: TextAlignVertical.center,
+              onChanged: onChanged,
+              onEditingComplete: onEditingCompleted,
+              autofocus: autofocus,
+              minLines: isMulti ? 4 : 1,
+              maxLines: isMulti ? null : 1,
+              onTap: onTap,
+              enabled: enabled,
+              readOnly: readOnly,
+              keyboardType: keyboardType,
+              controller: controller,
+              style: GoogleFonts.poppins(
+                  fontSize: 30.sp,
+                  fontWeight: FontWeight.normal,
+                  textStyle: TextStyle(color: AppColors.white)),
+              cursorColor: Theme.of(context).textSelectionTheme.cursorColor,
+              decoration: InputDecoration(
+                counterText: "",
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: AppColors.hintColor),
                 ),

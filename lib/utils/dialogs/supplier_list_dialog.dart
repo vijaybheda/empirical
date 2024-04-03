@@ -131,7 +131,7 @@ class SupplierListDialog {
                                 .elementAt(index));
                       } else {
                         // Show error message or handle invalid selection
-                        print('No supplier selected');
+                        debugPrint('No supplier selected');
                       }
                     },
                     style: ButtonStyle(

@@ -1935,7 +1935,7 @@ class ApplicationDao {
         itemSKUList.add(item);
       }
     } catch (e) {
-      print("Error occurred while finding quality control items: $e");
+      debugPrint("Error occurred while finding quality control items: $e");
       return null;
     }
     return itemSKUList;

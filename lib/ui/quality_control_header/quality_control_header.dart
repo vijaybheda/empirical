@@ -67,7 +67,12 @@ class QualityControlHeader extends GetView<HomeController> {
                       fontWeight: FontWeight.w600,
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
-                  onClickAction: () => {Get.to(() => TrailerTemp())}),
+                  onClickAction: ()  {
+                    if (qcHeaderController.isQualityControlFields_Validate(context)) {
+                      Get.to(() => TrailerTemp(carrier: carrier,orderNumber: qcHeaderController.orderNoTextController.value.text.trim()));
+                    }
+                  }
+              ),
               SizedBox(
                 width: 38.w,
               ),
