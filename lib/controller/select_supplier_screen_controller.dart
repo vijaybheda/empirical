@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/commodity/commodity_id_screen.dart';
@@ -22,9 +23,10 @@ class SelectSupplierScreenController extends GetxController {
   final GlobalConfigController globalConfigController =
       Get.find<GlobalConfigController>();
   final CarrierItem carrier;
+  final QCHeaderDetails? qcHeaderDetails;
 
   // constructor
-  SelectSupplierScreenController({required this.carrier});
+  SelectSupplierScreenController({required this.carrier, this.qcHeaderDetails});
 
   final TextEditingController searchSuppController = TextEditingController();
 
@@ -569,7 +571,7 @@ class SelectSupplierScreenController extends GetxController {
     }*/
   }
 
-  void navigateToPartnerDetails(PartnerItem partner) {
+  void navigateToScorecardScreen(PartnerItem partner) {
     Get.to(() => ScorecardScreen(partner: partner));
   }
 
@@ -583,12 +585,18 @@ class SelectSupplierScreenController extends GetxController {
           await SupplierListDialog.showListDialog(context);
       if (selectedPartner != null) {
         clearSearch();
-        Get.to(() =>
-            CommodityIDScreen(partner: selectedPartner, carrier: carrier));
+        Get.to(() => CommodityIDScreen(
+              partner: selectedPartner,
+              qcHeaderDetails: qcHeaderDetails,
+              carrier: carrier,
+            ));
       }
     } else {
       clearSearch();
-      Get.to(() => CommodityIDScreen(partner: partner, carrier: carrier));
+      Get.to(() => CommodityIDScreen(
+          partner: partner,
+          qcHeaderDetails: qcHeaderDetails,
+          carrier: carrier));
     }
   }
 

@@ -117,7 +117,7 @@ class QualityControlHeader extends GetView<HomeController> {
         SizedBox(
           height: 25.h,
         ),
-        FooterContentView()
+        FooterContentView(leftText: AppStrings.cancel)
       ],
     );
   }

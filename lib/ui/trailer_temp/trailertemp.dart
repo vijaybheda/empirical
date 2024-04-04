@@ -1,6 +1,5 @@
 // ignore_for_file: sized_box_for_whitespace, prefer_const_constructors, avoid_unnecessary_containers, non_constant_identifier_names, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
@@ -85,7 +84,7 @@ class TrailerTemp extends GetView<TrailerTempController> {
           ),
         ),
         FooterContentView(
-          isVisibleCancel: true,
+          hasLeftButton: false,
         )
       ],
     );

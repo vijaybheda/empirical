@@ -151,6 +151,8 @@ class QualityControl_Controller extends GetxController {
           selectetdTruckTempOK.value,
           selectetdTypes.value,
           cteType);
+      qcHeaderDetails =
+          await dao.findTempQCHeaderDetails(orderNoTextController.value.text);
     } else {
       QCHeaderDetails? headerDetails = qcHeaderDetails;
       await dao.updateTempQCHeaderDetails(
@@ -268,7 +270,8 @@ class QualityControl_Controller extends GetxController {
           'carrierID': 'carrierID', // Need to pass dynamic value
         });
         */
-        Get.to(() => SelectSupplierScreen(carrier: carrier));
+        Get.to(() => SelectSupplierScreen(
+            carrier: carrier, qcHeaderDetails: qcHeaderDetails));
       }
     }
   }

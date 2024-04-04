@@ -21,7 +21,11 @@ import 'package:pverify/utils/utils.dart';
 class CommodityIDScreenController extends GetxController {
   final PartnerItem partner;
   final CarrierItem carrier;
-  CommodityIDScreenController({required this.partner, required this.carrier});
+  final QCHeaderDetails? qcHeaderDetails;
+  CommodityIDScreenController(
+      {required this.partner,
+      required this.carrier,
+      required this.qcHeaderDetails});
 
   final ScrollController scrollController = ScrollController();
   final AppStorage appStorage = AppStorage.instance;
@@ -115,7 +119,10 @@ class CommodityIDScreenController extends GetxController {
 
   void navigateToPurchaseOrderScreen(CommodityItem commodity) {
     Get.to(() => PurchaseOrderScreen(
-        partner: partner, carrier: carrier, commodity: commodity));
+        partner: partner,
+        carrier: carrier,
+        qcHeaderDetails: qcHeaderDetails,
+        commodity: commodity));
   }
 
   Future<void> onDownloadTap() async {

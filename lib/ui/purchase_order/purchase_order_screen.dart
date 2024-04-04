@@ -7,6 +7,7 @@ import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/ui/components/bottom_custom_button_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
@@ -18,18 +19,23 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
   final PartnerItem partner;
   final CarrierItem carrier;
   final CommodityItem commodity;
+  final QCHeaderDetails? qcHeaderDetails;
   const PurchaseOrderScreen({
     super.key,
     required this.partner,
     required this.carrier,
     required this.commodity,
+    required this.qcHeaderDetails,
   });
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<PurchaseOrderScreenController>(
         init: PurchaseOrderScreenController(
-            carrier: carrier, partner: partner, commodity: commodity),
+            carrier: carrier,
+            partner: partner,
+            commodity: commodity,
+            qcHeaderDetails: qcHeaderDetails),
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -63,7 +69,7 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
                         textStyle: TextStyle(color: AppColors.white)),
                   ),
                 ),
-                const SearchGradingStandardWidget(),
+                const _SearchItemSkuWidget(),
                 Expanded(flex: 10, child: _itemSkuListSection(context)),
                 BottomCustomButtonView(
                   title: AppStrings.save,
@@ -72,7 +78,7 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
                         context, partner, carrier, commodity);
                   },
                 ),
-                FooterContentView()
+                FooterContentView(),
               ],
             ),
           );
@@ -178,8 +184,8 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
   }
 }
 
-class SearchGradingStandardWidget extends StatelessWidget {
-  const SearchGradingStandardWidget({super.key});
+class _SearchItemSkuWidget extends StatelessWidget {
+  const _SearchItemSkuWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

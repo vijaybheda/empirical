@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -9,11 +10,13 @@ import 'package:pverify/utils/theme/colors.dart';
 
 class HeaderContentView extends StatelessWidget {
   final String title;
+  final String? message;
   final bool isVersionShow;
 
   HeaderContentView({
     super.key,
     this.title = AppStrings.appName,
+    this.message,
     this.isVersionShow = false,
   });
 
@@ -36,14 +39,27 @@ class HeaderContentView extends StatelessWidget {
           SizedBox(
             width: 15.w,
           ),
-          Text(
-            title,
-            style: GoogleFonts.poppins(
-                fontSize: 38.sp,
-                fontWeight: FontWeight.w600,
-                textStyle: TextStyle(color: AppColors.white)),
+          Expanded(
+            child: Text(
+              title,
+              style: GoogleFonts.poppins(
+                  fontSize: 38.sp,
+                  fontWeight: FontWeight.w600,
+                  textStyle: TextStyle(color: AppColors.white)),
+            ),
           ),
-          const Spacer(),
+          message != null
+              ? Expanded(
+                  child: Text(
+                    message ?? '',
+                    style: GoogleFonts.poppins(
+                        fontSize: 38.sp,
+                        fontWeight: FontWeight.w600,
+                        textStyle: TextStyle(color: AppColors.white)),
+                  ),
+                )
+              : const Offstage(),
+          // const Spacer(),
           isVersionShow
               ? Obx(
                   () => Text(

@@ -17,10 +17,12 @@ import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/my_inspection_48hour_item.dart';
 import 'package:pverify/models/overridden_result_item.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/partner_item_sku_inspections.dart';
 import 'package:pverify/models/purchase_order_details.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/models/quality_control_item.dart';
 import 'package:pverify/models/specification.dart';
+import 'package:pverify/models/specification_analytical.dart';
 import 'package:pverify/models/specification_analytical_request_item.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/models/trailer_temperature_item.dart';
@@ -2086,5 +2088,139 @@ class ApplicationDao {
       return -1;
     }
     return enterpriseId;
+  }
+
+  Future<bool> isInspectionComplete(
+      int partnerId, String itemSKU, String lotNo) async {
+    List<dynamic> args = [true, partnerId.toString(), itemSKU, lotNo];
+
+    try {
+      Database db = await dbProvider.database;
+      String query =
+          "Select * from ${DBTables.PARTNER_ITEMSKU} where ${PartnerItemSkuColumn.COMPLETE}=?"
+          " and ${PartnerItemSkuColumn.PARTNER_ID}=?"
+          " and ${PartnerItemSkuColumn.ITEM_SKU}=?"
+          " and ${PartnerItemSkuColumn.UNIQUE_ID}=?";
+
+      var cursor = await db.rawQuery(query, args);
+      if (cursor.isNotEmpty) {
+        return true;
+      }
+    } catch (e) {
+      print("Error has occurred while finding pfg: $e");
+      return false;
+    }
+    return false;
+  }
+
+  Future<PartnerItemSKUInspections?> findPartnerItemSKU(
+      int partnerId, String itemSKU, String uniqueId) async {
+    List<dynamic> args = [partnerId.toString(), itemSKU, uniqueId];
+    try {
+      String query =
+          "Select * from ${DBTables.PARTNER_ITEMSKU} where ${PartnerItemSkuColumn.PARTNER_ID}=?" +
+              " and ${PartnerItemSkuColumn.ITEM_SKU}=?" +
+              " and ${PartnerItemSkuColumn.UNIQUE_ID}=?";
+
+      Database db = await dbProvider.database;
+      var cursor = await db.rawQuery(query, args);
+
+      PartnerItemSKUInspections? item =
+          PartnerItemSKUInspections.fromMap(cursor.first);
+      return item;
+    } catch (e) {
+      print("Error has occurred while finding quality control items: $e");
+      return null;
+    }
+  }
+
+  Future<List<SpecificationAnalytical>?> getSpecificationAnalyticalFromDB(
+      String number, String version) async {
+    List<SpecificationAnalytical> list = [];
+    SpecificationAnalytical item;
+
+    try {
+      List<dynamic> args = [number, version];
+
+      String query = "Select * from ${DBTables.SPECIFICATION_ANALYTICAL} where "
+              "${SpecificationAnalyticalColumn.NUMBER_SPECIFICATION}=?" +
+          " and ${SpecificationAnalyticalColumn.VERSION_SPECIFICATION}=?";
+      Database db = await dbProvider.database;
+      var cursor = await db.rawQuery(query, args);
+
+      for (Map<String, dynamic> row in cursor) {
+        item = SpecificationAnalytical.fromMap(row);
+        list.add(item);
+      }
+    } catch (e) {
+      print("Error has occurred while finding quality control items: $e");
+      return null;
+    }
+    return list;
+  }
+
+  Future<SpecificationAnalyticalRequest?> findSpecAnalyticalObj(
+      int inspectionId, int analyticalID) async {
+    try {
+      List<dynamic> args = [inspectionId.toString(), analyticalID.toString()];
+      String query = "Select * from ${DBTables.SPECIFICATION_ATTRIBUTES} where "
+              "${SpecificationAttributesColumn.INSPECTION_ID}=?" +
+          " and ${SpecificationAttributesColumn.ANALYTICAL_ID}=?";
+      Database db = await dbProvider.database;
+      var cursor = await db.rawQuery(query, args);
+
+      SpecificationAnalyticalRequest? item =
+          SpecificationAnalyticalRequest.fromMap(cursor.first);
+      return item;
+    } catch (e) {
+      print("Error has occurred while finding quality control items: $e");
+      return null;
+    }
+  }
+
+  Future<int?> createOrUpdateResultReasonDetails(int inspectionID,
+      String result, String resultReason, String comment) async {
+    int? inspectionId;
+    final Database db = await dbProvider.database;
+    try {
+      try {
+        String query =
+            "Select ${ResultRejectionDetailsColumn.INSPECTION_ID} from ${DBTables.RESULT_REJECTION_DETAILS} where ${ResultRejectionDetailsColumn.INSPECTION_ID} = $inspectionID";
+        List<dynamic> cursor = await db.rawQuery(query);
+
+        if (cursor.isNotEmpty) {
+          inspectionId = cursor[0][ResultRejectionDetailsColumn.INSPECTION_ID];
+        }
+      } catch (e) {
+        print("Error has occurred while finding a user id: $e");
+        return null;
+      }
+
+      if (inspectionId == null) {
+        var values = <String, dynamic>{
+          ResultRejectionDetailsColumn.INSPECTION_ID: inspectionID,
+          ResultRejectionDetailsColumn.RESULT: result,
+          ResultRejectionDetailsColumn.RESULT_REASON: resultReason,
+          ResultRejectionDetailsColumn.DEFECT_COMMENTS: comment,
+        };
+
+        inspectionId =
+            await db.insert(DBTables.RESULT_REJECTION_DETAILS, values);
+      } else {
+        var values = <String, dynamic>{
+          ResultRejectionDetailsColumn.RESULT: result,
+          ResultRejectionDetailsColumn.RESULT_REASON: resultReason,
+          ResultRejectionDetailsColumn.DEFECT_COMMENTS: comment,
+        };
+
+        await db.update(DBTables.RESULT_REJECTION_DETAILS, values,
+            where: '${ResultRejectionDetailsColumn.INSPECTION_ID} = ?',
+            whereArgs: [inspectionID]);
+      }
+    } catch (e) {
+      print("Error has occurred while creating an inspection: $e");
+      return null;
+    }
+    return inspectionId;
   }
 }

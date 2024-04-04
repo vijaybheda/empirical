@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:pverify/controller/select_supplier_screen_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/ui/components/app_name_header.dart';
 import 'package:pverify/ui/components/bottom_custom_button_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
@@ -14,12 +15,15 @@ import 'package:pverify/utils/theme/colors.dart';
 
 class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
   final CarrierItem carrier;
-  const SelectSupplierScreen({super.key, required this.carrier});
+  final QCHeaderDetails? qcHeaderDetails;
+  const SelectSupplierScreen(
+      {super.key, required this.carrier, this.qcHeaderDetails});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SelectSupplierScreenController>(
-        init: SelectSupplierScreenController(carrier: carrier),
+        init: SelectSupplierScreenController(
+            carrier: carrier, qcHeaderDetails: qcHeaderDetails),
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -190,7 +194,7 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              controller.navigateToPartnerDetails(partner);
+                              controller.navigateToScorecardScreen(partner);
                             },
                             child: SizedBox(
                               width: 100,

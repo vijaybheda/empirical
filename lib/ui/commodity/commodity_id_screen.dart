@@ -6,6 +6,7 @@ import 'package:pverify/controller/commodity_id_screen_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
@@ -15,16 +16,21 @@ import 'package:pverify/utils/theme/colors.dart';
 class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
   final PartnerItem partner;
   final CarrierItem carrier;
+  final QCHeaderDetails? qcHeaderDetails;
   const CommodityIDScreen({
     super.key,
     required this.partner,
     required this.carrier,
+    required this.qcHeaderDetails,
   });
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<CommodityIDScreenController>(
-        init: CommodityIDScreenController(partner: partner, carrier: carrier),
+        init: CommodityIDScreenController(
+            partner: partner,
+            carrier: carrier,
+            qcHeaderDetails: qcHeaderDetails),
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -58,7 +64,7 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
                         textStyle: TextStyle(color: AppColors.white)),
                   ),
                 ),
-                const SearchGradingStandardWidget(),
+                const _SearchGradingStandardWidget(),
                 Expanded(flex: 10, child: _commodityListSection(context)),
                 FooterContentView(
                   onDownloadTap: () {
@@ -220,7 +226,7 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
           indent: 10,
           endIndent: 10,
           color: AppColors.white,
-          thickness: 0.2,
+          thickness: 0.15,
         );
       },
     );
@@ -281,8 +287,8 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
   }
 }
 
-class SearchGradingStandardWidget extends StatelessWidget {
-  const SearchGradingStandardWidget({super.key});
+class _SearchGradingStandardWidget extends StatelessWidget {
+  const _SearchGradingStandardWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

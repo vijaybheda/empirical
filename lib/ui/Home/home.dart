@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/ui/Home/home_controller.dart';
 import 'package:pverify/ui/carrier/choose_carrier.dart';
-import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
+import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
@@ -347,7 +347,10 @@ class Home extends GetView<HomeController> {
         SizedBox(
           height: 35.h,
         ),
-        bottomContent(context)
+        // bottomContent(context)
+        FooterContentView(
+          hasLeftButton: false,
+        )
       ],
     );
   }

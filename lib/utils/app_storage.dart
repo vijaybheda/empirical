@@ -17,6 +17,10 @@ class AppStorage extends GetxController {
 
   List<FinishedGoodsItemSKU>? selectedItemSKUList;
 
+  // List<SpecificationAnalytical>? specificationAnalyticalList;
+  // List<SpecificationGradeToleranceArray>? specificationGradeToleranceArrayList;
+  // List<SpecificationGradeTolerance>? specificationGradeToleranceList;
+
   // instance of this class
   static AppStorage get instance => _instance;
   static final AppStorage _instance = AppStorage._internal();

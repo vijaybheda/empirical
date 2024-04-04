@@ -4,17 +4,20 @@ import 'package:pverify/controller/new_purchase_order_details_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/qc_header_details.dart';
 
 class NewPurchaseOrderDetailsScreen
     extends GetWidget<NewPurchaseOrderDetailsController> {
   final PartnerItem partner;
   final CarrierItem carrier;
   final CommodityItem commodity;
+  final QCHeaderDetails? qcHeaderDetails;
   const NewPurchaseOrderDetailsScreen({
     super.key,
     required this.partner,
     required this.carrier,
     required this.commodity,
+    required this.qcHeaderDetails,
   });
 
   @override

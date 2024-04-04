@@ -6,6 +6,7 @@ import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
@@ -17,10 +18,12 @@ class PurchaseOrderScreenController extends GetxController {
   final PartnerItem partner;
   final CarrierItem carrier;
   final CommodityItem commodity;
+  final QCHeaderDetails? qcHeaderDetails;
   PurchaseOrderScreenController({
     required this.partner,
     required this.carrier,
     required this.commodity,
+    required this.qcHeaderDetails,
   });
 
   final AppStorage appStorage = AppStorage.instance;
@@ -118,16 +121,16 @@ class PurchaseOrderScreenController extends GetxController {
         (appStorage.selectedItemSKUList ?? []).isNotEmpty) {
       if (userId == 4180) {
         Get.to(() => NewPurchaseOrderDetailsScreen(
-              partner: partner,
-              carrier: carrier,
-              commodity: commodity,
-            ));
+            partner: partner,
+            carrier: carrier,
+            commodity: commodity,
+            qcHeaderDetails: qcHeaderDetails));
       } else {
         Get.to(() => PurchaseOrderDetailsScreen(
-              partner: partner,
-              carrier: carrier,
-              commodity: commodity,
-            ));
+            partner: partner,
+            carrier: carrier,
+            commodity: commodity,
+            qcHeaderDetails: qcHeaderDetails));
       }
     } else {
       AppAlertDialog.validateAlerts(
