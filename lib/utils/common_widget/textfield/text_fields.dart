@@ -225,6 +225,9 @@ class BoxTextField2 extends StatelessWidget {
             alignment: Alignment.center,
             height: 105.h,
             child: TextFormField(
+              onFieldSubmitted: (value) {
+                debugPrint('Submitted');
+              },
               maxLength: 3,
               focusNode: focusNode,
               textAlignVertical: TextAlignVertical.center,
@@ -239,7 +242,7 @@ class BoxTextField2 extends StatelessWidget {
               keyboardType: keyboardType,
               controller: controller,
               style: GoogleFonts.poppins(
-                  fontSize: 30.sp,
+                  fontSize: 28.sp,
                   fontWeight: FontWeight.normal,
                   textStyle: TextStyle(color: AppColors.white)),
               cursorColor: Theme.of(context).textSelectionTheme.cursorColor,
@@ -253,7 +256,7 @@ class BoxTextField2 extends StatelessWidget {
                 ),
                 hintText: hintText,
                 hintStyle: GoogleFonts.poppins(
-                    fontSize: 30.sp,
+                    fontSize: 28.sp,
                     fontWeight: FontWeight.normal,
                     textStyle: TextStyle(color: AppColors.hintColor)),
                 border: InputBorder.none,

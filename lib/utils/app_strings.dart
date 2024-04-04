@@ -117,6 +117,8 @@ class AppStrings {
 
   static const String turnOnWifi =
       'Please go to your hotspot and turn WiFi on - need to update data with first login.';
+  static const String trailer_temperature_no_entries_alert =
+      'No temperatures readings have been entered.';
 
   static const String inspectionsAccessAlert =
       'You are not authorized to access Inspections';

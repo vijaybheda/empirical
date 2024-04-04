@@ -1,10 +1,5 @@
 // ignore_for_file: sized_box_for_whitespace, prefer_const_constructors, avoid_unnecessary_containers, non_constant_identifier_names, prefer_const_literals_to_create_immutables, unrelated_type_equality_checks
-import 'dart:async';
-import 'dart:developer';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
@@ -42,12 +37,9 @@ class TrailerTemp extends GetView<TrailerTempController> {
               backgroundColor: AppColors.primary,
               title: baseHeaderView(AppStrings.trailerTempRange, false),
             ),
-            body: GestureDetector(
-              onTap: () {},
-              child: Container(
-                color: Theme.of(context).colorScheme.background,
-                child: contentView(context, controller),
-              ),
+            body: Container(
+              color: Theme.of(context).colorScheme.background,
+              child: contentView(context, controller),
             ),
           );
         });
@@ -57,9 +49,7 @@ class TrailerTemp extends GetView<TrailerTempController> {
     return Column(
       children: [
         Expanded(
-          child: Container(
-              padding: EdgeInsets.only(left: 50, right: 50, top: 25),
-              child: truckContentView(context, controller)),
+          child: Container(child: truckContentView(context, controller)),
         ),
         Container(
           padding: EdgeInsets.only(left: 50.w, right: 50.w),
@@ -109,8 +99,10 @@ class TrailerTemp extends GetView<TrailerTempController> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Container(
+          padding: EdgeInsets.only(left: 50.w, right: 50, top: 25),
+          color: AppColors.white,
           alignment: Alignment.center,
-          height: ((MediaQuery.of(context).size.width - 60) / 0.85).h,
+          height: ((MediaQuery.of(context).size.width - 60) / 0.80).h,
           child: Stack(
             children: [
               Obx(
@@ -124,7 +116,7 @@ class TrailerTemp extends GetView<TrailerTempController> {
               Container(
                 margin: EdgeInsets.only(
                     left: (MediaQuery.of(context).size.width / 3.5),
-                    bottom: 300.h),
+                    bottom: 220.h),
                 height: double.infinity - 100,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -165,11 +157,14 @@ class TrailerTemp extends GetView<TrailerTempController> {
             ],
           ),
         ),
+        SizedBox(
+          height: 10.h,
+        ),
         Obx(
           () => Text(
             controller.selectetdTruckArea.value,
             style: GoogleFonts.poppins(
-                fontSize: 32.sp,
+                fontSize: 28.sp,
                 fontWeight: FontWeight.w600,
                 textStyle: TextStyle(color: AppColors.white)),
           ),
@@ -177,149 +172,84 @@ class TrailerTemp extends GetView<TrailerTempController> {
         SizedBox(
           height: 40.h,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Obx(
-              () => palletview(
-                  controller.pallet1_top_TextController.value,
-                  controller.pallet1_middle_TextController.value,
-                  controller.pallet1_bottom_TextController.value,
-                  controller.pallet1_top_FocusNode,
-                  controller.pallet1_middle_FocusNode,
-                  controller.pallet1_bottom_FocusNode,
-                  AppStrings.pallet1,
-                  context,
-                  controller),
-            ),
-
-            Obx(
-              () => palletview(
-                  controller.pallet2_top_TextController.value,
-                  controller.pallet2_middle_TextController.value,
-                  controller.pallet2_bottom_TextController.value,
-                  controller.pallet2_top_FocusNode,
-                  controller.pallet2_middle_FocusNode,
-                  controller.pallet2_bottom_FocusNode,
-                  AppStrings.pallet2,
-                  context,
-                  controller),
-            ),
-
-            Obx(
-              () => palletview(
-                  controller.pallet3_top_TextController.value,
-                  controller.pallet3_middle_TextController.value,
-                  controller.pallet3_bottom_TextController.value,
-                  controller.pallet3_top_FocusNode,
-                  controller.pallet3_middle_FocusNode,
-                  controller.pallet3_bottom_FocusNode,
-                  AppStrings.pallet3,
-                  context,
-                  controller),
-            ),
-
-            // () => palletview(
-            //     controller.currentMode.value == TrailerEnum.Nose
-            //         ? controller.pallet1_top_TextController.value
-            //         : controller.selectetdTruckArea.value == AppStrings.middle
-            //             ? controller.middle_pallet1_top_TextController.value
-            //             : controller.tail_pallet1_top_TextController.value,
-            //     controller.selectetdTruckArea.value == AppStrings.nose
-            //         ? controller.nose_pallet1_middle_TextController.value
-            //         : controller.selectetdTruckArea.value == AppStrings.middle
-            //             ? controller
-            //                 .middle_pallet1_middle_TextController.value
-            //             : controller.tail_pallet1_middle_TextController.value,
-            //     controller.selectetdTruckArea.value == AppStrings.nose
-            //         ? controller.nose_pallet1_bottom_TextController.value
-            //         : controller.selectetdTruckArea.value == AppStrings.middle
-            //             ? controller
-            //                 .middle_pallet1_bottom_TextController.value
-            //             : controller.tail_pallet1_bottom_TextController.value,
-            //     AppStrings.pallet1,
-            //     context,
-            //     controller),
-
-            // Obx(
-            //   () => palletview(
-            //       controller.selectetdTruckArea.value == AppStrings.nose
-            //           ? controller.nose_pallet2_top_TextController.value
-            //           : controller.selectetdTruckArea.value == AppStrings.middle
-            //               ? controller.middle_pallet2_top_TextController.value
-            //               : controller.tail_pallet2_top_TextController.value,
-            //       controller.selectetdTruckArea.value == AppStrings.nose
-            //           ? controller.nose_pallet2_middle_TextController.value
-            //           : controller.selectetdTruckArea.value == AppStrings.middle
-            //               ? controller
-            //                   .middle_pallet2_middle_TextController.value
-            //               : controller.tail_pallet2_middle_TextController.value,
-            //       controller.selectetdTruckArea.value == AppStrings.nose
-            //           ? controller.nose_pallet2_bottom_TextController.value
-            //           : controller.selectetdTruckArea.value == AppStrings.middle
-            //               ? controller
-            //                   .middle_pallet2_bottom_TextController.value
-            //               : controller.tail_pallet2_bottom_TextController.value,
-            //       AppStrings.pallet2,
-            //       context,
-            //       controller),
-            // ),
-            // Obx(
-            //   () => palletview(
-            //       controller.selectetdTruckArea.value == AppStrings.nose
-            //           ? controller.nose_pallet3_top_TextController.value
-            //           : controller.selectetdTruckArea.value == AppStrings.middle
-            //               ? controller.middle_pallet3_top_TextController.value
-            //               : controller.tail_pallet3_top_TextController.value,
-            //       controller.selectetdTruckArea.value == AppStrings.nose
-            //           ? controller.nose_pallet3_middle_TextController.value
-            //           : controller.selectetdTruckArea.value == AppStrings.middle
-            //               ? controller
-            //                   .middle_pallet3_middle_TextController.value
-            //               : controller.tail_pallet3_middle_TextController.value,
-            //       controller.selectetdTruckArea.value == AppStrings.nose
-            //           ? controller.nose_pallet3_bottom_TextController.value
-            //           : controller.selectetdTruckArea.value == AppStrings.middle
-            //               ? controller
-            //                   .middle_pallet3_bottom_TextController.value
-            //               : controller.tail_pallet3_bottom_TextController.value,
-            //       AppStrings.pallet3,
-            //       context,
-            //       controller),
-            // ),
-          ],
+        Padding(
+          padding: EdgeInsets.only(left: 50, right: 50),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Obx(
+                () => palletview(
+                    controller.pallet1_top_TextController.value,
+                    controller.pallet1_middle_TextController.value,
+                    controller.pallet1_bottom_TextController.value,
+                    controller.pallet1_top_FocusNode,
+                    controller.pallet1_middle_FocusNode,
+                    controller.pallet1_bottom_FocusNode,
+                    AppStrings.pallet1,
+                    context,
+                    controller),
+              ),
+              Obx(
+                () => palletview(
+                    controller.pallet2_top_TextController.value,
+                    controller.pallet2_middle_TextController.value,
+                    controller.pallet2_bottom_TextController.value,
+                    controller.pallet2_top_FocusNode,
+                    controller.pallet2_middle_FocusNode,
+                    controller.pallet2_bottom_FocusNode,
+                    AppStrings.pallet2,
+                    context,
+                    controller),
+              ),
+              Obx(
+                () => palletview(
+                    controller.pallet3_top_TextController.value,
+                    controller.pallet3_middle_TextController.value,
+                    controller.pallet3_bottom_TextController.value,
+                    controller.pallet3_top_FocusNode,
+                    controller.pallet3_middle_FocusNode,
+                    controller.pallet3_bottom_FocusNode,
+                    AppStrings.pallet3,
+                    context,
+                    controller),
+              ),
+            ],
+          ),
         ),
         SizedBox(
           height: 20.h,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              AppStrings.comment,
-              style: GoogleFonts.poppins(
-                  fontSize: 25.sp,
-                  fontWeight: FontWeight.normal,
-                  textStyle: TextStyle(color: AppColors.white)),
-            ),
-            SizedBox(
-              width: 50.w,
-            ),
-            Flexible(
-              child: BoxTextField1(
-                isMulti: false,
-                controller: controller.commentTextController.value,
-                onTap: () {},
-                errorText: '',
-                onEditingCompleted: () {},
-                onChanged: (value) {},
-                keyboardType: TextInputType.name,
-                hintText: '',
-                isPasswordField: true,
+        Padding(
+          padding: EdgeInsets.only(left: 50, right: 50),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                AppStrings.comment,
+                style: GoogleFonts.poppins(
+                    fontSize: 25.sp,
+                    fontWeight: FontWeight.normal,
+                    textStyle: TextStyle(color: AppColors.white)),
               ),
-            ),
-          ],
+              SizedBox(
+                width: 50.w,
+              ),
+              Flexible(
+                child: BoxTextField1(
+                  isMulti: false,
+                  controller: controller.commentTextController.value,
+                  onTap: () {},
+                  errorText: '',
+                  onEditingCompleted: () {},
+                  onChanged: (value) {},
+                  keyboardType: TextInputType.name,
+                  hintText: '',
+                  isPasswordField: true,
+                ),
+              ),
+            ],
+          ),
         )
       ],
     );
@@ -342,7 +272,7 @@ class TrailerTemp extends GetView<TrailerTempController> {
         Text(
           PalletTitle,
           style: GoogleFonts.poppins(
-              fontSize: 32.sp,
+              fontSize: 30.sp,
               fontWeight: FontWeight.w600,
               textStyle: TextStyle(color: AppColors.white)),
         ),
@@ -356,41 +286,7 @@ class TrailerTemp extends GetView<TrailerTempController> {
             },
             errorText: '',
             onEditingCompleted: () {
-              if (controller.currentMode == TrailerEnum.Nose) {
-                if (PalletTitle == AppStrings.pallet1) {
-                  controller.tailerTempData.nose?.pallet1?.top =
-                      topTextEditingController.value.text;
-                } else if (PalletTitle == AppStrings.pallet2) {
-                  controller.tailerTempData.nose?.pallet2?.top =
-                      topTextEditingController.value.text;
-                } else {
-                  controller.tailerTempData.nose?.pallet3?.top =
-                      topTextEditingController.value.text;
-                }
-              } else if (controller.currentMode == TrailerEnum.Middle) {
-                if (PalletTitle == AppStrings.pallet1) {
-                  controller.tailerTempData.middle?.pallet1?.top =
-                      topTextEditingController.value.text;
-                  debugPrint(controller.tailerTempData.middle?.pallet1?.top);
-                } else if (PalletTitle == AppStrings.pallet2) {
-                  controller.tailerTempData.middle?.pallet2?.top =
-                      topTextEditingController.value.text;
-                } else {
-                  controller.tailerTempData.middle?.pallet3?.top =
-                      topTextEditingController.value.text;
-                }
-              } else {
-                if (PalletTitle == AppStrings.pallet1) {
-                  controller.tailerTempData.tail?.pallet1?.top =
-                      topTextEditingController.value.text;
-                } else if (PalletTitle == AppStrings.pallet2) {
-                  controller.tailerTempData.tail?.pallet2?.top =
-                      topTextEditingController.value.text;
-                } else {
-                  controller.tailerTempData.tail?.pallet3?.top =
-                      topTextEditingController.value.text;
-                }
-              }
+              controller.saveData(PalletTitle);
               controller.setDataUI();
               topFocusNode.unfocus();
             },
@@ -411,41 +307,7 @@ class TrailerTemp extends GetView<TrailerTempController> {
             onTap: () {},
             errorText: '',
             onEditingCompleted: () {
-              if (controller.currentMode == TrailerEnum.Nose) {
-                if (PalletTitle == AppStrings.pallet1) {
-                  controller.tailerTempData.nose?.pallet1?.middle =
-                      middleTextEditingController.value.text.toString();
-                  debugPrint(controller.tailerTempData.nose?.pallet1?.middle);
-                } else if (PalletTitle == AppStrings.pallet2) {
-                  controller.tailerTempData.nose?.pallet2?.middle =
-                      middleTextEditingController.value.text;
-                } else {
-                  controller.tailerTempData.nose?.pallet3?.middle =
-                      middleTextEditingController.value.text;
-                }
-              } else if (controller.currentMode == TrailerEnum.Middle) {
-                if (PalletTitle == AppStrings.pallet1) {
-                  controller.tailerTempData.middle?.pallet1?.middle =
-                      middleTextEditingController.value.text;
-                } else if (PalletTitle == AppStrings.pallet2) {
-                  controller.tailerTempData.middle?.pallet2?.middle =
-                      middleTextEditingController.value.text;
-                } else {
-                  controller.tailerTempData.middle?.pallet3?.middle =
-                      middleTextEditingController.value.text;
-                }
-              } else {
-                if (PalletTitle == AppStrings.pallet1) {
-                  controller.tailerTempData.tail?.pallet1?.middle =
-                      middleTextEditingController.value.text;
-                } else if (PalletTitle == AppStrings.pallet2) {
-                  controller.tailerTempData.tail?.pallet2?.middle =
-                      middleTextEditingController.value.text;
-                } else {
-                  controller.tailerTempData.tail?.pallet3?.middle =
-                      middleTextEditingController.value.text;
-                }
-              }
+              controller.saveData(PalletTitle);
               controller.setDataUI();
               middleFocusNode.unfocus();
             },
@@ -464,41 +326,7 @@ class TrailerTemp extends GetView<TrailerTempController> {
             onTap: () {},
             errorText: '',
             onEditingCompleted: () {
-              if (controller.currentMode == TrailerEnum.Nose) {
-                if (PalletTitle == AppStrings.pallet1) {
-                  controller.tailerTempData.nose?.pallet1?.bottom =
-                      bottomTextEditingController.value.text.toString();
-                  debugPrint(controller.tailerTempData.nose?.pallet1?.bottom);
-                } else if (PalletTitle == AppStrings.pallet2) {
-                  controller.tailerTempData.nose?.pallet2?.bottom =
-                      bottomTextEditingController.value.text;
-                } else {
-                  controller.tailerTempData.nose?.pallet3?.bottom =
-                      bottomTextEditingController.value.text;
-                }
-              } else if (controller.currentMode == TrailerEnum.Middle) {
-                if (PalletTitle == AppStrings.pallet1) {
-                  controller.tailerTempData.middle?.pallet1?.bottom =
-                      bottomTextEditingController.value.text;
-                } else if (PalletTitle == AppStrings.pallet2) {
-                  controller.tailerTempData.middle?.pallet2?.bottom =
-                      bottomTextEditingController.value.text;
-                } else {
-                  controller.tailerTempData.middle?.pallet3?.bottom =
-                      bottomTextEditingController.value.text;
-                }
-              } else {
-                if (PalletTitle == AppStrings.pallet1) {
-                  controller.tailerTempData.tail?.pallet1?.bottom =
-                      bottomTextEditingController.value.text;
-                } else if (PalletTitle == AppStrings.pallet2) {
-                  controller.tailerTempData.tail?.pallet2?.bottom =
-                      bottomTextEditingController.value.text;
-                } else {
-                  controller.tailerTempData.tail?.pallet3?.bottom =
-                      bottomTextEditingController.value.text;
-                }
-              }
+              controller.saveData(PalletTitle);
               controller.setDataUI();
               bottomFocusNode.unfocus();
             },
