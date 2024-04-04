@@ -13,6 +13,7 @@ class FinishedGoodsItemSKU {
   int? inspectionId;
   int? partnerId;
   bool? is_Complete;
+  bool? isSelected;
   bool? isPartialComplete;
   String? packDate;
   String? gtin;
@@ -39,6 +40,7 @@ class FinishedGoodsItemSKU {
     this.inspectionId,
     this.partnerId,
     this.is_Complete,
+    this.isSelected,
     this.isPartialComplete,
     this.packDate,
     this.gtin,
@@ -68,6 +70,7 @@ class FinishedGoodsItemSKU {
     inspectionId = json['inspectionId'];
     partnerId = json['partnerId'];
     is_Complete = json['is_Complete'];
+    isSelected = json['isSelected'];
     isPartialComplete = json['isPartialComplete'];
     packDate = json['packDate'];
     gtin = json['gtin'];
@@ -97,6 +100,7 @@ class FinishedGoodsItemSKU {
     data['inspectionId'] = inspectionId;
     data['partnerId'] = partnerId;
     data['is_Complete'] = is_Complete;
+    data['isSelected'] = isSelected;
     data['isPartialComplete'] = isPartialComplete;
     data['packDate'] = packDate;
     data['gtin'] = gtin;
@@ -127,6 +131,7 @@ class FinishedGoodsItemSKU {
     int? inspectionId,
     int? partnerId,
     bool? is_Complete,
+    bool? isSelected,
     bool? isPartialComplete,
     String? packDate,
     String? gtin,
@@ -154,6 +159,7 @@ class FinishedGoodsItemSKU {
       inspectionId: inspectionId ?? this.inspectionId,
       partnerId: partnerId ?? this.partnerId,
       is_Complete: is_Complete ?? this.is_Complete,
+      isSelected: isSelected ?? this.isSelected,
       isPartialComplete: isPartialComplete ?? this.isPartialComplete,
       packDate: packDate ?? this.packDate,
       gtin: gtin ?? this.gtin,

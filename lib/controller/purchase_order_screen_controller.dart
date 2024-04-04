@@ -7,6 +7,8 @@ import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
+import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
@@ -26,9 +28,9 @@ class PurchaseOrderScreenController extends GetxController {
       Get.find<GlobalConfigController>();
   final ApplicationDao dao = ApplicationDao();
 
-  RxList<FinishedGoodsItemSKU> filteredCommodityList =
+  RxList<FinishedGoodsItemSKU> filteredItemSkuList =
       <FinishedGoodsItemSKU>[].obs;
-  RxList<FinishedGoodsItemSKU> commodityList = <FinishedGoodsItemSKU>[].obs;
+  RxList<FinishedGoodsItemSKU> itemSkuList = <FinishedGoodsItemSKU>[].obs;
   RxBool listAssigned = false.obs;
 
   @override
@@ -41,11 +43,11 @@ class PurchaseOrderScreenController extends GetxController {
     LoginData? loginData = appStorage.getLoginData();
 
     if (loginData != null) {
-      if (filteredCommodityList.isEmpty) {
+      if (filteredItemSkuList.isEmpty) {
         int enterpriseId = await dao
             .getEnterpriseIdByUserId(loginData.userName!.toLowerCase());
         // TODO:
-        List<FinishedGoodsItemSKU>? _filteredCommodityList =
+        List<FinishedGoodsItemSKU>? _filteredItemSkuList =
             await dao.getFinishedGoodItemSkuFromTable(
           partner.id!,
           enterpriseId,
@@ -56,12 +58,13 @@ class PurchaseOrderScreenController extends GetxController {
           partner.name!,
         );
 
-        filteredCommodityList.value = _filteredCommodityList ?? [];
+        itemSkuList.addAll(_filteredItemSkuList ?? []);
+        filteredItemSkuList.addAll(itemSkuList);
         listAssigned.value = true;
         update();
       } else {
         // TODO:
-        // filteredCommodityList = asd;
+        // filteredItemSkuList = asd;
         listAssigned.value = true;
         update();
       }
@@ -69,13 +72,30 @@ class PurchaseOrderScreenController extends GetxController {
   }
 
   void updateCommodityItem(FinishedGoodsItemSKU partner) {
-    int index = filteredCommodityList.indexWhere((element) {
-      return element.uniqueItemId == partner.uniqueItemId;
+    appStorage.selectedItemSKUList ??= <FinishedGoodsItemSKU>[];
+
+    // remove if exist in appStorage.selectedItemSKUList
+    appStorage.selectedItemSKUList?.removeWhere((element) {
+      return element.id == partner.id;
+    });
+    if (partner.isSelected ?? false) {
+      appStorage.selectedItemSKUList?.add(partner);
+    }
+
+    print(appStorage.selectedItemSKUList?.length);
+    int index = filteredItemSkuList.indexWhere((element) {
+      return element.id == partner.id;
     });
 
     if (index != -1) {
-      filteredCommodityList[index] = partner;
-      update(['commodityList']);
+      filteredItemSkuList[index] = partner;
+      int _index = filteredItemSkuList.indexWhere((element) {
+        return element.id == partner.id;
+      });
+      if (_index != -1) {
+        itemSkuList[_index] = partner;
+      }
+      update(['itemSkuList']);
     }
   }
 
@@ -96,16 +116,38 @@ class PurchaseOrderScreenController extends GetxController {
 
     if (appStorage.selectedItemSKUList != null &&
         (appStorage.selectedItemSKUList ?? []).isNotEmpty) {
-      // TODO: implement
-      // Get.to(() => userId == 4180
-      //     ? NewPurchaseOrderDetailsActivity()
-      //     : PurchaseOrderDetailsActivity());
+      if (userId == 4180) {
+        Get.to(() => NewPurchaseOrderDetailsScreen(
+              partner: partner,
+              carrier: carrier,
+              commodity: commodity,
+            ));
+      } else {
+        Get.to(() => PurchaseOrderDetailsScreen(
+              partner: partner,
+              carrier: carrier,
+              commodity: commodity,
+            ));
+      }
     } else {
       AppAlertDialog.validateAlerts(
         context,
         AppStrings.alert,
-        AppStrings.noItemSkuSelected,
+        AppStrings.selectItemsku,
       );
     }
+  }
+
+  void searchAndAssignOrder(String value) {
+    filteredItemSkuList.clear();
+    if (value.isEmpty) {
+      filteredItemSkuList.addAll(itemSkuList);
+    } else {
+      filteredItemSkuList.value = itemSkuList.where((element) {
+        return element.name!.toLowerCase().contains(value.toLowerCase()) ||
+            element.sku!.toLowerCase().contains(value.toLowerCase());
+      }).toList();
+    }
+    update(['itemSkuList']);
   }
 }

@@ -64,7 +64,7 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
                   ),
                 ),
                 const SearchGradingStandardWidget(),
-                Expanded(flex: 10, child: _commodityListSection(context)),
+                Expanded(flex: 10, child: _itemSkuListSection(context)),
                 BottomCustomButtonView(
                   title: AppStrings.save,
                   onPressed: () async {
@@ -79,10 +79,10 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
         });
   }
 
-  GetBuilder<PurchaseOrderScreenController> _commodityListSection(
+  GetBuilder<PurchaseOrderScreenController> _itemSkuListSection(
       BuildContext context) {
     return GetBuilder<PurchaseOrderScreenController>(
-      id: 'commodityList',
+      id: 'itemSkuList',
       builder: (controller) {
         return Container(
           padding: EdgeInsets.symmetric(vertical: 20.h),
@@ -94,8 +94,8 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
               controller.listAssigned.value
                   ? Expanded(
                       flex: 10,
-                      child: controller.filteredCommodityList.isNotEmpty
-                          ? commodityListView(context, controller)
+                      child: controller.filteredItemSkuList.isNotEmpty
+                          ? _itemSkuListView(context, controller)
                           : noDataFoundWidget(),
                     )
                   : const Center(
@@ -119,27 +119,29 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
     );
   }
 
-  Widget commodityListView(
-      BuildContext context, PurchaseOrderScreenController controller) {
+  Widget _itemSkuListView(
+    BuildContext context,
+    PurchaseOrderScreenController controller,
+  ) {
     return ListView.separated(
-      itemCount: controller.filteredCommodityList.length,
+      itemCount: controller.filteredItemSkuList.length,
       padding: EdgeInsets.zero,
       itemBuilder: (context, index) {
-        FinishedGoodsItemSKU partner =
-            controller.filteredCommodityList.elementAt(index);
+        FinishedGoodsItemSKU goodsItem =
+            controller.filteredItemSkuList.elementAt(index);
         return CheckboxListTile(
-          value: partner.is_Complete ?? false,
+          value: goodsItem.isSelected ?? false,
           visualDensity: VisualDensity.compact,
           contentPadding: EdgeInsets.zero,
           activeColor: Colors.transparent,
           checkColor: Colors.white,
-          fillColor: MaterialStateProperty.all((partner.is_Complete ?? false)
-              ? AppColors.textFieldText_Color
+          fillColor: MaterialStateProperty.all((goodsItem.isSelected ?? false)
+              ? AppColors.primary
               : Colors.transparent),
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           onChanged: (value) {
-            partner = partner.copyWith(is_Complete: (value!));
-            controller.updateCommodityItem(partner);
+            goodsItem = goodsItem.copyWith(isSelected: (value!));
+            controller.updateCommodityItem(goodsItem);
           },
           title: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -147,15 +149,15 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: partner.sku ?? '-',
+                    text: goodsItem.sku ?? '-',
                     style: Get.textTheme.bodyMedium
                         ?.copyWith(color: AppColors.white, fontSize: 50.h),
                   ),
                   const TextSpan(text: ' '),
                   TextSpan(
-                    text: partner.name ?? '-',
-                    style: Get.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textFieldText_Color, fontSize: 50.h),
+                    text: goodsItem.name ?? '-',
+                    style: Get.textTheme.bodyMedium
+                        ?.copyWith(color: AppColors.primary, fontSize: 50.h),
                   ),
                 ],
               ),
@@ -188,12 +190,13 @@ class SearchGradingStandardWidget extends StatelessWidget {
         child: TextField(
           onChanged: (value) {
             // TODO: Implement search functionality
-            // Get.find<PurchaseOrderScreenController>()
-            //     .searchAndAssignCommodity(value);
+            Get.find<PurchaseOrderScreenController>()
+                .searchAndAssignOrder(value);
           },
           decoration: InputDecoration(
             hintText: AppStrings.searchItem,
-            hintStyle: Get.textTheme.bodyLarge,
+            hintStyle: Get.textTheme.bodyLarge?.copyWith(
+                fontSize: 25.sp, color: AppColors.white.withOpacity(0.5)),
             isDense: true,
             contentPadding:
                 EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),

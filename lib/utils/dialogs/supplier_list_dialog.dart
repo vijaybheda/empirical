@@ -9,7 +9,6 @@ import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class SupplierListDialog {
-
   static Future<PartnerItem?> showListDialog(BuildContext context) {
     SelectSupplierScreenController controller =
         Get.find<SelectSupplierScreenController>();
@@ -39,7 +38,9 @@ class SupplierListDialog {
                   controller: controller.searchNonOpenSuppController,
                   decoration: InputDecoration(
                     hintText: AppStrings.searchPartner,
-                    hintStyle: Get.textTheme.bodyLarge,
+                    hintStyle: Get.textTheme.bodyLarge?.copyWith(
+                        fontSize: 25.sp,
+                        color: AppColors.white.withOpacity(0.5)),
                     isDense: true,
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),

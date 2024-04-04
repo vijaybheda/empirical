@@ -11,7 +11,7 @@ import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/cache_download_screen.dart';
-import 'package:pverify/ui/purchase_order_screen.dart';
+import 'package:pverify/ui/purchase_order/purchase_order_screen.dart';
 import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';

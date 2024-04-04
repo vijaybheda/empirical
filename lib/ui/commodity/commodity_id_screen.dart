@@ -297,7 +297,8 @@ class SearchGradingStandardWidget extends StatelessWidget {
           },
           decoration: InputDecoration(
             hintText: AppStrings.searchCommodity,
-            hintStyle: Get.textTheme.bodyLarge,
+            hintStyle: Get.textTheme.bodyLarge?.copyWith(
+                fontSize: 25.sp, color: AppColors.white.withOpacity(0.5)),
             isDense: true,
             contentPadding:
                 EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),

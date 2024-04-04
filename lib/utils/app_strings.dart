@@ -230,8 +230,6 @@ class AppStrings {
 
   static String scanBarcode = 'Scan Barcode';
 
-  static String noItemSkuSelected = 'Please select an itemsku.';
-
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';
 
