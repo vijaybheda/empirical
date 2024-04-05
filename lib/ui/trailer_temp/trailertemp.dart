@@ -2,8 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
-import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
@@ -13,6 +11,7 @@ import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
+import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/theme/theme.dart';
@@ -68,7 +67,21 @@ class TrailerTemp extends GetView<TrailerTempController> {
                       fontWeight: FontWeight.w600,
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
-                  onClickAction: () => {}),
+                  onClickAction: () => {
+                        if (controller.allDataBlank())
+                          {controller.showPurchaseOrder()}
+                        else
+                          {
+                            AppAlertDialog.confirmationAlert(
+                              context,
+                              AppStrings.error,
+                              AppStrings.trailerTemperatureSkipAlert,
+                              onYesTap: () {
+                                Get.back();
+                              },
+                            )
+                          }
+                      }),
               SizedBox(
                 width: 38.w,
               ),
@@ -82,7 +95,20 @@ class TrailerTemp extends GetView<TrailerTempController> {
                       fontWeight: FontWeight.w600,
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
-                  onClickAction: () => {}),
+                  onClickAction: () => {
+                        if (controller.allDataBlank())
+                          {
+                            AppAlertDialog.validateAlerts(
+                                context,
+                                AppStrings.error,
+                                AppStrings.trailer_temperature_no_entries_alert)
+                          }
+                        else
+                          {
+                            controller.saveTemperatureData(
+                                orderNumber, carrier.id ?? 0, 0)
+                          }
+                      }),
             ],
           ),
         ),
@@ -158,13 +184,13 @@ class TrailerTemp extends GetView<TrailerTempController> {
           ),
         ),
         SizedBox(
-          height: 10.h,
+          height: 32.h,
         ),
         Obx(
           () => Text(
             controller.selectetdTruckArea.value,
             style: GoogleFonts.poppins(
-                fontSize: 28.sp,
+                fontSize: 32.sp,
                 fontWeight: FontWeight.w600,
                 textStyle: TextStyle(color: AppColors.white)),
           ),
@@ -217,7 +243,7 @@ class TrailerTemp extends GetView<TrailerTempController> {
           ),
         ),
         SizedBox(
-          height: 20.h,
+          height: 40.h,
         ),
         Padding(
           padding: EdgeInsets.only(left: 50, right: 50),
@@ -228,7 +254,7 @@ class TrailerTemp extends GetView<TrailerTempController> {
               Text(
                 AppStrings.comment,
                 style: GoogleFonts.poppins(
-                    fontSize: 25.sp,
+                    fontSize: 30.sp,
                     fontWeight: FontWeight.normal,
                     textStyle: TextStyle(color: AppColors.white)),
               ),
@@ -272,7 +298,7 @@ class TrailerTemp extends GetView<TrailerTempController> {
         Text(
           PalletTitle,
           style: GoogleFonts.poppins(
-              fontSize: 30.sp,
+              fontSize: 32.sp,
               fontWeight: FontWeight.w600,
               textStyle: TextStyle(color: AppColors.white)),
         ),

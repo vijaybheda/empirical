@@ -1,10 +1,12 @@
-// ignore_for_file: non_constant_identifier_names, unused_field, unnecessary_overrides, prefer_interpolation_to_compose_strings, unrelated_type_equality_checks, prefer_const_constructors
+// ignore_for_file: non_constant_identifier_names, unused_field, unnecessary_overrides, prefer_interpolation_to_compose_strings, unrelated_type_equality_checks, prefer_const_constructors, unnecessary_null_comparison, unused_local_variable
 
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/models/trailer_temp.dart';
+import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
 import 'package:pverify/ui/trailer_temp/trailerTempClass.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
@@ -41,6 +43,8 @@ class TrailerTempController extends GetxController {
   trailerTempItem1? trailerTailDetails;
   TrailerTempClass tailerTempData = TrailerTempClass();
   var activePallet = AppStrings.pallet1.obs;
+  String callerActivity = '';
+  final ApplicationDao dao = ApplicationDao();
 
   @override
   void onInit() {
@@ -299,5 +303,175 @@ class TrailerTempController extends GetxController {
       return false;
     }
     return true;
+  }
+
+  bool allDataBlank() {
+    if (((tailerTempData.nose?.pallet1?.top == '' || tailerTempData.nose?.pallet1?.top == null) &&
+            (tailerTempData.middle?.pallet1?.middle == '' ||
+                tailerTempData.middle?.pallet1?.middle == null) &&
+            (tailerTempData.nose?.pallet1?.bottom == '' ||
+                tailerTempData.nose?.pallet1?.bottom == null)) &&
+        ((tailerTempData.nose?.pallet2?.top == '' || tailerTempData.nose?.pallet2?.top == null) &&
+            (tailerTempData.nose?.pallet2?.middle == '' ||
+                tailerTempData.nose?.pallet2?.middle == null) &&
+            (tailerTempData.nose?.pallet2?.bottom == '' ||
+                tailerTempData.nose?.pallet2?.bottom == null)) &&
+        ((tailerTempData.nose?.pallet3?.top == '' || tailerTempData.nose?.pallet3?.top == null) &&
+            (tailerTempData.nose?.pallet3?.middle == '' ||
+                tailerTempData.nose?.pallet3?.middle == null) &&
+            (tailerTempData.nose?.pallet3?.bottom == '' ||
+                tailerTempData.nose?.pallet3?.bottom == null)) &&
+        ((tailerTempData.middle?.pallet1?.top == '' || tailerTempData.middle?.pallet1?.top == null) &&
+            (tailerTempData.middle?.pallet1?.middle == '' ||
+                tailerTempData.middle?.pallet1?.middle == null) &&
+            (tailerTempData.middle?.pallet1?.bottom == '' ||
+                tailerTempData.middle?.pallet1?.bottom == null)) &&
+        ((tailerTempData.middle?.pallet2?.top == '' ||
+                tailerTempData.middle?.pallet2?.top == null) &&
+            (tailerTempData.middle?.pallet2?.middle == '' ||
+                tailerTempData.middle?.pallet2?.middle == null) &&
+            (tailerTempData.middle?.pallet2?.bottom == '' ||
+                tailerTempData.middle?.pallet2?.bottom == null)) &&
+        ((tailerTempData.middle?.pallet3?.top == '' ||
+                tailerTempData.middle?.pallet3?.top == null) &&
+            (tailerTempData.middle?.pallet3?.middle == '' ||
+                tailerTempData.middle?.pallet3?.middle == null) &&
+            (tailerTempData.middle?.pallet3?.bottom == '' ||
+                tailerTempData.middle?.pallet3?.bottom == null)) &&
+        ((tailerTempData.tail?.pallet1?.top == '' || tailerTempData.tail?.pallet1?.top == null) &&
+            (tailerTempData.tail?.pallet1?.middle == '' ||
+                tailerTempData.tail?.pallet1?.middle == null) &&
+            (tailerTempData.tail?.pallet1?.bottom == '' ||
+                tailerTempData.tail?.pallet1?.bottom == null)) &&
+        ((tailerTempData.tail?.pallet2?.top == '' || tailerTempData.tail?.pallet2?.top == null) &&
+            (tailerTempData.tail?.pallet2?.middle == '' ||
+                tailerTempData.tail?.pallet2?.middle == null) &&
+            (tailerTempData.tail?.pallet2?.bottom == '' ||
+                tailerTempData.tail?.pallet2?.bottom == null)) &&
+        ((tailerTempData.tail?.pallet3?.top == '' || tailerTempData.tail?.pallet3?.top == null) &&
+            (tailerTempData.tail?.pallet3?.middle == '' ||
+                tailerTempData.tail?.pallet3?.middle == null) &&
+            (tailerTempData.tail?.pallet3?.bottom == '' ||
+                tailerTempData.tail?.pallet3?.bottom == null))) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  void showPurchaseOrder() {
+    if (callerActivity != null && callerActivity.isNotEmpty) {
+      if (callerActivity == "PurchaseOrderDetailsActivity") {
+        /*
+      Get.offAll(() => PurchaseOrderDetailsActivity(), arguments: {
+        "partnerName": partnerName,
+        "partnerID": partnerID,
+        "carrierName": carrierName,
+        "carrierID": carrierID,
+        "commodityID": commodityID,
+        "commodityName": commodityName,
+        "po_number": po_number,
+        "callerActivity": "TrailerTempActivity",
+      });
+      */
+      } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+        /*
+      Get.offAll(() => NewPurchaseOrderDetailsActivity(), arguments: {
+        "partnerName": partnerName,
+        "partnerID": partnerID,
+        "carrierName": carrierName,
+        "carrierID": carrierID,
+        "commodityID": commodityID,
+        "commodityName": commodityName,
+        "po_number": po_number,
+        "callerActivity": "TrailerTempActivity",
+      });
+      */
+      } else {
+        Get.back();
+      }
+    } else {
+      Get.back(); // Back to Quality Control Header Screen
+    }
+  }
+
+  void saveTemperatureData(String poNumber, int partnerID, int? value) {
+    for (int i = 0; i < 9; i++) {
+      String levelMain;
+      String values;
+      String vals;
+      if (i < 3) {
+        levelMain = 'T1';
+        values = i == 0
+            ? 'NT1'
+            : i == 1
+                ? 'NM1'
+                : 'NB1';
+      } else if (i < 6) {
+        levelMain = 'T1';
+        values = i == 3
+            ? 'NT2'
+            : i == 4
+                ? 'NM2'
+                : 'NB2';
+      } else {
+        levelMain = 'T3';
+        values = i == 6
+            ? 'NT3'
+            : i == 7
+                ? 'NM3'
+                : 'NB3';
+      }
+      saveOrUpdateTempDataFromLayouts(
+          'N', poNumber, partnerID, levelMain, value ?? 0);
+    }
+
+    for (int i = 0; i < 9; i++) {
+      String levelMain;
+      if (i < 3) {
+        levelMain = 'T1';
+      } else if (i < 6) {
+        levelMain = 'T1';
+      } else {
+        levelMain = 'T3';
+      }
+      saveOrUpdateTempDataFromLayouts(
+          'M', poNumber, partnerID, levelMain, value ?? 0);
+    }
+
+    for (int i = 0; i < 9; i++) {
+      String levelMain;
+      if (i < 3) {
+        levelMain = 'T1';
+      } else if (i < 6) {
+        levelMain = 'T1';
+      } else {
+        levelMain = 'T3';
+      }
+      saveOrUpdateTempDataFromLayouts(
+          'T', poNumber, partnerID, levelMain, value ?? 0);
+    }
+  }
+
+  void saveOrUpdateTempDataFromLayouts(String location, String poNumber,
+      int partnerID, String level, int value) {
+    // if (trailerTempMap.containsKey(key)) {
+    //   long trailerTemperatureId = trailerTempMap[key].trailerTemperatureId;
+    //   if (value == null || value.isEmpty) {
+    //     dao.deleteTempTrailerTemperatureEntryByTrailerTemperatureId(
+    //         trailerTemperatureId);
+    //   } else {
+    //     // update the database with the current value
+    //     //dao.updateTrailerTemperature(trailerTemperatureId, int.parse(value));
+    //     dao.updateTempTrailerTemperature(
+    //         trailerTemperatureId, int.parse(value));
+    //   }
+    // } else {
+    // if (value != null && value.isNotEmpty) {
+    //   dao.createTempTrailerTemperature(
+    //       carrierID, location, level, int.parse(value), po_number);
+    // }
+    dao.createTempTrailerTemperature(
+        partnerID, location, level, value, poNumber);
   }
 }

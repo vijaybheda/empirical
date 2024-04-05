@@ -126,9 +126,9 @@ class TrailerTempPallet {
 }
 
 class Pallet {
-  String? top;
-  String? middle;
-  String? bottom;
+  String? top = '';
+  String? middle = '';
+  String? bottom = '';
 
   Pallet({this.top, this.middle, this.bottom});
 

@@ -1,4 +1,4 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers, use_rethrow_when_possible
+// ignore_for_file: no_leading_underscores_for_local_identifiers, use_rethrow_when_possible, prefer_adjacent_string_concatenation, prefer_interpolation_to_compose_strings
 
 import 'dart:convert';
 import 'dart:developer';
@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:pverify/models/finished_goods_item_sku.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/inspection_attachment.dart';
@@ -1829,6 +1830,27 @@ class ApplicationDao {
     }
 
     return itemSKUList;
+  }
+
+  Future<int> createTempTrailerTemperature(int partnerID, String location,
+      String level, int value, String poNumber) async {
+    final db = await dbProvider.database;
+    int? ttId;
+    try {
+      await db.transaction((txn) async {
+        ttId = await txn.insert(DBTables.TEMP_TRAILER_TEMPERATURE, {
+          TrailerTemperatureDetailsColumn.PARTNER_ID: partnerID,
+          'location': location,
+          'level': level,
+          'value': value,
+          'complete': 1,
+          'po_number': poNumber,
+        });
+      });
+    } catch (e) {
+      debugPrint("Error has occurred while creating a trailer temperature: $e");
+    }
+    return ttId ?? -1;
   }
 
   Future<int> deleteRowsTempTrailerTable() async {
