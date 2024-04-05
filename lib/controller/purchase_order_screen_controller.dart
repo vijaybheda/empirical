@@ -13,12 +13,15 @@ import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
+import 'package:pverify/utils/utils.dart';
 
 class PurchaseOrderScreenController extends GetxController {
   final PartnerItem partner;
   final CarrierItem carrier;
   final CommodityItem commodity;
   final QCHeaderDetails? qcHeaderDetails;
+
+  final TextEditingController searchController = TextEditingController();
   PurchaseOrderScreenController({
     required this.partner,
     required this.carrier,
@@ -152,5 +155,11 @@ class PurchaseOrderScreenController extends GetxController {
       }).toList();
     }
     update(['itemSkuList']);
+  }
+
+  void clearSearch() {
+    searchController.clear();
+    searchAndAssignOrder('');
+    unFocus();
   }
 }

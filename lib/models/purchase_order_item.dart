@@ -23,16 +23,16 @@ class PurchaseOrderItem {
   });
 
   PurchaseOrderItem.newData(
-      String description,
-      String sku,
-      String poNumber,
-      String sealNumber,
-      String lotNumber,
-      int commodityId,
-      String commodityName,
-      String packDate,
-      String Ftl,
-      String Branded) {
+      String? description,
+      String? sku,
+      String? poNumber,
+      String? sealNumber,
+      String? lotNumber,
+      int? commodityId,
+      String? commodityName,
+      String? packDate,
+      String? Ftl,
+      String? Branded) {
     this.description = description;
     this.sku = sku;
     this.poNumber = poNumber;

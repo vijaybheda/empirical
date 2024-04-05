@@ -89,6 +89,7 @@ class SelectSupplierScreenController extends GetxController {
   void clearSearch() {
     searchSuppController.clear();
     searchAndAssignPartner('');
+    unFocus();
   }
 
   void clearOpenSearch() {

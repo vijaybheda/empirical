@@ -8,6 +8,7 @@ import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/utils.dart';
 
 class SelectCarrierScreenController extends GetxController {
   final ScrollController scrollController = ScrollController();
@@ -20,6 +21,8 @@ class SelectCarrierScreenController extends GetxController {
   RxList<CarrierItem> filteredCarrierList = <CarrierItem>[].obs;
   RxList<CarrierItem> carriersList = <CarrierItem>[].obs;
   RxBool listAssigned = false.obs;
+
+  final TextEditingController searchController = TextEditingController();
 
   double get listHeight => 190.h;
 
@@ -96,5 +99,11 @@ class SelectCarrierScreenController extends GetxController {
     Future.delayed(const Duration(milliseconds: 100), () {
       Get.off(QualityControlHeader(carrier: carrier));
     });
+  }
+
+  void clearSearch() {
+    searchController.clear();
+    searchAndAssignCarrier('');
+    unFocus();
   }
 }

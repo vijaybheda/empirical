@@ -166,66 +166,61 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
       itemCount: controller.filteredPartnerList.length,
       itemBuilder: (context, index) {
         PartnerItem partner = controller.filteredPartnerList.elementAt(index);
-        return GestureDetector(
-          onTap: () {
-            controller.navigateToCommodityIdScreen(context, partner);
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Column(
-              children: [
-                getAlphabetContent(controller.filteredPartnerList, index),
-                SizedBox(
-                  height: controller.listHeight,
-                  child: Column(
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Column(
+            children: [
+              getAlphabetContent(controller.filteredPartnerList, index),
+              SizedBox(
+                height: controller.listHeight,
+                child: GestureDetector(
+                  onTap: () {
+                    controller.navigateToCommodityIdScreen(context, partner);
+                  },
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              partner.name ?? '-',
-                              style: Get.textTheme.bodyMedium?.copyWith(
-                                  color: AppColors.white, fontSize: 50.h),
-                            ),
+                      Expanded(
+                        child: Text(
+                          partner.name ?? '-',
+                          style: Get.textTheme.bodyMedium?.copyWith(
+                              color: AppColors.white, fontSize: 50.h),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          controller.navigateToScorecardScreen(partner);
+                        },
+                        child: SizedBox(
+                          width: 100,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.max,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if ((partner.greenPercentage ?? 0) != 0)
+                                _buildBar(
+                                    Colors.green, partner.greenPercentage ?? 0),
+                              if ((partner.yellowPercentage ?? 0) != 0)
+                                _buildBar(Colors.yellow,
+                                    partner.yellowPercentage ?? 0),
+                              if ((partner.orangePercentage ?? 0) != 0)
+                                _buildBar(Colors.orange,
+                                    partner.orangePercentage ?? 0),
+                              if ((partner.redPercentage ?? 0) != 0)
+                                _buildBar(
+                                    Colors.red, partner.redPercentage ?? 0),
+                            ],
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              controller.navigateToScorecardScreen(partner);
-                            },
-                            child: SizedBox(
-                              width: 100,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                mainAxisSize: MainAxisSize.max,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  if ((partner.greenPercentage ?? 0) != 0)
-                                    _buildBar(Colors.green,
-                                        partner.greenPercentage ?? 0),
-                                  if ((partner.yellowPercentage ?? 0) != 0)
-                                    _buildBar(Colors.yellow,
-                                        partner.yellowPercentage ?? 0),
-                                  if ((partner.orangePercentage ?? 0) != 0)
-                                    _buildBar(Colors.orange,
-                                        partner.orangePercentage ?? 0),
-                                  if ((partner.redPercentage ?? 0) != 0)
-                                    _buildBar(
-                                        Colors.red, partner.redPercentage ?? 0),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
@@ -280,17 +275,6 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
       );
     } else {
       return Container();
-    }
-  }
-
-  void _scrollToListSection(
-      SelectSupplierScreenController controller, String letter) {
-    int listTargetIndex = controller.filteredPartnerList
-        .indexWhere((supplier) => supplier.name!.startsWith(letter));
-    if (listTargetIndex != -1) {
-      // controller.scrollController.jumpTo(listTargetIndex * listHeight);
-      controller.scrollController
-          .jumpTo((listTargetIndex * controller.listHeight) + listTargetIndex);
     }
   }
 

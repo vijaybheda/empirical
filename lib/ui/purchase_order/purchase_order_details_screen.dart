@@ -6,12 +6,14 @@ import 'package:pverify/controller/purchase_order_details_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/purchase_order_item.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/ui/components/bottom_custom_button_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class PurchaseOrderDetailsScreen
@@ -71,7 +73,6 @@ class PurchaseOrderDetailsScreen
                   ),
                 ),
                 const SearchOrderItemsWidget(),
-                Expanded(child: Container()),
                 Expanded(flex: 10, child: _purchaseOrderItemSection(context)),
                 BottomCustomButtonView(
                   title: AppStrings.save,
@@ -90,7 +91,7 @@ class PurchaseOrderDetailsScreen
   GetBuilder<PurchaseOrderDetailsController> _purchaseOrderItemSection(
       BuildContext context) {
     return GetBuilder<PurchaseOrderDetailsController>(
-      id: 'itemSkuList',
+      id: 'inspectionItems',
       builder: (controller) {
         return Container(
           padding: EdgeInsets.symmetric(vertical: 20.h),
@@ -102,10 +103,9 @@ class PurchaseOrderDetailsScreen
               controller.listAssigned.value
                   ? Expanded(
                       flex: 10,
-                      child: /*controller.filteredItemSkuList.isNotEmpty
-                          ? _itemSkuListView(context, controller)
-                          :*/
-                          noDataFoundWidget(),
+                      child: controller.filteredInspectionsList.isNotEmpty
+                          ? _inspectionsListView(context, controller)
+                          : noDataFoundWidget(),
                     )
                   : const Center(
                       child: SizedBox(
@@ -127,6 +127,122 @@ class PurchaseOrderDetailsScreen
       ),
     );
   }
+
+  Widget _inspectionsListView(
+    BuildContext context,
+    PurchaseOrderDetailsController controller,
+  ) {
+    return ListView.separated(
+      itemCount: controller.filteredInspectionsList.length,
+      padding: EdgeInsets.zero,
+      itemBuilder: (context, index) {
+        PurchaseOrderItem goodsItem =
+            controller.filteredInspectionsList.elementAt(index);
+        return PurchaseOrderListViewItem(
+          goodsItem: goodsItem,
+          sku: goodsItem.sku,
+          inspectButtonCallback: () {
+            // Implement your logic
+          },
+          poNumber: goodsItem.poNumber,
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) {
+        return Divider(
+          height: 5,
+          indent: 0,
+          endIndent: 0,
+          color: AppColors.white,
+          thickness: 1,
+        );
+      },
+    );
+  }
+}
+
+class PurchaseOrderListViewItem extends StatefulWidget {
+  const PurchaseOrderListViewItem({
+    super.key,
+    required this.sku,
+    required this.poNumber,
+    required this.inspectButtonCallback,
+    required this.goodsItem,
+  });
+  final String? sku;
+  final String? poNumber;
+  final Function inspectButtonCallback;
+
+  final PurchaseOrderItem goodsItem;
+
+  @override
+  State<PurchaseOrderListViewItem> createState() =>
+      _PurchaseOrderListViewItemState();
+}
+
+class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
+  late TextEditingController lotNumberController;
+
+  late TextEditingController qtyRejectedController;
+
+  late TextEditingController qtyShippedController;
+
+  bool isComplete = false;
+
+  bool isPartialComplete = false;
+
+  @override
+  void initState() {
+    super.initState();
+    lotNumberController = TextEditingController();
+    qtyRejectedController = TextEditingController();
+    qtyShippedController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    lotNumberController.dispose();
+    qtyRejectedController.dispose();
+    qtyShippedController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(widget.goodsItem.description ?? '-'),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(widget.sku ?? '-'),
+          Text(widget.poNumber ?? '-'),
+        ],
+      ),
+      trailing: IconButton(
+        icon: const Icon(Icons.play_arrow),
+        onPressed: () {
+          if (lotNumberController.text.isEmpty) {
+            AppAlertDialog.validateAlerts(
+                context, AppStrings.alert, AppStrings.lotnoRequired);
+          } else {
+            bool checkItemSKUAndLot = false; // Implement your logic
+            bool isValid = true; // Implement your logic
+
+            if (isValid) {
+              if (isComplete || isPartialComplete || !checkItemSKUAndLot) {
+                widget.inspectButtonCallback(); // Navigate to QC details
+              } else {
+                AppAlertDialog.validateAlerts(
+                    context, 'Alert', AppStrings.lotnoRequired);
+              }
+            } else {
+              AppAlertDialog.validateAlerts(
+                  context, 'Alert', 'Quantity rejected is not valid');
+            }
+          }
+        },
+      ),
+    );
+  }
 }
 
 class SearchOrderItemsWidget extends StatelessWidget {
@@ -143,6 +259,8 @@ class SearchOrderItemsWidget extends StatelessWidget {
             Get.find<PurchaseOrderDetailsController>()
                 .searchAndAssignItems(value);
           },
+          controller:
+              Get.find<PurchaseOrderDetailsController>().searchController,
           decoration: InputDecoration(
             hintText: AppStrings.searchItem,
             hintStyle: Get.textTheme.bodyLarge?.copyWith(
@@ -162,6 +280,15 @@ class SearchOrderItemsWidget extends StatelessWidget {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(color: AppColors.white),
+            ),
+            suffixIcon: IconButton(
+              onPressed: () {
+                Get.find<PurchaseOrderDetailsController>().clearSearch();
+              },
+              icon: Icon(
+                Icons.clear,
+                color: AppColors.white,
+              ),
             ),
           ),
         ),

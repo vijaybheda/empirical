@@ -195,10 +195,11 @@ class _SearchItemSkuWidget extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 25.h),
         child: TextField(
           onChanged: (value) {
-            // TODO: Implement search functionality
             Get.find<PurchaseOrderScreenController>()
                 .searchAndAssignOrder(value);
           },
+          controller:
+              Get.find<PurchaseOrderScreenController>().searchController,
           decoration: InputDecoration(
             hintText: AppStrings.searchItem,
             hintStyle: Get.textTheme.bodyLarge?.copyWith(
@@ -218,6 +219,15 @@ class _SearchItemSkuWidget extends StatelessWidget {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(color: AppColors.white),
+            ),
+            suffixIcon: IconButton(
+              onPressed: () {
+                Get.find<PurchaseOrderScreenController>().clearSearch();
+              },
+              icon: Icon(
+                Icons.clear,
+                color: AppColors.white,
+              ),
             ),
           ),
         ),

@@ -22,6 +22,8 @@ class CommodityIDScreenController extends GetxController {
   final PartnerItem partner;
   final CarrierItem carrier;
   final QCHeaderDetails? qcHeaderDetails;
+
+  final TextEditingController searchController = TextEditingController();
   CommodityIDScreenController(
       {required this.partner,
       required this.carrier,
@@ -83,11 +85,14 @@ class CommodityIDScreenController extends GetxController {
     if (searchValue.isEmpty) {
       filteredCommodityList.addAll(commodityList);
     } else {
-      filteredCommodityList.value = commodityList
-          .where((element) => element.keywords!
-              .toLowerCase()
-              .contains(searchValue.toLowerCase()))
+      var items = commodityList
+          .where((element) =>
+              element.keywords != null &&
+              element.keywords!
+                  .toLowerCase()
+                  .contains(searchValue.toLowerCase()))
           .toList();
+      filteredCommodityList.addAll(items);
     }
     update(['commodityList']);
   }
@@ -229,6 +234,12 @@ class CommodityIDScreenController extends GetxController {
         }*/
       }
     }
+  }
+
+  void clearSearch() {
+    searchController.clear();
+    searchAndAssignCommodity('');
+    unFocus();
   }
 
   /*Future<Map<String, dynamic>?> requestUploadMobileFiles(

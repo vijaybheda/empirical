@@ -3,17 +3,26 @@ import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
+import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/purchase_order_item.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/utils.dart';
 
 class PurchaseOrderDetailsController extends GetxController {
   final PartnerItem partner;
   final CarrierItem carrier;
   final CommodityItem commodity;
   final QCHeaderDetails? qcHeaderDetails;
+
+  final TextEditingController searchController = TextEditingController();
+
+  String? specificationTypeName;
+  String? specificationNumber;
+  String? specificationVersion;
+
   PurchaseOrderDetailsController({
     required this.partner,
     required this.carrier,
@@ -25,7 +34,7 @@ class PurchaseOrderDetailsController extends GetxController {
   void onInit() {
     itemSkuList.assignAll(getPurchaseOrderData());
     super.onInit();
-    filteredItemSkuList.assignAll(itemSkuList);
+    filteredInspectionsList.assignAll(itemSkuList);
     listAssigned.value = true;
   }
 
@@ -34,18 +43,32 @@ class PurchaseOrderDetailsController extends GetxController {
       Get.find<GlobalConfigController>();
   final ApplicationDao dao = ApplicationDao();
 
-  RxList<PurchaseOrderItem> filteredItemSkuList = <PurchaseOrderItem>[].obs;
+  RxList<PurchaseOrderItem> filteredInspectionsList = <PurchaseOrderItem>[].obs;
   RxList<PurchaseOrderItem> itemSkuList = <PurchaseOrderItem>[].obs;
   RxBool listAssigned = false.obs;
 
-  void searchAndAssignItems(String value) {
-    // TODO: implement search logic
+  void searchAndAssignItems(String searchValue) {
+    filteredInspectionsList.clear();
+    if (searchValue.isEmpty) {
+      filteredInspectionsList.addAll(itemSkuList);
+    } else {
+      var items = itemSkuList.where((element) {
+        String? sku = element.sku;
+        String? description = element.description;
+        return (sku != null &&
+                sku.toLowerCase().contains(searchValue.toLowerCase())) ||
+            (description != null &&
+                description.toLowerCase().contains(searchValue.toLowerCase()));
+      }).toList();
+      filteredInspectionsList.addAll(items);
+    }
+    update(['inspectionItems']);
   }
 
   List<PurchaseOrderItem> getPurchaseOrderData() {
     List<PurchaseOrderItem> list = [];
 
-    for (var item in (appStorage.selectedItemSKUList ?? [])) {
+    for (FinishedGoodsItemSKU item in (appStorage.selectedItemSKUList ?? [])) {
       list.add(PurchaseOrderItem.newData(
           item.name,
           item.sku,
@@ -55,8 +78,8 @@ class PurchaseOrderDetailsController extends GetxController {
           item.commodityID,
           item.commodityName,
           item.packDate,
-          item.ftlFlag,
-          item.branded));
+          item.FTLflag,
+          item.Branded));
     }
     return list;
   }
@@ -171,11 +194,13 @@ class PurchaseOrderDetailsController extends GetxController {
 
             Util.setInspectionUploadStatus(context, inspection.inspectionId,
                 Consts.INSPECTION_UPLOAD_READY);
+
+            await dao.updateInspectionUploadStatus(inspection.id!, status);
           } else if (appStorage.specificationGradeToleranceList != null &&
               (appStorage.specificationGradeToleranceList ?? []).isNotEmpty) {
             int totalSampleSize = 0;
             List<InspectionSample> samples =
-                await dao.findInspectionSamples(inspection.inspectionId);
+                await dao.findInspectionSamples(inspection.id!);
             if (samples.isNotEmpty) {
               for (int a = 0; a < samples.length; a++) {
                 totalSampleSize += samples[a].setSize!;
@@ -190,5 +215,11 @@ class PurchaseOrderDetailsController extends GetxController {
         }
       }
     }*/
+  }
+
+  void clearSearch() {
+    searchController.clear();
+    searchAndAssignItems("");
+    unFocus();
   }
 }
