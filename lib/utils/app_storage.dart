@@ -8,6 +8,7 @@ import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/offline_commodity.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/severity_defect.dart';
+import 'package:pverify/models/specification_analytical.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/models/user.dart';
 
@@ -17,7 +18,7 @@ class AppStorage extends GetxController {
 
   List<FinishedGoodsItemSKU>? selectedItemSKUList;
 
-  // List<SpecificationAnalytical>? specificationAnalyticalList;
+  List<SpecificationAnalytical>? specificationAnalyticalList;
   // List<SpecificationGradeToleranceArray>? specificationGradeToleranceArrayList;
   // List<SpecificationGradeTolerance>? specificationGradeToleranceList;
 

@@ -10,6 +10,7 @@ import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/ui/components/bottom_custom_button_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
+import 'package:pverify/ui/components/progress_adaptive.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
@@ -98,16 +99,17 @@ class PurchaseOrderDetailsScreen
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
-              // controller.listAssigned.value
-              //     ? Expanded(
-              //         flex: 10,
-              //         child: controller.filteredItemSkuList.isNotEmpty
-              //             ? _itemSkuListView(context, controller)
-              //             : noDataFoundWidget(),
-              //       )
-              //     : const Center(
-              //         child: SizedBox(
-              //             height: 25, width: 25, child: ProgressAdaptive())),
+              controller.listAssigned.value
+                  ? Expanded(
+                      flex: 10,
+                      child: /*controller.filteredItemSkuList.isNotEmpty
+                          ? _itemSkuListView(context, controller)
+                          :*/
+                          noDataFoundWidget(),
+                    )
+                  : const Center(
+                      child: SizedBox(
+                          height: 25, width: 25, child: ProgressAdaptive())),
             ],
           ),
         );

@@ -2223,4 +2223,111 @@ class ApplicationDao {
     }
     return inspectionId;
   }
+
+  Future<int?> createIsPictureReqSpecAttribute(
+    int inspectionID,
+    String result,
+    String resultReason,
+    bool isPictureRequired,
+  ) async {
+    final Database db = await dbProvider.database;
+    int? inspectionId;
+    try {
+      try {
+        String query =
+            "Select ${ResultRejectionDetailsColumn.INSPECTION_ID} from ${DBTables.RESULT_REJECTION_DETAILS} where ${ResultRejectionDetailsColumn.INSPECTION_ID}=$inspectionID";
+        var cursor = await db.rawQuery(query);
+
+        if (cursor.isNotEmpty) {
+          inspectionId =
+              cursor.first[ResultRejectionDetailsColumn.INSPECTION_ID] as int?;
+        }
+      } catch (e) {
+        print("Error has occurred while finding a user id. $e");
+        return null;
+      }
+
+      if (inspectionId == null) {
+        await db.transaction((txn) async {
+          var values = <String, dynamic>{
+            ResultRejectionDetailsColumn.INSPECTION_ID: inspectionID,
+            "Result": result,
+            "Result_Reason": resultReason,
+            // "Defect_Comments": comment,
+          };
+          inspectionId =
+              await txn.insert(DBTables.RESULT_REJECTION_DETAILS, values);
+        });
+      } else {
+        await db.transaction((txn) async {
+          var values = <String, dynamic>{
+            "Result": result,
+            "Result_Reason": resultReason,
+            // "Defect_Comments": comment,
+          };
+          await txn.update(DBTables.RESULT_REJECTION_DETAILS, values,
+              where: "${ResultRejectionDetailsColumn.INSPECTION_ID} = ?",
+              whereArgs: [inspectionID]);
+        });
+      }
+    } catch (e) {
+      print("Error has occurred while creating an inspection. $e");
+      return null;
+    }
+    return inspectionId;
+  }
+
+  Future<bool> updateQuantityRejected(
+      int inspectionID, int qtyRejected, int qtyReceived) async {
+    try {
+      final Database db = await dbProvider.database;
+      await db.transaction((txn) async {
+        var values = <String, dynamic>{
+          QualityControlColumn.QTY_REJECTED: qtyRejected,
+          QualityControlColumn.QTY_RECEIVED: qtyReceived,
+        };
+
+        await txn.update(
+          DBTables.QUALITY_CONTROL,
+          values,
+          where: "${QualityControlColumn.INSPECTION_ID} = ?",
+          whereArgs: [inspectionID],
+        );
+
+        return true;
+      });
+    } catch (e) {
+      print("Error has occurred while updating an inspection. $e");
+      return false;
+    }
+    return false;
+  }
+
+  Future<bool> updateItemSKUInspectionComplete(
+    int inspectionID,
+    String? complete,
+  ) async {
+    try {
+      final Database db = await dbProvider.database;
+      await db.transaction((txn) async {
+        var values = <String, dynamic>{};
+        if (complete != null) {
+          values["complete"] = complete;
+        }
+
+        await txn.update(
+          DBTables.PARTNER_ITEMSKU,
+          values,
+          where: "${PartnerItemSkuColumn.INSPECTION_ID} = ?",
+          whereArgs: [inspectionID],
+        );
+
+        return true;
+      });
+    } catch (e) {
+      print("Error has occurred while updating an inspection. $e");
+      return false;
+    }
+    return false;
+  }
 }

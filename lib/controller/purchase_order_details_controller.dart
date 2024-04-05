@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
-import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/purchase_order_item.dart';
 import 'package:pverify/models/qc_header_details.dart';
@@ -63,7 +62,7 @@ class PurchaseOrderDetailsController extends GetxController {
   }
 
   Future<void> calculateResult(BuildContext context) async {
-    int totalQualityDefectId = 0;
+    /*int totalQualityDefectId = 0;
     int totalConditionDefectId = 0;
 
     List<FinishedGoodsItemSKU> selectedItemSKUList =
@@ -73,9 +72,7 @@ class PurchaseOrderDetailsController extends GetxController {
       bool isComplete = await dao.isInspectionComplete(
           partner.id!, itemSKU.sku!, itemSKU.uniqueItemId!);
 
-      // TODO: implement below logic
-
-      /*if (isComplete) {
+      if (isComplete) {
         PartnerItemSKUInspections? partnerItemSKU =
             await dao.findPartnerItemSKU(
                 partner.id!, itemSKU.sku!, itemSKU.uniqueItemId!);
@@ -145,7 +142,7 @@ class PurchaseOrderDetailsController extends GetxController {
                         inspection.inspectionId,
                         result,
                         "${dbobj.analyticalName} = N",
-                        dbobj.pictureRequired);
+                        dbobj.pictureRequired!);
                     break;
                   }
                 }
@@ -168,7 +165,7 @@ class PurchaseOrderDetailsController extends GetxController {
                 specificationNumber,
                 specificationVersion,
                 specificationName);
-            await dao.updateInspectionComplete(inspection.inspectionId, "true");
+            await dao.updateInspectionComplete(inspection.inspectionId, true);
             await dao.updateItemSKUInspectionComplete(
                 inspection.inspectionId, "true");
 
@@ -176,13 +173,22 @@ class PurchaseOrderDetailsController extends GetxController {
                 Consts.INSPECTION_UPLOAD_READY);
           } else if (appStorage.specificationGradeToleranceList != null &&
               (appStorage.specificationGradeToleranceList ?? []).isNotEmpty) {
-            // TODO: implement grade tolerance logic
+            int totalSampleSize = 0;
+            List<InspectionSample> samples =
+                await dao.findInspectionSamples(inspection.inspectionId);
+            if (samples.isNotEmpty) {
+              for (int a = 0; a < samples.length; a++) {
+                totalSampleSize += samples[a].setSize!;
+              }
+            }
+
+            // TODO: implement logic
           } else {
             AppAlertDialog.validateAlerts(context, AppStrings.alert,
                 AppStrings.noGradeTolarenceDataFound);
           }
         }
-      }*/
-    }
+      }
+    }*/
   }
 }
