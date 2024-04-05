@@ -11,7 +11,7 @@ import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 
-class QualityControl_Controller extends GetxController {
+class QualityControlController extends GetxController {
   final orderNoTextController = TextEditingController().obs;
   final commentTextController = TextEditingController().obs;
   final sealTextController = TextEditingController().obs;
@@ -216,7 +216,8 @@ class QualityControl_Controller extends GetxController {
             */
           }
         } else {
-          Get.to(() => SelectSupplierScreen(carrier: carrier));
+          Get.to(() => SelectSupplierScreen(
+              carrier: carrier, qcHeaderDetails: qcHeaderDetails));
           /*
           Get.to(() => PartnerActivity(), arguments: {
             'poNumber': orderNoTextController.value.text,

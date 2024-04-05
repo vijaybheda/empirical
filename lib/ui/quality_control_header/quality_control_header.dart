@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/models/carrier_item.dart';
-import 'package:pverify/ui/Home/home_controller.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/quality_control_header/quality_control_controller.dart';
 import 'package:pverify/ui/trailer_temp/trailertemp.dart';
@@ -15,20 +14,19 @@ import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
-class QualityControlHeader extends GetView<HomeController> {
+class QualityControlHeader extends GetView<QualityControlController> {
   final CarrierItem carrier;
 
-  QualityControlHeader({
+  const QualityControlHeader({
     super.key,
     required this.carrier,
   });
-  QualityControl_Controller qcHeaderController = QualityControl_Controller();
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
-        init: QualityControl_Controller(),
-        builder: (QualityControl_Controller) {
+        init: QualityControlController(),
+        builder: (controller) {
           return Scaffold(
               backgroundColor: AppColors.white,
               resizeToAvoidBottomInset: false,
@@ -40,16 +38,17 @@ class QualityControlHeader extends GetView<HomeController> {
               ),
               body: Container(
                   color: Theme.of(context).colorScheme.background,
-                  child: contentView(context, carrier)));
+                  child: contentView(context, carrier, controller)));
         });
   }
 
   // CONTENT'S VIEW
 
-  Widget contentView(BuildContext context, CarrierItem carrier) {
+  Widget contentView(BuildContext context, CarrierItem carrier,
+      QualityControlController controller) {
     return Column(
       children: [
-        Expanded(child: mainContentUI(context)),
+        Expanded(child: mainContentUI(context, controller)),
         Container(
           padding: EdgeInsets.only(left: 50.w, right: 50.w),
           height: 150.h,
@@ -67,19 +66,21 @@ class QualityControlHeader extends GetView<HomeController> {
                       fontWeight: FontWeight.w600,
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
-                  onClickAction: ()  {
-                    if (qcHeaderController.isQualityControlFields_Validate(context)) {
-                      Get.to(() => TrailerTemp(carrier: carrier,orderNumber: qcHeaderController.orderNoTextController.value.text.trim()));
-                    }
-                  }
-              ),
+                  onClickAction: () {
+                if (controller.isQualityControlFields_Validate(context)) {
+                  Get.to(() => TrailerTemp(
+                      carrier: carrier,
+                      orderNumber:
+                          controller.orderNoTextController.value.text.trim()));
+                }
+              }),
               SizedBox(
                 width: 38.w,
               ),
               Obx(
                 () => customButton(
                     AppColors.white,
-                    qcHeaderController.isShortForm == true
+                    controller.isShortForm == true
                         ? AppStrings.shortForm
                         : AppStrings.detailedForm,
                     (MediaQuery.of(context).size.width / 2.3),
@@ -90,10 +91,10 @@ class QualityControlHeader extends GetView<HomeController> {
                         textStyle:
                             TextStyle(color: AppColors.textFieldText_Color)),
                     onClickAction: () => {
-                          if (qcHeaderController.isShortForm == true)
-                            {qcHeaderController.isShortForm.value = false}
+                          if (controller.isShortForm == true)
+                            {controller.isShortForm.value = false}
                           else
-                            {qcHeaderController.isShortForm.value = true}
+                            {controller.isShortForm.value = true}
                         }),
               ),
             ],
@@ -114,8 +115,8 @@ class QualityControlHeader extends GetView<HomeController> {
                   fontWeight: FontWeight.w600,
                   textStyle: TextStyle(color: AppColors.textFieldText_Color)),
               onClickAction: () async {
-            if (qcHeaderController.isQualityControlFields_Validate(context)) {
-              await qcHeaderController.saveAction(carrier);
+            if (controller.isQualityControlFields_Validate(context)) {
+              await controller.saveAction(carrier);
             }
           }),
         ),
@@ -129,84 +130,75 @@ class QualityControlHeader extends GetView<HomeController> {
 
   // MAIN CONTENT VIEW
 
-  Widget mainContentUI(BuildContext context) {
+  Widget mainContentUI(
+      BuildContext context, QualityControlController controller) {
     return SingleChildScrollView(
       child: Padding(
         padding: EdgeInsets.all(15),
         child: Column(
           children: [
-            commonRowTextFieldView(
-                context,
-                AppStrings.purchaseOrderNumber,
-                AppStrings.orderNo,
-                qcHeaderController.orderNoTextController.value),
+            commonRowTextFieldView(context, AppStrings.purchaseOrderNumber,
+                AppStrings.orderNo, controller.orderNoTextController.value),
             SizedBox(
-              height: qcHeaderController.spacingBetweenFields.h,
+              height: controller.spacingBetweenFields.h,
             ),
-            commonRowDropDownView(context, AppStrings.truckTempOK,
-                qcHeaderController.truckTempOk, AppStrings.truckTempOK),
+            commonRowDropDownView(context, controller, AppStrings.truckTempOK,
+                controller.truckTempOk, AppStrings.truckTempOK),
             SizedBox(
-              height: qcHeaderController.spacingBetweenFields.h,
+              height: controller.spacingBetweenFields.h,
             ),
-            commonRowDropDownView(context, AppStrings.dtType,
-                qcHeaderController.type, AppStrings.dtType),
+            commonRowDropDownView(context, controller, AppStrings.dtType,
+                controller.type, AppStrings.dtType),
             SizedBox(
-              height: qcHeaderController.spacingBetweenFields.h,
+              height: controller.spacingBetweenFields.h,
             ),
-            commonRowTextFieldView(
-                context,
-                AppStrings.qcComments,
-                AppStrings.qcComments,
-                qcHeaderController.commentTextController.value),
+            commonRowTextFieldView(context, AppStrings.qcComments,
+                AppStrings.qcComments, controller.commentTextController.value),
             SizedBox(
-              height: qcHeaderController.spacingBetweenFields.h,
+              height: controller.spacingBetweenFields.h,
             ),
-            Obx(() => qcHeaderController.isShortForm == true
+            Obx(() => controller.isShortForm == true
                 ? Column(
                     children: [
                       commonRowTextFieldView(
                           context,
                           AppStrings.qcSeal,
                           AppStrings.qcSeal,
-                          qcHeaderController.sealTextController.value),
+                          controller.sealTextController.value),
                       SizedBox(
-                        height: qcHeaderController.spacingBetweenFields.h,
+                        height: controller.spacingBetweenFields.h,
                       ),
-                      commonRowTextFieldView(
-                          context,
-                          AppStrings.QCHOPEN1,
-                          '',
-                          qcHeaderController
-                              .certificateDepartureTextController.value),
+                      commonRowTextFieldView(context, AppStrings.QCHOPEN1, '',
+                          controller.certificateDepartureTextController.value),
                       SizedBox(
-                        height: qcHeaderController.spacingBetweenFields.h,
+                        height: controller.spacingBetweenFields.h,
                       ),
-                      commonRowTextFieldView(
-                          context,
-                          AppStrings.QCHOPEN2,
-                          '',
-                          qcHeaderController
-                              .factoryReferenceTextController.value),
+                      commonRowTextFieldView(context, AppStrings.QCHOPEN2, '',
+                          controller.factoryReferenceTextController.value),
                       SizedBox(
-                        height: qcHeaderController.spacingBetweenFields.h,
+                        height: controller.spacingBetweenFields.h,
                       ),
                       commonRowTextFieldView(context, AppStrings.QCHOPEN3, '',
-                          qcHeaderController.usdaReferenceTextController.value),
+                          controller.usdaReferenceTextController.value),
                       SizedBox(
-                        height: qcHeaderController.spacingBetweenFields.h,
+                        height: controller.spacingBetweenFields.h,
                       ),
                       commonRowTextFieldView(context, AppStrings.QCHOPEN4, '',
-                          qcHeaderController.containerTextController.value),
+                          controller.containerTextController.value),
                       SizedBox(
-                        height: qcHeaderController.spacingBetweenFields.h,
+                        height: controller.spacingBetweenFields.h,
                       ),
                       commonRowTextFieldView(context, AppStrings.QCHOPEN5, '',
-                          qcHeaderController.totalQuantityTextController.value),
+                          controller.totalQuantityTextController.value),
                       SizedBox(
-                        height: qcHeaderController.spacingBetweenFields.h,
+                        height: controller.spacingBetweenFields.h,
                       ),
-                      commonRowDropDownView(context, AppStrings.QCHOPEN6,
-                          qcHeaderController.loadType, AppStrings.QCHOPEN6),
+                      commonRowDropDownView(
+                          context,
+                          controller,
+                          AppStrings.QCHOPEN6,
+                          controller.loadType,
+                          AppStrings.QCHOPEN6),
                       // SizedBox(
                       //   height: Controller.spacingBetweenFields.h,
                       // ),
@@ -261,7 +253,11 @@ class QualityControlHeader extends GetView<HomeController> {
   }
 
   Widget commonRowDropDownView(
-      BuildContext context, String labelTitle, List items, String hintText) {
+      BuildContext context,
+      QualityControlController controller,
+      String labelTitle,
+      List items,
+      String hintText) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -303,12 +299,12 @@ class QualityControlHeader extends GetView<HomeController> {
                 );
               }).toList(),
               value: labelTitle == AppStrings.truckTempOK
-                  ? qcHeaderController.selectetdTruckTempOK.value
+                  ? controller.selectetdTruckTempOK.value
                   : labelTitle == AppStrings.dtType
-                      ? qcHeaderController.selectetdTypes.value
-                      : qcHeaderController.selectetdloadType.value,
+                      ? controller.selectetdTypes.value
+                      : controller.selectetdloadType.value,
               onChanged: (newValue) {
-                qcHeaderController.setSelected(
+                controller.setSelected(
                     newValue ?? '',
                     labelTitle == AppStrings.truckTempOK
                         ? 'TruckTempOK'

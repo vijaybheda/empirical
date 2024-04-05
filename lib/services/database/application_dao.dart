@@ -7,8 +7,6 @@ import 'dart:io';
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:pverify/models/commodity_item.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:pverify/models/finished_goods_item_sku.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/models/inspection_defect.dart';

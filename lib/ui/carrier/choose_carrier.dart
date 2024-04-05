@@ -95,37 +95,12 @@ class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           String letter = alphabets.elementAt(index);
-          // bool isDragging = false;
-
           return SizedBox(
             height: MediaQuery.of(context).size.height * .70 / alphabets.length,
             child: GestureDetector(
               onTap: () {
                 controller.scrollToSection(letter, index);
               },
-              /*onVerticalDragStart: (_) {
-                isDragging = true; // Set flag on drag start
-              },
-              onVerticalDragUpdate: (details) {
-                // Calculate the target index only if dragging
-                if (isDragging) {
-                  double offsetY = details.localPosition.dy;
-                  int targetIndex =
-                      (offsetY / listHeight * alphabets.length).toInt();
-                  targetIndex = targetIndex.clamp(0, alphabets.length - 1);
-                  _scrollToListSection(controller, alphabets[targetIndex]);
-                }
-
-                */ /*int targetIndex = controller.filteredCarrierList.indexWhere(
-                    (supplier) => supplier.name!.startsWith(letter));
-                if (targetIndex != -1) {
-                  controller.scrollController.animateTo(
-                    (targetIndex * listHeight) + (index * (listHeight * .45)),
-                    duration: const Duration(milliseconds: 10),
-                    curve: Curves.easeIn,
-                  );
-                }*/ /*
-              },*/
               child: SizedBox(
                 height: 20,
                 child: Text(
