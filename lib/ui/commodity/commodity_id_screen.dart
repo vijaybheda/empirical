@@ -6,6 +6,7 @@ import 'package:pverify/controller/commodity_id_screen_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
@@ -15,16 +16,21 @@ import 'package:pverify/utils/theme/colors.dart';
 class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
   final PartnerItem partner;
   final CarrierItem carrier;
+  final QCHeaderDetails? qcHeaderDetails;
   const CommodityIDScreen({
     super.key,
     required this.partner,
     required this.carrier,
+    required this.qcHeaderDetails,
   });
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<CommodityIDScreenController>(
-        init: CommodityIDScreenController(partner: partner, carrier: carrier),
+        init: CommodityIDScreenController(
+            partner: partner,
+            carrier: carrier,
+            qcHeaderDetails: qcHeaderDetails),
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -58,7 +64,7 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
                         textStyle: TextStyle(color: AppColors.white)),
                   ),
                 ),
-                const SearchGradingStandardWidget(),
+                const _SearchGradingStandardWidget(),
                 Expanded(flex: 10, child: _commodityListSection(context)),
                 FooterContentView(
                   onDownloadTap: () {
@@ -182,11 +188,12 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
             controller.navigateToPurchaseOrderScreen(partner);
           },
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20.h),
+            padding: EdgeInsets.symmetric(horizontal: 25.h),
             child: Column(
               children: [
                 getAlphabetContent(controller.filteredCommodityList, index),
-                SizedBox(
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20.h),
                   height: controller.listHeight,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -215,11 +222,11 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
       },
       separatorBuilder: (BuildContext context, int index) {
         return Divider(
-          height: 10,
-          indent: 0,
-          endIndent: 0,
+          height: 5,
+          indent: 10,
+          endIndent: 10,
           color: AppColors.white,
-          thickness: 1,
+          thickness: 0.15,
         );
       },
     );
@@ -245,25 +252,34 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
     }
 
     if (alphabet.isNotEmpty) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            alphabet,
-            style: Get.textTheme.headlineMedium?.copyWith(
-              color: AppColors.white,
-              fontSize: 60.h,
+      return Container(
+        padding: EdgeInsets.symmetric(vertical: 10.h),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 10.h),
+            Align(
+              alignment: Alignment.topLeft,
+              child: Text(
+                alphabet,
+                style: Get.textTheme.headlineMedium?.copyWith(
+                  color: AppColors.white,
+                  fontSize: 60.h,
+                ),
+                textAlign: TextAlign.start,
+              ),
             ),
-          ),
-          Divider(
-            height: 10,
-            indent: 0,
-            endIndent: 0,
-            color: AppColors.white,
-            thickness: 1,
-          )
-        ],
+            Divider(
+              height: 10,
+              indent: 0,
+              endIndent: 0,
+              color: AppColors.white,
+              thickness: 0.9,
+            )
+          ],
+        ),
       );
     } else {
       return Container();
@@ -271,8 +287,8 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
   }
 }
 
-class SearchGradingStandardWidget extends StatelessWidget {
-  const SearchGradingStandardWidget({super.key});
+class _SearchGradingStandardWidget extends StatelessWidget {
+  const _SearchGradingStandardWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -287,7 +303,8 @@ class SearchGradingStandardWidget extends StatelessWidget {
           },
           decoration: InputDecoration(
             hintText: AppStrings.searchCommodity,
-            hintStyle: Get.textTheme.bodyLarge,
+            hintStyle: Get.textTheme.bodyLarge?.copyWith(
+                fontSize: 25.sp, color: AppColors.white.withOpacity(0.5)),
             isDense: true,
             contentPadding:
                 EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),

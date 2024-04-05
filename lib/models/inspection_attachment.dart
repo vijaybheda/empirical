@@ -1,6 +1,7 @@
 class InspectionAttachment {
   int? id; // SQLite row id
   int? inspectionId;
+  int? attachmentId;
   String? title;
   int? createdTime;
   String? fileLocation;
@@ -8,6 +9,7 @@ class InspectionAttachment {
   InspectionAttachment({
     this.id,
     required this.inspectionId,
+    required this.attachmentId,
     required this.title,
     required this.createdTime,
     required this.fileLocation,
@@ -17,6 +19,7 @@ class InspectionAttachment {
     return {
       'id': id,
       'inspectionId': inspectionId,
+      'attachmentId': attachmentId,
       'title': title,
       'createdTime': createdTime,
       'fileLocation': fileLocation,
@@ -27,6 +30,7 @@ class InspectionAttachment {
     return InspectionAttachment(
       id: map['id'],
       inspectionId: map['inspectionId'],
+      attachmentId: map['attachmentId'],
       title: map['title'],
       createdTime: map['createdTime'],
       fileLocation: map['fileLocation'],
@@ -37,6 +41,7 @@ class InspectionAttachment {
   InspectionAttachment copyWith({
     int? id,
     int? inspectionId,
+    int? attachmentId,
     String? title,
     int? createdTime,
     String? fileLocation,
@@ -44,6 +49,7 @@ class InspectionAttachment {
     return InspectionAttachment(
       id: id ?? this.id,
       inspectionId: inspectionId ?? this.inspectionId,
+      attachmentId: attachmentId ?? this.attachmentId,
       title: title ?? this.title,
       createdTime: createdTime ?? this.createdTime,
       fileLocation: fileLocation ?? this.fileLocation,

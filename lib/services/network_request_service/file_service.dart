@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pverify/models/file_upload_model.dart';
+import 'package:pverify/services/network_request_service/api_urls.dart';
 import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/extensions/directory_extensions.dart';
@@ -33,11 +34,10 @@ class FileService {
 
   static Future<FileUploadData?> uploadFile(FilePickerResult? fileResult,
       {OnUploadProgressCallback? onUploadProgress}) async {
-    final String authToken = _appStorage.read(StorageKey.jwtToken) ?? "";
     try {
       MultipartRequest request = MultipartRequest(
         'POST',
-        Uri.parse("${const String.fromEnvironment('API_HOST')}/api/v1/upload"),
+        Uri.parse("${ApiUrls.serverUrl}/api/v1/upload"),
         onProgress: (int bytes, int total) {
           if (onUploadProgress != null) {
             onUploadProgress(bytes, total);
@@ -45,10 +45,8 @@ class FileService {
           }
         },
       );
-      Map<String, String> headers = {
-        "Authorization": "Bearer $authToken",
-        "Content-type": "multipart/form-data"
-      };
+      final Map<String, String> headers =
+          _appStorage.read(StorageKey.kHeaderMap);
       request.files.add(
         await http.MultipartFile.fromPath(
             'file', fileResult?.files.first.path ?? 'name'),
@@ -77,13 +75,13 @@ class FileService {
     return null;
   }
 
-  static Future<Response> uploadFileWithProgress(FilePickerResult? fileResult,
-      {OnUploadProgressCallback? onUploadProgress}) async {
-    final String authToken = _appStorage.read(StorageKey.jwtToken) ?? "";
-    Map<String, String> headers = {
-      "Authorization": "Bearer $authToken",
-      "Content-type": "multipart/form-data"
-    };
+  static Future<Response> uploadFileWithProgress(
+    String url,
+    FilePickerResult? fileResult, {
+    Map<String, dynamic>? headerData,
+    OnUploadProgressCallback? onUploadProgress,
+  }) async {
+    Map<String, dynamic> headers = _appStorage.getHeaderMap();
     final dio = Dio();
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(
@@ -91,8 +89,11 @@ class FileService {
         filename: '${fileResult?.files.first.name}',
       ),
     });
+    headerData?.forEach((key, value) {
+      headers[key] = value;
+    });
     Response response = await dio.post(
-      "${const String.fromEnvironment('API_HOST')}/api/v1/upload",
+      url,
       data: formData,
       options: Options(headers: headers),
       onSendProgress: (int bytes, int total) {
@@ -174,11 +175,7 @@ class FileService {
   static Future<Response> uploadOrDeleteProfileImageWithProgress(
       String filePath,
       {OnUploadProgressCallback? onUploadProgress}) async {
-    final String authToken = _appStorage.read(StorageKey.jwtToken) ?? "";
-    Map<String, String> headers = {
-      "Authorization": "Bearer $authToken",
-      // "Content-type": "multipart/form-data"
-    };
+    Map<String, dynamic> headers = _appStorage.getHeaderMap();
     final dio = Dio();
     FormData? formData;
     //if file path is null then the file is going to be deleted from server
@@ -195,7 +192,7 @@ class FileService {
       formData = null;
     }
     Response response = await dio.put(
-      "${const String.fromEnvironment('API_HOST')}/api/v1/students/profile/update-profile-photo",
+      "${ApiUrls.serverUrl}/api/v1/students/profile/update-profile-photo",
       data: formData,
       options: Options(headers: headers),
       onSendProgress: (int bytes, int total) {
@@ -253,10 +250,7 @@ class FileService {
 
     File file = await File(path).create(recursive: true);
     try {
-      final String authToken = _appStorage.read(StorageKey.jwtToken) ?? "";
-      final Map<String, String> headers = {
-        'Authorization': "Bearer $authToken"
-      };
+      Map<String, dynamic> headers = _appStorage.getHeaderMap();
       final response = await dio.get(
         fileUrl,
         options: Options(

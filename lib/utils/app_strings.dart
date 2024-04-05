@@ -227,6 +227,16 @@ class AppStrings {
 
   static String uploadError = 'Error uploading data. Please try again.';
 
+  static String selectPartnerInfo =
+      'No supplier selected. Please select a supplier.';
+
+  static String scanBarcode = 'Scan Barcode';
+
+  static String back = 'Back';
+
+  static String noGradeTolarenceDataFound =
+      'No Grade Tolerance found to calculate result.';
+
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';
 

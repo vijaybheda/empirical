@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
+import 'package:pverify/models/commodity_item.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pverify/models/finished_goods_item_sku.dart';
 import 'package:pverify/models/inspection.dart';
@@ -14,12 +15,19 @@ import 'package:pverify/models/inspection_defect.dart';
 import 'package:pverify/models/inspection_defect_attachment.dart';
 import 'package:pverify/models/inspection_sample.dart';
 import 'package:pverify/models/inspection_specification.dart';
+import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/my_inspection_48hour_item.dart';
+import 'package:pverify/models/overridden_result_item.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/partner_item_sku_inspections.dart';
 import 'package:pverify/models/purchase_order_details.dart';
 import 'package:pverify/models/qc_header_details.dart';
+import 'package:pverify/models/quality_control_item.dart';
 import 'package:pverify/models/specification.dart';
+import 'package:pverify/models/specification_analytical.dart';
+import 'package:pverify/models/specification_analytical_request_item.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
+import 'package:pverify/models/trailer_temperature_item.dart';
 import 'package:pverify/models/user.dart';
 import 'package:pverify/models/user_offline.dart';
 import 'package:pverify/services/database/column_names.dart';
@@ -667,7 +675,7 @@ class ApplicationDao {
           .transform(const CsvToListConverter(eol: '\n', fieldDelimiter: '|'))
           .toList();
 
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.ITEM_GROUP1}');
@@ -715,7 +723,7 @@ class ApplicationDao {
     debugPrint('Importing Item SKU');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file =
           File("$storagePath${FileManString.csvFilesCache}/item_sku.csv");
@@ -771,7 +779,7 @@ class ApplicationDao {
     debugPrint('Importing Item Agency');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file =
           File("$storagePath${FileManString.csvFilesCache}/agency.csv");
@@ -811,7 +819,7 @@ class ApplicationDao {
     debugPrint('Importing Item Grade');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file =
           File("$storagePath${FileManString.csvFilesCache}/grade.csv");
@@ -852,7 +860,7 @@ class ApplicationDao {
     debugPrint('Importing Item Grade Commodity');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/grade_commodity.csv");
@@ -893,7 +901,7 @@ class ApplicationDao {
     debugPrint('Importing Item Grade Commodity Detail');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/grade_commodity_detail.csv");
@@ -938,7 +946,7 @@ class ApplicationDao {
     debugPrint('Importing Item specification');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file =
           File("$storagePath${FileManString.csvFilesCache}/specification.csv");
@@ -982,7 +990,7 @@ class ApplicationDao {
     debugPrint('Importing Item Material Specification');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/material_specification.csv");
@@ -1026,7 +1034,7 @@ class ApplicationDao {
     debugPrint('Importing Item Specification Supplier');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/specification_supplier.csv");
@@ -1074,7 +1082,7 @@ class ApplicationDao {
     debugPrint('Importing Item Specification Grade Tolerance');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/specification_grade_tolerance.csv");
@@ -1129,7 +1137,7 @@ class ApplicationDao {
     debugPrint('Importing Item Specification Analytical');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/specification_analytical.csv");
@@ -1186,7 +1194,7 @@ class ApplicationDao {
     debugPrint('Importing Item Specification Analytical');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/specification_packaging_finished_goods.csv");
@@ -1233,7 +1241,7 @@ class ApplicationDao {
     debugPrint('Importing Item Specification Type');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/specification_type.csv");
@@ -1274,7 +1282,7 @@ class ApplicationDao {
     debugPrint('Importing Item Commodity');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file =
           File("$storagePath${FileManString.csvFilesCache}/commodity.csv");
@@ -1316,7 +1324,7 @@ class ApplicationDao {
     debugPrint('Importing Item Commodity Keywords');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/commodity_keywords.csv");
@@ -1357,7 +1365,7 @@ class ApplicationDao {
     debugPrint('Importing Item POHeader');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/purchase_order_header.csv");
@@ -1401,7 +1409,7 @@ class ApplicationDao {
     debugPrint('Importing Item PODetail');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/purchase_order_detail.csv");
@@ -1455,7 +1463,7 @@ class ApplicationDao {
     debugPrint('Importing Item Specification SupplierGtins');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/specification_supplier_gtins.csv");
@@ -1498,7 +1506,7 @@ class ApplicationDao {
     debugPrint('Importing Item Commodity CTE');
 
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       var storagePath = await Utils().getExternalStoragePath();
       final File file = File(
           "$storagePath${FileManString.csvFilesCache}/supplier_commodity.csv");
@@ -1694,7 +1702,7 @@ class ApplicationDao {
     String cteType,
   ) async {
     // Open the db
-    Database db = await dbProvider.database;
+    final Database db = await dbProvider.database;
 
     try {
       // Begin a transaction
@@ -1855,7 +1863,7 @@ class ApplicationDao {
 
   Future<int> deleteRowsTempTrailerTable() async {
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       return await db.transaction((txn) async {
         return await txn.delete(DBTables.TEMP_TRAILER_TEMPERATURE);
       });
@@ -1867,7 +1875,7 @@ class ApplicationDao {
 
   Future<int> deleteTempTrailerTemperatureDetails() async {
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       return await db.transaction((txn) async {
         return await txn.delete(DBTables.TEMP_TRAILER_TEMPERATURE_DETAILS);
       });
@@ -1879,7 +1887,7 @@ class ApplicationDao {
 
   Future<int> deleteSelectedItemSKUList() async {
     try {
-      Database db = await dbProvider.database;
+      final Database db = await dbProvider.database;
       return await db.transaction((txn) async {
         return await txn.delete(DBTables.SELECTED_ITEM_SKU_LIST);
       });
@@ -1892,7 +1900,7 @@ class ApplicationDao {
 
   Future<List<InspectionDefectAttachment>?> findDefectAttachmentsByInspectionId(
       int inspectionId) async {
-    Database db = await dbProvider.database;
+    final Database db = await dbProvider.database;
     final List<Map<String, dynamic>> maps = await db.query(
         DBTables.INSPECTION_DEFECT_ATTACHMENT,
         where: '${InspectionDefectAttachmentColumn.INSPECTION_ID} = ?',
@@ -1903,7 +1911,6 @@ class ApplicationDao {
   }
 
   Future<List<FinishedGoodsItemSKU>?> getFinishedGoodItemSkuFromTable(
-      Database database,
       int supplierId,
       int enterpriseId,
       int commodityId,
@@ -1915,7 +1922,7 @@ class ApplicationDao {
     FinishedGoodsItemSKU? item;
     String query;
     try {
-      bool hqUser = supplierId == headquarterId;
+      bool hqUser = (supplierId == headquarterId);
 
       if (hqUser) {
         query = "select distinct(itemSku.SKU_ID), itemSku.Name, itemSku.Code, itemSku.FTL, itemSku.Branded from Specification_Supplier SS " +
@@ -1943,12 +1950,16 @@ class ApplicationDao {
       } else {
         args = [supplierId, headquarterId, supplierId, commodityId];
       }
+      final Database db = await dbProvider.database;
 
-      List<Map<String, dynamic>> results = await database.rawQuery(query, args);
+      List<Map<String, dynamic>> results = await db.rawQuery(query, args);
 
       for (Map<String, dynamic> row in results) {
-        item = FinishedGoodsItemSKU.fromMap(row);
-        item.copyWith(
+        item = FinishedGoodsItemSKU();
+        item = item.copyWith(
+          id: row['SKU_ID'],
+          name: row['Name'],
+          sku: row['Code'],
           commodityName: commodityName,
           partnerId: supplierId,
           partnerName: partnerName,
@@ -1961,5 +1972,385 @@ class ApplicationDao {
       return null;
     }
     return itemSKUList;
+  }
+
+  Future<QualityControlItem?> findQualityControlDetails(
+      int inspectionId) async {
+    final Database db = await dbProvider.database;
+    List<Map> results = await db.query(
+      DBTables.QUALITY_CONTROL,
+      where: '${QualityControlColumn.INSPECTION_ID} = ?',
+      whereArgs: [inspectionId],
+    );
+
+    if (results.isNotEmpty) {
+      return QualityControlItem.fromJson(results.first as Map<String, dynamic>);
+    }
+
+    return null;
+  }
+
+  Future<List<TrailerTemperatureItem>> findListTrailerTemperatureItems(
+      int inspectionId) async {
+    final Database db = await dbProvider.database;
+    List<TrailerTemperatureItem> trailerTempList = [];
+    List<Map> results = await db.query(
+      DBTables.TRAILER_TEMPERATURE,
+      where: '${TrailerTemperatureColumn.INSPECTION_ID} = ?',
+      whereArgs: [inspectionId],
+    );
+
+    for (Map<dynamic, dynamic> map in results) {
+      trailerTempList
+          .add(TrailerTemperatureItem.fromMap(map as Map<String, dynamic>));
+    }
+
+    return trailerTempList;
+  }
+
+  Future<List<SpecificationAnalyticalRequest>>
+      findSpecificationAnalyticalRequest(int inspectionId) async {
+    final Database db = await dbProvider.database;
+    List<SpecificationAnalyticalRequest> list = [];
+
+    List<Map> results = await db.query(
+      DBTables.SPECIFICATION_ATTRIBUTES,
+      where: '${SpecificationAttributesColumn.INSPECTION_ID} = ?',
+      whereArgs: [inspectionId],
+    );
+
+    for (Map<dynamic, dynamic> map in results) {
+      list.add(
+          SpecificationAnalyticalRequest.fromMap(map as Map<String, dynamic>));
+    }
+
+    return list;
+  }
+
+  Future<OverriddenResult?> getOverriddenResult(int inspectionId) async {
+    final Database db = await dbProvider.database;
+    OverriddenResult? item;
+
+    List<Map> results = await db.rawQuery(
+      'SELECT Overridden_By, Overridden_Result, Overridden_Timestamp, Overridden_Comments, Old_Result, Original_Qty_Shipped, Original_Qty_Rejected, New_Qty_Shipped, New_Qty_Rejected FROM ${DBTables.OVERRIDDEN_RESULT} WHERE Inspection_ID = ?',
+      [inspectionId.toString()],
+    );
+
+    if (results.isNotEmpty) {
+      item = OverriddenResult.fromMap(results.first as Map<String, dynamic>);
+    }
+
+    return item;
+  }
+
+  Future<List<CommodityItem>?> getCommodityByPartnerFromTable(int supplierId,
+      int enterpriseId, int supplierIdParam, int headquarterId) async {
+    List<CommodityItem> itemSKUList = [];
+    CommodityItem item;
+    Database db = await dbProvider.database;
+    try {
+      bool hqUser = (supplierIdParam == headquarterId);
+      List<dynamic> args = [
+        'A',
+        supplierId,
+        'FG',
+        'AC',
+        headquarterId,
+        supplierId,
+        'A'
+      ];
+      String query1 =
+          'select distinct(c.id), c.name, c.keywords from Specification_Supplier SS '
+          'inner join Material_Specification MS on (SS.Number_Specification, SS.Version_Specification)=(MS.Number_Specification,MS.Version_Specification) '
+          'inner join Item_SKU itemSku on SS.Item_SKU_ID=itemSku.SKU_ID '
+          'inner join Commodity C on itemSku.Commodity_ID=C.ID '
+          'where SS.Status=? and SS.supplier_id=? '
+          'AND itemSku.Usage_Type=? and itemSku.Status=? '
+          'AND (itemSku.Company_Id =? or itemSku.Company_Id=?) '
+          'AND MS.Status = ?';
+
+      if (hqUser) {
+        query1 =
+            'select distinct(c.id), c.name, c.keywords from Specification_Supplier SS '
+            'inner join Material_Specification MS on (SS.Number_Specification, SS.Version_Specification)=(MS.Number_Specification,MS.Version_Specification) '
+            'inner join Item_SKU itemSku on SS.Item_SKU_ID=itemSku.SKU_ID '
+            'inner join Commodity C on itemSku.Commodity_ID=C.ID '
+            'where SS.Status=? and SS.supplier_id=? '
+            'AND itemSku.Usage_Type=? and itemSku.Status=? and itemSku.Company_Id=? '
+            'AND MS.Status = ?';
+        args = ['A', supplierId, 'FG', 'AC', headquarterId, 'A'];
+      }
+
+      List<Map<String, dynamic>> cursor = await db.rawQuery(query1, args);
+
+      for (Map<String, dynamic> row in cursor) {
+        item = CommodityItem.fromJson(row);
+        itemSKUList.add(item);
+      }
+    } catch (e) {
+      log('Error has occurred while finding quality control items: $e');
+      return null;
+    }
+    return itemSKUList;
+  }
+
+  Future<int> getHeadquarterIdByUserId(String userID) async {
+    Database db = await dbProvider.database;
+    int enterpriseId = 0;
+    List<dynamic> args = [userID];
+    try {
+      String query =
+          'SELECT * FROM ${DBTables.USER_OFFLINE} WHERE ${UserOfflineColumn.USER_ID} = ?';
+      List<Map<String, dynamic>> result = await db.rawQuery(query, args);
+
+      if (result.isNotEmpty) {
+        enterpriseId = result.first[UserOfflineColumn.HEADQUATER_SUPPLIER_ID];
+      }
+    } catch (e) {
+      print('Error has occurred while finding a user id: $e');
+      return -1;
+    }
+    return enterpriseId;
+  }
+
+  Future<bool> isInspectionComplete(
+      int partnerId, String itemSKU, String lotNo) async {
+    List<dynamic> args = [true, partnerId.toString(), itemSKU, lotNo];
+
+    try {
+      Database db = await dbProvider.database;
+      String query =
+          "Select * from ${DBTables.PARTNER_ITEMSKU} where ${PartnerItemSkuColumn.COMPLETE}=?"
+          " and ${PartnerItemSkuColumn.PARTNER_ID}=?"
+          " and ${PartnerItemSkuColumn.ITEM_SKU}=?"
+          " and ${PartnerItemSkuColumn.UNIQUE_ID}=?";
+
+      var cursor = await db.rawQuery(query, args);
+      if (cursor.isNotEmpty) {
+        return true;
+      }
+    } catch (e) {
+      print("Error has occurred while finding pfg: $e");
+      return false;
+    }
+    return false;
+  }
+
+  Future<PartnerItemSKUInspections?> findPartnerItemSKU(
+      int partnerId, String itemSKU, String uniqueId) async {
+    List<dynamic> args = [partnerId.toString(), itemSKU, uniqueId];
+    try {
+      String query =
+          "Select * from ${DBTables.PARTNER_ITEMSKU} where ${PartnerItemSkuColumn.PARTNER_ID}=?" +
+              " and ${PartnerItemSkuColumn.ITEM_SKU}=?" +
+              " and ${PartnerItemSkuColumn.UNIQUE_ID}=?";
+
+      Database db = await dbProvider.database;
+      var cursor = await db.rawQuery(query, args);
+
+      PartnerItemSKUInspections? item =
+          PartnerItemSKUInspections.fromMap(cursor.first);
+      return item;
+    } catch (e) {
+      print("Error has occurred while finding quality control items: $e");
+      return null;
+    }
+  }
+
+  Future<List<SpecificationAnalytical>?> getSpecificationAnalyticalFromDB(
+      String number, String version) async {
+    List<SpecificationAnalytical> list = [];
+    SpecificationAnalytical item;
+
+    try {
+      List<dynamic> args = [number, version];
+
+      String query = "Select * from ${DBTables.SPECIFICATION_ANALYTICAL} where "
+              "${SpecificationAnalyticalColumn.NUMBER_SPECIFICATION}=?" +
+          " and ${SpecificationAnalyticalColumn.VERSION_SPECIFICATION}=?";
+      Database db = await dbProvider.database;
+      var cursor = await db.rawQuery(query, args);
+
+      for (Map<String, dynamic> row in cursor) {
+        item = SpecificationAnalytical.fromMap(row);
+        list.add(item);
+      }
+    } catch (e) {
+      print("Error has occurred while finding quality control items: $e");
+      return null;
+    }
+    return list;
+  }
+
+  Future<SpecificationAnalyticalRequest?> findSpecAnalyticalObj(
+      int inspectionId, int analyticalID) async {
+    try {
+      List<dynamic> args = [inspectionId.toString(), analyticalID.toString()];
+      String query = "Select * from ${DBTables.SPECIFICATION_ATTRIBUTES} where "
+              "${SpecificationAttributesColumn.INSPECTION_ID}=?" +
+          " and ${SpecificationAttributesColumn.ANALYTICAL_ID}=?";
+      Database db = await dbProvider.database;
+      var cursor = await db.rawQuery(query, args);
+
+      SpecificationAnalyticalRequest? item =
+          SpecificationAnalyticalRequest.fromMap(cursor.first);
+      return item;
+    } catch (e) {
+      print("Error has occurred while finding quality control items: $e");
+      return null;
+    }
+  }
+
+  Future<int?> createOrUpdateResultReasonDetails(int inspectionID,
+      String result, String resultReason, String comment) async {
+    int? inspectionId;
+    final Database db = await dbProvider.database;
+    try {
+      try {
+        String query =
+            "Select ${ResultRejectionDetailsColumn.INSPECTION_ID} from ${DBTables.RESULT_REJECTION_DETAILS} where ${ResultRejectionDetailsColumn.INSPECTION_ID} = $inspectionID";
+        List<dynamic> cursor = await db.rawQuery(query);
+
+        if (cursor.isNotEmpty) {
+          inspectionId = cursor[0][ResultRejectionDetailsColumn.INSPECTION_ID];
+        }
+      } catch (e) {
+        print("Error has occurred while finding a user id: $e");
+        return null;
+      }
+
+      if (inspectionId == null) {
+        var values = <String, dynamic>{
+          ResultRejectionDetailsColumn.INSPECTION_ID: inspectionID,
+          ResultRejectionDetailsColumn.RESULT: result,
+          ResultRejectionDetailsColumn.RESULT_REASON: resultReason,
+          ResultRejectionDetailsColumn.DEFECT_COMMENTS: comment,
+        };
+
+        inspectionId =
+            await db.insert(DBTables.RESULT_REJECTION_DETAILS, values);
+      } else {
+        var values = <String, dynamic>{
+          ResultRejectionDetailsColumn.RESULT: result,
+          ResultRejectionDetailsColumn.RESULT_REASON: resultReason,
+          ResultRejectionDetailsColumn.DEFECT_COMMENTS: comment,
+        };
+
+        await db.update(DBTables.RESULT_REJECTION_DETAILS, values,
+            where: '${ResultRejectionDetailsColumn.INSPECTION_ID} = ?',
+            whereArgs: [inspectionID]);
+      }
+    } catch (e) {
+      print("Error has occurred while creating an inspection: $e");
+      return null;
+    }
+    return inspectionId;
+  }
+
+  Future<int?> createIsPictureReqSpecAttribute(
+    int inspectionID,
+    String result,
+    String resultReason,
+    bool isPictureRequired,
+  ) async {
+    final Database db = await dbProvider.database;
+    int? inspectionId;
+    try {
+      try {
+        String query =
+            "Select ${ResultRejectionDetailsColumn.INSPECTION_ID} from ${DBTables.RESULT_REJECTION_DETAILS} where ${ResultRejectionDetailsColumn.INSPECTION_ID}=$inspectionID";
+        var cursor = await db.rawQuery(query);
+
+        if (cursor.isNotEmpty) {
+          inspectionId =
+              cursor.first[ResultRejectionDetailsColumn.INSPECTION_ID] as int?;
+        }
+      } catch (e) {
+        print("Error has occurred while finding a user id. $e");
+        return null;
+      }
+
+      if (inspectionId == null) {
+        await db.transaction((txn) async {
+          var values = <String, dynamic>{
+            ResultRejectionDetailsColumn.INSPECTION_ID: inspectionID,
+            "Result": result,
+            "Result_Reason": resultReason,
+            // "Defect_Comments": comment,
+          };
+          inspectionId =
+              await txn.insert(DBTables.RESULT_REJECTION_DETAILS, values);
+        });
+      } else {
+        await db.transaction((txn) async {
+          var values = <String, dynamic>{
+            "Result": result,
+            "Result_Reason": resultReason,
+            // "Defect_Comments": comment,
+          };
+          await txn.update(DBTables.RESULT_REJECTION_DETAILS, values,
+              where: "${ResultRejectionDetailsColumn.INSPECTION_ID} = ?",
+              whereArgs: [inspectionID]);
+        });
+      }
+    } catch (e) {
+      print("Error has occurred while creating an inspection. $e");
+      return null;
+    }
+    return inspectionId;
+  }
+
+  Future<bool> updateQuantityRejected(
+      int inspectionID, int qtyRejected, int qtyReceived) async {
+    try {
+      final Database db = await dbProvider.database;
+      await db.transaction((txn) async {
+        var values = <String, dynamic>{
+          QualityControlColumn.QTY_REJECTED: qtyRejected,
+          QualityControlColumn.QTY_RECEIVED: qtyReceived,
+        };
+
+        await txn.update(
+          DBTables.QUALITY_CONTROL,
+          values,
+          where: "${QualityControlColumn.INSPECTION_ID} = ?",
+          whereArgs: [inspectionID],
+        );
+
+        return true;
+      });
+    } catch (e) {
+      print("Error has occurred while updating an inspection. $e");
+      return false;
+    }
+    return false;
+  }
+
+  Future<bool> updateItemSKUInspectionComplete(
+    int inspectionID,
+    String? complete,
+  ) async {
+    try {
+      final Database db = await dbProvider.database;
+      await db.transaction((txn) async {
+        var values = <String, dynamic>{};
+        if (complete != null) {
+          values["complete"] = complete;
+        }
+
+        await txn.update(
+          DBTables.PARTNER_ITEMSKU,
+          values,
+          where: "${PartnerItemSkuColumn.INSPECTION_ID} = ?",
+          whereArgs: [inspectionID],
+        );
+
+        return true;
+      });
+    } catch (e) {
+      print("Error has occurred while updating an inspection. $e");
+      return false;
+    }
+    return false;
   }
 }

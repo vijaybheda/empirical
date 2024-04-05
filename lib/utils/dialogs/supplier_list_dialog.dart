@@ -5,10 +5,10 @@ import 'package:pverify/controller/select_supplier_screen_controller.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/custom_radio_tile.dart';
+import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class SupplierListDialog {
-  // TODO: Vijay change message and UI according to existing app
   static Future<PartnerItem?> showListDialog(BuildContext context) {
     SelectSupplierScreenController controller =
         Get.find<SelectSupplierScreenController>();
@@ -38,7 +38,9 @@ class SupplierListDialog {
                   controller: controller.searchNonOpenSuppController,
                   decoration: InputDecoration(
                     hintText: AppStrings.searchPartner,
-                    hintStyle: Get.textTheme.bodyLarge,
+                    hintStyle: Get.textTheme.bodyLarge?.copyWith(
+                        fontSize: 25.sp,
+                        color: AppColors.white.withOpacity(0.5)),
                     isDense: true,
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
@@ -94,7 +96,6 @@ class SupplierListDialog {
                               style: Get.textTheme.bodyLarge,
                             ),
                             value: index,
-                            secondary: const Icon(Icons.radio_button_unchecked),
                             groupValue: controller.selectedIndex.value,
                             onChanged: (value) {
                               controller.selectedIndex.value = value;
@@ -130,8 +131,8 @@ class SupplierListDialog {
                             result: controller.filteredNonOpenPartnersList
                                 .elementAt(index));
                       } else {
-                        // Show error message or handle invalid selection
-                        debugPrint('No supplier selected');
+                        AppAlertDialog.validateAlerts(context, AppStrings.alert,
+                            AppStrings.selectPartnerInfo);
                       }
                     },
                     style: ButtonStyle(
@@ -173,7 +174,8 @@ class SupplierListDialog {
                           borderRadius: BorderRadius.circular(5),
                         ),
                       ),
-                      minimumSize: MaterialStateProperty.all(Size(100, 40)),
+                      minimumSize:
+                          MaterialStateProperty.all(const Size(100, 40)),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(

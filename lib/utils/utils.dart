@@ -648,3 +648,13 @@ enum PicDir {
   petPictures,
   profilePictures,
 }
+
+void printKeysAndValueTypes(Map<String, dynamic> json) {
+  /*json.forEach((key, value) {
+    log('$key (${value.runtimeType})');
+  });*/
+
+  log(json.entries
+      .map((entry) => '${entry.key} (${entry.value.runtimeType})')
+      .join(', '));
+}

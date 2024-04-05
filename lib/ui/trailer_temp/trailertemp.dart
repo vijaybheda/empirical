@@ -113,7 +113,7 @@ class TrailerTemp extends GetView<TrailerTempController> {
           ),
         ),
         FooterContentView(
-          isVisibleCancel: true,
+          hasLeftButton: false,
         )
       ],
     );

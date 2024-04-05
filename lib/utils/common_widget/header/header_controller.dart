@@ -1,15 +1,14 @@
-// ignore_for_file: unused_field, prefer_final_fields, unused_local_variable, non_constant_identifier_names, prefer_const_constructors
-
 import 'dart:async';
 import 'dart:io';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_internet_signal/flutter_internet_signal.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/images.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 class HeaderController extends GetxController {
   final NetworkConnectivity _networkConnectivity = NetworkConnectivity.instance;

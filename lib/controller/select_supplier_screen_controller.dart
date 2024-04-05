@@ -5,13 +5,17 @@ import 'package:intl/intl.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/commodity/commodity_id_screen.dart';
 import 'package:pverify/ui/scorecard/scorecard_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/dialogs/supplier_list_dialog.dart';
+import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
+import 'package:simple_barcode_scanner/enum.dart';
+import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
 class SelectSupplierScreenController extends GetxController {
   final ScrollController scrollController = ScrollController();
@@ -19,9 +23,10 @@ class SelectSupplierScreenController extends GetxController {
   final GlobalConfigController globalConfigController =
       Get.find<GlobalConfigController>();
   final CarrierItem carrier;
+  final QCHeaderDetails? qcHeaderDetails;
 
   // constructor
-  SelectSupplierScreenController({required this.carrier});
+  SelectSupplierScreenController({required this.carrier, this.qcHeaderDetails});
 
   final TextEditingController searchSuppController = TextEditingController();
 
@@ -37,7 +42,7 @@ class SelectSupplierScreenController extends GetxController {
   RxList<PartnerItem> nonOpenPartnersList = <PartnerItem>[].obs;
   RxBool listAssigned = false.obs;
 
-  double get listHeight => 180.h;
+  double get listHeight => 200.h;
 
   @override
   void onInit() {
@@ -566,7 +571,7 @@ class SelectSupplierScreenController extends GetxController {
     }*/
   }
 
-  void navigateToPartnerDetails(PartnerItem partner) {
+  void navigateToScorecardScreen(PartnerItem partner) {
     Get.to(() => ScorecardScreen(partner: partner));
   }
 
@@ -580,12 +585,104 @@ class SelectSupplierScreenController extends GetxController {
           await SupplierListDialog.showListDialog(context);
       if (selectedPartner != null) {
         clearSearch();
-        Get.to(() =>
-            CommodityIDScreen(partner: selectedPartner, carrier: carrier));
+        Get.to(() => CommodityIDScreen(
+              partner: selectedPartner,
+              qcHeaderDetails: qcHeaderDetails,
+              carrier: carrier,
+            ));
       }
     } else {
       clearSearch();
-      Get.to(() => CommodityIDScreen(partner: partner, carrier: carrier));
+      Get.to(() => CommodityIDScreen(
+          partner: partner,
+          qcHeaderDetails: qcHeaderDetails,
+          carrier: carrier));
+    }
+  }
+
+  void navigateToScanBarcodeScreen() {
+    // TODO: uncomment this code to enable barcode scanning
+
+    /*String? res = await Get.to(() => SimpleBarcodeScannerPage(
+                      scanType: ScanType.barcode,
+                      centerTitle: true,
+                      appBarTitle: 'Scan a Barcode',
+                      cancelButtonText: 'Cancel',
+                      isShowFlashIcon: true,
+                      lineColor: AppColors.primaryColor.value.toString(),
+                    ));
+                if (res != null) {
+                  if (onBarcodeScanned != null) {
+                    onBarcodeScanned!(res);
+                  }
+                  'Scanned: $res'
+                } else {
+                'Cancelled'
+
+                }*/
+
+    // if (onBarcodeScanned != null) {
+    // onBarcodeScanned!('(01)1233455566778(13)090818(10)912');
+
+    // /// Production Date= 11 > Yellow Peppers Bulk
+    // onBarcodeScanned!('(01)10012345612340(11)180322(10)01234');
+
+    // /// Due Date= 12 > Yellow Peppers Bulk
+    // onBarcodeScanned!('(01)10012345612340(12)180322(10)01234');
+    //
+    // /// Pack Date= 13 > Yellow Peppers Bulk
+    // onBarcodeScanned!('(01)10012345612340(13)180322(10)01234');
+    //
+    // /// Date does not change represented by = 14 > Only displays GTIN# > Yellow Peppers Bulk
+    // onBarcodeScanned!('(01)10012345612340(14)180322(10)01234');
+    //
+    // /// Best Used Before Date= 15 > Yellow Peppers Bulk
+    // onBarcodeScanned!('(01)10012345612340(15)180322(10)01234');
+    //
+    // /// Sell By Date= 16 > Yellow Peppers Bulk
+    // onBarcodeScanned!('(01)10012345612340(16)180322(10)01234');
+    //
+    // /// Expiration Date= 17 > Yellow Peppers Bulk
+    // onBarcodeScanned!('(01)10012345612340(17)180322(10)01234');
+    //
+    // /// Production Date= 11 > Tomato Beef STK
+    // onBarcodeScanned!('(01)10851059002829(11)240101(10)99123');
+    //
+    // /// Due Date= 12 > Tomato Beef STK
+    // onBarcodeScanned!('(01)10851059002829(12)240101(10)99123');
+    //
+    // /// Pack Date= 13 > Tomato Beef STK
+    // onBarcodeScanned!('(01)10851059002829(13)240101(10)99123');
+    //
+    // /// Date does not change represented by = 14 > Only displays GTIN# > > Tomato Beef STK
+    // onBarcodeScanned!('(01)10851059002829(14)240101(10)99123');
+    //
+    // /// Best Used Before Date= 15 > Tomato Beef STK
+    // onBarcodeScanned!('(01)10851059002829(15)240101(10)99123');
+    //
+    // /// Sell By Date= 16 > Tomato Beef STK
+    // onBarcodeScanned!('(01)10851059002829(16)240101(10)99123');
+    //
+    // /// Expiration Date= 17 > Tomato Beef STK
+    // onBarcodeScanned!('(01)10851059002829(17)240101(10)99123');
+  }
+
+  Future<String?> scanBarcode() async {
+    String? res = await Get.to(() => SimpleBarcodeScannerPage(
+          scanType: ScanType.barcode,
+          centerTitle: true,
+          appBarTitle: 'Scan a Barcode',
+          cancelButtonText: 'Cancel',
+          isShowFlashIcon: true,
+          lineColor: AppColors.primaryColor.value.toString(),
+        ));
+    if (res != null) {
+      // if (onBarcodeScanned != null) {
+      //   onBarcodeScanned!(res);
+      // }
+      return res;
+    } else {
+      return null;
     }
   }
 }

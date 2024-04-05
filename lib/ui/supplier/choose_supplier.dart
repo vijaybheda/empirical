@@ -4,22 +4,26 @@ import 'package:get/get.dart';
 import 'package:pverify/controller/select_supplier_screen_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/ui/components/app_name_header.dart';
+import 'package:pverify/ui/components/bottom_custom_button_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
-import 'package:pverify/ui/components/scan_barcode_view.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
   final CarrierItem carrier;
-  const SelectSupplierScreen({super.key, required this.carrier});
+  final QCHeaderDetails? qcHeaderDetails;
+  const SelectSupplierScreen(
+      {super.key, required this.carrier, this.qcHeaderDetails});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SelectSupplierScreenController>(
-        init: SelectSupplierScreenController(carrier: carrier),
+        init: SelectSupplierScreenController(
+            carrier: carrier, qcHeaderDetails: qcHeaderDetails),
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -40,9 +44,14 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
                 ),
                 const SearchSupplierWidget(),
                 Expanded(flex: 10, child: _partnerListSection(context)),
-                ScanBarcodeView(
-                  onBarcodeScanned: (String barcode) async {
-                    await controller.scanGTINResultContents(barcode);
+                BottomCustomButtonView(
+                  title: AppStrings.scanBarcode,
+                  onPressed: () async {
+                    String? barcode = await controller.scanBarcode();
+                    if (barcode != null) {
+                      await controller.scanGTINResultContents(barcode);
+                      controller.navigateToScanBarcodeScreen();
+                    }
                   },
                 ),
                 FooterContentView(),
@@ -167,6 +176,7 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
               children: [
                 getAlphabetContent(controller.filteredPartnerList, index),
                 SizedBox(
+                  height: controller.listHeight,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,7 +194,7 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              controller.navigateToPartnerDetails(partner);
+                              controller.navigateToScorecardScreen(partner);
                             },
                             child: SizedBox(
                               width: 100,
@@ -225,7 +235,7 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
   Widget _buildBar(Color color, double percentage) {
     return Container(
       width: 100,
-      height: 20,
+      height: 12,
       alignment: Alignment.topRight,
       child: FractionallySizedBox(
         widthFactor: (percentage / 100),
@@ -309,7 +319,8 @@ class SearchSupplierWidget extends StatelessWidget {
             Get.find<SelectSupplierScreenController>().searchSuppController,
         decoration: InputDecoration(
           hintText: AppStrings.searchPartner,
-          hintStyle: Get.textTheme.bodyLarge,
+          hintStyle: Get.textTheme.bodyLarge?.copyWith(
+              fontSize: 25.sp, color: AppColors.white.withOpacity(0.5)),
           isDense: true,
           contentPadding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
           prefixIcon: Icon(Icons.search, color: AppColors.white),

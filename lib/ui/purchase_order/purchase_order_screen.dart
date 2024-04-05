@@ -5,8 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/purchase_order_screen_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
-import 'package:pverify/models/finished_goods_item_sku.dart';
+import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/qc_header_details.dart';
+import 'package:pverify/ui/components/bottom_custom_button_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
@@ -17,18 +19,23 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
   final PartnerItem partner;
   final CarrierItem carrier;
   final CommodityItem commodity;
+  final QCHeaderDetails? qcHeaderDetails;
   const PurchaseOrderScreen({
     super.key,
     required this.partner,
     required this.carrier,
     required this.commodity,
+    required this.qcHeaderDetails,
   });
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<PurchaseOrderScreenController>(
         init: PurchaseOrderScreenController(
-            carrier: carrier, partner: partner, commodity: commodity),
+            carrier: carrier,
+            partner: partner,
+            commodity: commodity,
+            qcHeaderDetails: qcHeaderDetails),
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -62,26 +69,29 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
                         textStyle: TextStyle(color: AppColors.white)),
                   ),
                 ),
-                const SearchGradingStandardWidget(),
-                Expanded(flex: 10, child: _commodityListSection(context)),
-                FooterContentView(
-                  onDownloadTap: () {
-                    // TODO: Implement download functionality
+                const _SearchItemSkuWidget(),
+                Expanded(flex: 10, child: _itemSkuListSection(context)),
+                BottomCustomButtonView(
+                  title: AppStrings.save,
+                  onPressed: () async {
+                    await controller.navigateToPurchaseOrderDetails(
+                        context, partner, carrier, commodity);
                   },
-                )
+                ),
+                FooterContentView(),
               ],
             ),
           );
         });
   }
 
-  GetBuilder<PurchaseOrderScreenController> _commodityListSection(
+  GetBuilder<PurchaseOrderScreenController> _itemSkuListSection(
       BuildContext context) {
     return GetBuilder<PurchaseOrderScreenController>(
-      id: 'commodityList',
+      id: 'itemSkuList',
       builder: (controller) {
         return Container(
-          padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 20.h),
+          padding: EdgeInsets.symmetric(vertical: 20.h),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -90,8 +100,8 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
               controller.listAssigned.value
                   ? Expanded(
                       flex: 10,
-                      child: controller.filteredCommodityList.isNotEmpty
-                          ? commodityListView(context, controller)
+                      child: controller.filteredItemSkuList.isNotEmpty
+                          ? _itemSkuListView(context, controller)
                           : noDataFoundWidget(),
                     )
                   : const Center(
@@ -115,46 +125,55 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
     );
   }
 
-  Widget commodityListView(
-      BuildContext context, PurchaseOrderScreenController controller) {
+  Widget _itemSkuListView(
+    BuildContext context,
+    PurchaseOrderScreenController controller,
+  ) {
     return ListView.separated(
-      itemCount: controller.filteredCommodityList.length,
+      itemCount: controller.filteredItemSkuList.length,
+      padding: EdgeInsets.zero,
       itemBuilder: (context, index) {
-        FinishedGoodsItemSKU partner =
-            controller.filteredCommodityList.elementAt(index);
-        return GestureDetector(
-          onTap: () {
-            // TODO:
-            // controller.navigateToPurchaseOrderScreen(partner);
+        FinishedGoodsItemSKU goodsItem =
+            controller.filteredItemSkuList.elementAt(index);
+        return CheckboxListTile(
+          value: goodsItem.isSelected ?? false,
+          visualDensity: VisualDensity.compact,
+          contentPadding: EdgeInsets.zero,
+          activeColor: Colors.transparent,
+          checkColor: Colors.white,
+          fillColor: MaterialStateProperty.all((goodsItem.isSelected ?? false)
+              ? AppColors.primary
+              : Colors.transparent),
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          onChanged: (value) {
+            goodsItem = goodsItem.copyWith(isSelected: (value!));
+            controller.updateCommodityItem(goodsItem);
           },
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20.h),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        // TODO: Implement name as per the existing app
-                        partner.itemSkuName ?? '-',
-                        style: Get.textTheme.bodyMedium
-                            ?.copyWith(color: AppColors.white, fontSize: 50.h),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+          title: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: goodsItem.sku ?? '-',
+                    style: Get.textTheme.bodyMedium
+                        ?.copyWith(color: AppColors.white, fontSize: 50.h),
+                  ),
+                  const TextSpan(text: ' '),
+                  TextSpan(
+                    text: goodsItem.name ?? '-',
+                    style: Get.textTheme.bodyMedium
+                        ?.copyWith(color: AppColors.primary, fontSize: 50.h),
+                  ),
+                ],
+              ),
             ),
           ),
         );
       },
       separatorBuilder: (BuildContext context, int index) {
         return Divider(
-          height: 10,
+          height: 5,
           indent: 0,
           endIndent: 0,
           color: AppColors.white,
@@ -165,8 +184,8 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
   }
 }
 
-class SearchGradingStandardWidget extends StatelessWidget {
-  const SearchGradingStandardWidget({super.key});
+class _SearchItemSkuWidget extends StatelessWidget {
+  const _SearchItemSkuWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -177,12 +196,13 @@ class SearchGradingStandardWidget extends StatelessWidget {
         child: TextField(
           onChanged: (value) {
             // TODO: Implement search functionality
-            // Get.find<PurchaseOrderScreenController>()
-            //     .searchAndAssignCommodity(value);
+            Get.find<PurchaseOrderScreenController>()
+                .searchAndAssignOrder(value);
           },
           decoration: InputDecoration(
             hintText: AppStrings.searchItem,
-            hintStyle: Get.textTheme.bodyLarge,
+            hintStyle: Get.textTheme.bodyLarge?.copyWith(
+                fontSize: 25.sp, color: AppColors.white.withOpacity(0.5)),
             isDense: true,
             contentPadding:
                 EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),

@@ -5,7 +5,6 @@ class CustomRadioListTile<T> extends StatelessWidget {
   final T groupValue;
   final ValueChanged<T>? onChanged;
   final Widget title;
-  final Widget? secondary;
 
   const CustomRadioListTile({
     super.key,
@@ -13,7 +12,6 @@ class CustomRadioListTile<T> extends StatelessWidget {
     required this.groupValue,
     required this.onChanged,
     required this.title,
-    this.secondary,
   });
 
   @override
@@ -33,8 +31,8 @@ class CustomRadioListTile<T> extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(6.0),
               child: groupValue == value
-                  ? const Icon(Icons.radio_button_checked)
-                  : const Icon(Icons.radio_button_unchecked),
+                  ? const Icon(Icons.radio_button_checked_outlined)
+                  : const Icon(Icons.radio_button_unchecked_outlined),
             ),
           ],
         ),

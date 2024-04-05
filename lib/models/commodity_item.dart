@@ -8,7 +8,7 @@ class CommodityItem {
   int? numberSamplesSet;
   int? sampleSizeByCount;
   double? sampleSizeByWeight;
-  List<DefectItem> defectList;
+  List<DefectItem>? defectList;
   List<SeverityDefect> severityDefectList;
   String? keywords;
   List<DocumentItem> documents;
@@ -34,45 +34,53 @@ class CommodityItem {
   }
 
   void addDefectItem(DefectItem item) {
-    defectList.add(item);
+    defectList ??= [];
+    defectList?.add(item);
   }
 
   void removeDefectItem(DefectItem item) {
-    defectList.remove(item);
+    defectList ??= [];
+    defectList?.remove(item);
   }
 
   // toJson
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
+        'ID': id,
+        'Name': name,
         'numberSamplesSet': numberSamplesSet,
         'sampleSizeByCount': sampleSizeByCount,
         'sampleSizeByWeight': sampleSizeByWeight,
-        'defectList': defectList.map((item) => item.toJson()).toList(),
+        'defectList': defectList?.map((item) => item.toJson()).toList(),
         'severityDefectList':
             severityDefectList.map((item) => item.toJson()).toList(),
-        'keywords': keywords,
+        'Keywords': keywords,
         'documents': documents.map((item) => item.toJson()).toList(),
       };
 
   // fromJson
   factory CommodityItem.fromJson(Map<String, dynamic> json) {
     return CommodityItem(
-      id: json['id'],
-      name: json['name'],
+      id: json['ID'],
+      name: json['Name'],
       numberSamplesSet: json['numberSamplesSet'],
       sampleSizeByCount: json['sampleSizeByCount'],
       sampleSizeByWeight: json['sampleSizeByWeight'],
-      defectList: json['defectList']
-          .map<DefectItem>((item) => DefectItem.fromJson(item))
-          .toList(),
-      severityDefectList: json['severityDefectList']
-          .map<SeverityDefect>((item) => SeverityDefect.fromJson(item))
-          .toList(),
+      defectList: (json['defectList'] != null)
+          ? json['defectList']
+              .map<DefectItem>((item) => DefectItem.fromJson(item))
+              .toList()
+          : [],
+      severityDefectList: (json['severityDefectList'] != null)
+          ? json['severityDefectList']
+              .map<SeverityDefect>((item) => SeverityDefect.fromJson(item))
+              .toList()
+          : [],
       keywords: json['keywords'],
-      documents: json['documents']
-          .map<DocumentItem>((item) => DocumentItem.fromJson(item))
-          .toList(),
+      documents: (json['documents'] != null)
+          ? json['documents']
+              .map<DocumentItem>((item) => DocumentItem.fromJson(item))
+              .toList()
+          : [],
     );
   }
 

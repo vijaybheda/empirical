@@ -1,7 +1,5 @@
 // ignore_for_file: camel_case_types, non_constant_identifier_names, unrelated_type_equality_checks, unnecessary_brace_in_string_interps, unused_local_variable, unnecessary_null_comparison, no_leading_underscores_for_local_identifiers, prefer_is_empty
 
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:pverify/models/carrier_item.dart';
@@ -151,6 +149,8 @@ class QualityControl_Controller extends GetxController {
           selectetdTruckTempOK.value,
           selectetdTypes.value,
           cteType);
+      qcHeaderDetails =
+          await dao.findTempQCHeaderDetails(orderNoTextController.value.text);
     } else {
       QCHeaderDetails? headerDetails = qcHeaderDetails;
       await dao.updateTempQCHeaderDetails(
@@ -268,7 +268,8 @@ class QualityControl_Controller extends GetxController {
           'carrierID': 'carrierID', // Need to pass dynamic value
         });
         */
-        Get.to(() => SelectSupplierScreen(carrier: carrier));
+        Get.to(() => SelectSupplierScreen(
+            carrier: carrier, qcHeaderDetails: qcHeaderDetails));
       }
     }
   }

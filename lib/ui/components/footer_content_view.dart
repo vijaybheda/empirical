@@ -3,7 +3,9 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -24,12 +26,18 @@ class FooterContentView extends StatelessWidget {
 
   final ApplicationDao dao = ApplicationDao();
   final AppStorage appStorage = AppStorage.instance;
-  bool? isVisibleCancel;
+  bool hasLeftButton = true;
+  final String? leftText;
 
   final GlobalConfigController globalConfigController =
       Get.find<GlobalConfigController>();
 
-  FooterContentView({super.key, this.onDownloadTap, this.isVisibleCancel});
+  FooterContentView({
+    super.key,
+    this.onDownloadTap,
+    this.hasLeftButton = true,
+    this.leftText,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,75 +49,95 @@ class FooterContentView extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
         children: [
-          GestureDetector(
-            onTap: () {
-              Get.back();
-            },
-            child: Text(
-              isVisibleCancel == true ? '' : AppStrings.cancel,
-              style: GoogleFonts.poppins(
-                  fontSize: 35.sp,
-                  fontWeight: FontWeight.bold,
-                  textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+          Expanded(
+            flex: 1,
+            child: Container(
+              child: hasLeftButton
+                  ? GestureDetector(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: Text(
+                        leftText ?? AppStrings.back,
+                        style: GoogleFonts.poppins(
+                            fontSize: 35.sp,
+                            fontWeight: FontWeight.bold,
+                            textStyle: TextStyle(
+                                color: AppColors.textFieldText_Color)),
+                      ),
+                    )
+                  : const Offstage(),
             ),
           ),
-          const Spacer(),
-          Text(
-            getDaysMessage(),
-            style: GoogleFonts.poppins(
-                fontSize: 40.sp,
-                fontWeight: FontWeight.bold,
-                textStyle: TextStyle(color: getMessageColor())),
-          ),
-          SizedBox(
-            width: 40.w,
-          ),
-          GestureDetector(
-            onTap: () async {
-              debugPrint('Download button tap.');
-              if (onDownloadTap != null) {
-                onDownloadTap!();
-              } else {
-                if (globalConfigController.hasStableInternet.value) {
-                  UpdateDataAlert.showUpdateDataDialog(
-                    context,
-                    onOkPressed: () {
-                      debugPrint('Download button tap.');
-                      Get.off(() => const CacheDownloadScreen());
-                    },
-                    message: AppStrings.updateDataConfirmation,
-                  );
-                } else {
-                  UpdateDataAlert.showUpdateDataDialog(context,
-                      onOkPressed: () {
+          Expanded(
+            flex: 6,
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  getDaysMessage(),
+                  style: GoogleFonts.poppins(
+                      fontSize: 40.sp,
+                      fontWeight: FontWeight.bold,
+                      textStyle: TextStyle(color: getMessageColor())),
+                ),
+                SizedBox(
+                  width: 30.w,
+                ),
+                GestureDetector(
+                  onTap: () async {
                     debugPrint('Download button tap.');
-                  }, message: AppStrings.downloadWifiError);
-                }
-              }
-            },
-            child: Image.asset(
-              AppImages.ic_download,
-              width: 80.w,
-              height: 80.h,
+                    if (onDownloadTap != null) {
+                      onDownloadTap!();
+                    } else {
+                      if (globalConfigController.hasStableInternet.value) {
+                        UpdateDataAlert.showUpdateDataDialog(
+                          context,
+                          onOkPressed: () {
+                            debugPrint('Download button tap.');
+                            Get.off(() => const CacheDownloadScreen());
+                          },
+                          message: AppStrings.updateDataConfirmation,
+                        );
+                      } else {
+                        UpdateDataAlert.showUpdateDataDialog(context,
+                            onOkPressed: () {
+                          debugPrint('Download button tap.');
+                        }, message: AppStrings.downloadWifiError);
+                      }
+                    }
+                  },
+                  child: Image.asset(
+                    AppImages.ic_download,
+                    width: 80.w,
+                    height: 80.h,
+                  ),
+                ),
+              ],
             ),
           ),
-          const Spacer(),
-          GestureDetector(
-            onTap: () {
-              UserLogoutDialog.showLogoutConfirmation(context,
-                  onYesTap: () async {
-                await appLogoutAction();
-              });
-            },
-            child: Text(
-              AppStrings.logOut,
-              style: GoogleFonts.poppins(
-                  fontSize: 35.sp,
-                  fontWeight: FontWeight.bold,
-                  textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+          Expanded(
+            flex: 1,
+            child: GestureDetector(
+              onTap: () {
+                UserLogoutDialog.showLogoutConfirmation(context,
+                    onYesTap: () async {
+                  await appLogoutAction();
+                });
+              },
+              child: Text(
+                AppStrings.logOut,
+                style: GoogleFonts.poppins(
+                    fontSize: 35.sp,
+                    fontWeight: FontWeight.bold,
+                    textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+              ),
             ),
-          )
+          ),
         ],
       ),
     );
