@@ -12,8 +12,8 @@ import 'package:pverify/ui/components/bottom_custom_button_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
+import 'package:pverify/ui/purchase_order/purchase_order_item.dart';
 import 'package:pverify/utils/app_strings.dart';
-import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class PurchaseOrderDetailsScreen
@@ -75,10 +75,9 @@ class PurchaseOrderDetailsScreen
                 const SearchOrderItemsWidget(),
                 Expanded(flex: 10, child: _purchaseOrderItemSection(context)),
                 BottomCustomButtonView(
-                  title: AppStrings.save,
+                  title: AppStrings.inspectionCalculateResultButton,
                   onPressed: () async {
-                    // await controller.navigateToPurchaseOrderDetails(
-                    //     context, partner, carrier, commodity);
+                    await controller.calculateResult(context);
                   },
                 ),
                 FooterContentView()
@@ -138,13 +137,18 @@ class PurchaseOrderDetailsScreen
       itemBuilder: (context, index) {
         PurchaseOrderItem goodsItem =
             controller.filteredInspectionsList.elementAt(index);
-        return PurchaseOrderListViewItem(
-          goodsItem: goodsItem,
-          sku: goodsItem.sku,
-          inspectButtonCallback: () {
-            // Implement your logic
+        return GestureDetector(
+          onTap: () {
+            controller.onItemTap(goodsItem);
           },
-          poNumber: goodsItem.poNumber,
+          child: PurchaseOrderListViewItem(
+            goodsItem: goodsItem,
+            sku: goodsItem.sku,
+            inspectButtonCallback: () {
+              // Implement your logic
+            },
+            poNumber: goodsItem.poNumber,
+          ),
         );
       },
       separatorBuilder: (BuildContext context, int index) {
@@ -156,91 +160,6 @@ class PurchaseOrderDetailsScreen
           thickness: 1,
         );
       },
-    );
-  }
-}
-
-class PurchaseOrderListViewItem extends StatefulWidget {
-  const PurchaseOrderListViewItem({
-    super.key,
-    required this.sku,
-    required this.poNumber,
-    required this.inspectButtonCallback,
-    required this.goodsItem,
-  });
-  final String? sku;
-  final String? poNumber;
-  final Function inspectButtonCallback;
-
-  final PurchaseOrderItem goodsItem;
-
-  @override
-  State<PurchaseOrderListViewItem> createState() =>
-      _PurchaseOrderListViewItemState();
-}
-
-class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
-  late TextEditingController lotNumberController;
-
-  late TextEditingController qtyRejectedController;
-
-  late TextEditingController qtyShippedController;
-
-  bool isComplete = false;
-
-  bool isPartialComplete = false;
-
-  @override
-  void initState() {
-    super.initState();
-    lotNumberController = TextEditingController();
-    qtyRejectedController = TextEditingController();
-    qtyShippedController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    lotNumberController.dispose();
-    qtyRejectedController.dispose();
-    qtyShippedController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(widget.goodsItem.description ?? '-'),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(widget.sku ?? '-'),
-          Text(widget.poNumber ?? '-'),
-        ],
-      ),
-      trailing: IconButton(
-        icon: const Icon(Icons.play_arrow),
-        onPressed: () {
-          if (lotNumberController.text.isEmpty) {
-            AppAlertDialog.validateAlerts(
-                context, AppStrings.alert, AppStrings.lotnoRequired);
-          } else {
-            bool checkItemSKUAndLot = false; // Implement your logic
-            bool isValid = true; // Implement your logic
-
-            if (isValid) {
-              if (isComplete || isPartialComplete || !checkItemSKUAndLot) {
-                widget.inspectButtonCallback(); // Navigate to QC details
-              } else {
-                AppAlertDialog.validateAlerts(
-                    context, 'Alert', AppStrings.lotnoRequired);
-              }
-            } else {
-              AppAlertDialog.validateAlerts(
-                  context, 'Alert', 'Quantity rejected is not valid');
-            }
-          }
-        },
-      ),
     );
   }
 }

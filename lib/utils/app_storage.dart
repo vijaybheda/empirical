@@ -1,16 +1,32 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:pverify/models/agency_item.dart';
+import 'package:pverify/models/brand_item.dart';
 import 'package:pverify/models/carrier_item.dart';
+import 'package:pverify/models/commodity_data.dart';
 import 'package:pverify/models/commodity_item.dart';
+import 'package:pverify/models/country_item.dart';
 import 'package:pverify/models/defect_item.dart';
+import 'package:pverify/models/delivery_to_item.dart';
+import 'package:pverify/models/grade_commodity_detail_item.dart';
+import 'package:pverify/models/grade_defect_detail_item.dart';
 import 'package:pverify/models/item_sku_data.dart';
+import 'package:pverify/models/last_inspections_item.dart';
 import 'package:pverify/models/login_data.dart';
+import 'package:pverify/models/my_inspection_48hour_item.dart';
 import 'package:pverify/models/offline_commodity.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/reason_item.dart';
 import 'package:pverify/models/severity_defect.dart';
 import 'package:pverify/models/specification_analytical.dart';
+import 'package:pverify/models/specification_grade_tolerance.dart';
+import 'package:pverify/models/specification_grade_tolerance_array.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
+import 'package:pverify/models/to_location_item.dart';
+import 'package:pverify/models/trending_data_item.dart';
+import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/models/user.dart';
+import 'package:pverify/models/variety_item.dart';
 
 class AppStorage extends GetxController {
   // ignore: prefer_function_declarations_over_variables
@@ -19,8 +35,36 @@ class AppStorage extends GetxController {
   List<FinishedGoodsItemSKU>? selectedItemSKUList;
 
   List<SpecificationAnalytical>? specificationAnalyticalList;
-  // List<SpecificationGradeToleranceArray>? specificationGradeToleranceArrayList;
-  // List<SpecificationGradeTolerance>? specificationGradeToleranceList;
+  List<SpecificationGradeToleranceArray>? specificationGradeToleranceArrayList;
+  List<SpecificationGradeTolerance>? specificationGradeToleranceList;
+
+  List<PartnerItem>? partnersList;
+  List<CarrierItem>? carrierList;
+  List<Commodity>? mainCommodityList;
+  List<CommodityItem>? commodityList;
+  List<VarietyItem>? varietyList;
+  List<DefectItem>? defectsList;
+  List<SeverityDefect>? severityDefectsList;
+  List<UOMItem>? uomList;
+  List<ReasonItem>? reasonList;
+  List<AgencyItem>? agencyList;
+  List<GradeCommodityDetailItem>? gradeCommodityList;
+  List<GradeDefectDetailItem>? gradeDefectList;
+  List<BrandItem>? brandList;
+  List<CountryItem>? countryList;
+  List<DeliveryToItem>? deliveryToList;
+  List<TrendingDataItem>? trendingDataList;
+  List<MyInspection48HourItem>? myInsp48HourList;
+  List<LastInspectionsItem>? lastInspectionsList;
+  List<FinishedGoodsItemSKU>? finishedGoodsItemSKUList;
+  List<ToLocationItem>? toLocationItemList;
+  List<Commodity>? cteCommodityList;
+
+  List<int>? attachmentIds;
+
+  // List<Severity>? severityList;
+
+  Map<String, String> mapLogin = <String, String>{};
 
   // instance of this class
   static AppStorage get instance => _instance;

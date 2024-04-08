@@ -3,12 +3,21 @@ import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
+import 'package:pverify/models/inspection.dart';
+import 'package:pverify/models/inspection_sample.dart';
 import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/partner_item_sku_inspections.dart';
 import 'package:pverify/models/purchase_order_item.dart';
 import 'package:pverify/models/qc_header_details.dart';
+import 'package:pverify/models/quality_control_item.dart';
+import 'package:pverify/models/specification_analytical_request_item.dart';
+import 'package:pverify/models/specification_grade_tolerance_array.dart';
 import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/ui/qc_short_form/qc_details_short_form_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/utils.dart';
 
 class PurchaseOrderDetailsController extends GetxController {
@@ -22,6 +31,7 @@ class PurchaseOrderDetailsController extends GetxController {
   String? specificationTypeName;
   String? specificationNumber;
   String? specificationVersion;
+  String? specificationName;
 
   PurchaseOrderDetailsController({
     required this.partner,
@@ -85,7 +95,7 @@ class PurchaseOrderDetailsController extends GetxController {
   }
 
   Future<void> calculateResult(BuildContext context) async {
-    /*int totalQualityDefectId = 0;
+    int totalQualityDefectId = 0;
     int totalConditionDefectId = 0;
 
     List<FinishedGoodsItemSKU> selectedItemSKUList =
@@ -93,12 +103,12 @@ class PurchaseOrderDetailsController extends GetxController {
     for (int i = 0; i < selectedItemSKUList.length; i++) {
       FinishedGoodsItemSKU itemSKU = selectedItemSKUList.elementAt(i);
       bool isComplete = await dao.isInspectionComplete(
-          partner.id!, itemSKU.sku!, itemSKU.uniqueItemId!);
+          partner.id!, itemSKU.sku!, itemSKU.uniqueItemId);
 
       if (isComplete) {
         PartnerItemSKUInspections? partnerItemSKU =
             await dao.findPartnerItemSKU(
-                partner.id!, itemSKU.sku!, itemSKU.uniqueItemId!);
+                partner.id!, itemSKU.sku!, itemSKU.uniqueItemId);
 
         if (partnerItemSKU != null) {
           Inspection? inspection = await dao
@@ -115,18 +125,19 @@ class PurchaseOrderDetailsController extends GetxController {
           for (int abc = 0;
               abc < specificationGradeToleranceArrayList.length;
               abc++) {
-            if (specificationGradeToleranceArrayList[abc]
-                .getSpecificationGradeToleranceList()
+            if ((specificationGradeToleranceArrayList[abc]
+                        .specificationGradeToleranceList ??
+                    [])
                 .isNotEmpty) {
               if (specificationGradeToleranceArrayList[abc]
-                          .getSpecificationNumber() ==
+                          .specificationNumber ==
                       specificationNumber &&
                   specificationGradeToleranceArrayList[abc]
-                          .getSpecificationVersion() ==
+                          .specificationVersion ==
                       specificationVersion) {
                 appStorage.specificationGradeToleranceList = appStorage
-                    .specificationGradeToleranceArrayList[abc]
-                    .getSpecificationGradeToleranceList();
+                    .specificationGradeToleranceArrayList![abc]
+                    .specificationGradeToleranceList;
                 break;
               }
             }
@@ -139,15 +150,16 @@ class PurchaseOrderDetailsController extends GetxController {
 
           appStorage.specificationAnalyticalList =
               await dao.getSpecificationAnalyticalFromDB(
-                  specificationNumber, specificationVersion);
+                  specificationNumber!, specificationVersion!);
 
-          if (!specificationTypeName
-                  .equalsIgnoreCase("Finished Goods Produce") &&
-              !specificationTypeName.equalsIgnoreCase("Raw Produce")) {
+          if (!(specificationTypeName!.toLowerCase() ==
+                  ("Finished Goods Produce".toLowerCase()) &&
+              specificationTypeName!.toLowerCase() ==
+                  ("Raw Produce".toLowerCase()))) {
             if (appStorage.specificationAnalyticalList != null) {
               for (var item in (appStorage.specificationAnalyticalList ?? [])) {
-                var dbobj = await dao.findSpecAnalyticalObj(
-                    inspection.inspectionId, item.analyticalID);
+                SpecificationAnalyticalRequest? dbobj = await dao
+                    .findSpecAnalyticalObj(inspection.id!, item.analyticalID);
                 if (dbobj != null && dbobj.comply == "N") {
                   if (dbobj.inspectionResult != null &&
                       dbobj.inspectionResult == "N") {
@@ -156,16 +168,24 @@ class PurchaseOrderDetailsController extends GetxController {
                     result = "RJ";
                     rejectReason += "${dbobj.analyticalName} = N";
                     rejectReasonArray.add("${dbobj.analyticalName} = N");
-                    await dao.createOrUpdateResultReasonDetails(
-                        inspection.inspectionId,
-                        result,
-                        "${dbobj.analyticalName} = N",
-                        dbobj.comment);
-                    await dao.createIsPictureReqSpecAttribute(
-                        inspection.inspectionId,
-                        result,
-                        "${dbobj.analyticalName} = N",
-                        dbobj.pictureRequired!);
+                    int resultReason =
+                        await dao.createOrUpdateResultReasonDetails(
+                            inspection.id!,
+                            result,
+                            "${dbobj.analyticalName} = N",
+                            dbobj.comment!);
+                    if (resultReason != -1) {
+                      // TODO: implement logic
+                    }
+                    int isPictureReqSpec =
+                        await dao.createIsPictureReqSpecAttribute(
+                            inspection.id!,
+                            result,
+                            "${dbobj.analyticalName} = N",
+                            dbobj.pictureRequired!);
+                    if (isPictureReqSpec != -1) {
+                      // TODO: implement logic
+                    }
                     break;
                   }
                 }
@@ -173,29 +193,40 @@ class PurchaseOrderDetailsController extends GetxController {
               if (result == "") {
                 result = "AC";
               }
-              footerRightButtonText.setVisibility(View.VISIBLE);
+              // TODO: implement logic
+              // footerRightButtonText.setVisibility(View.VISIBLE);
             }
 
             if (result == "A-" || result == "AC") {
-              var qualityControlItems =
-                  await dao.findQualityControlDetails(inspection.inspectionId);
-              await dao.updateQuantityRejected(
-                  inspection.inspectionId, 0, qualityControlItems.qtyShipped);
+              QualityControlItem? qualityControlItems =
+                  await dao.findQualityControlDetails(inspection.id!);
+              bool isQuantityRejected = await dao.updateQuantityRejected(
+                  inspection.id!, 0, qualityControlItems!.qtyShipped!);
             }
-            await dao.updateInspectionResult(inspection.inspectionId, result);
-            await dao.createOrUpdateInspectionSpecification(
-                inspection.inspectionId,
-                specificationNumber,
-                specificationVersion,
-                specificationName);
-            await dao.updateInspectionComplete(inspection.inspectionId, true);
-            await dao.updateItemSKUInspectionComplete(
-                inspection.inspectionId, "true");
+            int inspectionResult =
+                await dao.updateInspectionResult(inspection.id!, result);
+            if (inspectionResult != -1) {
+              // TODO: implement logic
+            }
+            int inspectionSpecification =
+                await dao.createOrUpdateInspectionSpecification(
+                    inspection.id!,
+                    specificationNumber,
+                    specificationVersion,
+                    specificationName);
+            if (inspectionSpecification != -1) {
+              // TODO: implement logic
+            }
+            int inspectionComplete =
+                await dao.updateInspectionComplete(inspection.id!, true);
+            if (inspectionComplete != -1) {
+              // TODO: implement logic
+            }
+            bool updateItemSKU = await dao.updateItemSKUInspectionComplete(
+                inspection.id!, "true");
 
-            Util.setInspectionUploadStatus(context, inspection.inspectionId,
-                Consts.INSPECTION_UPLOAD_READY);
-
-            await dao.updateInspectionUploadStatus(inspection.id!, status);
+            // TODO: implement logic
+            // await dao.updateInspectionUploadStatus(inspection.id!, (result == "RJ"? "RJ": "AC"));
           } else if (appStorage.specificationGradeToleranceList != null &&
               (appStorage.specificationGradeToleranceList ?? []).isNotEmpty) {
             int totalSampleSize = 0;
@@ -214,12 +245,18 @@ class PurchaseOrderDetailsController extends GetxController {
           }
         }
       }
-    }*/
+    }
   }
 
   void clearSearch() {
     searchController.clear();
     searchAndAssignItems("");
     unFocus();
+  }
+
+  Future<void> onItemTap(PurchaseOrderItem goodsItem) async {
+    await Get.to(() => QCDetailsShortFormScreen(
+          partner: partner,
+        ));
   }
 }

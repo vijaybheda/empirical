@@ -12,7 +12,6 @@ import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/models/inspection_defect.dart';
 import 'package:pverify/models/inspection_defect_attachment.dart';
 import 'package:pverify/models/inspection_sample.dart';
-import 'package:pverify/models/inspection_specification.dart';
 import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/my_inspection_48hour_item.dart';
 import 'package:pverify/models/overridden_result_item.dart';
@@ -290,7 +289,7 @@ class ApplicationDao {
         where: '${BaseColumns.ID} = ?', whereArgs: [inspectionId]);
   }
 
-  Future<int> createOrUpdateInspectionSpecification(
+  /*Future<int> createOrUpdateInspectionSpecification(
       InspectionSpecification spec) async {
     final db = await DatabaseHelper.instance.database;
     if (spec.id == null) {
@@ -305,6 +304,60 @@ class ApplicationDao {
         whereArgs: [spec.id],
       );
     }
+  }*/
+
+  Future<int> createOrUpdateInspectionSpecification(
+      int inspectionID, String? number, String? version, String? name) async {
+    int? inspectionId;
+    final Database db = await dbProvider.database;
+    try {
+      try {
+        String query =
+            "SELECT Inspection_ID FROM ${DBTables.INSPECTION_SPECIFICATION} WHERE Inspection_ID = $inspectionID";
+        List<Map<String, dynamic>> result = await db.rawQuery(query);
+
+        if (result.isNotEmpty) {
+          inspectionId = result[0]["Inspection_ID"];
+        }
+      } catch (e) {
+        print("Error has occurred while finding a user id: $e");
+        return -1;
+      }
+
+      if (inspectionId == null) {
+        await db.transaction((txn) async {
+          var values = {
+            InspectionSpecificationColumn.INSPECTION_ID: inspectionID,
+            InspectionSpecificationColumn.SPECIFICATION_NUMBER: number,
+            InspectionSpecificationColumn.SPECIFICATION_VERSION: version,
+            InspectionSpecificationColumn.SPECIFICATION_NAME: name,
+          };
+
+          inspectionId =
+              await txn.insert(DBTables.INSPECTION_SPECIFICATION, values);
+        });
+      } else {
+        await db.transaction((txn) async {
+          var values = <String, dynamic>{};
+          if (number != null) {
+            values[InspectionSpecificationColumn.SPECIFICATION_NUMBER] = number;
+            values[InspectionSpecificationColumn.SPECIFICATION_VERSION] =
+                version;
+            values[InspectionSpecificationColumn.SPECIFICATION_NAME] = name;
+          }
+          await txn.update(DBTables.INSPECTION_SPECIFICATION, values,
+              where: "${InspectionSpecificationColumn.INSPECTION_ID} = ?",
+              whereArgs: [inspectionID]);
+        });
+      }
+
+      print("Inside specification table");
+    } catch (e) {
+      print("Error has occurred while creating an inspection: $e");
+      return -1;
+    }
+
+    return inspectionId ?? -1;
   }
 
   Future<void> updateInspectionRating(int inspectionID, int rating) async {
@@ -323,9 +376,9 @@ class ApplicationDao {
     return result.isNotEmpty;
   }
 
-  Future<void> updateInspectionComplete(int inspectionID, bool complete) async {
+  Future<int> updateInspectionComplete(int inspectionID, bool complete) async {
     final db = await dbProvider.database;
-    await db.update(
+    return await db.update(
       DBTables.INSPECTION,
       {
         InspectionColumn.COMPLETE: complete ? 1 : 0,
@@ -2112,7 +2165,7 @@ class ApplicationDao {
   }
 
   Future<bool> isInspectionComplete(
-      int partnerId, String itemSKU, String lotNo) async {
+      int partnerId, String itemSKU, String? lotNo) async {
     List<dynamic> args = [true, partnerId.toString(), itemSKU, lotNo];
 
     try {
@@ -2135,7 +2188,7 @@ class ApplicationDao {
   }
 
   Future<PartnerItemSKUInspections?> findPartnerItemSKU(
-      int partnerId, String itemSKU, String uniqueId) async {
+      int partnerId, String itemSKU, String? uniqueId) async {
     List<dynamic> args = [partnerId.toString(), itemSKU, uniqueId];
     try {
       String query =
@@ -2199,8 +2252,8 @@ class ApplicationDao {
     }
   }
 
-  Future<int?> createOrUpdateResultReasonDetails(int inspectionID,
-      String result, String resultReason, String comment) async {
+  Future<int> createOrUpdateResultReasonDetails(int inspectionID, String result,
+      String resultReason, String comment) async {
     int? inspectionId;
     final Database db = await dbProvider.database;
     try {
@@ -2214,7 +2267,7 @@ class ApplicationDao {
         }
       } catch (e) {
         print("Error has occurred while finding a user id: $e");
-        return null;
+        return -1;
       }
 
       if (inspectionId == null) {
@@ -2240,12 +2293,12 @@ class ApplicationDao {
       }
     } catch (e) {
       print("Error has occurred while creating an inspection: $e");
-      return null;
+      return -1;
     }
     return inspectionId;
   }
 
-  Future<int?> createIsPictureReqSpecAttribute(
+  Future<int> createIsPictureReqSpecAttribute(
     int inspectionID,
     String result,
     String resultReason,
@@ -2265,7 +2318,7 @@ class ApplicationDao {
         }
       } catch (e) {
         print("Error has occurred while finding a user id. $e");
-        return null;
+        return -1;
       }
 
       if (inspectionId == null) {
@@ -2293,9 +2346,9 @@ class ApplicationDao {
       }
     } catch (e) {
       print("Error has occurred while creating an inspection. $e");
-      return null;
+      return -1;
     }
-    return inspectionId;
+    return inspectionId ?? -1;
   }
 
   Future<bool> updateQuantityRejected(

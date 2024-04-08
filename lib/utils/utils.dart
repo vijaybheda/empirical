@@ -531,6 +531,37 @@ class Utils {
     }
   }
 
+  Future<void> offlineLoadCommodityVarietyDocuments(
+      String specNumber, String specVersion) async {
+    String filename = "${FileManString.COMMODITYDOCS_JSON_STRING_FORMAT}"
+        "${specNumber}_$specVersion";
+    String? json = await loadFileToStringFromExternalStorage(
+        filename, FileManString.jsonFilesCache);
+    if (json != null) {
+      // TODO: parse json implementations
+      // AppInfo.commodityVarietyData =
+      //     WebServiceParsers.parseCommodityToolbarDataJson(json);
+    }
+  }
+
+  Future<String?> loadFileToStringFromExternalStorage(
+      String filename, String directory) async {
+    var externalStoragePath =
+        await getApplicationDocumentsDirectory().then((value) => value.path);
+    String path = '$externalStoragePath/$directory/$filename';
+    File file = File(path);
+    try {
+      if (file.existsSync()) {
+        List<int> bytes = file.readAsBytesSync();
+        String contents = String.fromCharCodes(bytes);
+        return contents;
+      }
+    } catch (e) {
+      print('loadFileToStringFromExternalStorage error: $e');
+    }
+    return null;
+  }
+
   static Future<String> createCommodityVarietyDocumentDirectory() async {
     String externalStoragePath = await Utils().getExternalStoragePath();
     var directory = Directory(
