@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, unused_local_variable
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -31,6 +31,107 @@ class AppAlertDialog {
           TextButton(
               onPressed: () {
                 navigator?.pop();
+              },
+              child: Text(
+                AppStrings.ok,
+                style: GoogleFonts.poppins(
+                    fontSize: 26.sp,
+                    fontWeight: FontWeight.normal,
+                    textStyle: TextStyle(color: AppColors.primary)),
+              )),
+        ]);
+  }
+
+/*
+AlertDialog(
+          title: Text('Enter Text'),
+          content: TextField(
+            onChanged: (value) {
+              textFieldValue = value;
+            },
+            decoration: InputDecoration(
+              hintText: 'Enter text here...',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Do something with the text value
+                print('Text entered: $textFieldValue');
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+*/
+  static void textfiAlert(
+    BuildContext context,
+    String title,
+    String message, {
+    required Function()? onYesTap,
+  }) {
+    String textFieldValue = '';
+    AdaptiveAlert.customAlertWithTextField(context,
+        title: Text(
+          title,
+          style: GoogleFonts.poppins(
+              fontSize: 28.sp,
+              fontWeight: FontWeight.w500,
+              textStyle: TextStyle(color: AppColors.white)),
+        ),
+        content: TextField(
+          style: GoogleFonts.poppins(
+              fontSize: 30.sp,
+              fontWeight: FontWeight.normal,
+              textStyle: TextStyle(color: AppColors.white)),
+          cursorColor: Theme.of(context).textSelectionTheme.cursorColor,
+          decoration: InputDecoration(
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppColors.hintColor),
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Theme.of(context).primaryColor),
+            ),
+            hintText: '',
+            hintStyle: GoogleFonts.poppins(
+                fontSize: 30.sp,
+                fontWeight: FontWeight.normal,
+                textStyle: TextStyle(color: AppColors.hintColor)),
+            border: InputBorder.none,
+            isDense: true,
+            contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+          ),
+          onChanged: (value) {
+            textFieldValue = value;
+          },
+        ),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Get.back();
+              },
+              child: Text(
+                AppStrings.cancel,
+                style: GoogleFonts.poppins(
+                    fontSize: 26.sp,
+                    fontWeight: FontWeight.normal,
+                    textStyle: TextStyle(color: AppColors.primary)),
+              )),
+          TextButton(
+              onPressed: () {
+                Get.back();
+                if (onYesTap != null) {
+                  onYesTap();
+                }
               },
               child: Text(
                 AppStrings.ok,

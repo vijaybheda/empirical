@@ -85,7 +85,7 @@ class PurchaseOrderScreenController extends GetxController {
       appStorage.selectedItemSKUList?.add(partner);
     }
 
-    print(appStorage.selectedItemSKUList?.length);
+    debugPrint("${appStorage.selectedItemSKUList?.length}");
     int index = filteredItemSkuList.indexWhere((element) {
       return element.id == partner.id;
     });

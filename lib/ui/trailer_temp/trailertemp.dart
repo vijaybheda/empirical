@@ -105,8 +105,12 @@ class TrailerTemp extends GetView<TrailerTempController> {
                           }
                         else
                           {
-                            controller.saveTemperatureData(
-                                orderNumber, carrier.id ?? 0, 0)
+                            controller.saveTemperatureData('N', orderNumber,
+                                carrier.id ?? 0, controller.tailerTempData),
+                            controller.saveTemperatureData('M', orderNumber,
+                                carrier.id ?? 0, controller.tailerTempData),
+                            controller.saveTemperatureData('B', orderNumber,
+                                carrier.id ?? 0, controller.tailerTempData)
                           }
                       }),
             ],

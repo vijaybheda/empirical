@@ -1,4 +1,4 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers, use_rethrow_when_possible, prefer_adjacent_string_concatenation, prefer_interpolation_to_compose_strings
+// ignore_for_file: no_leading_underscores_for_local_identifiers, use_rethrow_when_possible, prefer_adjacent_string_concatenation, prefer_interpolation_to_compose_strings, unused_local_variable
 
 import 'dart:convert';
 import 'dart:developer';
@@ -1839,7 +1839,7 @@ class ApplicationDao {
   }
 
   Future<int> createTempTrailerTemperature(int partnerID, String location,
-      String level, int value, String poNumber) async {
+      String level, String value, String poNumber) async {
     final db = await dbProvider.database;
     int? ttId;
     try {
@@ -1857,6 +1857,35 @@ class ApplicationDao {
       debugPrint("Error has occurred while creating a trailer temperature: $e");
     }
     return ttId ?? -1;
+  }
+
+  Future<void> createTempTrailerTemperatureDetails(
+      int partnerID,
+      String tempOpen1,
+      String tempOpen2,
+      String tempOpen3,
+      String comments,
+      String poNumber) async {
+    final db = await dbProvider.database;
+    int? ttId;
+    try {
+      await db.transaction((txn) async {
+        var values = <String, dynamic>{
+          TempTrailerTemperatureDetailsColumn.PARTNER_ID: partnerID,
+          TempTrailerTemperatureDetailsColumn.TEMP_OPEN1: tempOpen1,
+          TempTrailerTemperatureDetailsColumn.TEMP_OPEN2: tempOpen2,
+          TempTrailerTemperatureDetailsColumn.TEMP_OPEN3: tempOpen3,
+          TempTrailerTemperatureDetailsColumn.COMMENTS: comments,
+          TempTrailerTemperatureDetailsColumn.PO_NUMBER: poNumber,
+        };
+
+        ttId =
+            await txn.insert(DBTables.TEMP_TRAILER_TEMPERATURE_DETAILS, values);
+      });
+    } catch (e) {
+      debugPrint('Error occurred while creating a trailer temperature: $e');
+      rethrow;
+    }
   }
 
   Future<int> deleteRowsTempTrailerTable() async {
@@ -2105,7 +2134,7 @@ class ApplicationDao {
         enterpriseId = result.first[UserOfflineColumn.HEADQUATER_SUPPLIER_ID];
       }
     } catch (e) {
-      print('Error has occurred while finding a user id: $e');
+      debugPrint('Error has occurred while finding a user id: $e');
       return -1;
     }
     return enterpriseId;
@@ -2128,7 +2157,7 @@ class ApplicationDao {
         return true;
       }
     } catch (e) {
-      print("Error has occurred while finding pfg: $e");
+      debugPrint("Error has occurred while finding pfg: $e");
       return false;
     }
     return false;
@@ -2150,7 +2179,7 @@ class ApplicationDao {
           PartnerItemSKUInspections.fromMap(cursor.first);
       return item;
     } catch (e) {
-      print("Error has occurred while finding quality control items: $e");
+      debugPrint("Error has occurred while finding quality control items: $e");
       return null;
     }
   }
@@ -2174,7 +2203,7 @@ class ApplicationDao {
         list.add(item);
       }
     } catch (e) {
-      print("Error has occurred while finding quality control items: $e");
+      debugPrint("Error has occurred while finding quality control items: $e");
       return null;
     }
     return list;
@@ -2194,7 +2223,7 @@ class ApplicationDao {
           SpecificationAnalyticalRequest.fromMap(cursor.first);
       return item;
     } catch (e) {
-      print("Error has occurred while finding quality control items: $e");
+      debugPrint("Error has occurred while finding quality control items: $e");
       return null;
     }
   }
@@ -2213,7 +2242,7 @@ class ApplicationDao {
           inspectionId = cursor[0][ResultRejectionDetailsColumn.INSPECTION_ID];
         }
       } catch (e) {
-        print("Error has occurred while finding a user id: $e");
+        debugPrint("Error has occurred while finding a user id: $e");
         return null;
       }
 
@@ -2239,7 +2268,7 @@ class ApplicationDao {
             whereArgs: [inspectionID]);
       }
     } catch (e) {
-      print("Error has occurred while creating an inspection: $e");
+      debugPrint("Error has occurred while creating an inspection: $e");
       return null;
     }
     return inspectionId;
@@ -2264,7 +2293,7 @@ class ApplicationDao {
               cursor.first[ResultRejectionDetailsColumn.INSPECTION_ID] as int?;
         }
       } catch (e) {
-        print("Error has occurred while finding a user id. $e");
+        debugPrint("Error has occurred while finding a user id. $e");
         return null;
       }
 
@@ -2292,7 +2321,7 @@ class ApplicationDao {
         });
       }
     } catch (e) {
-      print("Error has occurred while creating an inspection. $e");
+      debugPrint("Error has occurred while creating an inspection. $e");
       return null;
     }
     return inspectionId;
@@ -2318,7 +2347,7 @@ class ApplicationDao {
         return true;
       });
     } catch (e) {
-      print("Error has occurred while updating an inspection. $e");
+      debugPrint("Error has occurred while updating an inspection. $e");
       return false;
     }
     return false;
@@ -2346,7 +2375,7 @@ class ApplicationDao {
         return true;
       });
     } catch (e) {
-      print("Error has occurred while updating an inspection. $e");
+      debugPrint("Error has occurred while updating an inspection. $e");
       return false;
     }
     return false;

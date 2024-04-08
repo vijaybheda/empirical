@@ -1,12 +1,9 @@
 // ignore_for_file: non_constant_identifier_names, unused_field, unnecessary_overrides, prefer_interpolation_to_compose_strings, unrelated_type_equality_checks, prefer_const_constructors, unnecessary_null_comparison, unused_local_variable
 
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/models/trailer_temp.dart';
 import 'package:pverify/services/database/application_dao.dart';
-import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
 import 'package:pverify/ui/trailer_temp/trailerTempClass.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
@@ -395,66 +392,133 @@ class TrailerTempController extends GetxController {
     }
   }
 
-  void saveTemperatureData(String poNumber, int partnerID, int? value) {
-    for (int i = 0; i < 9; i++) {
-      String levelMain;
-      String values;
-      String vals;
-      if (i < 3) {
-        levelMain = 'T1';
-        values = i == 0
-            ? 'NT1'
-            : i == 1
-                ? 'NM1'
-                : 'NB1';
-      } else if (i < 6) {
-        levelMain = 'T1';
-        values = i == 3
-            ? 'NT2'
-            : i == 4
-                ? 'NM2'
-                : 'NB2';
-      } else {
-        levelMain = 'T3';
-        values = i == 6
-            ? 'NT3'
-            : i == 7
-                ? 'NM3'
-                : 'NB3';
+  Future<void> saveTemperatureData(String location, String poNumber,
+      int partnerID, TrailerTempClass tempData) async {
+    if (location == 'N') {
+      for (int i = 0; i < 9; i++) {
+        String level;
+        String value;
+        if (i < 3) {
+          level = i == 0
+              ? 'T1'
+              : i == 1
+                  ? 'T2'
+                  : 'T3';
+          value = i == 0
+              ? (tempData.nose?.pallet1?.top ?? '')
+              : i == 1
+                  ? tempData.nose?.pallet2?.top ?? ''
+                  : tempData.nose?.pallet3?.top ?? '';
+        } else if (i < 6) {
+          level = i == 3
+              ? 'M1'
+              : i == 4
+                  ? 'M2'
+                  : 'M3';
+          value = i == 0
+              ? tempData.nose?.pallet1?.middle ?? ''
+              : i == 1
+                  ? tempData.nose?.pallet2?.middle ?? ''
+                  : tempData.nose?.pallet3?.middle ?? '';
+        } else {
+          level = i == 6
+              ? 'B1'
+              : i == 7
+                  ? 'B2'
+                  : 'B3';
+          value = i == 0
+              ? tempData.nose?.pallet1?.bottom ?? ''
+              : i == 1
+                  ? tempData.nose?.pallet2?.bottom ?? ''
+                  : tempData.nose?.pallet3?.bottom ?? '';
+        }
+        saveOrUpdateTempDataFromLayouts('N', poNumber, partnerID, level, value);
       }
-      saveOrUpdateTempDataFromLayouts(
-          'N', poNumber, partnerID, levelMain, value ?? 0);
-    }
-
-    for (int i = 0; i < 9; i++) {
-      String levelMain;
-      if (i < 3) {
-        levelMain = 'T1';
-      } else if (i < 6) {
-        levelMain = 'T1';
-      } else {
-        levelMain = 'T3';
+    } else if (location == 'M') {
+      for (int i = 0; i < 9; i++) {
+        String level;
+        String value;
+        if (i < 3) {
+          level = i == 0
+              ? 'T1'
+              : i == 1
+                  ? 'T2'
+                  : 'T3';
+          value = i == 0
+              ? (tempData.middle?.pallet1?.top ?? '')
+              : i == 1
+                  ? tempData.middle?.pallet2?.top ?? ''
+                  : tempData.middle?.pallet3?.top ?? '';
+        } else if (i < 6) {
+          level = i == 3
+              ? 'M1'
+              : i == 4
+                  ? 'M2'
+                  : 'M3';
+          value = i == 0
+              ? tempData.middle?.pallet1?.middle ?? ''
+              : i == 1
+                  ? tempData.middle?.pallet2?.middle ?? ''
+                  : tempData.middle?.pallet3?.middle ?? '';
+        } else {
+          level = i == 6
+              ? 'B1'
+              : i == 7
+                  ? 'B2'
+                  : 'B3';
+          value = i == 0
+              ? tempData.middle?.pallet1?.bottom ?? ''
+              : i == 1
+                  ? tempData.middle?.pallet2?.bottom ?? ''
+                  : tempData.middle?.pallet3?.bottom ?? '';
+        }
+        saveOrUpdateTempDataFromLayouts('M', poNumber, partnerID, level, value);
       }
-      saveOrUpdateTempDataFromLayouts(
-          'M', poNumber, partnerID, levelMain, value ?? 0);
-    }
-
-    for (int i = 0; i < 9; i++) {
-      String levelMain;
-      if (i < 3) {
-        levelMain = 'T1';
-      } else if (i < 6) {
-        levelMain = 'T1';
-      } else {
-        levelMain = 'T3';
+    } else {
+      for (int i = 0; i < 9; i++) {
+        String level;
+        String value;
+        if (i < 3) {
+          level = i == 0
+              ? 'T1'
+              : i == 1
+                  ? 'T2'
+                  : 'T3';
+          value = i == 0
+              ? (tempData.tail?.pallet1?.top ?? '')
+              : i == 1
+                  ? tempData.tail?.pallet2?.top ?? ''
+                  : tempData.tail?.pallet3?.top ?? '';
+        } else if (i < 6) {
+          level = i == 3
+              ? 'M1'
+              : i == 4
+                  ? 'M2'
+                  : 'M3';
+          value = i == 0
+              ? tempData.tail?.pallet1?.middle ?? ''
+              : i == 1
+                  ? tempData.tail?.pallet2?.middle ?? ''
+                  : tempData.tail?.pallet3?.middle ?? '';
+        } else {
+          level = i == 6
+              ? 'B1'
+              : i == 7
+                  ? 'B1'
+                  : 'B3';
+          value = i == 0
+              ? tempData.tail?.pallet1?.bottom ?? ''
+              : i == 1
+                  ? tempData.tail?.pallet2?.bottom ?? ''
+                  : tempData.tail?.pallet3?.bottom ?? '';
+        }
+        saveOrUpdateTempDataFromLayouts('B', poNumber, partnerID, level, value);
       }
-      saveOrUpdateTempDataFromLayouts(
-          'T', poNumber, partnerID, levelMain, value ?? 0);
     }
   }
 
   void saveOrUpdateTempDataFromLayouts(String location, String poNumber,
-      int partnerID, String level, int value) {
+      int partnerID, String level, String value) {
     // if (trailerTempMap.containsKey(key)) {
     //   long trailerTemperatureId = trailerTempMap[key].trailerTemperatureId;
     //   if (value == null || value.isEmpty) {
