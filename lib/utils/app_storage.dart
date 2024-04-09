@@ -5,7 +5,9 @@ import 'package:pverify/models/brand_item.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_data.dart';
 import 'package:pverify/models/commodity_item.dart';
+import 'package:pverify/models/commodity_variety_data.dart';
 import 'package:pverify/models/country_item.dart';
+import 'package:pverify/models/defect_categories.dart';
 import 'package:pverify/models/defect_item.dart';
 import 'package:pverify/models/delivery_to_item.dart';
 import 'package:pverify/models/grade_commodity_detail_item.dart';
@@ -17,8 +19,10 @@ import 'package:pverify/models/my_inspection_48hour_item.dart';
 import 'package:pverify/models/offline_commodity.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/reason_item.dart';
+import 'package:pverify/models/severity.dart';
 import 'package:pverify/models/severity_defect.dart';
 import 'package:pverify/models/specification_analytical.dart';
+import 'package:pverify/models/specification_by_item_sku.dart';
 import 'package:pverify/models/specification_grade_tolerance.dart';
 import 'package:pverify/models/specification_grade_tolerance_array.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
@@ -32,7 +36,7 @@ class AppStorage extends GetxController {
   // ignore: prefer_function_declarations_over_variables
   final storageBox = () => GetStorage(StorageKey.kAppStorageKey);
 
-  List<FinishedGoodsItemSKU>? selectedItemSKUList;
+  List<FinishedGoodsItemSKU> selectedItemSKUList = [];
 
   List<SpecificationAnalytical>? specificationAnalyticalList;
   List<SpecificationGradeToleranceArray>? specificationGradeToleranceArrayList;
@@ -62,7 +66,13 @@ class AppStorage extends GetxController {
 
   List<int>? attachmentIds;
 
-  // List<Severity>? severityList;
+  List<Severity>? severityList;
+  List<DefectCategories>? defectCategoriesList;
+  List<SpecificationByItemSKU>? specificationByItemSKUList;
+  List<FinishedGoodsItemSKU> tempSelectedItemSKUList = [];
+
+  CommodityVarietyData? commodityVarietyData;
+  List<CommodityVarietyData>? commodityVarietyDataList;
 
   Map<String, String> mapLogin = <String, String>{};
 
