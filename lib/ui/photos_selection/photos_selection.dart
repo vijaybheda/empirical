@@ -3,9 +3,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/photos_selection/photos_selection_controller.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -42,6 +44,7 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
   Widget contentView(
       BuildContext context, PhotoSelectionController controller) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Container(
           padding: EdgeInsets.only(left: 40.w),
@@ -130,61 +133,59 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
           padding: EdgeInsets.only(top: 20, bottom: 10),
           alignment: Alignment.topCenter,
           color: AppColors.lightGrey,
-          child: Expanded(
-            child: Column(
-              children: [
-                Expanded(
-                  child: Image.file(
-                      fit: BoxFit.contain,
-                      File(controller.imgList[rowIndex].path)),
+          child: Column(
+            children: [
+              Expanded(
+                child: Image.file(
+                    fit: BoxFit.contain,
+                    File(controller.imgList[rowIndex].path)),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              SizedBox(
+                height: 80.h,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton(
+                        onPressed: () {
+                          AppAlertDialog.confirmationAlert(
+                            context,
+                            '',
+                            AppStrings.pictureMessage,
+                            onYesTap: () {
+                              controller.removeImage(rowIndex);
+                            },
+                          );
+                        },
+                        child: Text(
+                          AppStrings.delete,
+                          style: TextStyle(color: AppColors.textBlue),
+                        )),
+                    TextButton(
+                        onPressed: () {
+                          controller.cropImage(
+                              File(controller.imgList[rowIndex].path),
+                              rowIndex);
+                        },
+                        child: Text(AppStrings.crop,
+                            style: TextStyle(color: AppColors.textBlue))),
+                    TextButton(
+                        onPressed: () {
+                          AppAlertDialog.textfiAlert(
+                            context,
+                            AppStrings.inspectionPhotoTitle,
+                            '',
+                            onYesTap: () {},
+                          );
+                        },
+                        child: Text(AppStrings.title,
+                            style: TextStyle(color: AppColors.textBlue))),
+                  ],
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-                SizedBox(
-                  height: 80.h,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      TextButton(
-                          onPressed: () {
-                            AppAlertDialog.confirmationAlert(
-                              context,
-                              '',
-                              AppStrings.pictureMessage,
-                              onYesTap: () {
-                                controller.removeImage(rowIndex);
-                              },
-                            );
-                          },
-                          child: Text(
-                            'Delete',
-                            style: TextStyle(color: AppColors.textBlue),
-                          )),
-                      TextButton(
-                          onPressed: () {
-                            controller.cropImage(
-                                File(controller.imgList[rowIndex].path),
-                                rowIndex);
-                          },
-                          child: Text('Crop',
-                              style: TextStyle(color: AppColors.textBlue))),
-                      TextButton(
-                          onPressed: () {
-                            AppAlertDialog.textfiAlert(
-                              context,
-                              AppStrings.inspectionPhotoTitle,
-                              '',
-                              onYesTap: () {},
-                            );
-                          },
-                          child: Text('Title',
-                              style: TextStyle(color: AppColors.textBlue))),
-                    ],
-                  ),
-                )
-              ],
-            ),
+              )
+            ],
           ),
         );
       },

@@ -27,6 +27,12 @@ class TrailerTemp extends GetView<TrailerTempController> {
     return GetBuilder<TrailerTempController>(
         init: TrailerTempController(),
         builder: (controller) {
+          controller.carrier1 = carrier;
+          controller.orderNumber1 = orderNumber;
+          if (controller.isOrderNumberAvailable == false) {
+            controller.loadDataFromDB();
+            controller.isOrderNumberAvailable = true;
+          }
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
             resizeToAvoidBottomInset: false,
@@ -110,7 +116,8 @@ class TrailerTemp extends GetView<TrailerTempController> {
                             controller.saveTemperatureData('M', orderNumber,
                                 carrier.id ?? 0, controller.tailerTempData),
                             controller.saveTemperatureData('B', orderNumber,
-                                carrier.id ?? 0, controller.tailerTempData)
+                                carrier.id ?? 0, controller.tailerTempData),
+                            Get.back()
                           }
                       }),
             ],

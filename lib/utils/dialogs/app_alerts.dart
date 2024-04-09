@@ -42,37 +42,6 @@ class AppAlertDialog {
         ]);
   }
 
-/*
-AlertDialog(
-          title: Text('Enter Text'),
-          content: TextField(
-            onChanged: (value) {
-              textFieldValue = value;
-            },
-            decoration: InputDecoration(
-              hintText: 'Enter text here...',
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                // Do something with the text value
-                print('Text entered: $textFieldValue');
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-*/
   static void textfiAlert(
     BuildContext context,
     String title,

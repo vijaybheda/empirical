@@ -13,8 +13,9 @@ class PhotoSelectionController extends GetxController {
   RxList imgList = [].obs;
 
   Future getImageFromGallery() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    imgList.add(image);
+    _picker.supportsImageSource(ImageSource.gallery);
+    final List<XFile> image = await _picker.pickMultiImage();
+    imgList.addAll(image);
   }
 
   Future getImageFromCamera() async {

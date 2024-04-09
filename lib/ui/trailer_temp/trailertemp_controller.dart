@@ -2,9 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/trailer_temp.dart';
+import 'package:pverify/models/trailer_temperature_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/trailer_temp/trailerTempClass.dart';
+import 'package:pverify/ui/trailer_temp/trailertemprature_details.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 
@@ -42,6 +46,11 @@ class TrailerTempController extends GetxController {
   var activePallet = AppStrings.pallet1.obs;
   String callerActivity = '';
   final ApplicationDao dao = ApplicationDao();
+
+  CarrierItem? carrier1;
+  String? orderNumber1;
+
+  var isOrderNumberAvailable = false;
 
   @override
   void onInit() {
@@ -101,6 +110,97 @@ class TrailerTempController extends GetxController {
       _textFieldListener(
           pallet3_bottom_TextController.value, pallet3_bottom_FocusNode);
     });
+
+    debugPrint('carrier ID ${carrier1?.id}');
+    debugPrint('orderNumber1${orderNumber1 ?? ''}');
+    isOrderNumberAvailable = false;
+  }
+
+  void addData(String mode, String level, String value) {
+    if (mode == 'N') {
+      tailerTempData.nose?.pallet1?.top =
+          level == "T1" ? value : tailerTempData.nose?.pallet1?.top;
+      tailerTempData.nose?.pallet2?.top =
+          level == "T2" ? value : tailerTempData.nose?.pallet2?.top;
+      tailerTempData.nose?.pallet3?.top =
+          level == "T3" ? value : tailerTempData.nose?.pallet3?.top;
+
+      tailerTempData.nose?.pallet1?.middle =
+          level == "M1" ? value : tailerTempData.nose?.pallet1?.middle;
+      tailerTempData.nose?.pallet2?.middle =
+          level == "M2" ? value : tailerTempData.nose?.pallet2?.middle;
+      tailerTempData.nose?.pallet3?.middle =
+          level == "M3" ? value : tailerTempData.nose?.pallet3?.middle;
+
+      tailerTempData.nose?.pallet1?.bottom =
+          level == "B1" ? value : tailerTempData.nose?.pallet1?.bottom;
+      tailerTempData.nose?.pallet2?.bottom =
+          level == "B2" ? value : tailerTempData.nose?.pallet2?.bottom;
+      tailerTempData.nose?.pallet3?.bottom =
+          level == "B3" ? value : tailerTempData.nose?.pallet3?.bottom;
+    } else if (mode == 'M') {
+      tailerTempData.middle?.pallet1?.top =
+          level == "T1" ? value : tailerTempData.middle?.pallet1?.top;
+      tailerTempData.middle?.pallet2?.top =
+          level == "T2" ? value : tailerTempData.middle?.pallet2?.top;
+      tailerTempData.middle?.pallet3?.top =
+          level == "T3" ? value : tailerTempData.middle?.pallet3?.top;
+
+      tailerTempData.middle?.pallet1?.middle =
+          level == "M1" ? value : tailerTempData.middle?.pallet1?.middle;
+      tailerTempData.middle?.pallet2?.middle =
+          level == "M2" ? value : tailerTempData.middle?.pallet2?.middle;
+      tailerTempData.middle?.pallet3?.middle =
+          level == "M3" ? value : tailerTempData.middle?.pallet3?.middle;
+
+      tailerTempData.middle?.pallet1?.bottom =
+          level == "B1" ? value : tailerTempData.middle?.pallet1?.bottom;
+      tailerTempData.middle?.pallet2?.bottom =
+          level == "B2" ? value : tailerTempData.middle?.pallet2?.bottom;
+      tailerTempData.middle?.pallet3?.bottom =
+          level == "B3" ? value : tailerTempData.middle?.pallet3?.bottom;
+    } else {
+      tailerTempData.tail?.pallet1?.top =
+          level == "T1" ? value : tailerTempData.tail?.pallet1?.top;
+      tailerTempData.tail?.pallet2?.top =
+          level == "T2" ? value : tailerTempData.tail?.pallet2?.top;
+      tailerTempData.tail?.pallet3?.top =
+          level == "T3" ? value : tailerTempData.tail?.pallet3?.top;
+
+      tailerTempData.tail?.pallet1?.middle =
+          level == "M1" ? value : tailerTempData.tail?.pallet1?.middle;
+      tailerTempData.tail?.pallet2?.middle =
+          level == "M2" ? value : tailerTempData.tail?.pallet2?.middle;
+      tailerTempData.tail?.pallet3?.middle =
+          level == "M3" ? value : tailerTempData.tail?.pallet3?.middle;
+
+      tailerTempData.tail?.pallet1?.bottom =
+          level == "B1" ? value : tailerTempData.tail?.pallet1?.bottom;
+      tailerTempData.tail?.pallet2?.bottom =
+          level == "B2" ? value : tailerTempData.tail?.pallet2?.bottom;
+      tailerTempData.tail?.pallet3?.bottom =
+          level == "B3" ? value : tailerTempData.tail?.pallet3?.bottom;
+    }
+    setDataUI();
+  }
+
+  void loadDataFromDB() async {
+    debugPrint('carrier ID ${carrier1?.id}');
+    debugPrint('orderNumber1 ${orderNumber1 ?? ''}');
+
+    List trailerTempMap = await dao.findTempTrailerTemperatureItems(
+        carrier1!.id!.toInt(), orderNumber1.toString());
+
+    for (var element in trailerTempMap) {
+      addData(
+          element['Location'], element['Level'], element['value'].toString());
+    }
+    TrailerTemperatureDetails? temperatureDetails =
+        await dao.findTempTrailerTemperatureDetails(21471);
+
+    if (temperatureDetails != null) {
+      commentTextController.value.text = temperatureDetails.comments;
+    }
   }
 
   String setDataWithSymbol(String value) {
@@ -288,7 +388,7 @@ class TrailerTempController extends GetxController {
             pallet3_bottom_TextController.value.text;
       }
     }
-    setDataUI();
+    //setDataUI();
   }
 
   // LOGIN SCREEN VALIDATION'S
@@ -415,9 +515,9 @@ class TrailerTempController extends GetxController {
               : i == 4
                   ? 'M2'
                   : 'M3';
-          value = i == 0
+          value = i == 3
               ? tempData.nose?.pallet1?.middle ?? ''
-              : i == 1
+              : i == 4
                   ? tempData.nose?.pallet2?.middle ?? ''
                   : tempData.nose?.pallet3?.middle ?? '';
         } else {
@@ -426,9 +526,9 @@ class TrailerTempController extends GetxController {
               : i == 7
                   ? 'B2'
                   : 'B3';
-          value = i == 0
+          value = i == 6
               ? tempData.nose?.pallet1?.bottom ?? ''
-              : i == 1
+              : i == 7
                   ? tempData.nose?.pallet2?.bottom ?? ''
                   : tempData.nose?.pallet3?.bottom ?? '';
         }
@@ -455,9 +555,9 @@ class TrailerTempController extends GetxController {
               : i == 4
                   ? 'M2'
                   : 'M3';
-          value = i == 0
+          value = i == 3
               ? tempData.middle?.pallet1?.middle ?? ''
-              : i == 1
+              : i == 4
                   ? tempData.middle?.pallet2?.middle ?? ''
                   : tempData.middle?.pallet3?.middle ?? '';
         } else {
@@ -466,9 +566,9 @@ class TrailerTempController extends GetxController {
               : i == 7
                   ? 'B2'
                   : 'B3';
-          value = i == 0
+          value = i == 6
               ? tempData.middle?.pallet1?.bottom ?? ''
-              : i == 1
+              : i == 7
                   ? tempData.middle?.pallet2?.bottom ?? ''
                   : tempData.middle?.pallet3?.bottom ?? '';
         }
