@@ -28,10 +28,19 @@ class PurchaseOrderDetailsController extends GetxController {
 
   final TextEditingController searchController = TextEditingController();
 
-  String? specificationTypeName;
-  String? specificationNumber;
-  String? specificationVersion;
-  String? specificationName;
+  late final int? serverInspectionID;
+  late final String? partnerName;
+  late final int? partnerID;
+  late final String? carrierName;
+  late final int? carrierID;
+  late final int? commodityID;
+  late final String? commodityName;
+  late final String? poNumber;
+  late final String? sealNumber;
+  late final String? specificationNumber;
+  late final String? specificationVersion;
+  late final String? specificationName;
+  late final String? specificationTypeName;
 
   PurchaseOrderDetailsController({
     required this.partner,
@@ -42,6 +51,26 @@ class PurchaseOrderDetailsController extends GetxController {
 
   @override
   void onInit() {
+    Map<String, dynamic>? args = Get.arguments;
+    if (args == null) {
+      Get.back();
+      throw Exception('Arguments not allowed');
+    }
+
+    serverInspectionID = args['serverInspectionID'] ?? -1;
+    partnerName = args['partnerName'] ?? '';
+    partnerID = args['partnerID'] ?? 0;
+    carrierName = args['carrierName'] ?? '';
+    carrierID = args['carrierID'] ?? 0;
+    commodityID = args['commodityID'] ?? 0;
+    commodityName = args['commodityName'] ?? '';
+    poNumber = args['poNumber'] ?? '';
+    sealNumber = args['sealNumber'] ?? '';
+    specificationNumber = args['specificationNumber'] ?? '';
+    specificationVersion = args['specificationVersion'] ?? '';
+    specificationName = args['specificationName'] ?? '';
+    specificationTypeName = args['specificationTypeName'] ?? '';
+
     itemSkuList.assignAll(getPurchaseOrderData());
     super.onInit();
     filteredInspectionsList.assignAll(itemSkuList);
@@ -116,9 +145,15 @@ class PurchaseOrderDetailsController extends GetxController {
           if (inspection == null) {
             return;
           }
-          specificationTypeName = inspection.specificationTypeName;
-          specificationNumber = inspection.specificationNumber;
-          specificationVersion = inspection.specificationVersion;
+          if (inspection.specificationTypeName != null) {
+            specificationTypeName = inspection.specificationTypeName!;
+          }
+          if (inspection.specificationNumber != null) {
+            specificationNumber = inspection.specificationNumber!;
+          }
+          if (inspection.specificationVersion != null) {
+            specificationVersion = inspection.specificationVersion!;
+          }
           List<SpecificationGradeToleranceArray>
               specificationGradeToleranceArrayList =
               appStorage.specificationGradeToleranceArrayList ?? [];
@@ -158,8 +193,9 @@ class PurchaseOrderDetailsController extends GetxController {
                   ("Raw Produce".toLowerCase()))) {
             if (appStorage.specificationAnalyticalList != null) {
               for (var item in (appStorage.specificationAnalyticalList ?? [])) {
-                SpecificationAnalyticalRequest? dbobj = await dao
-                    .findSpecAnalyticalObj(inspection.id!, item.analyticalID);
+                SpecificationAnalyticalRequest? dbobj =
+                    await dao.findSpecAnalyticalObj(
+                        inspection.inspectionId!, item.analyticalID);
                 if (dbobj != null && dbobj.comply == "N") {
                   if (dbobj.inspectionResult != null &&
                       dbobj.inspectionResult == "N") {
@@ -170,7 +206,7 @@ class PurchaseOrderDetailsController extends GetxController {
                     rejectReasonArray.add("${dbobj.analyticalName} = N");
                     int resultReason =
                         await dao.createOrUpdateResultReasonDetails(
-                            inspection.id!,
+                            inspection.inspectionId!,
                             result,
                             "${dbobj.analyticalName} = N",
                             dbobj.comment!);
@@ -179,7 +215,7 @@ class PurchaseOrderDetailsController extends GetxController {
                     }
                     int isPictureReqSpec =
                         await dao.createIsPictureReqSpecAttribute(
-                            inspection.id!,
+                            inspection.inspectionId!,
                             result,
                             "${dbobj.analyticalName} = N",
                             dbobj.pictureRequired!);
@@ -199,31 +235,33 @@ class PurchaseOrderDetailsController extends GetxController {
 
             if (result == "A-" || result == "AC") {
               QualityControlItem? qualityControlItems =
-                  await dao.findQualityControlDetails(inspection.id!);
+                  await dao.findQualityControlDetails(inspection.inspectionId!);
               bool isQuantityRejected = await dao.updateQuantityRejected(
-                  inspection.id!, 0, qualityControlItems!.qtyShipped!);
+                  inspection.inspectionId!,
+                  0,
+                  qualityControlItems!.qtyShipped!);
             }
-            int inspectionResult =
-                await dao.updateInspectionResult(inspection.id!, result);
+            int inspectionResult = await dao.updateInspectionResult(
+                inspection.inspectionId!, result);
             if (inspectionResult != -1) {
               // TODO: implement logic
             }
             int inspectionSpecification =
                 await dao.createOrUpdateInspectionSpecification(
-                    inspection.id!,
+                    inspection.inspectionId!,
                     specificationNumber,
                     specificationVersion,
                     specificationName);
             if (inspectionSpecification != -1) {
               // TODO: implement logic
             }
-            int inspectionComplete =
-                await dao.updateInspectionComplete(inspection.id!, true);
+            int inspectionComplete = await dao.updateInspectionComplete(
+                inspection.inspectionId!, true);
             if (inspectionComplete != -1) {
               // TODO: implement logic
             }
             bool updateItemSKU = await dao.updateItemSKUInspectionComplete(
-                inspection.id!, "true");
+                inspection.inspectionId!, "true");
 
             // TODO: implement logic
             // await dao.updateInspectionUploadStatus(inspection.id!, (result == "RJ"? "RJ": "AC"));
@@ -231,7 +269,7 @@ class PurchaseOrderDetailsController extends GetxController {
               (appStorage.specificationGradeToleranceList ?? []).isNotEmpty) {
             int totalSampleSize = 0;
             List<InspectionSample> samples =
-                await dao.findInspectionSamples(inspection.id!);
+                await dao.findInspectionSamples(inspection.inspectionId!);
             if (samples.isNotEmpty) {
               for (int a = 0; a < samples.length; a++) {
                 totalSampleSize += samples[a].setSize!;
@@ -255,8 +293,35 @@ class PurchaseOrderDetailsController extends GetxController {
   }
 
   Future<void> onItemTap(PurchaseOrderItem goodsItem) async {
-    await Get.to(() => QCDetailsShortFormScreen(
-          partner: partner,
-        ));
+    await Get.to(
+        () => QCDetailsShortFormScreen(
+              partner: partner,
+              carrier: carrier,
+              commodity: commodity,
+              qcHeaderDetails: qcHeaderDetails,
+              purchaseOrderItem: goodsItem,
+            ),
+        arguments: {
+          'serverInspectionID': serverInspectionID,
+          'partnerName': partner.name,
+          'partnerID': partner.id,
+          'carrierName': carrier.name,
+          'carrierID': carrier.id,
+          'commodityName': commodity.name,
+          'commodityID': commodity.id,
+          // 'sampleSizeByCount': ,
+          // 'inspectionResult': ,
+          // 'itemSKU': ,
+          'poNumber': qcHeaderDetails?.poNo,
+          // 'specificationNumber': ,
+          // 'specificationVersion': ,
+          // 'specificationName': ,
+          // 'specificationTypeName': ,
+          // 'selectedSpecification': ,
+          // 'productTransfer': ,
+          // 'callerActivity': ,
+          // 'is1stTimeActivity': ,
+          // 'isMyInspectionScreen': ,
+        });
   }
 }

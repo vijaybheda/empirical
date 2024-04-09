@@ -21,6 +21,16 @@ class PurchaseOrderScreenController extends GetxController {
   final CommodityItem commodity;
   final QCHeaderDetails? qcHeaderDetails;
 
+  late final String poNumber;
+  late final String sealNumber;
+  late final String partnerName;
+  late final int partnerID;
+  late final String carrierName;
+  late final int carrierID;
+  late final int commodityID;
+  late final String commodityName;
+  late final String productTransfer;
+
   final TextEditingController searchController = TextEditingController();
   PurchaseOrderScreenController({
     required this.partner,
@@ -41,6 +51,22 @@ class PurchaseOrderScreenController extends GetxController {
 
   @override
   void onInit() {
+    Map<String, dynamic>? args = Get.arguments;
+    if (args == null) {
+      Get.back();
+      throw Exception('Arguments not allowed');
+    }
+
+    poNumber = args['poNumber'] ?? '';
+    sealNumber = args['sealNumber'] ?? '';
+    partnerName = args['partnerName'] ?? '';
+    partnerID = args['partnerID'] ?? 0;
+    carrierName = args['carrierName'] ?? '';
+    carrierID = args['carrierID'] ?? 0;
+    commodityID = args['commodityID'] ?? 0;
+    commodityName = args['commodityName'] ?? '';
+    productTransfer = args['productTransfer'] ?? '';
+
     super.onInit();
     assignInitialData();
   }
@@ -81,14 +107,14 @@ class PurchaseOrderScreenController extends GetxController {
     appStorage.selectedItemSKUList ??= <FinishedGoodsItemSKU>[];
 
     // remove if exist in appStorage.selectedItemSKUList
-    appStorage.selectedItemSKUList?.removeWhere((element) {
+    appStorage.selectedItemSKUList.removeWhere((element) {
       return element.id == partner.id;
     });
     if (partner.isSelected ?? false) {
-      appStorage.selectedItemSKUList?.add(partner);
+      appStorage.selectedItemSKUList.add(partner);
     }
 
-    print(appStorage.selectedItemSKUList?.length);
+    print(appStorage.selectedItemSKUList.length);
     int index = filteredItemSkuList.indexWhere((element) {
       return element.id == partner.id;
     });
@@ -123,17 +149,45 @@ class PurchaseOrderScreenController extends GetxController {
     if (appStorage.selectedItemSKUList != null &&
         (appStorage.selectedItemSKUList ?? []).isNotEmpty) {
       if (userId == 4180) {
-        Get.to(() => NewPurchaseOrderDetailsScreen(
-            partner: partner,
-            carrier: carrier,
-            commodity: commodity,
-            qcHeaderDetails: qcHeaderDetails));
+        Get.to(
+            () => NewPurchaseOrderDetailsScreen(
+                partner: partner,
+                carrier: carrier,
+                commodity: commodity,
+                qcHeaderDetails: qcHeaderDetails),
+            arguments: {
+              'serverInspectionID': qcHeaderDetails?.id ?? 0,
+              'partnerName': partner..name,
+              'partnerID': partner.id,
+              'carrierName': carrier.name,
+              'carrierID': carrier.id,
+              'commodityID': commodity.id,
+              'commodityName': commodity.name,
+              'poNumber': qcHeaderDetails?.poNo,
+              'sealNumber': qcHeaderDetails?.sealNo,
+            });
       } else {
-        Get.to(() => PurchaseOrderDetailsScreen(
-            partner: partner,
-            carrier: carrier,
-            commodity: commodity,
-            qcHeaderDetails: qcHeaderDetails));
+        Get.to(
+            () => PurchaseOrderDetailsScreen(
+                partner: partner,
+                carrier: carrier,
+                commodity: commodity,
+                qcHeaderDetails: qcHeaderDetails),
+            arguments: {
+              'serverInspectionID': qcHeaderDetails?.id ?? 0,
+              'partnerName': partner.name,
+              'partnerID': partner.id,
+              'carrierName': carrier.name,
+              'carrierID': carrier.id,
+              'commodityID': commodity.id,
+              'commodityName': commodity.name,
+              'poNumber': qcHeaderDetails?.poNo,
+              'sealNumber': qcHeaderDetails?.sealNo,
+              'specificationNumber': '',
+              'specificationVersion': '',
+              'specificationName': '',
+              'specificationTypeName': '',
+            });
       }
     } else {
       AppAlertDialog.validateAlerts(

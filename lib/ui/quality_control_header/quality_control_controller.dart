@@ -216,8 +216,15 @@ class QualityControlController extends GetxController {
             */
           }
         } else {
-          Get.to(() => SelectSupplierScreen(
-              carrier: carrier, qcHeaderDetails: qcHeaderDetails));
+          Get.to(
+              () => SelectSupplierScreen(
+                  carrier: carrier, qcHeaderDetails: qcHeaderDetails),
+              arguments: {
+                'callerActivity': 'QualityControlHeaderActivity',
+                // TODO: Need to pass dynamic value
+                // 'name': ,
+                // 'id': ,
+              });
           /*
           Get.to(() => PartnerActivity(), arguments: {
             'poNumber': orderNoTextController.value.text,
@@ -269,8 +276,15 @@ class QualityControlController extends GetxController {
           'carrierID': 'carrierID', // Need to pass dynamic value
         });
         */
-        Get.to(() => SelectSupplierScreen(
-            carrier: carrier, qcHeaderDetails: qcHeaderDetails));
+        Get.to(
+            () => SelectSupplierScreen(
+                carrier: carrier, qcHeaderDetails: qcHeaderDetails),
+            arguments: {
+              'callerActivity': 'QualityControlHeaderActivity',
+              // TODO: Need to pass dynamic value
+              // 'name': ,
+              // 'id': ,
+            });
       }
     }
   }

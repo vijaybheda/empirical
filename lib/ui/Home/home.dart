@@ -9,10 +9,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/ui/Home/home_controller.dart';
 import 'package:pverify/ui/carrier/choose_carrier.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
+import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
-import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/dialogs/user_logout.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -341,7 +341,9 @@ class Home extends GetView<HomeController> {
                 fontWeight: FontWeight.w600,
                 textStyle: TextStyle(color: AppColors.white)),
             onClickAction: () {
-          return Get.to(SelectCarrierScreen());
+          return Get.to(SelectCarrierScreen(), arguments: {
+            // TODO: Add arguments
+          });
           // return Get.to(QualityControlHeader());
         }),
         SizedBox(

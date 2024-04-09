@@ -26,8 +26,22 @@ class SelectCarrierScreenController extends GetxController {
 
   double get listHeight => 190.h;
 
+  late final String callerActivity;
+  late final String name;
+  late final int id;
+
   @override
   void onInit() {
+    var args = Get.arguments;
+    // if (args == null) {
+    // Get.back();
+    // throw Exception('Arguments not allowed');
+    // }
+
+    callerActivity = args?['callerActivity'] ?? '';
+    name = args?['name'] ?? '';
+    id = args?['id'] ?? 0;
+
     super.onInit();
     assignInitialData();
   }

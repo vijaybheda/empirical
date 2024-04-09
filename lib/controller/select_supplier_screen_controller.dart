@@ -44,8 +44,21 @@ class SelectSupplierScreenController extends GetxController {
 
   double get listHeight => 200.h;
 
+  late final String callerActivity;
+  late final String name;
+  late final int id;
+
   @override
   void onInit() {
+    Map<String, dynamic>? args = Get.arguments;
+    if (args == null) {
+      Get.back();
+      throw Exception('Arguments not allowed');
+    }
+    callerActivity = args['callerActivity'] ?? '';
+    name = args['name'] ?? '';
+    id = args['id'] ?? 0;
+
     super.onInit();
     assignInitialData();
   }
@@ -573,7 +586,14 @@ class SelectSupplierScreenController extends GetxController {
   }
 
   void navigateToScorecardScreen(PartnerItem partner) {
-    Get.to(() => ScorecardScreen(partner: partner));
+    Get.to(() => ScorecardScreen(partner: partner), arguments: {
+      'scorecardName': partner.name,
+      'scorecardID': partner.id,
+      'redPercentage': partner.redPercentage,
+      'greenPercentage': partner.greenPercentage,
+      'yellowPercentage': partner.yellowPercentage,
+      'orangePercentage': partner.orangePercentage,
+    });
   }
 
   Future<void> navigateToCommodityIdScreen(
@@ -586,18 +606,38 @@ class SelectSupplierScreenController extends GetxController {
           await SupplierListDialog.showListDialog(context);
       if (selectedPartner != null) {
         clearSearch();
-        Get.to(() => CommodityIDScreen(
-              partner: selectedPartner,
-              qcHeaderDetails: qcHeaderDetails,
-              carrier: carrier,
-            ));
+        Get.to(
+            () => CommodityIDScreen(
+                  partner: selectedPartner,
+                  qcHeaderDetails: qcHeaderDetails,
+                  carrier: carrier,
+                ),
+            arguments: {
+              'partnerID': partner.id,
+              'partnerName': partner.name,
+              'sealNumber': qcHeaderDetails?.sealNo,
+              'poNumber': qcHeaderDetails?.poNo,
+              'carrierName': carrier.name,
+              'carrierID': carrier.id,
+              'cteType': qcHeaderDetails?.cteType,
+            });
       }
     } else {
       clearSearch();
-      Get.to(() => CommodityIDScreen(
-          partner: partner,
-          qcHeaderDetails: qcHeaderDetails,
-          carrier: carrier));
+      Get.to(
+          () => CommodityIDScreen(
+              partner: partner,
+              qcHeaderDetails: qcHeaderDetails,
+              carrier: carrier),
+          arguments: {
+            'partnerID': partner.id,
+            'partnerName': partner.name,
+            'sealNumber': qcHeaderDetails?.sealNo,
+            'poNumber': qcHeaderDetails?.poNo,
+            'carrierName': carrier.name,
+            'carrierID': carrier.id,
+            'cteType': qcHeaderDetails?.cteType,
+          });
     }
   }
 

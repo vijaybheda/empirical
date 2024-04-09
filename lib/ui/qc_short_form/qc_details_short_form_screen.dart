@@ -3,7 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/qc_details_short_form_screen_controller.dart';
+import 'package:pverify/models/carrier_item.dart';
+import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/purchase_order_item.dart';
+import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/ui/components/drawer_header_content_view.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -11,7 +15,18 @@ import 'package:pverify/utils/theme/colors.dart';
 class QCDetailsShortFormScreen
     extends GetWidget<QCDetailsShortFormScreenController> {
   final PartnerItem partner;
-  const QCDetailsShortFormScreen({super.key, required this.partner});
+  final CarrierItem carrier;
+  final CommodityItem commodity;
+  final QCHeaderDetails? qcHeaderDetails;
+  final PurchaseOrderItem purchaseOrderItem;
+  const QCDetailsShortFormScreen({
+    super.key,
+    required this.partner,
+    required this.carrier,
+    required this.commodity,
+    this.qcHeaderDetails,
+    required this.purchaseOrderItem,
+  });
 
   @override
   Widget build(BuildContext context) {

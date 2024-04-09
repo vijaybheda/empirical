@@ -8,11 +8,11 @@ import 'package:get/get.dart';
 import 'package:pverify/controller/auth_controller.dart';
 import 'package:pverify/models/login_data.dart';
 import 'package:pverify/services/custom_exception/custom_exception.dart';
+import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/setup_platfrom/setup.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
-import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/images.dart';
@@ -38,7 +38,8 @@ class LoginScreen extends GetView<AuthController> {
           appBar: AppBar(
             toolbarHeight: 150.h,
             backgroundColor: Theme.of(context).primaryColor,
-            title: baseHeaderView(AppStrings.login, true),
+            title:
+                HeaderContentView(title: AppStrings.login, isVersionShow: true),
           ),
           body: AutofillGroup(
             child: Container(
@@ -149,7 +150,7 @@ class LoginScreen extends GetView<AuthController> {
         if (loginData != null) {
           if (!isLoginButton) {
             Utils.hideLoadingDialog();
-            await Get.to(() => SetupScreen());
+            await Get.to(() => SetupScreen(), arguments: loginData);
             return;
           }
           if (loginData.subscriptionExpired ?? false) {

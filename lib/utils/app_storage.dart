@@ -12,6 +12,7 @@ import 'package:pverify/models/defect_item.dart';
 import 'package:pverify/models/delivery_to_item.dart';
 import 'package:pverify/models/grade_commodity_detail_item.dart';
 import 'package:pverify/models/grade_defect_detail_item.dart';
+import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/last_inspections_item.dart';
 import 'package:pverify/models/login_data.dart';
@@ -75,6 +76,8 @@ class AppStorage extends GetxController {
   List<CommodityVarietyData>? commodityVarietyDataList;
 
   Map<String, String> mapLogin = <String, String>{};
+
+  Inspection? currentInspection;
 
   // instance of this class
   static AppStorage get instance => _instance;

@@ -166,7 +166,7 @@ class AuthController extends GetxController {
                 await jsonFileOperations.offlineLoadCarriersData();
                 await jsonFileOperations.offlineLoadCommodityData();
                 await Utils.hideLoadingDialog();
-                Get.offAll(() => Home());
+                Get.offAll(() => const Home());
               }
             } else {
               await Utils.hideLoadingDialog();
@@ -257,6 +257,7 @@ class AuthController extends GetxController {
           Get.offAll(() => const CacheDownloadScreen());
           return;
         } else {
+          Utils.hideLoadingDialog();
           AppAlertDialog.validateAlerts(
               context, AppStrings.error, AppStrings.downloadWifiError);
         }
@@ -265,7 +266,7 @@ class AuthController extends GetxController {
             context, AppStrings.error, AppStrings.betterWifiConnWarning);
       }
     } else {
-      Get.offAll(() => Home());
+      Get.offAll(() => const Home());
       return;
     }
   }

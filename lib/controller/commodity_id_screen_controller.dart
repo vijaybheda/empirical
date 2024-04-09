@@ -22,12 +22,20 @@ class CommodityIDScreenController extends GetxController {
   final PartnerItem partner;
   final CarrierItem carrier;
   final QCHeaderDetails? qcHeaderDetails;
+  late final int partnerID;
+  late final String partnerName;
+  late final String sealNumber;
+  late final String poNumber;
+  late final String carrierName;
+  late final int carrierID;
+  late final String cteType;
 
   final TextEditingController searchController = TextEditingController();
-  CommodityIDScreenController(
-      {required this.partner,
-      required this.carrier,
-      required this.qcHeaderDetails});
+  CommodityIDScreenController({
+    required this.partner,
+    required this.carrier,
+    required this.qcHeaderDetails,
+  });
 
   final ScrollController scrollController = ScrollController();
   final AppStorage appStorage = AppStorage.instance;
@@ -43,6 +51,19 @@ class CommodityIDScreenController extends GetxController {
 
   @override
   void onInit() {
+    Map<String, dynamic>? args = Get.arguments;
+    if (args == null) {
+      Get.back();
+      throw Exception('Arguments not allowed');
+    }
+
+    partnerID = args['partnerID'] ?? 0;
+    partnerName = args['partnerName'] ?? '';
+    sealNumber = args['sealNumber'] ?? '';
+    poNumber = args['poNumber'] ?? '';
+    carrierName = args['carrierName'] ?? '';
+    carrierID = args['carrierID'] ?? 0;
+    cteType = args['cteType'] ?? '';
     super.onInit();
     assignInitialData();
   }
@@ -123,11 +144,23 @@ class CommodityIDScreenController extends GetxController {
   }
 
   void navigateToPurchaseOrderScreen(CommodityItem commodity) {
-    Get.to(() => PurchaseOrderScreen(
-        partner: partner,
-        carrier: carrier,
-        qcHeaderDetails: qcHeaderDetails,
-        commodity: commodity));
+    Get.to(
+        () => PurchaseOrderScreen(
+            partner: partner,
+            carrier: carrier,
+            qcHeaderDetails: qcHeaderDetails,
+            commodity: commodity),
+        arguments: {
+          'poNumber': poNumber,
+          'sealNumber': sealNumber,
+          'partnerName': partnerName,
+          'partnerID': partnerID,
+          'carrierName': carrierName,
+          'carrierID': carrierID,
+          'commodityID': commodity.id,
+          'commodityName': commodity.name,
+          'productTransfer': qcHeaderDetails?.productTransfer ?? '',
+        });
   }
 
   Future<void> onDownloadTap() async {

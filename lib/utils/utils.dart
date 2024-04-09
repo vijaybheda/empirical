@@ -14,6 +14,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pverify/controller/dialog_progress_controller.dart';
+import 'package:pverify/controller/json_file_operations.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -538,9 +539,8 @@ class Utils {
     String? json = await loadFileToStringFromExternalStorage(
         filename, FileManString.jsonFilesCache);
     if (json != null) {
-      // TODO: parse json implementations
-      // AppInfo.commodityVarietyData =
-      //     WebServiceParsers.parseCommodityToolbarDataJson(json);
+      _appStorage.commodityVarietyData =
+          JsonFileOperations.parseCommodityToolbarDataJson(json);
     }
   }
 
