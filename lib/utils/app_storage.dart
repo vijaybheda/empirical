@@ -50,7 +50,7 @@ class AppStorage extends GetxController {
   List<VarietyItem>? varietyList;
   List<DefectItem>? defectsList;
   List<SeverityDefect>? severityDefectsList;
-  List<UOMItem>? uomList;
+  List<UOMItem> uomList = [];
   List<ReasonItem>? reasonList;
   List<AgencyItem>? agencyList;
   List<GradeCommodityDetailItem>? gradeCommodityList;

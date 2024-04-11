@@ -1,6 +1,5 @@
 class UOMItem {
   String? uomName;
-
   int? uomID;
 
   UOMItem(int? uomID, String? uomName) {

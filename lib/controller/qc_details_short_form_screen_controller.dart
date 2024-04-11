@@ -1,9 +1,19 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pverify/controller/global_config_controller.dart';
+import 'package:pverify/controller/json_file_operations.dart';
+import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/purchase_order_details.dart';
+import 'package:pverify/models/quality_control_item.dart';
+import 'package:pverify/models/specification_analytical.dart';
+import 'package:pverify/models/specification_analytical_request_item.dart';
 import 'package:pverify/models/specification_by_item_sku.dart';
+import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/dialogs/custom_listview_dialog.dart';
@@ -23,7 +33,7 @@ class QCDetailsShortFormScreenController extends GetxController {
   late final int commodityID;
   late final int sampleSizeByCount;
   late final String inspectionResult;
-  late final String itemSKU;
+  late final String itemSKU, itemSkuName, lot_No;
   late final String poNumber;
   late final String specificationNumber;
   late final String specificationVersion;
@@ -34,10 +44,37 @@ class QCDetailsShortFormScreenController extends GetxController {
   late final String callerActivity;
   late final String is1stTimeActivity;
   late final bool isMyInspectionScreen;
+  late String gtin,
+      gln,
+      sealNumber,
+      varietyName,
+      varietySize,
+      itemUniqueId,
+      lot_size;
+  late int poLineNo, varietyId, gradeId, item_Sku_Id;
 
   final ApplicationDao dao = ApplicationDao();
 
   int? inspectionId;
+
+  final TextEditingController gtinController = TextEditingController();
+  final TextEditingController glnController = TextEditingController();
+  final TextEditingController lotNoController = TextEditingController();
+  final TextEditingController packDateController = TextEditingController();
+  final TextEditingController qtyShippedController = TextEditingController();
+
+  DateTime? packDate;
+
+  UOMItem? uom;
+
+  List<UOMItem> uomList = <UOMItem>[].obs;
+
+  RxList<SpecificationAnalytical> listSpecAnalyticals =
+      <SpecificationAnalytical>[].obs;
+
+  int? qcID;
+
+  String dateTypeDesc = '';
 
   QCDetailsShortFormScreenController({
     required this.partner,
@@ -81,27 +118,40 @@ class QCDetailsShortFormScreenController extends GetxController {
     completed = args['completed'] ?? false;
     partial_completed = args['partial_completed'] ?? false;
 
+    gtin = args['gtin'] ?? '';
+    itemSkuName = args['item_Sku_Name'] ?? '';
+    lot_size = args['lot_size'] ?? '';
+    sealNumber = args['seal_number'] ?? '';
+    varietyName = args['varietyName'] ?? '';
+    varietySize = args['varietySize'] ?? '';
+    varietyId = args['varietyId'] ?? 0;
+    gradeId = args['gradeId'] ?? 0;
+    itemUniqueId = args['item_unique_id'] ?? '';
+    poLineNo = args['poLineNo'] ?? 0;
+    item_Sku_Id = args['item_Sku_Id'] ?? 0;
+
+    setUOMSpinner();
     super.onInit();
     unawaited(
       () async {
         await specificationSelection();
 
-        /*if (serverInspectionID < 0) {
+        if (serverInspectionID < 0) {
           if (!completed && !partial_completed) {
             createNewInspection(
-                item_Sku,
+                itemSKU,
                 item_Sku_Id,
                 lot_No,
-                pack_Date,
+                packDate,
                 specificationNumber,
                 specificationVersion,
                 specificationName,
                 specificationTypeName,
                 sampleSizeByCount,
                 gtin,
-                po_number,
+                poNumber,
                 poLineNo,
-                item_Sku_Name);
+                itemSkuName);
           }
         } else {
           if (callerActivity != "NewPurchaseOrderDetailsActivity") {
@@ -117,21 +167,22 @@ class QCDetailsShortFormScreenController extends GetxController {
                 specificationName,
                 specificationTypeName,
                 sampleSizeByCount,
-                item_Sku,
+                itemSKU,
                 item_Sku_Id,
-                po_number,
+                poNumber,
                 0,
                 "",
-                item_Sku_Name);
+                itemSkuName);
           }
           inspectionId = serverInspectionID;
         }
 
         hasInitialised.value = true;
+        loadFieldsFromDB();
         _appStorage.specificationAnalyticalList =
             await dao.getSpecificationAnalyticalFromTable(
                 specificationNumber, specificationVersion);
-        setSpecAnalyticalTable();*/
+        setSpecAnalyticalTable();
       }(),
     );
   }
@@ -185,7 +236,44 @@ class QCDetailsShortFormScreenController extends GetxController {
     }
   }
 
-  /*Future<void> createNewInspection(
+  Future<void> scanBarcode(
+      {required Function(String scanResult)? onScanResult}) async {
+    // TODO: Implement scanBarcode
+  }
+
+  Future selectDate(BuildContext context,
+      {DateTime? firstDate,
+      DateTime? lastDate,
+      required Function(DateTime selectedDate) onDateSelected}) async {
+    DateTime now = DateTime.now();
+    // show Adaptive Date Picker
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      firstDate: firstDate ?? now,
+      initialDate: packDate ?? now,
+      currentDate: now,
+      lastDate: lastDate ?? now.add(const Duration(days: 365)),
+    );
+
+    if (selectedDate != null) {
+      packDate = selectedDate;
+      onDateSelected(selectedDate);
+    }
+    return selectedDate;
+  }
+
+  Future<void> setUOMSpinner() async {
+    _appStorage.uomList = await JsonFileOperations.parseUOMJson() ?? [];
+
+    uomList = _appStorage.uomList;
+    uomList.sort((a, b) => a.uomName!.compareTo(b.uomName!));
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      update();
+    });
+  }
+
+  Future<void> createNewInspection(
       item_sku,
       item_sku_id,
       lot_no,
@@ -233,54 +321,34 @@ class QCDetailsShortFormScreenController extends GetxController {
     }
   }
 
-  void setSpecAnalyticalTable() {
-    if (AppInfo.specificationAnalyticalList == null) {
+  Future<void> setSpecAnalyticalTable() async {
+    if (_appStorage.specificationAnalyticalList == null) {
       return;
     }
-    listSpecAnalyticals = AppInfo.specificationAnalyticalList;
+    listSpecAnalyticals.value = _appStorage.specificationAnalyticalList ?? [];
 
-    listSpecAnalyticals.sort((a, b) => a.order.compareTo(b.order));
-
-    TableLayout tableLayoutSpecAttributes =
-    findViewById(R.id.tablelayout_spec_attributes);
-    LayoutInflater inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    listSpecAnalyticals.sort((a, b) => a.order!.compareTo(b.order!));
 
     int row_no = 1;
     for (SpecificationAnalytical item in listSpecAnalyticals) {
-      final SpecificationAnalyticalRequest reqobj = SpecificationAnalyticalRequest();
+      final SpecificationAnalyticalRequest reqobj =
+          SpecificationAnalyticalRequest();
 
       final SpecificationAnalyticalRequest? dbobj =
-      dao.findSpecAnalyticalObj(inspectionId, item.analyticalID);
+          await dao.findSpecAnalyticalObj(inspectionId!, item.analyticalID!);
 
-      reqobj.analyticalID = item.analyticalID;
-      reqobj.analyticalName = item.description;
-      reqobj.specTypeofEntry = item.specTypeofEntry;
-      reqobj.pictureRequired = item.pictureRequired;
-      reqobj.specMin = item.specMin;
-      reqobj.specMax = item.specMax;
-      reqobj.description = item.description;
-      reqobj.inspectionResult = item.inspectionResult;
+      reqobj.copyWith(
+        analyticalID: item.analyticalID,
+        analyticalName: item.description,
+        specTypeofEntry: item.specTypeofEntry,
+        isPictureRequired: item.isPictureRequired,
+        specMin: item.specMin,
+        specMax: item.specMax,
+        description: item.description,
+        inspectionResult: item.inspectionResult,
+      );
 
-      TableRow row = inflater.inflate(R.layout.tablerow_specattributes_shortform, null) as TableRow;
-
-      TextView? textViewName = row.findViewById(R.id.textview_name);
-      if (textViewName != null) {
-        textViewName.text = item.description;
-        textViewName.setTextColor(getResources().getColor(R.color.black));
-      }
-
-      final ImageView comment = row.findViewById(R.id.imageview_comment) as ImageView;
-
-      if (dbobj != null) {
-        if (dbobj.comment != null && dbobj.comment != "") {
-          reqobj.comment = dbobj.comment;
-          comment.setImageDrawable(getResources().getDrawable(R.drawable.spec_comment_added));
-        }
-      } else {
-        comment.setImageDrawable(getResources().getDrawable(R.drawable.spec_comment));
-      }
-
-      comment.setOnClickListener((v) {
+      /*comment.setOnClickListener((v) {
         AlertDialog.Builder alert = AlertDialog.Builder(QC_Details_short_form.this);
         EditText edittext = EditText(QC_Details_short_form.this);
         edittext.setHorizontallyScrolling(false);
@@ -303,13 +371,74 @@ class QCDetailsShortFormScreenController extends GetxController {
           dialog.dismiss();
         });
         alert.show();
-      });
+      });*/
 
-      // Rest of the code...
-
-      tableLayoutSpecAttributes.addView(row);
       row_no++;
     }
   }
-*/
+
+  void loadFieldsFromDB() async {
+    ApplicationDao dao = ApplicationDao();
+
+    QualityControlItem? qualityControlItems =
+        await dao.findQualityControlDetails(inspectionId!);
+
+    if (_appStorage.getLoginData() != null) {
+      List<PurchaseOrderDetails> purchaseOrderDetails =
+          await dao.getPODetailsFromTable(
+              poNumber, _appStorage.getLoginData()!.supplierId!);
+
+      if (purchaseOrderDetails.isNotEmpty) {
+        for (var i = 0; i < purchaseOrderDetails.length; i++) {
+          if (item_Sku_Id == purchaseOrderDetails[i].itemSkuId) {
+            qtyShippedController.text =
+                purchaseOrderDetails[i].quantity.toString();
+          }
+        }
+      }
+    }
+
+    if (qualityControlItems != null) {
+      qcID = qualityControlItems.qcID;
+      qtyShippedController.text = qualityControlItems.qtyShipped.toString();
+      if (qualityControlItems.dateType != "") {
+        dateTypeDesc = getDateTypeDesc(qualityControlItems.dateType);
+        packDateController.text = dateTypeDesc;
+      }
+      if (qualityControlItems.packDate != null &&
+          qualityControlItems.packDate! > 0) {
+        packDateController.text =
+            getDateStingFromTime(qualityControlItems.packDate ?? 0);
+      } else {
+        packDateController.text = "";
+      }
+
+      lotNoController.text = qualityControlItems.lot ?? '';
+      gtinController.text = qualityControlItems.gtin ?? '';
+    }
+  }
+
+  String getDateTypeDesc(String? dateType) {
+    switch (dateType) {
+      case '11':
+        return 'Production Date';
+      case '12':
+        return 'Due Date';
+      case '13':
+        return 'Pack Date';
+      case '15':
+        return 'Best Before Date';
+      case '16':
+        return 'Sell By Date';
+      case '17':
+        return 'Expiration Date';
+      default:
+        return 'Unknown Date Type';
+    }
+  }
+
+  String getDateStingFromTime(int timestamp) {
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    return DateFormat('yyyy-MM-dd').format(date);
+  }
 }

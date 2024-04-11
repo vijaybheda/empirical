@@ -2124,7 +2124,7 @@ class ApplicationDao {
 
     for (Map<dynamic, dynamic> map in results) {
       list.add(
-          SpecificationAnalyticalRequest.fromMap(map as Map<String, dynamic>));
+          SpecificationAnalyticalRequest.fromJson(map as Map<String, dynamic>));
     }
 
     return list;
@@ -2296,7 +2296,7 @@ class ApplicationDao {
       var cursor = await db.rawQuery(query, args);
 
       SpecificationAnalyticalRequest? item =
-          SpecificationAnalyticalRequest.fromMap(cursor.first);
+          SpecificationAnalyticalRequest.fromJson(cursor.first);
       return item;
     } catch (e) {
       print("Error has occurred while finding quality control items: $e");

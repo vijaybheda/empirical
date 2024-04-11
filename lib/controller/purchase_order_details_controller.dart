@@ -218,7 +218,7 @@ class PurchaseOrderDetailsController extends GetxController {
                             inspection.inspectionId!,
                             result,
                             "${dbobj.analyticalName} = N",
-                            dbobj.pictureRequired!);
+                            dbobj.isPictureRequired!);
                     if (isPictureReqSpec != -1) {
                       // TODO: implement logic
                     }

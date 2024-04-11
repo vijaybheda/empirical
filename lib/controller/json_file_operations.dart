@@ -14,6 +14,7 @@ import 'package:pverify/models/exception_item.dart';
 import 'package:pverify/models/offline_commodity.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/severity_defect.dart';
+import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/utils.dart';
@@ -117,7 +118,7 @@ class JsonFileOperations {
         (offlineCommodityIDList != null && offlineCommodityIDList.isNotEmpty);
   }
 
-  Future<String> getJsonFileContent(
+  static Future<String> getJsonFileContent(
     Directory directory, {
     required String fileName,
   }) async {
@@ -501,5 +502,55 @@ class JsonFileOperations {
     }
 
     return commodityVarietyData;
+  }
+
+  static Future<List<UOMItem>?> parseUOMJson() async {
+    var storagePath = await Utils().getExternalStoragePath();
+    final Directory directory =
+        Directory("$storagePath${FileManString.jsonFilesCache}/");
+    print('UOMJson directory ${directory.path}');
+
+    String jsonLoadText = await getJsonFileContent(directory,
+        fileName: FileManString.UOM_FILENAME);
+
+    List<UOMItem> list = [];
+    try {
+      List<dynamic> uomArray = jsonDecode(jsonLoadText);
+      for (int i = 0; i < uomArray.length; i++) {
+        int? id = uomArray[i]['uomID'];
+        String? name = uomArray[i]['uomName'];
+
+        UOMItem listItem = UOMItem(id, name);
+        list.add(listItem);
+      }
+    } catch (e) {
+      print(e);
+      return null;
+    }
+    return list;
+  }
+
+  static String? jsonLoadTextFile(String path) {
+    StringBuffer buf = StringBuffer();
+    try {
+      File file = File(path);
+      if (file.existsSync()) {
+        // Read the file using a StreamReader with UTF-8 encoding
+        file
+            .openRead()
+            .transform(utf8.decoder)
+            .transform(const LineSplitter())
+            .forEach((line) {
+          buf.write(line);
+        });
+      } else {
+        print('File not found: $path');
+        return null;
+      }
+    } catch (e) {
+      print(e);
+      return null;
+    }
+    return buf.toString();
   }
 }

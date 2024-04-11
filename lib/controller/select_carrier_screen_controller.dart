@@ -33,10 +33,10 @@ class SelectCarrierScreenController extends GetxController {
   @override
   void onInit() {
     var args = Get.arguments;
-    // if (args == null) {
-    // Get.back();
-    // throw Exception('Arguments not allowed');
-    // }
+    if (args == null) {
+      Get.back();
+      throw Exception('Arguments not allowed');
+    }
 
     callerActivity = args?['callerActivity'] ?? '';
     name = args?['name'] ?? '';

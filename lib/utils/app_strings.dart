@@ -244,6 +244,7 @@ class AppStrings {
   static const String completeAndSend = 'Complete and Send';
   static const String specification = 'Specification';
   static const String gtin = 'GTIN';
+  static const String gln = 'GLN';
   static const String uploadInspectionAlert =
       'Do you want to upload Inspection to server?';
 
@@ -389,6 +390,9 @@ class AppStrings {
   static const String add = 'Add';
 
   static const String inspectionPhotoTitle = 'Enter title for photo';
+  static const String inspectionPhotoHeading = 'Inspection Photos';
+  static const String referencesHeading = 'References';
+  static const String connectionHeading = 'Connection';
 
   static const String inspectionUploadMessage =
       'Only Inspections with an Inspection Result will be uploaded.';
@@ -586,6 +590,7 @@ class FileManString {
   static const String SUPPLIERS_JSON_FILENAME = "suppliers.json";
   static const String CARRIERS_JSON_FILENAME = "carriers.json";
   static const String COMMODITY_JSON_FILENAME = "commodity.json";
+  static const String UOM_FILENAME = "uom.json";
   static const String DEFECT_CATEGORIES_JSON_FILENAME = "defectcategories.json";
   static const String SPECIFICATION_BANNER_DATA_JSON_FILENAME =
       "specificationBannerData.json";

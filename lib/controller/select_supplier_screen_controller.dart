@@ -606,6 +606,7 @@ class SelectSupplierScreenController extends GetxController {
           await SupplierListDialog.showListDialog(context);
       if (selectedPartner != null) {
         clearSearch();
+        // TODO: handle other type of partner Item
         Get.to(
             () => CommodityIDScreen(
                   partner: selectedPartner,
