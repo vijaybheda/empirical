@@ -297,8 +297,8 @@ class PurchaseOrderDetailsController extends GetxController {
 
     // FIXME: below
     // String current_lot_number = viewHolder.edit_LotNo.getText().toString();
-    // String? current_Item_SKU = goodsItem.sku;
-    // String? current_Item_SKU_Name = goodsItem.description;
+    String? current_Item_SKU = goodsItem.sku;
+    String? current_Item_SKU_Name = goodsItem.description;
     // String? current_pack_Date = packDate;
 
     Map<String, dynamic> passingData = {};
@@ -324,8 +324,8 @@ class PurchaseOrderDetailsController extends GetxController {
 
     // FIXME: below
     // passingData[Consts.Lot_No] = current_lot_number;
-    // passingData[Consts.ITEM_SKU] = current_Item_SKU;
-    // passingData[Consts.ITEM_SKU_NAME] = current_Item_SKU_Name;
+    passingData[Consts.ITEM_SKU] = current_Item_SKU;
+    passingData[Consts.ITEM_SKU_NAME] = current_Item_SKU_Name;
     // passingData[Consts.ITEM_SKU_ID] = current_Item_SKU_Id;
     // passingData[Consts.PACK_DATE] = current_pack_Date;
 

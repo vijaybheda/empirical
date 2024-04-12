@@ -139,15 +139,22 @@ class PurchaseOrderDetailsScreen
             controller.filteredInspectionsList.elementAt(index);
         return GestureDetector(
           onTap: () {
-            controller.onItemTap(goodsItem);
+            controller.onItemTap(goodsItem, index);
           },
-          child: PurchaseOrderListViewItem(
-            goodsItem: goodsItem,
-            sku: goodsItem.sku,
-            inspectButtonCallback: () {
-              // Implement your logic
-            },
-            poNumber: goodsItem.poNumber,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: PurchaseOrderListViewItem(
+              goodsItem: goodsItem,
+              inspectTap: () {
+                // Implement your logic
+              },
+              onTapEdit: () {
+                // Implement your logic
+              },
+              infoTap: () {
+                // Implement your logic
+              },
+            ),
           ),
         );
       },
