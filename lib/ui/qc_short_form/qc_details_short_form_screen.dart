@@ -12,9 +12,8 @@ import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/ui/components/drawer_header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
 import 'package:pverify/ui/qc_short_form/spec_analytical_table.dart';
+import 'package:pverify/ui/side_drawer.dart';
 import 'package:pverify/utils/app_strings.dart';
-import 'package:pverify/utils/dialogs/user_logout.dart';
-import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
 
@@ -67,7 +66,29 @@ class QCDetailsShortFormScreen
               title: AppStrings.title_activity_q_c__details_short_form,
             ),
           ),
-          drawer: _SideDrawer(context, controller),
+          drawer: SideDrawer(
+            onDefectSaveAndCompleteTap: () {
+              //TODO: Implement defect save and complete
+            },
+            onDiscardTap: () {
+              //TODO: Implement discard
+            },
+            onCameraTap: () {
+              //TODO: Implement camera
+            },
+            onSpecInstructionTap: () {
+              //TODO: Implement spec instruction
+            },
+            onSpecificationTap: () {
+              //TODO: Implement specification
+            },
+            onGradeTap: () {
+              //TODO: Implement grade
+            },
+            onInspectionTap: () {
+              //TODO: Implement inspection
+            },
+          ),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.max,
@@ -626,196 +647,6 @@ class QCDetailsShortFormScreen
               textStyle: TextStyle(color: AppColors.white)),
         ),
       ],
-    );
-  }
-
-  Drawer _SideDrawer(
-    BuildContext context,
-    QCDetailsShortFormScreenController controller,
-  ) {
-    return Drawer(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(0),
-          bottomRight: Radius.circular(0),
-        ),
-      ),
-      elevation: 10,
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [
-                  AppColors.primary.withOpacity(0.5),
-                  AppColors.primary,
-                ],
-              ),
-            ),
-            curve: Curves.easeIn,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image.asset(
-                  fit: BoxFit.contain,
-                  AppImages.appLogo,
-                  width: 150.w,
-                  height: 150.h,
-                ),
-                Text(
-                  '${AppStrings.appNameInspection}\n${AppStrings.version.capitalizeFirst} ${controller.globalConfigController.appVersion.value}',
-                  style: Get.textTheme.headlineLarge!.copyWith(
-                    color: AppColors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.build),
-            title: Text(
-              AppStrings.defectSaveAndComplete,
-              style: Get.textTheme.bodyLarge!.copyWith(
-                fontSize: 26.sp,
-              ),
-            ),
-            onTap: () {
-              // TODO: save inspection
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.build),
-            title: Text(
-              AppStrings.defectDiscard,
-              style: Get.textTheme.bodyLarge!.copyWith(
-                fontSize: 26.sp,
-              ),
-            ),
-            onTap: () {
-              // TODO: discard inspection
-            },
-          ),
-          const Divider(
-            indent: 0,
-            endIndent: 0,
-          ),
-          _TitleText(AppStrings.inspectionPhotoHeading),
-          ListTile(
-            leading: const Icon(Icons.camera_alt),
-            title: Text(
-              AppStrings.camera,
-              style: Get.textTheme.bodyLarge!.copyWith(
-                fontSize: 26.sp,
-              ),
-            ),
-            onTap: () {
-              // TODO: open camera screen
-            },
-          ),
-          const Divider(
-            indent: 0,
-            endIndent: 0,
-          ),
-          _TitleText(AppStrings.referencesHeading),
-          ListTile(
-            leading: const Icon(Icons.edit_document),
-            title: Text(
-              AppStrings.specInstrunction,
-              style: Get.textTheme.bodyLarge!.copyWith(
-                fontSize: 26.sp,
-              ),
-            ),
-            onTap: () {
-              // TODO: open spec Instruction screen
-            },
-          ),
-          ListTile(
-            leading: Image.asset(
-              fit: BoxFit.contain,
-              AppImages.appLogo,
-              width: 24,
-              height: 24,
-            ),
-            title: Text(
-              AppStrings.specification,
-              style: Get.textTheme.bodyLarge!.copyWith(
-                fontSize: 26.sp,
-              ),
-            ),
-            onTap: () {
-              // TODO: open specification screen
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.grade),
-            title: Text(
-              AppStrings.grade,
-              style: Get.textTheme.bodyLarge!.copyWith(
-                fontSize: 26.sp,
-              ),
-            ),
-            onTap: () {
-              // TODO: open grade screen
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.fact_check_outlined),
-            title: Text(
-              AppStrings.inspectionAndroid,
-              style: Get.textTheme.bodyLarge!.copyWith(
-                fontSize: 26.sp,
-              ),
-            ),
-            onTap: () {
-              // TODO: open inspection screen
-            },
-          ),
-          const Divider(
-            indent: 0,
-            endIndent: 0,
-          ),
-          _TitleText(AppStrings.connectionHeading),
-          ListTile(
-            leading: const Icon(Icons.logout),
-            title: Text(
-              AppStrings.logOut,
-              style: Get.textTheme.bodyLarge!.copyWith(
-                fontSize: 26.sp,
-              ),
-            ),
-            onTap: () {
-              UserLogoutDialog.showLogoutConfirmation(context,
-                  onYesTap: () async {
-                Utils.showLoadingDialog();
-                await controller.globalConfigController.appLogoutAction(
-                  onSuccess: () {
-                    Utils.hideLoadingDialog();
-                  },
-                );
-              });
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Container _TitleText(String title) {
-    return Container(
-      padding: const EdgeInsets.only(left: 16, top: 10),
-      child: Text(
-        title,
-        style: Get.textTheme.bodyLarge!
-            .copyWith(fontSize: 26.sp, color: AppColors.lightGrey),
-      ),
     );
   }
 }

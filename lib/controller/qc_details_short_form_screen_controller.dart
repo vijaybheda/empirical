@@ -17,7 +17,10 @@ import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/dialogs/custom_listview_dialog.dart';
+import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
+import 'package:simple_barcode_scanner/enum.dart';
+import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
 class QCDetailsShortFormScreenController extends GetxController {
   final PartnerItem partner;
@@ -236,9 +239,25 @@ class QCDetailsShortFormScreenController extends GetxController {
     }
   }
 
-  Future<void> scanBarcode(
+  Future<String?> scanBarcode(
       {required Function(String scanResult)? onScanResult}) async {
     // TODO: Implement scanBarcode
+    String? res = await Get.to(() => SimpleBarcodeScannerPage(
+          scanType: ScanType.barcode,
+          centerTitle: true,
+          appBarTitle: 'Scan a Barcode',
+          cancelButtonText: 'Cancel',
+          isShowFlashIcon: true,
+          lineColor: AppColors.primaryColor.value.toString(),
+        ));
+    if (res != null) {
+      // if (onBarcodeScanned != null) {
+      //   onBarcodeScanned!(res);
+      // }
+      return res;
+    } else {
+      return null;
+    }
   }
 
   Future selectDate(BuildContext context,

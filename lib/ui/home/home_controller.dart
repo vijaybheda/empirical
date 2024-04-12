@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
+import 'package:pverify/ui/cache_download_screen.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/update_data_dialog.dart';
 import 'package:pverify/utils/images.dart';
@@ -105,16 +106,17 @@ class HomeController extends GetxController {
     int days = Utils().checkCacheDays();
     if (days >= 7) {
       if (globalConfigController.hasStableInternet.value) {
-        UpdateDataAlert.showUpdateDataDialog(Get.context!, onOkPressed: () {
-          debugPrint('Download button tap.');
-          // TODO: vijay handle action as per android code
-        }, message: AppStrings().getDayMessage(days));
+        Future.delayed(const Duration(seconds: 1)).then((value) =>
+            UpdateDataAlert.showUpdateDataDialog(Get.context!, onOkPressed: () {
+              debugPrint('Ok button tap.');
+              Get.off(() => const CacheDownloadScreen());
+            }, message: AppStrings().getDayMessage(days)));
       } else {
-        UpdateDataAlert.showUpdateDataDialog(Get.context!, onOkPressed: () {
-          debugPrint('Download button tap.');
-          // TODO: vijay handle action as per android code
-          // Get.off(() => const CacheDownloadScreen());
-        }, message: AppStrings().getDayMessage1(days));
+        Future.delayed(const Duration(seconds: 1)).then((value) =>
+            UpdateDataAlert.showUpdateDataDialog(Get.context!, onOkPressed: () {
+              debugPrint('Ok button tap.');
+              Get.off(() => const CacheDownloadScreen());
+            }, message: AppStrings().getDayMessage1(days)));
       }
     }
   }
