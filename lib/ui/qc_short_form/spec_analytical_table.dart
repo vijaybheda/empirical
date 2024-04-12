@@ -19,9 +19,6 @@ class SpecAnalyticalTable
         SpecificationAnalyticalRequest reqobj =
             SpecificationAnalyticalRequest();
 
-        // TODO: Replace with actual data
-        SpecificationAnalyticalRequest dbobj = SpecificationAnalyticalRequest();
-
         reqobj.copyWith(
           analyticalID: item.analyticalID,
           analyticalName: item.description,

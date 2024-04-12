@@ -11,6 +11,7 @@ import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/commodity/commodity_id_screen.dart';
 import 'package:pverify/ui/scorecard/scorecard_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/supplier_list_dialog.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
@@ -55,9 +56,9 @@ class SelectSupplierScreenController extends GetxController {
       Get.back();
       throw Exception('Arguments not allowed');
     }
-    callerActivity = args['callerActivity'] ?? '';
-    name = args['name'] ?? '';
-    id = args['id'] ?? 0;
+    callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
+    name = args[Consts.NAME] ?? '';
+    id = args[Consts.ID] ?? 0;
 
     super.onInit();
     assignInitialData();
@@ -587,12 +588,12 @@ class SelectSupplierScreenController extends GetxController {
 
   void navigateToScorecardScreen(PartnerItem partner) {
     Get.to(() => ScorecardScreen(partner: partner), arguments: {
-      'scorecardName': partner.name,
-      'scorecardID': partner.id,
-      'redPercentage': partner.redPercentage,
-      'greenPercentage': partner.greenPercentage,
-      'yellowPercentage': partner.yellowPercentage,
-      'orangePercentage': partner.orangePercentage,
+      Consts.SCORECARD_NAME: partner.name,
+      Consts.SCORECARD_ID: partner.id,
+      Consts.REDPERCENTAGE: partner.redPercentage,
+      Consts.GREENPERCENTAGE: partner.greenPercentage,
+      Consts.YELLOWPERCENTAGE: partner.yellowPercentage,
+      Consts.ORANGEPERCENTAGE: partner.orangePercentage,
     });
   }
 
@@ -614,13 +615,13 @@ class SelectSupplierScreenController extends GetxController {
                   carrier: carrier,
                 ),
             arguments: {
-              'partnerID': partner.id,
-              'partnerName': partner.name,
-              'sealNumber': qcHeaderDetails?.sealNo,
-              'poNumber': qcHeaderDetails?.poNo,
-              'carrierName': carrier.name,
-              'carrierID': carrier.id,
-              'cteType': qcHeaderDetails?.cteType,
+              Consts.PARTNER_ID: partner.id,
+              Consts.PARTNER_NAME: partner.name,
+              Consts.SEAL_NUMBER: qcHeaderDetails?.sealNo,
+              Consts.PO_NUMBER: qcHeaderDetails?.poNo,
+              Consts.CARRIER_NAME: carrier.name,
+              Consts.CARRIER_ID: carrier.id,
+              Consts.CTEType: qcHeaderDetails?.cteType,
             });
       }
     } else {
@@ -631,13 +632,13 @@ class SelectSupplierScreenController extends GetxController {
               qcHeaderDetails: qcHeaderDetails,
               carrier: carrier),
           arguments: {
-            'partnerID': partner.id,
-            'partnerName': partner.name,
-            'sealNumber': qcHeaderDetails?.sealNo,
-            'poNumber': qcHeaderDetails?.poNo,
-            'carrierName': carrier.name,
-            'carrierID': carrier.id,
-            'cteType': qcHeaderDetails?.cteType,
+            Consts.PARTNER_ID: partner.id,
+            Consts.PARTNER_NAME: partner.name,
+            Consts.SEAL_NUMBER: qcHeaderDetails?.sealNo,
+            Consts.PO_NUMBER: qcHeaderDetails?.poNo,
+            Consts.CARRIER_NAME: carrier.name,
+            Consts.CARRIER_ID: carrier.id,
+            Consts.CTEType: qcHeaderDetails?.cteType,
           });
     }
   }

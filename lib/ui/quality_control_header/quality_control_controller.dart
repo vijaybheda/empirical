@@ -9,6 +9,7 @@ import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/supplier/choose_supplier.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 
 class QualityControlController extends GetxController {
@@ -135,7 +136,7 @@ class QualityControlController extends GetxController {
 
     if (qcHeaderDetails == null) {
       await dao.createTempQCHeaderDetails(
-          carrier.id!, // Carrier ID
+          carrier.id!,
           orderNoTextController.value.text,
           sealTextController.value.text,
           certificateDepartureTextController.value.text,
@@ -154,7 +155,7 @@ class QualityControlController extends GetxController {
     } else {
       QCHeaderDetails? headerDetails = qcHeaderDetails;
       await dao.updateTempQCHeaderDetails(
-          headerDetails?.id ?? 0, // baseID
+          headerDetails?.id ?? 0,
           orderNoTextController.value.text,
           sealTextController.value.text,
           certificateDepartureTextController.value.text,
@@ -220,7 +221,7 @@ class QualityControlController extends GetxController {
               () => SelectSupplierScreen(
                   carrier: carrier, qcHeaderDetails: qcHeaderDetails),
               arguments: {
-                'callerActivity': 'QualityControlHeaderActivity',
+                Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
                 // TODO: Need to pass dynamic value
                 // 'name': ,
                 // 'id': ,
@@ -280,7 +281,7 @@ class QualityControlController extends GetxController {
             () => SelectSupplierScreen(
                 carrier: carrier, qcHeaderDetails: qcHeaderDetails),
             arguments: {
-              'callerActivity': 'QualityControlHeaderActivity',
+              Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
               // TODO: Need to pass dynamic value
               // 'name': ,
               // 'id': ,

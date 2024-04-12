@@ -101,11 +101,11 @@ class AppStorage extends GetxController {
   }
 
   User? getUserData() {
-    String? loggedInUser = read(StorageKey.kUser);
+    Map<String, dynamic>? loggedInUser = read(StorageKey.kUser);
     if (loggedInUser == null) {
       return null;
     }
-    User user = User.fromJson(loggedInUser);
+    User user = User.fromMap(loggedInUser);
     return user;
   }
 

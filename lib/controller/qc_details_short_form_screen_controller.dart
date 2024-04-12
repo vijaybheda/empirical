@@ -16,6 +16,7 @@ import 'package:pverify/models/specification_by_item_sku.dart';
 import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/custom_listview_dialog.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
@@ -98,40 +99,41 @@ class QCDetailsShortFormScreenController extends GetxController {
       throw Exception('Arguments not allowed');
     }
 
-    serverInspectionID = args['serverInspectionID'] ?? -1;
-    partnerName = args['partnerName'] ?? '';
-    partnerID = args['partnerID'] ?? 0;
-    carrierName = args['carrierName'] ?? '';
-    carrierID = args['carrierID'] ?? 0;
-    commodityName = args['commodityName'] ?? '';
-    commodityID = args['commodityID'] ?? 0;
-    sampleSizeByCount = args['sampleSizeByCount'] ?? 0;
-    inspectionResult = args['inspectionResult'] ?? '';
-    itemSKU = args['itemSKU'] ?? '';
-    poNumber = args['poNumber'] ?? '';
-    specificationNumber = args['specificationNumber'] ?? '';
-    specificationVersion = args['specificationVersion'] ?? '';
-    specificationName = args['specificationName'] ?? '';
-    specificationTypeName = args['specificationTypeName'] ?? '';
-    selectedSpecification = args['selectedSpecification'] ?? '';
-    productTransfer = args['productTransfer'] ?? '';
-    callerActivity = args['callerActivity'] ?? '';
-    is1stTimeActivity = args['is1stTimeActivity'] ?? '';
-    isMyInspectionScreen = args['isMyInspectionScreen'] ?? false;
-    completed = args['completed'] ?? false;
-    partial_completed = args['partial_completed'] ?? false;
+    serverInspectionID = args[Consts.SERVER_INSPECTION_ID] ?? -1;
+    partnerName = args[Consts.PARTNER_NAME] ?? '';
+    partnerID = args[Consts.PARTNER_ID] ?? 0;
+    carrierName = args[Consts.CARRIER_NAME] ?? '';
+    carrierID = args[Consts.CARRIER_ID] ?? 0;
+    commodityName = args[Consts.COMMODITY_NAME] ?? '';
+    commodityID = args[Consts.COMMODITY_ID] ?? 0;
+    sampleSizeByCount = args[Consts.SAMPLE_SIZE_BY_COUNT] ?? 0;
+    inspectionResult = args[Consts.INSPECTION_RESULT] ?? '';
+    lot_No = args[Consts.Lot_No] ?? '';
+    itemSKU = args[Consts.ITEM_SKU] ?? '';
+    poNumber = args[Consts.PO_NUMBER] ?? '';
+    specificationNumber = args[Consts.SPECIFICATION_NUMBER] ?? '';
+    specificationVersion = args[Consts.SPECIFICATION_VERSION] ?? '';
+    specificationName = args[Consts.SPECIFICATION_NAME] ?? '';
+    specificationTypeName = args[Consts.SPECIFICATION_TYPE_NAME] ?? '';
+    selectedSpecification = args[Consts.SELECTEDSPECIFICATION] ?? '';
+    productTransfer = args[Consts.PRODUCT_TRANSFER] ?? '';
+    callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
+    is1stTimeActivity = args[Consts.IS1STTIMEACTIVITY] ?? '';
+    isMyInspectionScreen = args[Consts.IS_MY_INSPECTION_SCREEN] ?? false;
+    completed = args[Consts.COMPLETED] ?? false;
+    partial_completed = args[Consts.PARTIAL_COMPLETED] ?? false;
 
-    gtin = args['gtin'] ?? '';
-    itemSkuName = args['item_Sku_Name'] ?? '';
-    lot_size = args['lot_size'] ?? '';
-    sealNumber = args['seal_number'] ?? '';
-    varietyName = args['varietyName'] ?? '';
-    varietySize = args['varietySize'] ?? '';
-    varietyId = args['varietyId'] ?? 0;
-    gradeId = args['gradeId'] ?? 0;
-    itemUniqueId = args['item_unique_id'] ?? '';
-    poLineNo = args['poLineNo'] ?? 0;
-    item_Sku_Id = args['item_Sku_Id'] ?? 0;
+    gtin = args[Consts.GTIN] ?? '';
+    itemSkuName = args[Consts.ITEM_SKU_NAME] ?? '';
+    lot_size = args[Consts.LOT_SIZE] ?? '';
+    sealNumber = args[Consts.SEAL_NUMBER] ?? '';
+    varietyName = args[Consts.VARIETY_NAME] ?? '';
+    varietySize = args[Consts.VARIETY_SIZE] ?? '';
+    varietyId = args[Consts.VARIETY_ID] ?? 0;
+    gradeId = args[Consts.GRADE_ID] ?? 0;
+    itemUniqueId = args[Consts.ITEM_UNIQUE_ID] ?? '';
+    poLineNo = args[Consts.PO_LINE_NO] ?? 0;
+    item_Sku_Id = args[Consts.ITEM_SKU_ID] ?? 0;
 
     setUOMSpinner();
     super.onInit();
@@ -141,7 +143,7 @@ class QCDetailsShortFormScreenController extends GetxController {
 
         if (serverInspectionID < 0) {
           if (!completed && !partial_completed) {
-            createNewInspection(
+            await createNewInspection(
                 itemSKU,
                 item_Sku_Id,
                 lot_No,
@@ -180,12 +182,12 @@ class QCDetailsShortFormScreenController extends GetxController {
           inspectionId = serverInspectionID;
         }
 
+        await loadFieldsFromDB();
         hasInitialised.value = true;
-        loadFieldsFromDB();
         _appStorage.specificationAnalyticalList =
             await dao.getSpecificationAnalyticalFromTable(
                 specificationNumber, specificationVersion);
-        setSpecAnalyticalTable();
+        await setSpecAnalyticalTable();
       }(),
     );
   }
@@ -286,7 +288,7 @@ class QCDetailsShortFormScreenController extends GetxController {
 
     uomList = _appStorage.uomList;
     uomList.sort((a, b) => a.uomName!.compareTo(b.uomName!));
-
+// todo: walmart demo code
     SchedulerBinding.instance.addPostFrameCallback((_) {
       update();
     });
@@ -307,8 +309,9 @@ class QCDetailsShortFormScreenController extends GetxController {
       poLineNo,
       item_sku_name) async {
     try {
+      var userId = _appStorage.getUserData()?.id;
       _appStorage.currentInspection = Inspection(
-        userId: _appStorage.getLoginData()!.id,
+        userId: userId,
         partnerId: partnerID,
         carrierId: carrierID,
         createdTime: DateTime.now().millisecondsSinceEpoch,
@@ -331,9 +334,11 @@ class QCDetailsShortFormScreenController extends GetxController {
         poLineNo: poLineNo,
         rating: 0,
       );
-      inspectionId = await dao.createInspection(_appStorage.currentInspection!);
+      var inspection_id =
+          await dao.createInspection(_appStorage.currentInspection!);
+      inspectionId = inspection_id;
       _appStorage.currentInspection?.inspectionId = inspectionId;
-      serverInspectionID = inspectionId!;
+      // serverInspectionID = inspectionId!;
     } catch (e) {
       print(e.toString());
       return;
@@ -396,9 +401,10 @@ class QCDetailsShortFormScreenController extends GetxController {
     }
   }
 
-  void loadFieldsFromDB() async {
-    ApplicationDao dao = ApplicationDao();
-
+  Future<void> loadFieldsFromDB() async {
+    if (inspectionId == null) {
+      throw Exception('Inspection ID is null');
+    }
     QualityControlItem? qualityControlItems =
         await dao.findQualityControlDetails(inspectionId!);
 

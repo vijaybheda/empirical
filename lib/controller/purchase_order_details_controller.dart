@@ -17,6 +17,7 @@ import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/qc_short_form/qc_details_short_form_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/utils.dart';
 
@@ -57,19 +58,13 @@ class PurchaseOrderDetailsController extends GetxController {
       throw Exception('Arguments not allowed');
     }
 
-    serverInspectionID = args['serverInspectionID'] ?? -1;
-    partnerName = args['partnerName'] ?? '';
-    partnerID = args['partnerID'] ?? 0;
-    carrierName = args['carrierName'] ?? '';
-    carrierID = args['carrierID'] ?? 0;
-    commodityID = args['commodityID'] ?? 0;
-    commodityName = args['commodityName'] ?? '';
-    poNumber = args['poNumber'] ?? '';
-    sealNumber = args['sealNumber'] ?? '';
-    specificationNumber = args['specificationNumber'] ?? '';
-    specificationVersion = args['specificationVersion'] ?? '';
-    specificationName = args['specificationName'] ?? '';
-    specificationTypeName = args['specificationTypeName'] ?? '';
+    serverInspectionID = args[Consts.SERVER_INSPECTION_ID] ?? -1;
+    partnerName = args[Consts.PARTNER_NAME] ?? '';
+    partnerID = args[Consts.PARTNER_ID] ?? 0;
+    carrierName = args[Consts.CARRIER_NAME] ?? '';
+    carrierID = args[Consts.CARRIER_ID] ?? 0;
+    poNumber = args[Consts.PO_NUMBER] ?? '';
+    sealNumber = args[Consts.SEAL_NUMBER] ?? '';
 
     itemSkuList.assignAll(getPurchaseOrderData());
     super.onInit();
@@ -292,7 +287,59 @@ class PurchaseOrderDetailsController extends GetxController {
     unFocus();
   }
 
-  Future<void> onItemTap(PurchaseOrderItem goodsItem) async {
+  Future<void> onItemTap(PurchaseOrderItem goodsItem, int index) async {
+    FinishedGoodsItemSKU? finishedGoodsItemSKU =
+        appStorage.selectedItemSKUList[index];
+    bool isComplete = await dao.isInspectionComplete(
+        partner.id!, goodsItem.sku!, finishedGoodsItemSKU.id.toString());
+    bool ispartialComplete = await dao.isInspectionPartialComplete(
+        partner.id!, goodsItem.sku!, finishedGoodsItemSKU.id.toString());
+
+    // FIXME: below
+    // String current_lot_number = viewHolder.edit_LotNo.getText().toString();
+    // String? current_Item_SKU = goodsItem.sku;
+    // String? current_Item_SKU_Name = goodsItem.description;
+    // String? current_pack_Date = packDate;
+
+    Map<String, dynamic> passingData = {};
+
+    if (!isComplete && !ispartialComplete) {
+      passingData[Consts.SERVER_INSPECTION_ID] = -1;
+    } else {
+      // FIXME: below
+      // passingData[Consts.SERVER_INSPECTION_ID] = viewHolder.inspectionId;
+
+      passingData[Consts.SPECIFICATION_NUMBER] = specificationNumber;
+      passingData[Consts.SPECIFICATION_VERSION] = specificationVersion;
+      passingData[Consts.SPECIFICATION_NAME] = specificationName;
+      passingData[Consts.SPECIFICATION_TYPE_NAME] = specificationTypeName;
+    }
+
+    passingData[Consts.PO_NUMBER] = poNumber;
+    passingData[Consts.SEAL_NUMBER] = sealNumber;
+    passingData[Consts.PARTNER_NAME] = partnerName;
+    passingData[Consts.PARTNER_ID] = partnerID;
+    passingData[Consts.CARRIER_NAME] = carrierName;
+    passingData[Consts.CARRIER_ID] = carrierID;
+
+    // FIXME: below
+    // passingData[Consts.Lot_No] = current_lot_number;
+    // passingData[Consts.ITEM_SKU] = current_Item_SKU;
+    // passingData[Consts.ITEM_SKU_NAME] = current_Item_SKU_Name;
+    // passingData[Consts.ITEM_SKU_ID] = current_Item_SKU_Id;
+    // passingData[Consts.PACK_DATE] = current_pack_Date;
+
+    passingData[Consts.COMPLETED] = isComplete;
+    passingData[Consts.PARTIAL_COMPLETED] = ispartialComplete;
+
+    // FIXME: below
+    // passingData[Consts.COMMODITY_ID] = current_commodity_id;
+    // passingData[Consts.COMMODITY_NAME] = current_commodity_name;
+    // passingData[Consts.ITEM_UNIQUE_ID] = current_unique_id;
+    // passingData[Consts.GTIN] = current_gtin;
+    // passingData[Consts.PRODUCT_TRANSFER] = productTransfer;
+    // passingData[Consts.DATETYPE] = dateType;
+
     await Get.to(
         () => QCDetailsShortFormScreen(
               partner: partner,
@@ -301,27 +348,6 @@ class PurchaseOrderDetailsController extends GetxController {
               qcHeaderDetails: qcHeaderDetails,
               purchaseOrderItem: goodsItem,
             ),
-        arguments: {
-          'serverInspectionID': serverInspectionID,
-          'partnerName': partner.name,
-          'partnerID': partner.id,
-          'carrierName': carrier.name,
-          'carrierID': carrier.id,
-          'commodityName': commodity.name,
-          'commodityID': commodity.id,
-          // 'sampleSizeByCount': ,
-          // 'inspectionResult': ,
-          // 'itemSKU': ,
-          'poNumber': qcHeaderDetails?.poNo,
-          // 'specificationNumber': ,
-          // 'specificationVersion': ,
-          // 'specificationName': ,
-          // 'specificationTypeName': ,
-          // 'selectedSpecification': ,
-          // 'productTransfer': ,
-          // 'callerActivity': ,
-          // 'is1stTimeActivity': ,
-          // 'isMyInspectionScreen': ,
-        });
+        arguments: passingData);
   }
 }

@@ -12,6 +12,7 @@ import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart
 import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/utils.dart';
 
@@ -57,15 +58,15 @@ class PurchaseOrderScreenController extends GetxController {
       throw Exception('Arguments not allowed');
     }
 
-    poNumber = args['poNumber'] ?? '';
-    sealNumber = args['sealNumber'] ?? '';
-    partnerName = args['partnerName'] ?? '';
-    partnerID = args['partnerID'] ?? 0;
-    carrierName = args['carrierName'] ?? '';
-    carrierID = args['carrierID'] ?? 0;
-    commodityID = args['commodityID'] ?? 0;
-    commodityName = args['commodityName'] ?? '';
-    productTransfer = args['productTransfer'] ?? '';
+    poNumber = args[Consts.PO_NUMBER] ?? '';
+    sealNumber = args[Consts.SEAL_NUMBER] ?? '';
+    partnerName = args[Consts.PARTNER_NAME] ?? '';
+    partnerID = args[Consts.PARTNER_ID] ?? 0;
+    carrierName = args[Consts.CARRIER_NAME] ?? '';
+    carrierID = args[Consts.CARRIER_ID] ?? 0;
+    commodityID = args[Consts.COMMODITY_ID] ?? 0;
+    commodityName = args[Consts.COMMODITY_NAME] ?? '';
+    productTransfer = args[Consts.PRODUCT_TRANSFER] ?? '';
 
     super.onInit();
     assignInitialData();
@@ -156,15 +157,15 @@ class PurchaseOrderScreenController extends GetxController {
                 commodity: commodity,
                 qcHeaderDetails: qcHeaderDetails),
             arguments: {
-              'serverInspectionID': qcHeaderDetails?.id ?? 0,
-              'partnerName': partner..name,
-              'partnerID': partner.id,
-              'carrierName': carrier.name,
-              'carrierID': carrier.id,
-              'commodityID': commodity.id,
-              'commodityName': commodity.name,
-              'poNumber': qcHeaderDetails?.poNo,
-              'sealNumber': qcHeaderDetails?.sealNo,
+              Consts.SERVER_INSPECTION_ID: qcHeaderDetails?.id ?? 0,
+              Consts.PARTNER_NAME: partner..name,
+              Consts.PARTNER_ID: partner.id,
+              Consts.CARRIER_NAME: carrier.name,
+              Consts.CARRIER_ID: carrier.id,
+              Consts.COMMODITY_ID: commodity.id,
+              Consts.COMMODITY_NAME: commodity.name,
+              Consts.PO_NUMBER: qcHeaderDetails?.poNo,
+              Consts.SEAL_NUMBER: qcHeaderDetails?.sealNo,
             });
       } else {
         Get.to(
@@ -174,19 +175,14 @@ class PurchaseOrderScreenController extends GetxController {
                 commodity: commodity,
                 qcHeaderDetails: qcHeaderDetails),
             arguments: {
-              'serverInspectionID': qcHeaderDetails?.id ?? 0,
-              'partnerName': partner.name,
-              'partnerID': partner.id,
-              'carrierName': carrier.name,
-              'carrierID': carrier.id,
-              'commodityID': commodity.id,
-              'commodityName': commodity.name,
-              'poNumber': qcHeaderDetails?.poNo,
-              'sealNumber': qcHeaderDetails?.sealNo,
-              'specificationNumber': '',
-              'specificationVersion': '',
-              'specificationName': '',
-              'specificationTypeName': '',
+              Consts.SERVER_INSPECTION_ID: qcHeaderDetails?.id ?? 0,
+              Consts.PARTNER_ID: partner.id,
+              Consts.PARTNER_NAME: partner.name,
+              Consts.CARRIER_ID: carrier.id,
+              Consts.CARRIER_NAME: carrier.name,
+              Consts.COMMODITY_ID: commodity.id,
+              Consts.COMMODITY_NAME: commodity.name,
+              Consts.PO_NUMBER: qcHeaderDetails?.poNo,
             });
       }
     } else {

@@ -31,7 +31,7 @@ class AuthController extends GetxController {
   bool socialButtonVisible = true;
   final AppStorage appStorage = AppStorage.instance;
   final JsonFileOperations jsonFileOperations = JsonFileOperations.instance;
-
+  final ApplicationDao dao = ApplicationDao();
   int wifiLevel = 0;
 
   @override
@@ -77,10 +77,9 @@ class AuthController extends GetxController {
 
         if (userData != null) {
           try {
-            int userid =
-                await ApplicationDao().getEnterpriseIdByUserId(mUsername);
+            int userid = await dao.getEnterpriseIdByUserId(mUsername);
             if (userid == 0) {
-              int? _id = await ApplicationDao().createOrUpdateOfflineUser(
+              int? _id = await dao.createOrUpdateOfflineUser(
                 mUsername.toLowerCase(),
                 userData.access1!,
                 userData.enterpriseId!,
@@ -147,12 +146,12 @@ class AuthController extends GetxController {
             }*/
       } else {
         String? userHash =
-            await ApplicationDao().getOfflineUserHash(mUsername.toLowerCase());
+            await dao.getOfflineUserHash(mUsername.toLowerCase());
 
         if (userHash != null && userHash.isNotEmpty) {
           if (SecurePassword.validatePasswordHash(mPassword, userHash)) {
-            UserOffline? offlineUser = await ApplicationDao()
-                .getOfflineUserData(mUsername.toLowerCase());
+            UserOffline? offlineUser =
+                await dao.getOfflineUserData(mUsername.toLowerCase());
             await persistUserName();
             if (isLoginButton) {
               if (offlineUser != null && offlineUser.isSubscriptionExpired ||
@@ -205,7 +204,7 @@ class AuthController extends GetxController {
           timestamp: DateTime.now().millisecondsSinceEpoch,
           language: loginData.language,
         );
-        userId = await ApplicationDao().createOrUpdateUser(user);
+        userId = await dao.createOrUpdateUser(user);
         user = user.copyWith(id: userId);
         await appStorage.setUserData(user);
       } catch (e) {

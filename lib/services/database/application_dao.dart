@@ -2484,4 +2484,28 @@ class ApplicationDao {
 
     return list;
   }
+
+  Future<bool> isInspectionPartialComplete(
+      int partnerId, String itemSKU, String lotNo) async {
+    final Database db = await dbProvider.database;
+    try {
+      List<dynamic> args = ["false", partnerId.toString(), itemSKU, lotNo];
+
+      String query = "SELECT * FROM ${DBTables.PARTNER_ITEMSKU} WHERE " +
+          "${PartnerItemSkuColumn.COMPLETE}=? AND " +
+          "${PartnerItemSkuColumn.PARTNER_ID}=? AND " +
+          "${PartnerItemSkuColumn.ITEM_SKU}=? AND " +
+          "${PartnerItemSkuColumn.UNIQUE_ID}=?";
+
+      var cursor = await db.rawQuery(query, args);
+      if (cursor.isNotEmpty) {
+        return true;
+      }
+    } catch (e) {
+      print("Error has occurred while finding pfg: $e");
+      return false;
+    }
+
+    return false;
+  }
 }
