@@ -13,7 +13,6 @@ import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/models/inspection_defect.dart';
 import 'package:pverify/models/inspection_defect_attachment.dart';
 import 'package:pverify/models/inspection_sample.dart';
-import 'package:pverify/models/inspection_specification.dart';
 import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/my_inspection_48hour_item.dart';
 import 'package:pverify/models/overridden_result_item.dart';
@@ -229,7 +228,7 @@ class ApplicationDao {
 
   Future<int> createInspection(Inspection inspection) async {
     final db = await dbProvider.database;
-    var res = await db.insert(DBTables.INSPECTION, inspection.toMap());
+    var res = await db.insert(DBTables.INSPECTION, inspection.toJson());
     return res;
   }
 
@@ -292,7 +291,7 @@ class ApplicationDao {
         where: '${BaseColumns.ID} = ?', whereArgs: [inspectionId]);
   }
 
-  Future<int> createOrUpdateInspectionSpecification(
+  /*Future<int> createOrUpdateInspectionSpecification(
       InspectionSpecification spec) async {
     final db = await DatabaseHelper.instance.database;
     if (spec.id == null) {
@@ -307,6 +306,60 @@ class ApplicationDao {
         whereArgs: [spec.id],
       );
     }
+  }*/
+
+  Future<int> createOrUpdateInspectionSpecification(
+      int inspectionID, String? number, String? version, String? name) async {
+    int? inspectionId;
+    final Database db = await dbProvider.database;
+    try {
+      try {
+        String query =
+            "SELECT Inspection_ID FROM ${DBTables.INSPECTION_SPECIFICATION} WHERE Inspection_ID = $inspectionID";
+        List<Map<String, dynamic>> result = await db.rawQuery(query);
+
+        if (result.isNotEmpty) {
+          inspectionId = result[0]["Inspection_ID"];
+        }
+      } catch (e) {
+        print("Error has occurred while finding a user id: $e");
+        return -1;
+      }
+
+      if (inspectionId == null) {
+        await db.transaction((txn) async {
+          var values = {
+            InspectionSpecificationColumn.INSPECTION_ID: inspectionID,
+            InspectionSpecificationColumn.SPECIFICATION_NUMBER: number,
+            InspectionSpecificationColumn.SPECIFICATION_VERSION: version,
+            InspectionSpecificationColumn.SPECIFICATION_NAME: name,
+          };
+
+          inspectionId =
+              await txn.insert(DBTables.INSPECTION_SPECIFICATION, values);
+        });
+      } else {
+        await db.transaction((txn) async {
+          var values = <String, dynamic>{};
+          if (number != null) {
+            values[InspectionSpecificationColumn.SPECIFICATION_NUMBER] = number;
+            values[InspectionSpecificationColumn.SPECIFICATION_VERSION] =
+                version;
+            values[InspectionSpecificationColumn.SPECIFICATION_NAME] = name;
+          }
+          await txn.update(DBTables.INSPECTION_SPECIFICATION, values,
+              where: "${InspectionSpecificationColumn.INSPECTION_ID} = ?",
+              whereArgs: [inspectionID]);
+        });
+      }
+
+      print("Inside specification table");
+    } catch (e) {
+      print("Error has occurred while creating an inspection: $e");
+      return -1;
+    }
+
+    return inspectionId ?? -1;
   }
 
   Future<void> updateInspectionRating(int inspectionID, int rating) async {
@@ -325,9 +378,9 @@ class ApplicationDao {
     return result.isNotEmpty;
   }
 
-  Future<void> updateInspectionComplete(int inspectionID, bool complete) async {
+  Future<int> updateInspectionComplete(int inspectionID, bool complete) async {
     final db = await dbProvider.database;
-    await db.update(
+    return await db.update(
       DBTables.INSPECTION,
       {
         InspectionColumn.COMPLETE: complete ? 1 : 0,
@@ -360,7 +413,7 @@ class ApplicationDao {
     );
   }
 
-  Future<void> updateInspection(
+  /*Future<void> updateInspection(
       int inspectionID, Map<String, dynamic> values) async {
     final db = await dbProvider.database;
     await db.update(
@@ -369,6 +422,58 @@ class ApplicationDao {
       where: '${BaseColumns.ID} = ?',
       whereArgs: [inspectionID],
     );
+  }*/
+
+  Future<int> updateInspection(
+    int serverInspectionID,
+    int commodityID,
+    String commodityName,
+    int varietyId,
+    String varietyName,
+    int gradeId,
+    String specificationNumber,
+    String specificationVersion,
+    String specificationName,
+    String specificationTypeName,
+    int sampleSizeByCount,
+    String itemSKU,
+    int itemSKUId,
+    String po_number,
+    int rating,
+    String cteType,
+    String itemSkuName,
+  ) async {
+    final db = await dbProvider.database;
+    try {
+      return await db.transaction((txn) async {
+        return await txn.update(
+          DBTables.INSPECTION,
+          {
+            InspectionColumn.COMMODITY_ID: commodityID,
+            InspectionColumn.COMMODITY_NAME: commodityName,
+            InspectionColumn.VARIETY_ID: varietyId,
+            InspectionColumn.VARIETY_NAME: varietyName,
+            InspectionColumn.GRADE_ID: gradeId,
+            InspectionColumn.SPECIFICATION_NAME: specificationName,
+            InspectionColumn.SPECIFICATION_VERSION: specificationVersion,
+            InspectionColumn.SPECIFICATION_NUMBER: specificationNumber,
+            InspectionColumn.SPECIFICATION_TYPENAME: specificationTypeName,
+            InspectionColumn.SAMPLE_SIZE_BY_COUNT: sampleSizeByCount,
+            InspectionColumn.ITEM_SKU: itemSKU,
+            InspectionColumn.ITEM_SKU_ID: itemSKUId,
+            InspectionColumn.PO_NUMBER: po_number,
+            InspectionColumn.RATING: rating,
+            InspectionColumn.CTE_TYPE: cteType,
+            InspectionColumn.ITEM_SKU_NAME: itemSkuName,
+          },
+          where: '${InspectionColumn.ID} = ?',
+          whereArgs: [serverInspectionID],
+        );
+      });
+    } catch (e) {
+      print('Error has occurred while updating an inspection: $e');
+      return -1;
+    }
   }
 
   Future<Inspection?> findInspectionByID(int inspectionID) async {
@@ -380,7 +485,7 @@ class ApplicationDao {
     );
 
     if (maps.isNotEmpty) {
-      return Inspection.fromMap(maps.first as Map<String, dynamic>);
+      return Inspection.fromJson(maps.first as Map<String, dynamic>);
     }
     return null;
   }
@@ -1600,7 +1705,7 @@ class ApplicationDao {
         pod.PO_Line_Number, pod.PO_Item_Sku_Id, pod.PO_Item_Sku_Code, pod.PO_Item_Sku_Name,
         pod.PO_Quantity, pod.PO_Qty_UOM_Id, pod.PO_Qty_UOM_Name,
         pod.PO_Number_Spec, pod.PO_Version_Spec, pod.PO_Commodity_Id, pod.PO_Commodity_Name
-        FROM PO_Detail pod
+        FROM ${DBTables.PO_DETAIL} pod
         INNER JOIN PO_Header poh ON pod.PO_Header_ID=poh.PO_Header_ID
         WHERE poh.PO_Number='$poNumber' AND poh.PO_Deliver_To_Id=$inspectorSupplierId
       ''');
@@ -1745,7 +1850,7 @@ class ApplicationDao {
       String? specVersion = "";
 
       String query =
-          "Select distinct number_specification, version_specification from Specification_Supplier ss " +
+          "Select distinct number_specification, version_specification from ${DBTables.SPECIFICATION_SUPPLIER} ss " +
               "inner join specification_supplier_gtin sgtin on sgtin.Specification_Supplier_ID=ss.Specification_Supplier_ID " +
               "where sgtin.gtin='" +
               gtin +
@@ -1764,7 +1869,7 @@ class ApplicationDao {
           "SKU.SKU_ID AS ITEM_SKU_ID, SKU.NAME AS ITEM_SKU_NAME, SKU.CODE AS ITEM_SKU_CODE," +
           "COMMODITY.ID AS COMMODITY_ID, COMMODITY.NAME AS COMMODITY_NAME, COMMODITY.Sample_Size_By_Count," +
           "VARIETY.Group1_ID AS VARIETY_ID, VARIETY.NAME AS VARIETY_NAME, GRADE.ID AS GRADE_ID, GRADE.NAME AS GRADE_NAME, AGENCY.ID AS AGENCY_ID, AGENCY.NAME AS AGENCY_NAME " +
-          "FROM SPECIFICATION_SUPPLIER SS JOIN SPECIFICATION SP ON (SS.NUMBER_SPECIFICATION,SS.VERSION_SPECIFICATION)=(SP.NUMBER,SP.VERSION) " +
+          "FROM ${DBTables.SPECIFICATION_SUPPLIER} SS JOIN SPECIFICATION SP ON (SS.NUMBER_SPECIFICATION,SS.VERSION_SPECIFICATION)=(SP.NUMBER,SP.VERSION) " +
           "INNER JOIN SPECIFICATION_SUPPLIER_GTIN SGTIN ON SGTIN.SPECIFICATION_SUPPLIER_ID=SS.Specification_Supplier_ID " +
           "JOIN MATERIAL_SPECIFICATION MS ON (SP.NUMBER,SP.VERSION)=(MS.NUMBER_SPECIFICATION,MS.VERSION_SPECIFICATION) " +
           "JOIN SPECIFICATION_TYPE SPECTYPE ON SP.SPECIFICATION_TYPE_ID=SPECTYPE.Specification_Type_ID " +
@@ -2043,7 +2148,7 @@ class ApplicationDao {
       bool hqUser = (supplierId == headquarterId);
 
       if (hqUser) {
-        query = "select distinct(itemSku.SKU_ID), itemSku.Name, itemSku.Code, itemSku.FTL, itemSku.Branded from Specification_Supplier SS " +
+        query = "select distinct(itemSku.SKU_ID), itemSku.Name, itemSku.Code, itemSku.FTL, itemSku.Branded from ${DBTables.SPECIFICATION_SUPPLIER} SS " +
             "inner join Material_Specification MS on (SS.Number_Specification, SS.Version_Specification)=(MS.Number_Specification,MS.Version_Specification) " +
             "inner join Item_SKU itemSku on SS.Item_SKU_ID=itemSku.SKU_ID " +
             "inner join Commodity C on itemSku.Commodity_ID=C.ID " +
@@ -2052,7 +2157,7 @@ class ApplicationDao {
             "AND itemSku.Company_Id =? " +
             "And MS.Status = 'A' and C.ID=?";
       } else {
-        query = "select distinct(itemSku.SKU_ID), itemSku.Name, itemSku.Code, itemSku.FTL, itemSku.Branded from Specification_Supplier SS " +
+        query = "select distinct(itemSku.SKU_ID), itemSku.Name, itemSku.Code, itemSku.FTL, itemSku.Branded from ${DBTables.SPECIFICATION_SUPPLIER} SS " +
             "inner join Material_Specification MS on (SS.Number_Specification, SS.Version_Specification)=(MS.Number_Specification,MS.Version_Specification) " +
             "inner join Item_SKU itemSku on SS.Item_SKU_ID=itemSku.SKU_ID " +
             "inner join Commodity C on itemSku.Commodity_ID=C.ID " +
@@ -2139,7 +2244,7 @@ class ApplicationDao {
 
     for (Map<dynamic, dynamic> map in results) {
       list.add(
-          SpecificationAnalyticalRequest.fromMap(map as Map<String, dynamic>));
+          SpecificationAnalyticalRequest.fromJson(map as Map<String, dynamic>));
     }
 
     return list;
@@ -2178,7 +2283,7 @@ class ApplicationDao {
         'A'
       ];
       String query1 =
-          'select distinct(c.id), c.name, c.keywords from Specification_Supplier SS '
+          'select distinct(c.id), c.name, c.keywords from ${DBTables.SPECIFICATION_SUPPLIER} SS '
           'inner join Material_Specification MS on (SS.Number_Specification, SS.Version_Specification)=(MS.Number_Specification,MS.Version_Specification) '
           'inner join Item_SKU itemSku on SS.Item_SKU_ID=itemSku.SKU_ID '
           'inner join Commodity C on itemSku.Commodity_ID=C.ID '
@@ -2189,7 +2294,7 @@ class ApplicationDao {
 
       if (hqUser) {
         query1 =
-            'select distinct(c.id), c.name, c.keywords from Specification_Supplier SS '
+            'select distinct(c.id), c.name, c.keywords from ${DBTables.SPECIFICATION_SUPPLIER} SS '
             'inner join Material_Specification MS on (SS.Number_Specification, SS.Version_Specification)=(MS.Number_Specification,MS.Version_Specification) '
             'inner join Item_SKU itemSku on SS.Item_SKU_ID=itemSku.SKU_ID '
             'inner join Commodity C on itemSku.Commodity_ID=C.ID '
@@ -2232,7 +2337,7 @@ class ApplicationDao {
   }
 
   Future<bool> isInspectionComplete(
-      int partnerId, String itemSKU, String lotNo) async {
+      int partnerId, String itemSKU, String? lotNo) async {
     List<dynamic> args = [true, partnerId.toString(), itemSKU, lotNo];
 
     try {
@@ -2255,7 +2360,7 @@ class ApplicationDao {
   }
 
   Future<PartnerItemSKUInspections?> findPartnerItemSKU(
-      int partnerId, String itemSKU, String uniqueId) async {
+      int partnerId, String itemSKU, String? uniqueId) async {
     List<dynamic> args = [partnerId.toString(), itemSKU, uniqueId];
     try {
       String query =
@@ -2311,7 +2416,7 @@ class ApplicationDao {
       var cursor = await db.rawQuery(query, args);
 
       SpecificationAnalyticalRequest? item =
-          SpecificationAnalyticalRequest.fromMap(cursor.first);
+          SpecificationAnalyticalRequest.fromJson(cursor.first);
       return item;
     } catch (e) {
       debugPrint("Error has occurred while finding quality control items: $e");
@@ -2319,8 +2424,8 @@ class ApplicationDao {
     }
   }
 
-  Future<int?> createOrUpdateResultReasonDetails(int inspectionID,
-      String result, String resultReason, String comment) async {
+  Future<int> createOrUpdateResultReasonDetails(int inspectionID, String result,
+      String resultReason, String comment) async {
     int? inspectionId;
     final Database db = await dbProvider.database;
     try {
@@ -2333,8 +2438,8 @@ class ApplicationDao {
           inspectionId = cursor[0][ResultRejectionDetailsColumn.INSPECTION_ID];
         }
       } catch (e) {
-        debugPrint("Error has occurred while finding a user id: $e");
-        return null;
+        print("Error has occurred while finding a user id: $e");
+        return -1;
       }
 
       if (inspectionId == null) {
@@ -2359,13 +2464,13 @@ class ApplicationDao {
             whereArgs: [inspectionID]);
       }
     } catch (e) {
-      debugPrint("Error has occurred while creating an inspection: $e");
-      return null;
+      print("Error has occurred while creating an inspection: $e");
+      return -1;
     }
     return inspectionId;
   }
 
-  Future<int?> createIsPictureReqSpecAttribute(
+  Future<int> createIsPictureReqSpecAttribute(
     int inspectionID,
     String result,
     String resultReason,
@@ -2384,8 +2489,8 @@ class ApplicationDao {
               cursor.first[ResultRejectionDetailsColumn.INSPECTION_ID] as int?;
         }
       } catch (e) {
-        debugPrint("Error has occurred while finding a user id. $e");
-        return null;
+        print("Error has occurred while finding a user id. $e");
+        return -1;
       }
 
       if (inspectionId == null) {
@@ -2412,10 +2517,10 @@ class ApplicationDao {
         });
       }
     } catch (e) {
-      debugPrint("Error has occurred while creating an inspection. $e");
-      return null;
+      print("Error has occurred while creating an inspection. $e");
+      return -1;
     }
-    return inspectionId;
+    return inspectionId ?? -1;
   }
 
   Future<bool> updateQuantityRejected(
@@ -2469,6 +2574,58 @@ class ApplicationDao {
       debugPrint("Error has occurred while updating an inspection. $e");
       return false;
     }
+    return false;
+  }
+
+  Future<List<SpecificationAnalytical>> getSpecificationAnalyticalFromTable(
+    String number,
+    String version,
+  ) async {
+    List<SpecificationAnalytical> list = [];
+
+    try {
+      final Database db = await dbProvider.database;
+      String query =
+          "SELECT Number_Specification, Version_Specification, Analytical_ID, Analytical_name, Spec_Min, Spec_Max, "
+          "Target_Num_Value, Target_Text_Value, UOM_Name, Type_Entry, Description, OrderNo, Picture_Required, "
+          "Target_Text_Default, Inspection_Result FROM ${DBTables.SPECIFICATION_ANALYTICAL} "
+          "WHERE Number_Specification='$number' AND Version_Specification='$version'";
+
+      List<Map<String, dynamic>> cursor = await db.rawQuery(query);
+
+      for (Map<String, dynamic> row in cursor) {
+        SpecificationAnalytical item = SpecificationAnalytical.fromMap(row);
+        list.add(item);
+      }
+    } catch (e) {
+      print('Error has occurred while finding quality control items: $e');
+      return [];
+    }
+
+    return list;
+  }
+
+  Future<bool> isInspectionPartialComplete(
+      int partnerId, String itemSKU, String lotNo) async {
+    final Database db = await dbProvider.database;
+    try {
+      List<dynamic> args = ["false", partnerId.toString(), itemSKU, lotNo];
+
+      String query = "SELECT * FROM ${DBTables.PARTNER_ITEMSKU} WHERE " +
+          "${PartnerItemSkuColumn.COMPLETE}=? AND " +
+          "${PartnerItemSkuColumn.PARTNER_ID}=? AND " +
+          "${PartnerItemSkuColumn.ITEM_SKU}=? AND " +
+          "${PartnerItemSkuColumn.UNIQUE_ID}=?";
+
+      var cursor = await db.rawQuery(query, args);
+      if (cursor.isNotEmpty) {
+        return true;
+      }
+    } catch (e) {
+      print("Error has occurred while finding pfg: $e");
+      return false;
+    }
+
     return false;
   }
 }

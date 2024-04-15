@@ -66,6 +66,7 @@ class InspectionColumn {
   static const String TO_LOCATION_NAME = 'To_Location_Name';
   static const String CTE_TYPE = 'Cte_Type';
   static const String ITEM_SKU_NAME = 'Item_Sku_Name';
+  static const String GTIN = 'GTIN';
 }
 
 class InspectionAttachmentColumn {

@@ -14,12 +14,13 @@ import 'package:pverify/models/exception_item.dart';
 import 'package:pverify/models/offline_commodity.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/severity_defect.dart';
+import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/utils.dart';
 
 class JsonFileOperations {
-  final AppStorage appStorage = AppStorage.instance;
+  final AppStorage _appStorage = AppStorage.instance;
 
   static JsonFileOperations get instance => _instance;
   static final JsonFileOperations _instance = JsonFileOperations._internal();
@@ -43,7 +44,7 @@ class JsonFileOperations {
     List<PartnerItem>? data = parseSupplierJson(content);
 
     if (data != null && data.isNotEmpty) {
-      await appStorage.savePartnerList(data);
+      await _appStorage.savePartnerList(data);
     }
     return (data != null && data.isNotEmpty);
   }
@@ -67,7 +68,7 @@ class JsonFileOperations {
     List<CarrierItem>? data = parseCarrierJson(content);
 
     if (data != null && data.isNotEmpty) {
-      await appStorage.saveCarrierList(data);
+      await _appStorage.saveCarrierList(data);
     }
     return (data != null && data.isNotEmpty);
   }
@@ -91,23 +92,23 @@ class JsonFileOperations {
     List<CommodityItem>? commodityDataList =
         await parseCommodityJson(commodityJsonContent);
     if (commodityDataList != null && commodityDataList.isNotEmpty) {
-      await appStorage.saveCommodityList(commodityDataList);
+      await _appStorage.saveCommodityList(commodityDataList);
     }
     List<DefectItem>? defectDataList =
         parseDefectListJson(commodityJsonContent);
     if (defectDataList != null && defectDataList.isNotEmpty) {
-      await appStorage.saveDefectList(defectDataList);
+      await _appStorage.saveDefectList(defectDataList);
     }
 
     List<SeverityDefect>? parseSeverityDefectList =
         parseSeverityDefectJson(commodityJsonContent);
     if (parseSeverityDefectList != null && parseSeverityDefectList.isNotEmpty) {
-      await appStorage.saveSeverityDefectList(parseSeverityDefectList);
+      await _appStorage.saveSeverityDefectList(parseSeverityDefectList);
     }
     List<OfflineCommodity>? offlineCommodityIDList =
         parseOfflineCommodityID(commodityJsonContent);
     if (offlineCommodityIDList != null && offlineCommodityIDList.isNotEmpty) {
-      await appStorage.saveOfflineCommodityList(offlineCommodityIDList);
+      await _appStorage.saveOfflineCommodityList(offlineCommodityIDList);
     }
 
     return (commodityDataList != null && commodityDataList.isNotEmpty) &&
@@ -117,7 +118,7 @@ class JsonFileOperations {
         (offlineCommodityIDList != null && offlineCommodityIDList.isNotEmpty);
   }
 
-  Future<String> getJsonFileContent(
+  static Future<String> getJsonFileContent(
     Directory directory, {
     required String fileName,
   }) async {
@@ -451,5 +452,105 @@ class JsonFileOperations {
     file.writeAsBytesSync(bytes);
 
     return file;
+  }
+
+  static CommodityVarietyData? parseCommodityToolbarDataJson(String response) {
+    CommodityVarietyData? commodityVarietyData;
+
+    try {
+      Map<String, dynamic> jsonResponse = json.decode(response);
+      String? commodityId = jsonResponse['commodityId'];
+      String? varietyId = jsonResponse['varietyId'];
+      String? varietyName = jsonResponse['varietyName'];
+
+      commodityVarietyData = CommodityVarietyData(
+          commodityId: int.tryParse(commodityId!),
+          varietyId: int.tryParse(varietyId!),
+          varietyName: varietyName);
+
+      List<dynamic>? documentsArray = jsonResponse['documents'];
+      if (documentsArray != null) {
+        for (int i = 0; i < documentsArray.length; i++) {
+          Map<String, dynamic>? item = documentsArray[i];
+          if (item != null) {
+            String? type = item['type'];
+            commodityVarietyData.addDocumentItem(
+                DocumentItemData(type: type, fileURL: item['fileURL']));
+          }
+        }
+      }
+
+      List<dynamic>? exceptionArray = jsonResponse['exception'];
+      if (exceptionArray != null) {
+        for (int i = 0; i < exceptionArray.length; i++) {
+          Map<String, dynamic>? item = exceptionArray[i];
+          if (item != null) {
+            String? shortDescription = item['shortDescription'];
+            String? longDescription = item['longDescription'];
+            String? expirationDate = item['expirationDateStr'];
+
+            commodityVarietyData.addExceptionItem(ExceptionItem(
+                shortDescription: shortDescription,
+                longDescription: longDescription,
+                expirationDate: expirationDate));
+          }
+        }
+      }
+    } catch (e) {
+      log('failed to parseCommodityToolbarDataJson ${e.toString()}');
+      return null;
+    }
+
+    return commodityVarietyData;
+  }
+
+  static Future<List<UOMItem>?> parseUOMJson() async {
+    var storagePath = await Utils().getExternalStoragePath();
+    final Directory directory =
+        Directory("$storagePath${FileManString.jsonFilesCache}/");
+    print('UOMJson directory ${directory.path}');
+
+    String jsonLoadText = await getJsonFileContent(directory,
+        fileName: FileManString.UOM_FILENAME);
+
+    List<UOMItem> list = [];
+    try {
+      List<dynamic> uomArray = jsonDecode(jsonLoadText);
+      for (int i = 0; i < uomArray.length; i++) {
+        int? id = uomArray[i]['uomID'];
+        String? name = uomArray[i]['uomName'];
+
+        UOMItem listItem = UOMItem(id, name);
+        list.add(listItem);
+      }
+    } catch (e) {
+      print(e);
+      return null;
+    }
+    return list;
+  }
+
+  static String? jsonLoadTextFile(String path) {
+    StringBuffer buf = StringBuffer();
+    try {
+      File file = File(path);
+      if (file.existsSync()) {
+        // Read the file using a StreamReader with UTF-8 encoding
+        file
+            .openRead()
+            .transform(utf8.decoder)
+            .transform(const LineSplitter())
+            .forEach((line) {
+          buf.write(line);
+        });
+      } else {
+        print('File not found: $path');
+        return null;
+      }
+    } catch (e) {
+      print(e);
+      return null;
+    }
+    return buf.toString();
   }
 }

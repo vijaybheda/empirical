@@ -11,6 +11,7 @@ import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/commodity/commodity_id_screen.dart';
 import 'package:pverify/ui/scorecard/scorecard_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/supplier_list_dialog.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
@@ -44,8 +45,21 @@ class SelectSupplierScreenController extends GetxController {
 
   double get listHeight => 200.h;
 
+  late final String callerActivity;
+  late final String name;
+  late final int id;
+
   @override
   void onInit() {
+    Map<String, dynamic>? args = Get.arguments;
+    if (args == null) {
+      Get.back();
+      throw Exception('Arguments not allowed');
+    }
+    callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
+    name = args[Consts.NAME] ?? '';
+    id = args[Consts.ID] ?? 0;
+
     super.onInit();
     assignInitialData();
   }
@@ -89,6 +103,7 @@ class SelectSupplierScreenController extends GetxController {
   void clearSearch() {
     searchSuppController.clear();
     searchAndAssignPartner('');
+    unFocus();
   }
 
   void clearOpenSearch() {
@@ -572,7 +587,14 @@ class SelectSupplierScreenController extends GetxController {
   }
 
   void navigateToScorecardScreen(PartnerItem partner) {
-    Get.to(() => ScorecardScreen(partner: partner));
+    Get.to(() => ScorecardScreen(partner: partner), arguments: {
+      Consts.SCORECARD_NAME: partner.name,
+      Consts.SCORECARD_ID: partner.id,
+      Consts.REDPERCENTAGE: partner.redPercentage,
+      Consts.GREENPERCENTAGE: partner.greenPercentage,
+      Consts.YELLOWPERCENTAGE: partner.yellowPercentage,
+      Consts.ORANGEPERCENTAGE: partner.orangePercentage,
+    });
   }
 
   Future<void> navigateToCommodityIdScreen(
@@ -585,18 +607,39 @@ class SelectSupplierScreenController extends GetxController {
           await SupplierListDialog.showListDialog(context);
       if (selectedPartner != null) {
         clearSearch();
-        Get.to(() => CommodityIDScreen(
-              partner: selectedPartner,
-              qcHeaderDetails: qcHeaderDetails,
-              carrier: carrier,
-            ));
+        // TODO: handle other type of partner Item
+        Get.to(
+            () => CommodityIDScreen(
+                  partner: selectedPartner,
+                  qcHeaderDetails: qcHeaderDetails,
+                  carrier: carrier,
+                ),
+            arguments: {
+              Consts.PARTNER_ID: partner.id,
+              Consts.PARTNER_NAME: partner.name,
+              Consts.SEAL_NUMBER: qcHeaderDetails?.sealNo,
+              Consts.PO_NUMBER: qcHeaderDetails?.poNo,
+              Consts.CARRIER_NAME: carrier.name,
+              Consts.CARRIER_ID: carrier.id,
+              Consts.CTEType: qcHeaderDetails?.cteType,
+            });
       }
     } else {
       clearSearch();
-      Get.to(() => CommodityIDScreen(
-          partner: partner,
-          qcHeaderDetails: qcHeaderDetails,
-          carrier: carrier));
+      Get.to(
+          () => CommodityIDScreen(
+              partner: partner,
+              qcHeaderDetails: qcHeaderDetails,
+              carrier: carrier),
+          arguments: {
+            Consts.PARTNER_ID: partner.id,
+            Consts.PARTNER_NAME: partner.name,
+            Consts.SEAL_NUMBER: qcHeaderDetails?.sealNo,
+            Consts.PO_NUMBER: qcHeaderDetails?.poNo,
+            Consts.CARRIER_NAME: carrier.name,
+            Consts.CARRIER_ID: carrier.id,
+            Consts.CTEType: qcHeaderDetails?.cteType,
+          });
     }
   }
 

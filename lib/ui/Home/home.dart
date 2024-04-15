@@ -341,7 +341,9 @@ class Home extends GetView<HomeController> {
                 fontWeight: FontWeight.w600,
                 textStyle: TextStyle(color: AppColors.white)),
             onClickAction: () {
-          return Get.to(SelectCarrierScreen());
+          return Get.to(SelectCarrierScreen(), arguments: {
+            // TODO: Add arguments
+          });
           // return Get.to(QualityControlHeader());
         }),
         SizedBox(

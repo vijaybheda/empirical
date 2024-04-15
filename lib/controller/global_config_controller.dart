@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_internet_signal/flutter_internet_signal.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/ui/login_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 
 class GlobalConfigController extends GetxController {
@@ -28,6 +30,7 @@ class GlobalConfigController extends GetxController {
   Stream<int> get wifiLevelStream => _wifiLevelController.stream;
 
   RxString appVersion = ''.obs;
+  final ApplicationDao dao = ApplicationDao();
 
   @override
   void onInit() {
@@ -147,5 +150,20 @@ class GlobalConfigController extends GetxController {
       String version = packageInfo.version;
       appVersion.value = version;
     });
+  }
+
+  Future<void> appLogoutAction({Function()? onSuccess}) async {
+    int tempTrailer = await dao.deleteRowsTempTrailerTable();
+    log('Deleted $tempTrailer rows from temp_trailer table.');
+    int tempTrailerDetail = await dao.deleteTempTrailerTemperatureDetails();
+    log('Deleted $tempTrailerDetail rows from temp_trailer_temperature_details table.');
+    await appStorage.removeDataByKey(StorageKey.kFinishedGoodsItemSKUList);
+    int selectedItemSku = await dao.deleteSelectedItemSKUList();
+    log('Deleted $selectedItemSku rows from selected_item_sku_list table.');
+
+    if (onSuccess != null) {
+      onSuccess.call();
+    }
+    Get.offAll(() => const LoginScreen());
   }
 }

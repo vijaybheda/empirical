@@ -301,6 +301,7 @@ class _SearchGradingStandardWidget extends StatelessWidget {
             Get.find<CommodityIDScreenController>()
                 .searchAndAssignCommodity(value);
           },
+          controller: Get.find<CommodityIDScreenController>().searchController,
           decoration: InputDecoration(
             hintText: AppStrings.searchCommodity,
             hintStyle: Get.textTheme.bodyLarge?.copyWith(
@@ -320,6 +321,15 @@ class _SearchGradingStandardWidget extends StatelessWidget {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(color: AppColors.white),
+            ),
+            suffixIcon: IconButton(
+              onPressed: () {
+                Get.find<CommodityIDScreenController>().clearSearch();
+              },
+              icon: Icon(
+                Icons.clear,
+                color: AppColors.white,
+              ),
             ),
           ),
         ),

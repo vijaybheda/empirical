@@ -54,6 +54,7 @@ class AppColors {
   static Color red = const Color(0xffFA0000);
   static Color blue = const Color(0xff0064B2);
   static Color purple = const Color(0xff5D5DFF);
+  static Color darkSkyBlue = const Color(0xff007AFF);
 
   static Color textFieldBorderColor = const Color(0xffE5E8E9);
   static Color lightButtonBackground = const Color(0xffEBF9F6);

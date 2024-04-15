@@ -14,6 +14,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pverify/controller/dialog_progress_controller.dart';
+import 'package:pverify/controller/json_file_operations.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -529,6 +530,36 @@ class Utils {
     } else {
       return "";
     }
+  }
+
+  Future<void> offlineLoadCommodityVarietyDocuments(
+      String specNumber, String specVersion) async {
+    String filename = "${FileManString.COMMODITYDOCS_JSON_STRING_FORMAT}"
+        "${specNumber}_$specVersion";
+    String? json = await loadFileToStringFromExternalStorage(
+        filename, FileManString.jsonFilesCache);
+    if (json != null) {
+      _appStorage.commodityVarietyData =
+          JsonFileOperations.parseCommodityToolbarDataJson(json);
+    }
+  }
+
+  Future<String?> loadFileToStringFromExternalStorage(
+      String filename, String directory) async {
+    var externalStoragePath =
+        await getApplicationDocumentsDirectory().then((value) => value.path);
+    String path = '$externalStoragePath/$directory/$filename';
+    File file = File(path);
+    try {
+      if (file.existsSync()) {
+        List<int> bytes = file.readAsBytesSync();
+        String contents = String.fromCharCodes(bytes);
+        return contents;
+      }
+    } catch (e) {
+      print('loadFileToStringFromExternalStorage error: $e');
+    }
+    return null;
   }
 
   static Future<String> createCommodityVarietyDocumentDirectory() async {

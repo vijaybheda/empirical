@@ -244,6 +244,7 @@ class AppStrings {
   static const String completeAndSend = 'Complete and Send';
   static const String specification = 'Specification';
   static const String gtin = 'GTIN';
+  static const String gln = 'GLN';
   static const String uploadInspectionAlert =
       'Do you want to upload Inspection to server?';
 
@@ -389,6 +390,9 @@ class AppStrings {
   static const String add = 'Add';
 
   static const String inspectionPhotoTitle = 'Enter title for photo';
+  static const String inspectionPhotoHeading = 'Inspection Photos';
+  static const String referencesHeading = 'References';
+  static const String connectionHeading = 'Connection';
 
   static const String inspectionUploadMessage =
       'Only Inspections with an Inspection Result will be uploaded.';
@@ -579,4 +583,29 @@ class FileManString {
   static const String commodityJson = 'commodity.json';
   static const String specificationBannerDataJson =
       'specificationBannerData.json';
+
+  static const String JSONFILESCACHE = "jsoncache";
+  static const String COMMODITYDOCS = "commoditydocs";
+  static const String CSVFILESCACHE = "csvcache";
+  static const String SUPPLIERS_JSON_FILENAME = "suppliers.json";
+  static const String CARRIERS_JSON_FILENAME = "carriers.json";
+  static const String COMMODITY_JSON_FILENAME = "commodity.json";
+  static const String UOM_FILENAME = "uom.json";
+  static const String DEFECT_CATEGORIES_JSON_FILENAME = "defectcategories.json";
+  static const String SPECIFICATION_BANNER_DATA_JSON_FILENAME =
+      "specificationBannerData.json";
+  static const String DELIVERYTO_JSON_FILENAME = "deliveryTo.json";
+  static const String TOLOCATION_JSON_FILENAME = "connections.json";
+  static const String VARIETY_JSON_STRING_FORMAT = "%d_variety.json";
+  static const String AGENCY_JSON_STRING_FORMAT = "%d_agency.json";
+  static const String GRADE_COMMODITY_DETAIL_STRING_FORMAT =
+      "%d_%d_gradedetail.json";
+  static const String COMMODITYDOCS_JSON_STRING_FORMAT = "WS_%s.json";
+  static const String SPECANALYTICAL_JSON_STRING_FORMAT = "SA_%s_%s.json";
+  static const String SEVERITIES_JSON_STRING_FORMAT = "SEV_%s.json";
+  static const String SPECIFICATION_GRADE_TOLERANCE_JSON_STRING_FORMAT =
+      "SGT_%s_%s.json";
+  static const String GRADE_SETTING_BY_COMMODITY_JSON_STRING_FORMAT =
+      "GSC_%s.json";
+  static const String CSV_OFFLINE_ZIP_FILENAME = "csvOffline.zip";
 }

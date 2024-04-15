@@ -12,6 +12,7 @@ import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
+import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class QualityControlHeader extends GetView<QualityControlController> {
@@ -68,10 +69,17 @@ class QualityControlHeader extends GetView<QualityControlController> {
                           TextStyle(color: AppColors.textFieldText_Color)),
                   onClickAction: () {
                 if (controller.isQualityControlFields_Validate(context)) {
-                  Get.to(() => TrailerTemp(
-                      carrier: carrier,
-                      orderNumber:
-                          controller.orderNoTextController.value.text.trim()));
+                  Get.to(
+                      () => TrailerTemp(
+                          carrier: carrier,
+                          orderNumber: controller
+                              .orderNoTextController.value.text
+                              .trim()),
+                      arguments: {
+                        Consts.ORDERNUMBER:
+                            controller.orderNoTextController.value.text.trim(),
+                        Consts.CARRIER: carrier,
+                      });
                 }
               }),
               SizedBox(

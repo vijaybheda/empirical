@@ -4,6 +4,34 @@ import 'package:pverify/utils/enumeration.dart';
 import 'package:pverify/utils/images.dart';
 
 class ScorecardScreenController extends GetxController {
+  late final String scorecardName;
+  late final int scorecardID;
+  late final double redPercentage;
+  late final double greenPercentage;
+  late final double yellowPercentage;
+  late final double orangePercentage;
+
+  final PartnerItem partner;
+  ScorecardScreenController(this.partner);
+
+  @override
+  void onInit() {
+    Map<String, dynamic>? args = Get.arguments;
+    if (args == null) {
+      Get.back();
+      throw Exception('Arguments not allowed');
+    }
+
+    scorecardName = args?['scorecardName'] ?? '';
+    scorecardID = args?['scorecardID'] ?? 0;
+    redPercentage = args?['redPercentage'] ?? 0.0;
+    greenPercentage = args?['greenPercentage'] ?? 0.0;
+    yellowPercentage = args?['yellowPercentage'] ?? 0.0;
+    orangePercentage = args?['orangePercentage'] ?? 0.0;
+
+    super.onInit();
+  }
+
   List<String> bannerImages = [AppImages.img_banner, AppImages.img_banner];
   List<Map<String, String>> listOfInspection = [
     {
@@ -61,9 +89,6 @@ class ScorecardScreenController extends GetxController {
   CommoditySort commoditySort = CommoditySort.none;
   ResultSort resultSort = ResultSort.none;
   ReasonSort reasonSort = ReasonSort.none;
-
-  final PartnerItem partner;
-  ScorecardScreenController(this.partner);
 
   selectInspectionForDownload(String id, bool isSelectAll) {
     if (isSelectAll) {

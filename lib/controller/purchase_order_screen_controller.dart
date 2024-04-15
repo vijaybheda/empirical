@@ -12,13 +12,27 @@ import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart
 import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
+import 'package:pverify/utils/utils.dart';
 
 class PurchaseOrderScreenController extends GetxController {
   final PartnerItem partner;
   final CarrierItem carrier;
   final CommodityItem commodity;
   final QCHeaderDetails? qcHeaderDetails;
+
+  late final String poNumber;
+  late final String sealNumber;
+  late final String partnerName;
+  late final int partnerID;
+  late final String carrierName;
+  late final int carrierID;
+  late final int commodityID;
+  late final String commodityName;
+  late final String productTransfer;
+
+  final TextEditingController searchController = TextEditingController();
   PurchaseOrderScreenController({
     required this.partner,
     required this.carrier,
@@ -38,6 +52,22 @@ class PurchaseOrderScreenController extends GetxController {
 
   @override
   void onInit() {
+    Map<String, dynamic>? args = Get.arguments;
+    if (args == null) {
+      Get.back();
+      throw Exception('Arguments not allowed');
+    }
+
+    poNumber = args[Consts.PO_NUMBER] ?? '';
+    sealNumber = args[Consts.SEAL_NUMBER] ?? '';
+    partnerName = args[Consts.PARTNER_NAME] ?? '';
+    partnerID = args[Consts.PARTNER_ID] ?? 0;
+    carrierName = args[Consts.CARRIER_NAME] ?? '';
+    carrierID = args[Consts.CARRIER_ID] ?? 0;
+    commodityID = args[Consts.COMMODITY_ID] ?? 0;
+    commodityName = args[Consts.COMMODITY_NAME] ?? '';
+    productTransfer = args[Consts.PRODUCT_TRANSFER] ?? '';
+
     super.onInit();
     assignInitialData();
   }
@@ -78,11 +108,11 @@ class PurchaseOrderScreenController extends GetxController {
     appStorage.selectedItemSKUList ??= <FinishedGoodsItemSKU>[];
 
     // remove if exist in appStorage.selectedItemSKUList
-    appStorage.selectedItemSKUList?.removeWhere((element) {
+    appStorage.selectedItemSKUList.removeWhere((element) {
       return element.id == partner.id;
     });
     if (partner.isSelected ?? false) {
-      appStorage.selectedItemSKUList?.add(partner);
+      appStorage.selectedItemSKUList.add(partner);
     }
 
     debugPrint("${appStorage.selectedItemSKUList?.length}");
@@ -120,17 +150,40 @@ class PurchaseOrderScreenController extends GetxController {
     if (appStorage.selectedItemSKUList != null &&
         (appStorage.selectedItemSKUList ?? []).isNotEmpty) {
       if (userId == 4180) {
-        Get.to(() => NewPurchaseOrderDetailsScreen(
-            partner: partner,
-            carrier: carrier,
-            commodity: commodity,
-            qcHeaderDetails: qcHeaderDetails));
+        Get.to(
+            () => NewPurchaseOrderDetailsScreen(
+                partner: partner,
+                carrier: carrier,
+                commodity: commodity,
+                qcHeaderDetails: qcHeaderDetails),
+            arguments: {
+              Consts.SERVER_INSPECTION_ID: qcHeaderDetails?.id ?? 0,
+              Consts.PARTNER_NAME: partner..name,
+              Consts.PARTNER_ID: partner.id,
+              Consts.CARRIER_NAME: carrier.name,
+              Consts.CARRIER_ID: carrier.id,
+              Consts.COMMODITY_ID: commodity.id,
+              Consts.COMMODITY_NAME: commodity.name,
+              Consts.PO_NUMBER: qcHeaderDetails?.poNo,
+              Consts.SEAL_NUMBER: qcHeaderDetails?.sealNo,
+            });
       } else {
-        Get.to(() => PurchaseOrderDetailsScreen(
-            partner: partner,
-            carrier: carrier,
-            commodity: commodity,
-            qcHeaderDetails: qcHeaderDetails));
+        Get.to(
+            () => PurchaseOrderDetailsScreen(
+                partner: partner,
+                carrier: carrier,
+                commodity: commodity,
+                qcHeaderDetails: qcHeaderDetails),
+            arguments: {
+              Consts.SERVER_INSPECTION_ID: qcHeaderDetails?.id ?? 0,
+              Consts.PARTNER_ID: partner.id,
+              Consts.PARTNER_NAME: partner.name,
+              Consts.CARRIER_ID: carrier.id,
+              Consts.CARRIER_NAME: carrier.name,
+              Consts.COMMODITY_ID: commodity.id,
+              Consts.COMMODITY_NAME: commodity.name,
+              Consts.PO_NUMBER: qcHeaderDetails?.poNo,
+            });
       }
     } else {
       AppAlertDialog.validateAlerts(
@@ -152,5 +205,11 @@ class PurchaseOrderScreenController extends GetxController {
       }).toList();
     }
     update(['itemSkuList']);
+  }
+
+  void clearSearch() {
+    searchController.clear();
+    searchAndAssignOrder('');
+    unFocus();
   }
 }

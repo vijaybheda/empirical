@@ -263,17 +263,6 @@ class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
     }
   }
 
-  void _scrollToListSection(
-      SelectCarrierScreenController controller, String letter) {
-    int listTargetIndex = controller.filteredCarrierList
-        .indexWhere((carrier) => carrier.name!.startsWith(letter));
-    if (listTargetIndex != -1) {
-      // controller.scrollController.jumpTo(listTargetIndex * listHeight);
-      controller.scrollController
-          .jumpTo((listTargetIndex * controller.listHeight) + listTargetIndex);
-    }
-  }
-
   int _calculateIndexFromDragPosition(
       double dragPosition, int itemCount, BuildContext context) {
     double totalHeight = MediaQuery.of(context).size.height * .70;
@@ -295,6 +284,7 @@ class SearchCarrierWidget extends StatelessWidget {
           Get.find<SelectCarrierScreenController>()
               .searchAndAssignCarrier(value);
         },
+        controller: Get.find<SelectCarrierScreenController>().searchController,
         decoration: InputDecoration(
           hintText: AppStrings.searchCarrier,
           hintStyle: Get.textTheme.bodyLarge?.copyWith(
@@ -313,6 +303,15 @@ class SearchCarrierWidget extends StatelessWidget {
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(5),
             borderSide: BorderSide(color: AppColors.white),
+          ),
+          suffixIcon: IconButton(
+            onPressed: () {
+              Get.find<SelectCarrierScreenController>().clearSearch();
+            },
+            icon: Icon(
+              Icons.clear,
+              color: AppColors.white,
+            ),
           ),
         ),
       ),

@@ -15,6 +15,7 @@ import 'package:pverify/ui/purchase_order/purchase_order_screen.dart';
 import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/update_data_dialog.dart';
 import 'package:pverify/utils/utils.dart';
 
@@ -22,10 +23,20 @@ class CommodityIDScreenController extends GetxController {
   final PartnerItem partner;
   final CarrierItem carrier;
   final QCHeaderDetails? qcHeaderDetails;
-  CommodityIDScreenController(
-      {required this.partner,
-      required this.carrier,
-      required this.qcHeaderDetails});
+  late final int partnerID;
+  late final String partnerName;
+  late final String sealNumber;
+  late final String poNumber;
+  late final String carrierName;
+  late final int carrierID;
+  late final String cteType;
+
+  final TextEditingController searchController = TextEditingController();
+  CommodityIDScreenController({
+    required this.partner,
+    required this.carrier,
+    required this.qcHeaderDetails,
+  });
 
   final ScrollController scrollController = ScrollController();
   final AppStorage appStorage = AppStorage.instance;
@@ -41,6 +52,19 @@ class CommodityIDScreenController extends GetxController {
 
   @override
   void onInit() {
+    Map<String, dynamic>? args = Get.arguments;
+    if (args == null) {
+      Get.back();
+      throw Exception('Arguments not allowed');
+    }
+
+    partnerID = args[Consts.PARTNER_ID] ?? 0;
+    partnerName = args[Consts.PARTNER_NAME] ?? '';
+    sealNumber = args[Consts.SEAL_NUMBER] ?? '';
+    poNumber = args[Consts.PO_NUMBER] ?? '';
+    carrierName = args[Consts.CARRIER_NAME] ?? '';
+    carrierID = args[Consts.CARRIER_ID] ?? 0;
+    cteType = args[Consts.CTEType] ?? '';
     super.onInit();
     assignInitialData();
   }
@@ -83,11 +107,14 @@ class CommodityIDScreenController extends GetxController {
     if (searchValue.isEmpty) {
       filteredCommodityList.addAll(commodityList);
     } else {
-      filteredCommodityList.value = commodityList
-          .where((element) => element.keywords!
-              .toLowerCase()
-              .contains(searchValue.toLowerCase()))
+      var items = commodityList
+          .where((element) =>
+              element.keywords != null &&
+              element.keywords!
+                  .toLowerCase()
+                  .contains(searchValue.toLowerCase()))
           .toList();
+      filteredCommodityList.addAll(items);
     }
     update(['commodityList']);
   }
@@ -118,11 +145,24 @@ class CommodityIDScreenController extends GetxController {
   }
 
   void navigateToPurchaseOrderScreen(CommodityItem commodity) {
-    Get.to(() => PurchaseOrderScreen(
-        partner: partner,
-        carrier: carrier,
-        qcHeaderDetails: qcHeaderDetails,
-        commodity: commodity));
+    Map<String, dynamic> passingData = {
+      Consts.PO_NUMBER: poNumber,
+      Consts.SEAL_NUMBER: sealNumber,
+      Consts.PARTNER_NAME: partnerName,
+      Consts.PARTNER_ID: partnerID,
+      Consts.CARRIER_NAME: carrierName,
+      Consts.CARRIER_ID: carrierID,
+      Consts.COMMODITY_ID: commodity.id,
+      Consts.COMMODITY_NAME: commodity.name,
+      Consts.PRODUCT_TRANSFER: qcHeaderDetails?.productTransfer ?? '',
+    };
+    Get.to(
+        () => PurchaseOrderScreen(
+            partner: partner,
+            carrier: carrier,
+            qcHeaderDetails: qcHeaderDetails,
+            commodity: commodity),
+        arguments: passingData);
   }
 
   Future<void> onDownloadTap() async {
@@ -229,6 +269,12 @@ class CommodityIDScreenController extends GetxController {
         }*/
       }
     }
+  }
+
+  void clearSearch() {
+    searchController.clear();
+    searchAndAssignCommodity('');
+    unFocus();
   }
 
   /*Future<Map<String, dynamic>?> requestUploadMobileFiles(
