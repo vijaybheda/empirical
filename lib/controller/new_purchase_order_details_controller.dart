@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/utils/const.dart';
 
 class NewPurchaseOrderDetailsController extends GetxController {
   final PartnerItem partner;
@@ -31,15 +32,15 @@ class NewPurchaseOrderDetailsController extends GetxController {
       Get.back();
       throw Exception('Arguments not allowed');
     }
-    serverInspectionID = args?['serverInspectionID'] ?? -1;
-    partnerName = args?['partnerName'] ?? '';
-    partnerID = args?['partnerID'] ?? 0;
-    carrierName = args?['carrierName'] ?? '';
-    carrierID = args?['carrierID'] ?? 0;
-    commodityID = args?['commodityID'] ?? 0;
-    commodityName = args?['commodityName'] ?? '';
-    poNumber = args?['poNumber'] ?? '';
-    sealNumber = args?['sealNumber'] ?? '';
+    serverInspectionID = args[Consts.SERVER_INSPECTION_ID] ?? -1;
+    partnerName = args[Consts.PARTNER_NAME] ?? '';
+    partnerID = args[Consts.PARTNER_ID] ?? 0;
+    carrierName = args[Consts.CARRIER_NAME] ?? '';
+    carrierID = args[Consts.CARRIER_ID] ?? 0;
+    commodityID = args[Consts.COMMODITY_ID] ?? 0;
+    commodityName = args[Consts.COMMODITY_NAME] ?? '';
+    poNumber = args[Consts.PO_NUMBER] ?? '';
+    sealNumber = args[Consts.SEAL_NUMBER] ?? '';
     super.onInit();
   }
 }

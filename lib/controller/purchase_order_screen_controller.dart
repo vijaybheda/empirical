@@ -4,9 +4,9 @@ import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/item_sku_data.dart';
-import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/qc_header_details.dart';
+import 'package:pverify/models/user_data.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
@@ -73,12 +73,12 @@ class PurchaseOrderScreenController extends GetxController {
   }
 
   Future<void> assignInitialData() async {
-    LoginData? loginData = appStorage.getLoginData();
+    UserData? userData = appStorage.getUserData();
 
-    if (loginData != null) {
+    if (userData != null) {
       if (filteredItemSkuList.isEmpty) {
-        int enterpriseId = await dao
-            .getEnterpriseIdByUserId(loginData.userName!.toLowerCase());
+        int enterpriseId =
+            await dao.getEnterpriseIdByUserId(userData.userName!.toLowerCase());
         // TODO:
         List<FinishedGoodsItemSKU>? _filteredItemSkuList =
             await dao.getFinishedGoodItemSkuFromTable(
@@ -86,8 +86,8 @@ class PurchaseOrderScreenController extends GetxController {
           enterpriseId,
           commodity.id!,
           commodity.name!,
-          loginData.supplierId!,
-          loginData.headquarterSupplierId!,
+          userData.supplierId!,
+          userData.headquarterSupplierId!,
           partner.name!,
         );
 
@@ -138,17 +138,16 @@ class PurchaseOrderScreenController extends GetxController {
     CarrierItem carrier,
     CommodityItem commodity,
   ) async {
-    LoginData? loginData = appStorage.getLoginData();
+    UserData? userData = appStorage.getUserData();
 
-    if (loginData == null) {
+    if (userData == null) {
       return;
     }
 
     int userId =
-        await dao.getHeadquarterIdByUserId(loginData.userName!.toLowerCase());
+        await dao.getHeadquarterIdByUserId(userData.userName!.toLowerCase());
 
-    if (appStorage.selectedItemSKUList != null &&
-        (appStorage.selectedItemSKUList ?? []).isNotEmpty) {
+    if (appStorage.selectedItemSKUList.isNotEmpty) {
       if (userId == 4180) {
         Get.to(
             () => NewPurchaseOrderDetailsScreen(

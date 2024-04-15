@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/enumeration.dart';
 import 'package:pverify/utils/images.dart';
 
@@ -22,12 +23,12 @@ class ScorecardScreenController extends GetxController {
       throw Exception('Arguments not allowed');
     }
 
-    scorecardName = args?['scorecardName'] ?? '';
-    scorecardID = args?['scorecardID'] ?? 0;
-    redPercentage = args?['redPercentage'] ?? 0.0;
-    greenPercentage = args?['greenPercentage'] ?? 0.0;
-    yellowPercentage = args?['yellowPercentage'] ?? 0.0;
-    orangePercentage = args?['orangePercentage'] ?? 0.0;
+    scorecardName = args[Consts.SCORECARD_NAME] ?? '';
+    scorecardID = args[Consts.SCORECARD_ID] ?? 0;
+    redPercentage = args[Consts.REDPERCENTAGE] ?? 0.0;
+    greenPercentage = args[Consts.GREENPERCENTAGE] ?? 0.0;
+    yellowPercentage = args[Consts.YELLOWPERCENTAGE] ?? 0.0;
+    orangePercentage = args[Consts.ORANGEPERCENTAGE] ?? 0.0;
 
     super.onInit();
   }

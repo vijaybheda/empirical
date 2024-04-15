@@ -1,5 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:pverify/models/inspection.dart';
+import 'package:pverify/models/overridden_result_item.dart';
+import 'package:pverify/models/partner_item_sku_inspections.dart';
 import 'package:pverify/models/purchase_order_item.dart';
+import 'package:pverify/models/quality_control_item.dart';
+import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/app_strings.dart';
 
 class PurchaseOrderListViewItem extends StatefulWidget {
   const PurchaseOrderListViewItem({
@@ -8,10 +18,19 @@ class PurchaseOrderListViewItem extends StatefulWidget {
     required this.infoTap,
     required this.inspectTap,
     required this.onTapEdit,
+    required this.partnerID,
+    required this.position,
+    required this.productTransfer,
   });
   final Function()? infoTap;
   final Function()? inspectTap;
-  final Function()? onTapEdit;
+  final Function(
+    Inspection? inspection,
+    PartnerItemSKUInspections? partnerItemSKU,
+  )? onTapEdit;
+  final int partnerID;
+  final int position;
+  final String productTransfer;
 
   final PurchaseOrderItem goodsItem;
 
@@ -28,9 +47,17 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
   late TextEditingController qtyShippedController;
   late TextEditingController packDateController;
 
+  PartnerItemSKUInspections? partnerItemSKU;
+  int? inspectionId;
+  final ApplicationDao dao = ApplicationDao();
+  final AppStorage appStorage = AppStorage.instance;
   bool isComplete = false;
 
   bool isPartialComplete = false;
+
+  FocusNode qtyRejectedFocusNode = FocusNode();
+
+  Inspection? inspection;
 
   @override
   void initState() {
@@ -38,7 +65,20 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
     qtyRejectedController = TextEditingController();
     qtyShippedController = TextEditingController();
     packDateController = TextEditingController();
+    asyncTask();
     super.initState();
+  }
+
+  Future<void> getSpecifications() async {
+    if (widget.productTransfer == "Transfer") {
+      appStorage.specificationByItemSKUList =
+          await dao.getSpecificationByItemSKUFromTableForTransfer(
+              widget.partnerID, widget.goodsItem.sku!, widget.goodsItem.sku!);
+    } else {
+      appStorage.specificationByItemSKUList =
+          await dao.getSpecificationByItemSKUFromTable(
+              widget.partnerID, widget.goodsItem.sku!, widget.goodsItem.sku!);
+    }
   }
 
   @override
@@ -120,7 +160,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
         ),
         const Spacer(),
         IconButton(
-          icon: Icon(
+          icon: const Icon(
             // widget.goodsItem.isCompleted
             // Random().nextBool()
             true ? Icons.check_circle_outline : Icons.play_circle_outline,
@@ -162,7 +202,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           child: RichText(
             text: TextSpan(
               children: [
-                TextSpan(
+                const TextSpan(
                   text: 'Lot No. ',
                   // style: style.copyWith(color: Colors.black87),
                 ),
@@ -183,7 +223,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           child: RichText(
             text: TextSpan(
               children: [
-                TextSpan(
+                const TextSpan(
                   text: 'Pack Date ',
                   // style: style.copyWith(color: Colors.black87),
                 ),
@@ -217,7 +257,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
                                 true ? Colors.green : Colors.redAccent[700],
                             borderRadius: BorderRadius.circular(32),
                           ),
-                          child: Text(
+                          child: const Text(
                             // widget.goodsItem.status ? 'Accept' : 'Reject',
                             'Accept',
                             // style: style,
@@ -229,7 +269,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
                         IconButton(
                           onPressed: () {
                             if (widget.onTapEdit != null) {
-                              widget.onTapEdit!();
+                              widget.onTapEdit!(inspection, partnerItemSKU);
                             }
                           },
                           icon: const Icon(
@@ -256,7 +296,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           child: RichText(
             text: TextSpan(
               children: [
-                TextSpan(
+                const TextSpan(
                   text: 'Qty Shipped * ',
                   // style: style.copyWith(color: Colors.black87),
                 ),
@@ -277,12 +317,12 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           child: RichText(
             text: TextSpan(
               children: [
-                TextSpan(
+                const TextSpan(
                   text: 'Qty Rejected * ',
                   // style: style.copyWith(color: Colors.black87),
                 ),
                 if (widget.goodsItem.packDate != null)
-                  TextSpan(
+                  const TextSpan(
                     text: '200',
                     // style: style.copyWith(
                     //   color: Colors.grey[500],
@@ -295,6 +335,213 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
         ),
       ],
     );
+  }
+
+  Future<void> asyncTask() async {
+    partnerItemSKU = await dao.findPartnerItemSKU(
+        widget.partnerID,
+        widget.goodsItem.sku!,
+        appStorage.selectedItemSKUList.elementAt(widget.position).uniqueItemId);
+
+    await getSpecifications();
+    if (partnerItemSKU == null) {
+      return;
+    }
+    if (partnerItemSKU?.inspectionId == null) {
+      return;
+    }
+    if (partnerItemSKU != null) {
+      int? inspectionId = partnerItemSKU?.inspectionId;
+
+      String? lotNo = await dao.getLotNoFromQCDetails(inspectionId!);
+      if (lotNo != null) {
+        appStorage.selectedItemSKUList[widget.position].lotNo = lotNo;
+        await dao.updateLotNoPartnerItemSKU(inspectionId, lotNo);
+        lotNumberController.text = lotNo;
+      }
+
+      String? dateType = await dao.getDateTypeFromQCDetails(inspectionId);
+
+      if (dateType != null) {
+        appStorage.selectedItemSKUList[widget.position].dateType = dateType;
+
+        String dateTypeDesc = "Pack Date";
+
+        switch (dateType) {
+          case "11":
+            dateTypeDesc = "Production Date";
+            break;
+          case "12":
+            dateTypeDesc = "Due Date";
+            break;
+          case "13":
+            dateTypeDesc = "Pack Date";
+            break;
+          case "15":
+            dateTypeDesc = "Best Before Date";
+            break;
+          case "16":
+            dateTypeDesc = "Sell By Date";
+            break;
+          case "17":
+            dateTypeDesc = "Expiration Date";
+            break;
+        }
+
+        // txtpackDateType.text = dateTypeDesc;
+      }
+
+      int time = await dao.getPackDateFromQCDetails(inspectionId);
+      if (time != 0) {
+        DateTime date = DateTime.fromMillisecondsSinceEpoch(time);
+
+        String formattedDateString = DateFormat('MM-dd-yyyy').format(date);
+
+        appStorage.selectedItemSKUList[widget.position].packDate =
+            formattedDateString;
+        await dao.updatePackdatePartnerItemSKU(
+            inspectionId, formattedDateString);
+        packDateController.text = formattedDateString;
+      }
+
+      inspection = await dao.findInspectionByID(partnerItemSKU!.inspectionId!);
+
+      isComplete = await dao.isInspectionComplete(
+          widget.partnerID, widget.goodsItem.sku!, partnerItemSKU!.uniqueId);
+      isPartialComplete = await dao.isInspectionPartialComplete(
+          widget.partnerID,
+          widget.goodsItem.sku!,
+          partnerItemSKU!.uniqueId.toString());
+
+      if (isComplete ||
+          (inspection != null && (inspection?.complete ?? false))) {
+        // TODO: implement below
+        // inspectButton.icon = const Icon(Icons.check);
+      } else if (isPartialComplete) {
+        // TODO: implement below
+        // inspectButton.icon = const Icon(Icons.pause);
+      }
+
+      String inspectionResult = "";
+      if (inspection != null) {
+        inspectionResult = inspection!.result ?? '';
+
+        OverriddenResult? overriddenResult =
+            await dao.getOverriddenResult(inspection!.inspectionId!);
+
+        if (overriddenResult != null) {
+          inspectionResult = overriddenResult.overriddenResult!;
+          await dao.updateInspectionResult(
+              inspection!.inspectionId!, inspectionResult);
+        }
+        if (inspectionResult.isNotEmpty) {
+          // TODO: implement below
+          // resultButton.visible = true;
+          // editPencil.visible = true;
+
+          if (inspectionResult == "RJ" ||
+              inspectionResult == AppStrings.reject) {
+            // resultButton.color = Colors.red;
+            // resultButton.text = AppStrings.reject;
+            // layoutQuantityRejected.visible = true;
+
+            QualityControlItem? qualityControlItems = await dao
+                .findQualityControlDetails(partnerItemSKU!.inspectionId!);
+
+            if (qualityControlItems != null) {
+              qtyShippedController.text =
+                  qualityControlItems.qtyShipped.toString();
+              if (qualityControlItems.qtyRejected == 0) {
+                if (overriddenResult != null &&
+                    (overriddenResult.overriddenResult == "RJ" ||
+                        overriddenResult.overriddenResult == "Reject")) {
+                  qtyRejectedController.text = '0';
+                } else {
+                  qtyRejectedController.text =
+                      qualityControlItems.qtyShipped.toString();
+                }
+              } else {
+                qtyRejectedController.text =
+                    qualityControlItems.qtyRejected.toString();
+              }
+              int qtyRejected = int.parse(qtyRejectedController.text);
+              int qtyReceived = qualityControlItems.qtyShipped! - qtyRejected;
+
+              await dao.updateQuantityRejected(
+                  inspection!.inspectionId!, qtyRejected, qtyReceived);
+            }
+
+            qtyRejectedController.selection = TextSelection.fromPosition(
+                TextPosition(offset: qtyRejectedController.text.length));
+
+            qtyRejectedController.addListener(() {
+              if (!qtyRejectedFocusNode.hasFocus) {
+                String tempQty = qtyRejectedController.text;
+
+                if (tempQty.isNotEmpty) {
+                  int qtyRejected = int.parse(tempQty);
+                  int qtyReceived = 0;
+                  if (qualityControlItems != null) {
+                    qtyReceived = qualityControlItems.qtyShipped! - qtyRejected;
+                  }
+                  dao.updateQuantityRejected(
+                      inspection!.inspectionId!, qtyRejected, qtyReceived);
+                } else {
+                  if (qualityControlItems != null) {
+                    dao.updateQuantityRejected(inspection!.inspectionId!, 0,
+                        qualityControlItems.qtyShipped!);
+                  }
+                }
+              }
+            });
+          } else if (inspectionResult == "AC" ||
+              inspectionResult == AppStrings.accept) {
+            // resultButton.color = Colors.green;
+            // resultButton.text = context.getString(R.string.accept);
+            // layoutQuantityRejected.visible = false;
+            // TODO: setting up the color
+          } else if (inspectionResult == "A-") {
+            // TODO: setting up the color
+            // resultButton.color = Colors.yellow;
+            // resultButton.text = "A-";
+            // layoutQuantityRejected.visible = false;
+          } else if (inspectionResult == "AW" ||
+              inspectionResult.toLowerCase() == AppStrings.acceptCondition) {
+            // TODO: setting up the color
+            // resultButton.color = Colors.orange;
+            // resultButton.text = "AW";
+            // layoutQuantityRejected.visible = false;
+          }
+        }
+
+        String finalInspectionResult = inspectionResult;
+        // TODO: implement below
+        /*editPencil.onPressed = () {
+          // Assuming OverriddenResultActivity is a Flutter route
+          Get.to(() => const OverriddenResultScreen(), arguments: {
+            Consts.SERVER_INSPECTION_ID: inspection.inspectionId,
+            Consts.PARTNER_NAME: partnerName,
+            Consts.PARTNER_ID: partnerID,
+            Consts.CARRIER_NAME: carrierName,
+            Consts.CARRIER_ID: carrierID,
+            Consts.COMMODITY_NAME:
+                appStorage.selectedItemSKUList[widget.position].commodityName,
+            Consts.COMMODITY_ID:
+                appStorage.selectedItemSKUList[widget.position].commodityID,
+            Consts.INSPECTION_RESULT: finalInspectionResult,
+            Consts.ITEM_SKU: widget.goodsItem.sku,
+            Consts.PO_NUMBER: poNumber,
+            Consts.SPECIFICATION_NUMBER: specificationNumber,
+            Consts.SPECIFICATION_VERSION: specificationVersion,
+            Consts.SPECIFICATION_NAME: specificationName,
+            Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
+            Consts.PRODUCT_TRANSFER: productTransfer,
+          });
+        };*/
+      }
+    }
+
+    await getSpecifications();
   }
 }
 

@@ -1,8 +1,7 @@
 import 'dart:developer';
 
 import 'package:get/get.dart';
-import 'package:pverify/models/login_data.dart';
-import 'package:pverify/models/user.dart';
+import 'package:pverify/models/user_data.dart';
 import 'package:pverify/services/custom_exception/custom_exception.dart';
 import 'package:pverify/services/network_request_service/network_request_base_class.dart';
 import 'package:pverify/utils/app_storage.dart';
@@ -11,12 +10,12 @@ class UserService extends BaseRequestService {
   late int phoneNumber;
   String hashData = "";
 
-  Future<User> getUser() async {
+  Future<UserData> getUser() async {
     try {
       final Response<Map<String, dynamic>> result = await get("/me");
       log('result is ${result.body}');
       final Map<String, dynamic> data = await errorHandler(result);
-      User currentUser = User.fromJson(data['data']);
+      UserData currentUser = UserData.fromJson(data['data']);
       AppStorage.instance.setUserData(currentUser);
       return currentUser;
     } catch (e) {
@@ -32,7 +31,7 @@ class UserService extends BaseRequestService {
     }
   }
 
-  Future<LoginData?> checkLogin(String requestUrl, String mUsername,
+  Future<UserData?> checkLogin(String requestUrl, String mUsername,
       String mPassword, bool isLoginButton) async {
     try {
       final Response result = await getCallResponse(
@@ -45,8 +44,12 @@ class UserService extends BaseRequestService {
       log('result is ${result.body}');
       final Map<String, dynamic> data =
           await errorHandlerDynamicResponse(result);
-      LoginData currentUser = LoginData.fromJson(data);
-      await AppStorage.instance.setLoginData(currentUser);
+      UserData currentUser = UserData.fromJson(data);
+      currentUser = currentUser.copyWith(
+        userName: data['userName'],
+        language: data['language'],
+      );
+      await AppStorage.instance.setUserData(currentUser);
       await AppStorage.instance.setHeaderMap({
         'username': mUsername,
         'password': mPassword,

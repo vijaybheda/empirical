@@ -7,8 +7,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/controller/json_file_operations.dart';
-import 'package:pverify/models/login_data.dart';
-import 'package:pverify/models/user.dart';
+import 'package:pverify/models/user_data.dart';
 import 'package:pverify/models/user_offline.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/services/network_request_service/api_urls.dart';
@@ -25,7 +24,7 @@ import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/utils.dart';
 
 class AuthController extends GetxController {
-  User? userModel;
+  UserData? userModel;
   final emailTextController = TextEditingController().obs;
   final passwordTextController = TextEditingController().obs;
   bool socialButtonVisible = true;
@@ -55,7 +54,7 @@ class AuthController extends GetxController {
   }
 
   bool isLoggedIn() {
-    User? userData = AppStorage.instance.getUserData();
+    UserData? userData = AppStorage.instance.getUserData();
 
     return userData != null;
   }
@@ -66,13 +65,13 @@ class AuthController extends GetxController {
   }
 
   // loginUser
-  Future<LoginData?> loginUser(
+  Future<UserData?> loginUser(
       {required bool isLoginButton, required BuildContext context}) async {
     try {
       String mUsername = emailTextController.value.text.trim();
       String mPassword = passwordTextController.value.text;
       if (await Utils.hasInternetConnection()) {
-        LoginData? userData = await UserService()
+        UserData? userData = await UserService()
             .checkLogin(loginRequestUrl, mUsername, mPassword, isLoginButton);
 
         if (userData != null) {
@@ -116,7 +115,7 @@ class AuthController extends GetxController {
                   await persistUserName();
 
                   if (isLoginButton) {
-                    LoginData? userData = appStorage.getLoginData();
+                    UserData? userData = appStorage.getUserData();
                     if ((userData?.subscriptionExpired ?? true) ||
                         userData?.status == 3) {
                       await Utils.hideLoadingDialog();
@@ -193,20 +192,19 @@ class AuthController extends GetxController {
   String get loginRequestUrl => ApiUrls.serverUrl + ApiUrls.LOGIN_REQUEST;
 
   Future<void> persistUserName() async {
-    LoginData? loginData = appStorage.getLoginData();
-    if (loginData != null) {
+    UserData? userData = appStorage.getUserData();
+    if (userData != null) {
       int? userId;
 
       try {
-        User user = User(
-          id: 0,
-          name: loginData.userName,
-          timestamp: DateTime.now().millisecondsSinceEpoch,
-          language: loginData.language,
+        userData = userData.copyWith(
+          id: userData.id ?? 0,
+          loginTime: DateTime.now().millisecondsSinceEpoch,
         );
-        userId = await dao.createOrUpdateUser(user);
-        user = user.copyWith(id: userId);
-        await appStorage.setUserData(user);
+
+        userId = await dao.createOrUpdateUser(userData);
+        userData = userData.copyWith(id: userId);
+        await appStorage.setUserData(userData);
       } catch (e) {
         return;
       }

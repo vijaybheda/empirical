@@ -5,7 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/purchase_order_details_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
+import 'package:pverify/models/inspection.dart';
+import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/partner_item_sku_inspections.dart';
 import 'package:pverify/models/purchase_order_item.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/ui/components/bottom_custom_button_view.dart';
@@ -148,12 +151,23 @@ class PurchaseOrderDetailsScreen
               inspectTap: () {
                 // Implement your logic
               },
-              onTapEdit: () {
-                // Implement your logic
+              onTapEdit: (Inspection? inspection,
+                  PartnerItemSKUInspections? partnerItemSKU) async {
+                FinishedGoodsItemSKU? finishedGoodsItemSKU = controller
+                    .appStorage.selectedItemSKUList
+                    .elementAtOrNull(index);
+                if (finishedGoodsItemSKU == null || inspection == null) {
+                  return;
+                }
+                await controller.onEditIconTap(goodsItem, finishedGoodsItemSKU,
+                    inspection, partnerItemSKU);
               },
-              infoTap: () {
-                // Implement your logic
+              infoTap: () async {
+                await controller.onInformationIconTap(goodsItem);
               },
+              partnerID: partner.id!,
+              position: index,
+              productTransfer: controller.productTransfer ?? '',
             ),
           ),
         );

@@ -6,6 +6,7 @@ import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/inspection_sample.dart';
 import 'package:pverify/models/item_sku_data.dart';
+import 'package:pverify/models/overridden_result_item.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/partner_item_sku_inspections.dart';
 import 'package:pverify/models/purchase_order_item.dart';
@@ -14,11 +15,13 @@ import 'package:pverify/models/quality_control_item.dart';
 import 'package:pverify/models/specification_analytical_request_item.dart';
 import 'package:pverify/models/specification_grade_tolerance_array.dart';
 import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/ui/overridden_result/overridden_result_screen.dart';
 import 'package:pverify/ui/qc_short_form/qc_details_short_form_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
+import 'package:pverify/utils/dialogs/custom_listview_dialog.dart';
 import 'package:pverify/utils/utils.dart';
 
 class PurchaseOrderDetailsController extends GetxController {
@@ -29,19 +32,30 @@ class PurchaseOrderDetailsController extends GetxController {
 
   final TextEditingController searchController = TextEditingController();
 
-  late final int? serverInspectionID;
-  late final String? partnerName;
-  late final int? partnerID;
-  late final String? carrierName;
-  late final int? carrierID;
-  late final int? commodityID;
-  late final String? commodityName;
-  late final String? poNumber;
-  late final String? sealNumber;
-  late final String? specificationNumber;
-  late final String? specificationVersion;
-  late final String? specificationName;
-  late final String? specificationTypeName;
+  int? serverInspectionID;
+  String? partnerName;
+  int? partnerID;
+  String? carrierName;
+  int? carrierID;
+  int? commodityID;
+  String? commodityName;
+  String? poNumber;
+  String? sealNumber;
+  String? specificationNumber;
+  String? specificationVersion;
+  String? specificationName;
+  String? specificationTypeName;
+
+  String? currentLotNumber,
+      currentItemSKU,
+      currentPackDate,
+      currentLotSize,
+      currentItemSKUName,
+      itemUniqueId,
+      callerActivity,
+      productTransfer;
+  int? itemSkuId;
+  bool isGTINSamePartner = true;
 
   PurchaseOrderDetailsController({
     required this.partner,
@@ -65,6 +79,22 @@ class PurchaseOrderDetailsController extends GetxController {
     carrierID = args[Consts.CARRIER_ID] ?? 0;
     poNumber = args[Consts.PO_NUMBER] ?? '';
     sealNumber = args[Consts.SEAL_NUMBER] ?? '';
+    currentLotNumber = args[Consts.Lot_No] ?? '';
+    currentItemSKU = args[Consts.ITEM_SKU] ?? '';
+    currentPackDate = args[Consts.PACK_DATE] ?? '';
+    currentLotSize = args[Consts.LOT_SIZE] ?? '';
+    currentItemSKUName = args[Consts.ITEM_SKU_NAME] ?? '';
+    specificationNumber = args[Consts.SPECIFICATION_NUMBER];
+    specificationVersion = args[Consts.SPECIFICATION_VERSION];
+    specificationName = args[Consts.SPECIFICATION_NAME];
+    specificationTypeName = args[Consts.SPECIFICATION_TYPE_NAME];
+    commodityID = args[Consts.COMMODITY_ID] ?? 0;
+    commodityName = args[Consts.COMMODITY_NAME] ?? '';
+    itemSkuId = args[Consts.ITEM_SKU_ID] ?? 0;
+    itemUniqueId = args[Consts.ITEM_UNIQUE_ID] ?? '';
+    callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
+    isGTINSamePartner = args[Consts.IS_GTIN_SAME_PARTNER] ?? true;
+    productTransfer = args[Consts.PRODUCT_TRANSFER] ?? '';
 
     itemSkuList.assignAll(getPurchaseOrderData());
     super.onInit();
@@ -349,5 +379,231 @@ class PurchaseOrderDetailsController extends GetxController {
               purchaseOrderItem: goodsItem,
             ),
         arguments: passingData);
+  }
+
+  Future<void> onEditTap(PurchaseOrderItem goodsItem, int index) async {
+    /*PartnerItemSKUInspections? partnerItemSKU = await dao.findPartnerItemSKU(
+        partnerID,
+        dataList.get(position).getSku(),
+        appStorage.selectedItemSKUList.get(position).getUniqueItemId());
+
+    Inspection? inspection =
+        await dao.findInspectionByID(partnerItemSKU.getInspectionId());
+
+    Map<String, dynamic> passingData = {
+      Consts.SERVER_INSPECTION_ID: inspection.inspection_id,
+      Consts.PARTNER_NAME: partnerName,
+      Consts.PARTNER_ID: partnerID,
+      Consts.CARRIER_NAME: carrierName,
+      Consts.CARRIER_ID: carrierID,
+      Consts.COMMODITY_NAME:
+          appStorage.selectedItemSKUList[position].commodityName,
+      Consts.COMMODITY_ID: appStorage.selectedItemSKUList[position].commodityID,
+      Consts.INSPECTION_RESULT: finalInspectionResult,
+      Consts.ITEM_SKU: dataList[position].sku,
+      Consts.PO_NUMBER: po_number,
+    };
+
+    if (productTransfer == "Transfer") {
+      appStorage.specificationByItemSKUList =
+          await dao.getSpecificationByItemSKUFromTableForTransfer(
+              partnerID, dataList[position].sku, dataList[position].sku);
+    } else {
+      appStorage.specificationByItemSKUList =
+          await dao.getSpecificationByItemSKUFromTable(
+              partnerID, dataList[position].sku, dataList[position].sku);
+    }
+
+    if (appStorage.specificationByItemSKUList != null &&
+        appStorage.specificationByItemSKUList!.isNotEmpty) {
+      specificationNumber =
+          appStorage.specificationByItemSKUList!.first.specificationNumber;
+      specificationVersion =
+          appStorage.specificationByItemSKUList!.first.specificationVersion;
+      specificationName =
+          appStorage.specificationByItemSKUList!.first.specificationName;
+      specificationTypeName =
+          appStorage.specificationByItemSKUList!.first.specificationTypeName;
+    }
+
+    passingData.addAll({
+      Consts.SPECIFICATION_NUMBER: specificationNumber,
+      Consts.SPECIFICATION_VERSION: specificationVersion,
+      Consts.SPECIFICATION_NAME: specificationName,
+      Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
+      Consts.PRODUCT_TRANSFER: productTransfer,
+    });
+
+    await Get.to(
+        () => QCDetailsShortFormScreen(
+              partner: partner,
+              carrier: carrier,
+              commodity: commodity,
+              qcHeaderDetails: qcHeaderDetails,
+              purchaseOrderItem: goodsItem,
+            ),
+        arguments: passingData);*/
+  }
+
+  Future onInformationIconTap(PurchaseOrderItem goodsItem) async {
+    if (productTransfer == "Transfer") {
+      appStorage.specificationByItemSKUList =
+          await dao.getSpecificationByItemSKUFromTableForTransfer(
+              partnerID!, goodsItem.sku!, goodsItem.sku!);
+    } else {
+      appStorage.specificationByItemSKUList =
+          await dao.getSpecificationByItemSKUFromTable(
+              partnerID!, goodsItem.sku!, goodsItem.sku!);
+    }
+
+    if (appStorage.specificationByItemSKUList != null &&
+        (appStorage.specificationByItemSKUList ?? []).isNotEmpty) {
+      specificationNumber =
+          appStorage.specificationByItemSKUList!.first.specificationNumber;
+      specificationVersion =
+          appStorage.specificationByItemSKUList!.first.specificationVersion;
+      specificationName =
+          appStorage.specificationByItemSKUList!.first.specificationName;
+      specificationTypeName =
+          appStorage.specificationByItemSKUList!.first.specificationTypeName;
+    }
+
+    await Utils().offlineLoadCommodityVarietyDocuments(
+        specificationNumber ?? '', specificationVersion ?? '');
+
+    CustomListViewDialog customDialog = CustomListViewDialog(
+      Get.context!,
+      (selectedValue) {},
+    );
+    customDialog.setCanceledOnTouchOutside(false);
+    customDialog.show();
+  }
+
+  Future onEditIconTap(
+      PurchaseOrderItem goodsItem,
+      FinishedGoodsItemSKU finishedGoodsItemSKU,
+      Inspection inspection,
+      PartnerItemSKUInspections? partnerItemSKU) async {
+    bool isComplete = await dao.isInspectionComplete(
+        partner.id!, goodsItem.sku!, finishedGoodsItemSKU.id.toString());
+    bool ispartialComplete = await dao.isInspectionPartialComplete(
+        partner.id!, goodsItem.sku!, finishedGoodsItemSKU.id.toString());
+
+    if (productTransfer == "Transfer") {
+      appStorage.specificationByItemSKUList =
+          await dao.getSpecificationByItemSKUFromTableForTransfer(
+              partnerID!, goodsItem.sku!, goodsItem.sku!);
+    } else {
+      appStorage.specificationByItemSKUList =
+          await dao.getSpecificationByItemSKUFromTable(
+              partnerID!, goodsItem.sku!, goodsItem.sku!);
+    }
+
+    if (appStorage.specificationByItemSKUList != null &&
+        (appStorage.specificationByItemSKUList ?? []).isNotEmpty) {
+      specificationNumber =
+          appStorage.specificationByItemSKUList!.first.specificationNumber;
+      specificationVersion =
+          appStorage.specificationByItemSKUList!.first.specificationVersion;
+      specificationName =
+          appStorage.specificationByItemSKUList!.first.specificationName;
+      specificationTypeName =
+          appStorage.specificationByItemSKUList!.first.specificationTypeName;
+    }
+
+    String? finalInspectionResult =
+        await getFinalInspectionResult(inspection, partnerItemSKU);
+
+    Map<String, dynamic> passingData = {
+      Consts.SERVER_INSPECTION_ID: inspection.inspectionId,
+      Consts.PARTNER_NAME: partnerName,
+      Consts.PARTNER_ID: partnerID,
+      Consts.CARRIER_NAME: carrierName,
+      Consts.CARRIER_ID: carrierID,
+      Consts.COMMODITY_NAME: finishedGoodsItemSKU.commodityName,
+      Consts.COMMODITY_ID: finishedGoodsItemSKU.commodityID,
+      Consts.INSPECTION_RESULT: finalInspectionResult,
+      Consts.ITEM_SKU: goodsItem.sku,
+      Consts.PO_NUMBER: poNumber,
+      Consts.SPECIFICATION_NUMBER: specificationNumber,
+      Consts.SPECIFICATION_VERSION: specificationVersion,
+      Consts.SPECIFICATION_NAME: specificationName,
+      Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
+      Consts.PRODUCT_TRANSFER: productTransfer,
+      Consts.CALLER_ACTIVITY: 'PurchaseOrderDetailsActivity',
+    };
+
+    Get.to(() => const OverriddenResultScreen(), arguments: passingData);
+  }
+
+  Future<String?> getFinalInspectionResult(
+      Inspection inspection, PartnerItemSKUInspections? partnerItemSKU) async {
+    String? inspectionResult;
+    inspectionResult = inspection.result ?? '';
+
+    OverriddenResult? overriddenResult =
+        await dao.getOverriddenResult(inspection.inspectionId!);
+
+    if (overriddenResult != null) {
+      inspectionResult = overriddenResult.overriddenResult;
+      await dao.updateInspectionResult(
+          inspection.inspectionId!, inspectionResult!);
+    }
+
+    if (overriddenResult != null) {
+      inspectionResult = overriddenResult.overriddenResult;
+      await dao.updateInspectionResult(
+          inspection.inspectionId!, inspectionResult!);
+    }
+
+    if (inspectionResult != null && inspectionResult.isNotEmpty) {
+      // Update UI to show result button and edit pencil
+      // This will depend on your actual UI implementation
+
+      if (inspectionResult == "RJ" || inspectionResult == "Reject") {
+        // Update UI to show reject state
+        // This will depend on your actual UI implementation
+
+        QualityControlItem? qualityControlItems =
+            await dao.findQualityControlDetails(partnerItemSKU!.inspectionId!);
+
+        if (qualityControlItems != null) {
+          int qtyShipped = qualityControlItems.qtyShipped ?? 0;
+          int qtyRejected = qualityControlItems.qtyRejected ?? 0;
+
+          if (qtyRejected == 0) {
+            if (overriddenResult != null &&
+                (overriddenResult.overriddenResult == "RJ" ||
+                    overriddenResult.overriddenResult == "Reject")) {
+              qtyRejected = 0;
+            } else {
+              qtyRejected = qtyShipped;
+            }
+          }
+
+          int qtyReceived = qtyShipped - qtyRejected;
+
+          await dao.updateQuantityRejected(
+              inspection.inspectionId!, qtyRejected, qtyReceived);
+        }
+
+        // Update UI to show quantity rejected
+        // This will depend on your actual UI implementation
+      } else if (inspectionResult == "AC" || inspectionResult == "Accept") {
+        // Update UI to show accept state
+        // This will depend on your actual UI implementation
+      } else if (inspectionResult == "A-") {
+        // Update UI to show A- state
+        // This will depend on your actual UI implementation
+      } else if (inspectionResult == "AW" ||
+          inspectionResult == "Accept Condition") {
+        // Update UI to show AW state
+        // This will depend on your actual UI implementation
+      }
+    }
+
+    String? finalInspectionResult = inspectionResult;
+
+    return finalInspectionResult;
   }
 }

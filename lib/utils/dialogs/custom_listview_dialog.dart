@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/models/exception_item.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/theme/colors.dart';
 
 class CustomListViewDialog {
   BuildContext context;
@@ -61,34 +63,86 @@ class CustomListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text('Exceptions',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          ),
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: exceptions.length,
-            itemBuilder: (context, index) {
-              final item = exceptions[index];
-              return ListTile(
-                onTap: () {
-                  Get.back(result: item);
-                },
-                title: Text(item.shortDescription ?? ''),
-                subtitle: Text(item.shortDescription ?? ''),
-              );
-            },
-          ),
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Close'),
-          ),
-        ],
+      backgroundColor: Theme.of(context).colorScheme.background,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
       ),
+      title: Text(
+        AppStrings.exceptions,
+        style: Get.textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: Get.height * 0.6,
+              width: Get.width,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: exceptions.length,
+                itemBuilder: (context, index) {
+                  final item = exceptions[index];
+                  return ListTile(
+                    onTap: () {
+                      Get.back(result: item);
+                    },
+                    title: Text(
+                      item.shortDescription ?? '',
+                      style: Get.textTheme.titleMedium
+                          ?.copyWith(color: Colors.white),
+                    ),
+                    subtitle: Text(
+                      item.shortDescription ?? '',
+                      style: Get.textTheme.titleSmall
+                          ?.copyWith(color: Colors.white),
+                    ),
+                  );
+                },
+              ),
+            )
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        Center(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Get.back();
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(AppColors.primary),
+                  foregroundColor: MaterialStateProperty.all(AppColors.primary),
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ),
+                  minimumSize: MaterialStateProperty.all(const Size(100, 40)),
+                ),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                  child: Text(
+                    AppStrings.close,
+                    style: Get.textTheme.labelLarge?.copyWith(
+                      color: AppColors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
     );
   }
 }

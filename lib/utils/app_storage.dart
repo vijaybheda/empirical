@@ -15,7 +15,6 @@ import 'package:pverify/models/grade_defect_detail_item.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/last_inspections_item.dart';
-import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/my_inspection_48hour_item.dart';
 import 'package:pverify/models/offline_commodity.dart';
 import 'package:pverify/models/partner_item.dart';
@@ -30,7 +29,7 @@ import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/models/to_location_item.dart';
 import 'package:pverify/models/trending_data_item.dart';
 import 'package:pverify/models/uom_item.dart';
-import 'package:pverify/models/user.dart';
+import 'package:pverify/models/user_data.dart';
 import 'package:pverify/models/variety_item.dart';
 
 class AppStorage extends GetxController {
@@ -87,7 +86,7 @@ class AppStorage extends GetxController {
 
   Future<void> appLogout() async {
     await storageBox().remove(StorageKey.kIsBoardWatched);
-    await storageBox().remove(StorageKey.kUser);
+    await storageBox().remove(StorageKey.kLoginUserData);
     await storageBox().remove(StorageKey.kNotificationSettings);
     return;
   }
@@ -100,27 +99,13 @@ class AppStorage extends GetxController {
     return await storageBox().write(key, value);
   }
 
-  User? getUserData() {
-    Map<String, dynamic>? loggedInUser = read(StorageKey.kUser);
-    if (loggedInUser == null) {
-      return null;
-    }
-    User user = User.fromMap(loggedInUser);
-    return user;
-  }
-
-  Future<void> setUserData(User user) async {
-    await write(StorageKey.kUser, user.toJson());
-    return;
-  }
-
-  LoginData? getLoginData() {
+  UserData? getUserData() {
     Map<String, dynamic>? loggedInUser = read(StorageKey.kLoginUserData);
     if (loggedInUser == null) {
       return null;
     }
-    LoginData loginData = LoginData.fromJson(loggedInUser);
-    return loginData;
+    UserData userData = UserData.fromJson(loggedInUser);
+    return userData;
   }
 
   Future<void> savePartnerList(List<PartnerItem> partnerList) {
@@ -333,8 +318,8 @@ class AppStorage extends GetxController {
     return specificationSupplierGTINList;
   }
 
-  Future<void> setLoginData(LoginData loginData) async {
-    await write(StorageKey.kLoginUserData, loginData.toJson());
+  Future<void> setUserData(UserData userData) async {
+    await write(StorageKey.kLoginUserData, userData.toJson());
     return;
   }
 
@@ -403,7 +388,6 @@ class AppStorage extends GetxController {
 class StorageKey {
   static const String kAppStorageKey = 'AppStorageKey';
 
-  static const String kUser = 'LoggedInUser';
   static const String kLoginUserData = 'LoginUserData';
   static const String kNotificationSettings = 'notificationSetting';
   static const String kAppLanguage = 'appLanguage';

@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/auth_controller.dart';
-import 'package:pverify/models/login_data.dart';
+import 'package:pverify/models/user_data.dart';
 import 'package:pverify/services/custom_exception/custom_exception.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/setup_platfrom/setup.dart';
@@ -145,21 +145,21 @@ class LoginScreen extends GetView<AuthController> {
     if (authController.isLoginFieldsValidate(context)) {
       try {
         Utils.showLoadingDialog();
-        LoginData? loginData = await authController.loginUser(
+        UserData? userData = await authController.loginUser(
             isLoginButton: isLoginButton, context: context);
-        if (loginData != null) {
+        if (userData != null) {
           if (!isLoginButton) {
             Utils.hideLoadingDialog();
-            await Get.to(() => SetupScreen(), arguments: loginData);
+            await Get.to(() => SetupScreen(), arguments: userData);
             return;
           }
-          if (loginData.subscriptionExpired ?? false) {
+          if (userData.subscriptionExpired ?? false) {
             // dismissible info dialog
             Utils.hideLoadingDialog();
 
             AppAlertDialog.validateAlerts(
                 context, AppStrings.error, AppStrings.subscriptionExpired);
-          } else if (loginData.status == 3) {
+          } else if (userData.status == 3) {
             Utils.hideLoadingDialog();
 
             AppAlertDialog.validateAlerts(

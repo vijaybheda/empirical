@@ -6,11 +6,11 @@ class SpecificationAnalyticalRequest {
   final String? comply;
   final String? comment;
   final String? analyticalName;
-  final int? specTypeofEntry;
+  final String? specTypeofEntry;
   final bool? isPictureRequired;
   final String? description;
-  final double? specMin;
-  final double? specMax;
+  final String? specMin;
+  final int? specMax;
   final String? inspectionResult;
 
   SpecificationAnalyticalRequest({
@@ -73,11 +73,11 @@ class SpecificationAnalyticalRequest {
     String? comply,
     String? comment,
     String? analyticalName,
-    int? specTypeofEntry,
+    String? specTypeofEntry,
     bool? isPictureRequired,
     String? description,
-    double? specMin,
-    double? specMax,
+    String? specMin,
+    int? specMax,
     String? inspectionResult,
   }) {
     return SpecificationAnalyticalRequest(

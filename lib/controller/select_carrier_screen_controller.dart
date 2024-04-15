@@ -8,6 +8,7 @@ import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/utils.dart';
 
 class SelectCarrierScreenController extends GetxController {
@@ -32,15 +33,15 @@ class SelectCarrierScreenController extends GetxController {
 
   @override
   void onInit() {
-    var args = Get.arguments;
+    Map? args = Get.arguments;
     if (args == null) {
       Get.back();
       throw Exception('Arguments not allowed');
     }
 
-    callerActivity = args?['callerActivity'] ?? '';
-    name = args?['name'] ?? '';
-    id = args?['id'] ?? 0;
+    callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
+    name = args[Consts.NAME] ?? '';
+    id = args[Consts.ID] ?? 0;
 
     super.onInit();
     assignInitialData();

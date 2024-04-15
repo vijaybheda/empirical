@@ -1,9 +1,9 @@
 import 'package:pverify/services/database/column_names.dart';
 
 class PartnerItemSKUInspections {
-  double? partnerId;
+  int? partnerId;
   String? itemSKU;
-  double? inspectionId;
+  int? inspectionId;
   String? lotNo;
   String? packDate;
   String? lotSize;
@@ -51,9 +51,9 @@ class PartnerItemSKUInspections {
 
   // copyWith
   PartnerItemSKUInspections copyWith({
-    double? partnerId,
+    int? partnerId,
     String? itemSKU,
-    double? inspectionId,
+    int? inspectionId,
     String? lotNo,
     String? packDate,
     String? lotSize,
