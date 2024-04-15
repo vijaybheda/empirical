@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:open_file/open_file.dart';
 import 'package:path/path.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/commodity_variety_data.dart';
@@ -15,6 +17,7 @@ import 'package:pverify/models/offline_commodity.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/severity_defect.dart';
 import 'package:pverify/models/uom_item.dart';
+import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/utils.dart';
@@ -552,5 +555,42 @@ class JsonFileOperations {
       return null;
     }
     return buf.toString();
+  }
+
+  void viewGradePdf() async {
+    String filename2 =
+        "GRADE_${_appStorage.commodityVarietyData!.commodityId}.pdf";
+    var storagePath = await Utils().getExternalStoragePath();
+    final Directory directory =
+        Directory("$storagePath${FileManString.commodityVarietyDocument}/");
+
+    String path2 = '${directory.path}/$filename2';
+    File fileLocation2 = File(path2);
+
+    if (await fileLocation2.exists()) {
+      final Uri data2 = Uri.file(path2);
+      await _grantPermissions(data2);
+      await openFile(path2);
+    } else {
+      AppSnackBar.error(message: AppStrings.noGradeDocument);
+    }
+  }
+
+  Future<void> _grantPermissions(Uri uri) async {
+    final permissions = <Permission>[Permission.storage];
+    for (final permission in permissions) {
+      if (await permission.status.isGranted) continue;
+      await permission.request();
+    }
+  }
+
+  Future<bool> openFile(String filePath) async {
+    File file = File(filePath);
+    if (await file.exists()) {
+      OpenResult resultType = await OpenFile.open(filePath);
+      return resultType.type == ResultType.done;
+    } else {
+      return false;
+    }
   }
 }

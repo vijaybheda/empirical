@@ -237,6 +237,8 @@ class AppStrings {
   static String noGradeTolarenceDataFound =
       'No Grade Tolerance found to calculate result.';
 
+  static String noGradeDocument = 'No Grade Document';
+
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';
 
