@@ -342,7 +342,7 @@ class AppStrings {
   static const String injuryIcon = 'I';
   static const String damageIcon = 'D';
   static const String seriousDamageIcon = 'SD';
-  static const String verySeriousDamageIcon = 'VSD';
+  static const String verySeriousDamageIcon = 'VS';
   static const String decayIcon = 'DK';
 
   static const String dtType = 'Type';

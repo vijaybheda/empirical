@@ -3,11 +3,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/photos_selection/photos_selection_controller.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -81,7 +79,9 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
                       fontWeight: FontWeight.w600,
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
-                  onClickAction: () {}),
+                  onClickAction: () {
+                controller.saveAction();
+              }),
               SizedBox(
                 width: 38.w,
               ),

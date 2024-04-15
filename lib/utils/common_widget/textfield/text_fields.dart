@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_this
+// ignore_for_file: prefer_const_constructors, unnecessary_this, must_be_immutable
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -100,6 +100,8 @@ class BoxTextFieldLogin extends StatelessWidget {
 }
 
 class BoxTextField1 extends StatelessWidget {
+  final Color? textColor;
+  final Color? hintColor;
   final TextEditingController controller;
   final bool obsecure;
   final bool readOnly;
@@ -116,6 +118,8 @@ class BoxTextField1 extends StatelessWidget {
 
   const BoxTextField1(
       {Key? key,
+      this.textColor = Colors.white,
+      this.hintColor = Colors.grey,
       required this.controller,
       this.keyboardType = TextInputType.text,
       this.obsecure = false,
@@ -152,9 +156,9 @@ class BoxTextField1 extends StatelessWidget {
               keyboardType: keyboardType,
               controller: controller,
               style: GoogleFonts.poppins(
-                  fontSize: 30.sp,
-                  fontWeight: FontWeight.normal,
-                  textStyle: TextStyle(color: AppColors.white)),
+                  fontSize: 32.sp,
+                  fontWeight: FontWeight.w400,
+                  textStyle: TextStyle(color: textColor)),
               cursorColor: Theme.of(context).textSelectionTheme.cursorColor,
               decoration: InputDecoration(
                 enabledBorder: UnderlineInputBorder(
@@ -165,9 +169,9 @@ class BoxTextField1 extends StatelessWidget {
                 ),
                 hintText: hintText,
                 hintStyle: GoogleFonts.poppins(
-                    fontSize: 30.sp,
-                    fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.hintColor)),
+                    fontSize: 32.sp,
+                    fontWeight: FontWeight.w400,
+                    textStyle: TextStyle(color: hintColor)),
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding:

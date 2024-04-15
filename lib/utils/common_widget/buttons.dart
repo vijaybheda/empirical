@@ -22,6 +22,7 @@ Widget customButton(
       decoration: BoxDecoration(
           color: backgroundColor, borderRadius: BorderRadius.circular(45.r)),
       child: Text(
+        textAlign: TextAlign.center,
         title,
         style: fontStyle,
       ),

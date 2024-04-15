@@ -185,21 +185,22 @@ class TrailerTempController extends GetxController {
   }
 
   void loadDataFromDB() async {
-    debugPrint('carrier ID ${carrier1?.id}');
-    debugPrint('orderNumber1 ${orderNumber1 ?? ''}');
-
-    List trailerTempMap = await dao.findTempTrailerTemperatureItems(
+    List? trailerTempMap = await dao.findTempTrailerTemperatureItems(
         carrier1!.id!.toInt(), orderNumber1.toString());
 
-    for (var element in trailerTempMap) {
-      addData(
-          element['Location'], element['Level'], element['value'].toString());
-    }
+    if(trailerTempMap!=null){
+        for (var element in trailerTempMap) {
+          addData(
+              element['Location'], element['Level'], element['value'].toString());
+        }
+     }
+
     TrailerTemperatureDetails? temperatureDetails =
-        await dao.findTempTrailerTemperatureDetails(21471);
+        await dao.findTempTrailerTemperatureDetails(
+            carrier1!.id!.toInt(), orderNumber1.toString());
 
     if (temperatureDetails != null) {
-      commentTextController.value.text = temperatureDetails.comments;
+      commentTextController.value.text = temperatureDetails.comments ?? '';
     }
   }
 
@@ -388,7 +389,7 @@ class TrailerTempController extends GetxController {
             pallet3_bottom_TextController.value.text;
       }
     }
-    //setDataUI();
+    setDataUI();
   }
 
   // LOGIN SCREEN VALIDATION'S
@@ -404,8 +405,8 @@ class TrailerTempController extends GetxController {
 
   bool allDataBlank() {
     if (((tailerTempData.nose?.pallet1?.top == '' || tailerTempData.nose?.pallet1?.top == null) &&
-            (tailerTempData.middle?.pallet1?.middle == '' ||
-                tailerTempData.middle?.pallet1?.middle == null) &&
+            (tailerTempData.nose?.pallet1?.middle == '' ||
+                tailerTempData.nose?.pallet1?.middle == null) &&
             (tailerTempData.nose?.pallet1?.bottom == '' ||
                 tailerTempData.nose?.pallet1?.bottom == null)) &&
         ((tailerTempData.nose?.pallet2?.top == '' || tailerTempData.nose?.pallet2?.top == null) &&
@@ -595,26 +596,28 @@ class TrailerTempController extends GetxController {
               : i == 4
                   ? 'M2'
                   : 'M3';
-          value = i == 0
+          value = i == 3
               ? tempData.tail?.pallet1?.middle ?? ''
-              : i == 1
+              : i == 4
                   ? tempData.tail?.pallet2?.middle ?? ''
                   : tempData.tail?.pallet3?.middle ?? '';
         } else {
           level = i == 6
               ? 'B1'
               : i == 7
-                  ? 'B1'
+                  ? 'B2'
                   : 'B3';
-          value = i == 0
+          value = i == 6
               ? tempData.tail?.pallet1?.bottom ?? ''
-              : i == 1
+              : i == 7
                   ? tempData.tail?.pallet2?.bottom ?? ''
                   : tempData.tail?.pallet3?.bottom ?? '';
         }
         saveOrUpdateTempDataFromLayouts('B', poNumber, partnerID, level, value);
       }
     }
+    await dao.createTempTrailerTemperatureDetails(partnerID.toString(), "", "",
+        "", commentTextController.value.text, poNumber);
   }
 
   void saveOrUpdateTempDataFromLayouts(String location, String poNumber,

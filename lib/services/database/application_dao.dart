@@ -1,4 +1,4 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers, use_rethrow_when_possible, prefer_adjacent_string_concatenation, prefer_interpolation_to_compose_strings, unused_local_variable, unnecessary_brace_in_string_interps
+// ignore_for_file: no_leading_underscores_for_local_identifiers, use_rethrow_when_possible, prefer_adjacent_string_concatenation, prefer_interpolation_to_compose_strings, unused_local_variable, unnecessary_brace_in_string_interps, non_constant_identifier_names, unnecessary_string_interpolations, unrelated_type_equality_checks
 
 import 'dart:collection';
 import 'dart:convert';
@@ -1861,19 +1861,17 @@ class ApplicationDao {
     return ttId ?? -1;
   }
 
-  Future<List> findTempTrailerTemperatureItems(
+  Future<List?> findTempTrailerTemperatureItems(
       int partnerId, String poNumber) async {
-    HashMap<String, TrailerTemperatureItem> trailerTempMap =
-        HashMap<String, TrailerTemperatureItem>();
-
     List data = [];
 
     final db = await dbProvider.database;
     try {
       List<Map<String, dynamic>> results = await db.query(
         DBTables.TEMP_TRAILER_TEMPERATURE,
-        where: 'po_number = ?',
-        whereArgs: [poNumber],
+        where:
+            'po_number = ? and ${TrailerTemperatureDetailsColumn.PARTNER_ID} = ?',
+        whereArgs: [poNumber, partnerId],
       );
 
       if (results.isNotEmpty) {
@@ -1887,49 +1885,65 @@ class ApplicationDao {
     } catch (e) {
       debugPrint(
           'Error has occurred while finding trailer temperature items: $e');
+      return null;
       // Handle the error
     }
 
     return data;
   }
 
-  Future<TrailerTemperatureDetails?> findTempTrailerTemperatureDetails(
-      int partnerID) async {
+  Future<TrailerTemperatureDetails> findTempTrailerTemperatureDetails(
+      int partnerID, String poNumber) async {
     TrailerTemperatureDetails trailerTempMap = TrailerTemperatureDetails();
     final db = await dbProvider.database;
-
     try {
-      List<Map<String, dynamic>> results = await db.query(
-        DBTables.TEMP_TRAILER_TEMPERATURE_DETAILS,
-        where: '${TempTrailerTemperatureDetailsColumn.ID} = ?',
-        whereArgs: [partnerID.toString()],
-      );
+      String query =
+          "SELECT * FROM ${DBTables.TEMP_TRAILER_TEMPERATURE_DETAILS} WHERE " +
+              "${TempTrailerTemperatureDetailsColumn.PARTNER_ID}=? and ${TempTrailerTemperatureDetailsColumn.PO_NUMBER}=?";
+      List<String> args = [partnerID.toString(), poNumber];
+      List<Map> result = await db.rawQuery(query, args);
 
-      if (results.isNotEmpty) {
-        for (Map<String, dynamic> row in results) {
-          trailerTempMap.tempOpen1 =
-              row[TempTrailerTemperatureDetailsColumn.TEMP_OPEN1];
-          trailerTempMap.tempOpen2 =
-              row[TempTrailerTemperatureDetailsColumn.TEMP_OPEN2];
-          trailerTempMap.tempOpen3 =
-              row[TempTrailerTemperatureDetailsColumn.TEMP_OPEN3];
-          trailerTempMap.comments =
-              row[TempTrailerTemperatureDetailsColumn.COMMENTS];
-          trailerTempMap.poNumber =
-              row[TempTrailerTemperatureDetailsColumn.PO_NUMBER];
-        }
+      if (result.isNotEmpty) {
+        trailerTempMap.tempOpen1 =
+            result[0]['${TempTrailerTemperatureDetailsColumn.TEMP_OPEN1}'];
+        trailerTempMap.tempOpen2 =
+            result[0]['${TempTrailerTemperatureDetailsColumn.TEMP_OPEN2}'];
+        trailerTempMap.tempOpen3 =
+            result[0]['${TempTrailerTemperatureDetailsColumn.TEMP_OPEN3}'];
+        trailerTempMap.comments =
+            result[0]['${TempTrailerTemperatureDetailsColumn.COMMENTS}'];
+        trailerTempMap.poNumber =
+            result[0]['${TempTrailerTemperatureDetailsColumn.PO_NUMBER}'];
       }
     } catch (e) {
       debugPrint(
-          'Error has occurred while finding trailer temperature items: $e');
-      // Handle the error
+          "Error has occurred while finding trailer temperature items: $e");
+      // rethrow e;
     }
 
     return trailerTempMap;
   }
 
+  Future<bool> checkDataExists(txn, String columnName, String poNumber) async {
+    try {
+      var result = await txn.query(
+        DBTables.TEMP_TRAILER_TEMPERATURE_DETAILS,
+        where: 'po_number = ?',
+        whereArgs: [poNumber],
+      );
+      if (result.isNotEmpty) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      debugPrint("Error occurred while checking data existence: $e");
+      return false;
+    }
+  }
+
   Future<void> createTempTrailerTemperatureDetails(
-      int partnerID,
+      String partnerID,
       String tempOpen1,
       String tempOpen2,
       String tempOpen3,
@@ -1948,8 +1962,16 @@ class ApplicationDao {
           TempTrailerTemperatureDetailsColumn.PO_NUMBER: poNumber,
         };
 
-        ttId =
-            await txn.insert(DBTables.TEMP_TRAILER_TEMPERATURE_DETAILS, values);
+        bool tempIsExists = await checkDataExists(txn,
+            TempTrailerTemperatureDetailsColumn.PO_NUMBER, poNumber.toString());
+
+        if (tempIsExists == true) {
+          ttId = await txn.update(
+              DBTables.TEMP_TRAILER_TEMPERATURE_DETAILS, values);
+        } else {
+          ttId = await txn.insert(
+              DBTables.TEMP_TRAILER_TEMPERATURE_DETAILS, values);
+        }
       });
     } catch (e) {
       debugPrint('Error occurred while creating a trailer temperature: $e');

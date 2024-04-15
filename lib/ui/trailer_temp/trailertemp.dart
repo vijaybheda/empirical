@@ -101,25 +101,20 @@ class TrailerTemp extends GetView<TrailerTempController> {
                       fontWeight: FontWeight.w600,
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
-                  onClickAction: () => {
-                        if (controller.allDataBlank())
-                          {
-                            AppAlertDialog.validateAlerts(
-                                context,
-                                AppStrings.error,
-                                AppStrings.trailer_temperature_no_entries_alert)
-                          }
-                        else
-                          {
-                            controller.saveTemperatureData('N', orderNumber,
-                                carrier.id ?? 0, controller.tailerTempData),
-                            controller.saveTemperatureData('M', orderNumber,
-                                carrier.id ?? 0, controller.tailerTempData),
-                            controller.saveTemperatureData('B', orderNumber,
-                                carrier.id ?? 0, controller.tailerTempData),
-                            Get.back()
-                          }
-                      }),
+                  onClickAction: () {
+                if (controller.allDataBlank()) {
+                  AppAlertDialog.validateAlerts(context, AppStrings.error,
+                      AppStrings.trailer_temperature_no_entries_alert);
+                } else {
+                   controller.saveTemperatureData('N', orderNumber,
+                      carrier.id ?? 0, controller.tailerTempData);
+                   controller.saveTemperatureData('M', orderNumber,
+                      carrier.id ?? 0, controller.tailerTempData);
+                   controller.saveTemperatureData('B', orderNumber,
+                      carrier.id ?? 0, controller.tailerTempData);
+                  Get.back();
+                }
+              }),
             ],
           ),
         ),
@@ -324,7 +319,6 @@ class TrailerTemp extends GetView<TrailerTempController> {
             errorText: '',
             onEditingCompleted: () {
               controller.saveData(PalletTitle);
-              controller.setDataUI();
               topFocusNode.unfocus();
             },
             onChanged: (value) {
@@ -345,7 +339,6 @@ class TrailerTemp extends GetView<TrailerTempController> {
             errorText: '',
             onEditingCompleted: () {
               controller.saveData(PalletTitle);
-              controller.setDataUI();
               middleFocusNode.unfocus();
             },
             onChanged: (value) {},
@@ -364,7 +357,6 @@ class TrailerTemp extends GetView<TrailerTempController> {
             errorText: '',
             onEditingCompleted: () {
               controller.saveData(PalletTitle);
-              controller.setDataUI();
               bottomFocusNode.unfocus();
             },
             onChanged: (value) {},

@@ -20,4 +20,5 @@ class AppImages {
   static const String ic_trailerMiddle = 'assets/images/trailer_middle.png';
   static const String ic_trailerNose = 'assets/images/trailer_nose.png';
   static const String ic_trailerTail = 'assets/images/trailer_tail.png';
+  static const String ic_minus = 'assets/images/minus_icon.png';
 }
