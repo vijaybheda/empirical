@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:open_file/open_file.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/defect_item.dart';
 import 'package:pverify/ui/worksheet/defects_data.dart';
@@ -159,13 +161,35 @@ class WorksheetController extends GetxController {
     File file = File(path);
 
     if (await file.exists()) {
-      try {} catch (e) {
+      try {
+        final Uri data2 = Uri.file(path);
+        await _grantPermissions(data2);
+        await openFile(path);
+      } catch (e) {
         AppSnackBar.getCustomSnackBar("Error", "Error opening PDF file: $e",
             isSuccess: false);
       }
     } else {
       AppSnackBar.getCustomSnackBar("Error", "No Inspection Instructions",
           isSuccess: false);
+    }
+  }
+
+  Future<void> _grantPermissions(Uri uri) async {
+    final permissions = <Permission>[Permission.storage];
+    for (final permission in permissions) {
+      if (await permission.status.isGranted) continue;
+      await permission.request();
+    }
+  }
+
+  Future<bool> openFile(String filePath) async {
+    File file = File(filePath);
+    if (await file.exists()) {
+      OpenResult resultType = await OpenFile.open(filePath);
+      return resultType.type == ResultType.done;
+    } else {
+      return false;
     }
   }
 }
