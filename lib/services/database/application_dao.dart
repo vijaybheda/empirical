@@ -2850,4 +2850,20 @@ class ApplicationDao {
       return;
     }
   }
+
+  Future<bool> checkItemSKUAndLotNo(String itemSKU, String lotNo) async {
+    Database db = await DatabaseHelper.instance.database;
+    List<Map> result = await db.query(
+      DBTables.PARTNER_ITEMSKU,
+      where:
+          '${PartnerItemSkuColumn.ITEM_SKU}= ? AND ${PartnerItemSkuColumn.UNIQUE_ID} = ?',
+      whereArgs: [itemSKU, lotNo],
+    );
+
+    if (result.isNotEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

@@ -153,7 +153,7 @@ class PurchaseOrderDetailsController extends GetxController {
     int totalConditionDefectId = 0;
 
     List<FinishedGoodsItemSKU> selectedItemSKUList =
-        appStorage.selectedItemSKUList ?? [];
+        appStorage.selectedItemSKUList;
     for (int i = 0; i < selectedItemSKUList.length; i++) {
       FinishedGoodsItemSKU itemSKU = selectedItemSKUList.elementAt(i);
       bool isComplete = await dao.isInspectionComplete(
@@ -400,18 +400,18 @@ class PurchaseOrderDetailsController extends GetxController {
           appStorage.selectedItemSKUList[position].commodityName,
       Consts.COMMODITY_ID: appStorage.selectedItemSKUList[position].commodityID,
       Consts.INSPECTION_RESULT: finalInspectionResult,
-      Consts.ITEM_SKU: dataList[position].sku,
+      Consts.ITEM_SKU: goodsItem.sku,
       Consts.PO_NUMBER: po_number,
     };
 
     if (productTransfer == "Transfer") {
       appStorage.specificationByItemSKUList =
           await dao.getSpecificationByItemSKUFromTableForTransfer(
-              partnerID, dataList[position].sku, dataList[position].sku);
+              partnerID, goodsItem.sku, goodsItem.sku);
     } else {
       appStorage.specificationByItemSKUList =
           await dao.getSpecificationByItemSKUFromTable(
-              partnerID, dataList[position].sku, dataList[position].sku);
+              partnerID, goodsItem.sku, goodsItem.sku);
     }
 
     if (appStorage.specificationByItemSKUList != null &&
@@ -605,5 +605,165 @@ class PurchaseOrderDetailsController extends GetxController {
     String? finalInspectionResult = inspectionResult;
 
     return finalInspectionResult;
+  }
+
+  Future onInspectTap(
+    PurchaseOrderItem goodsItem,
+    FinishedGoodsItemSKU finishedGoodsItemSKU,
+    Inspection inspection,
+    PartnerItemSKUInspections? partnerItemSKU,
+    String lotNo,
+    String packDate,
+    bool isComplete,
+    bool ispartialComplete,
+    int inspectionId,
+    String po_number,
+    String seal_number,
+    Function(Map data) poInterface,
+  ) async {
+    bool checkItemSKUAndLot =
+        await dao.checkItemSKUAndLotNo(goodsItem.sku!, lotNo);
+    checkItemSKUAndLot = false;
+    bool isValid = true;
+
+    if (isComplete) {
+      for (int i = 0; i < appStorage.selectedItemSKUList.length; i++) {
+        FinishedGoodsItemSKU finishedGoodsItemSKU =
+            appStorage.selectedItemSKUList[i];
+        bool isComplete = await dao.isInspectionComplete(partnerID!,
+            finishedGoodsItemSKU.sku!, finishedGoodsItemSKU.uniqueItemId);
+
+        if (isComplete) {
+          PartnerItemSKUInspections? partnerItemSKU =
+              await dao.findPartnerItemSKU(partnerID!,
+                  finishedGoodsItemSKU.sku!, finishedGoodsItemSKU.uniqueItemId);
+
+          if (partnerItemSKU != null) {
+            Inspection? inspection =
+                await dao.findInspectionByID(partnerItemSKU.inspectionId!);
+            QualityControlItem? qualityControlItems = await dao
+                .findQualityControlDetails(partnerItemSKU.inspectionId!);
+
+            if (inspection != null &&
+                inspection.result != null &&
+                inspection.result == "RJ") {
+              if (qualityControlItems?.qtyRejected != null &&
+                      qualityControlItems?.qtyShipped != null &&
+                      qualityControlItems!.qtyRejected == 0 ||
+                  qualityControlItems!.qtyRejected! >
+                      qualityControlItems.qtyShipped!) {
+                isValid = false;
+
+                AppAlertDialog.validateAlerts(Get.context!, AppStrings.alert,
+                    AppStrings.quantityRejected);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (isValid) {
+      if (isComplete || ispartialComplete || !checkItemSKUAndLot) {
+        String current_lot_number = lotNo;
+        String current_Item_SKU = goodsItem.sku!;
+        String current_Item_SKU_Name = goodsItem.description!;
+        String current_pack_Date = packDate;
+        int current_Item_SKU_Id = finishedGoodsItemSKU.id!;
+        String current_unique_id = finishedGoodsItemSKU.uniqueItemId!;
+        int current_commodity_id = finishedGoodsItemSKU.commodityID!;
+        String current_commodity_name = finishedGoodsItemSKU.commodityName!;
+        String current_gtin = finishedGoodsItemSKU.gtin!;
+        String dateType = finishedGoodsItemSKU.dateType!;
+
+        if (poInterface != null) {
+          Map<String, dynamic> bundle = {
+            Consts.Lot_No: current_lot_number,
+            Consts.ITEM_SKU: current_Item_SKU,
+            Consts.ITEM_SKU_NAME: current_Item_SKU_Name,
+            Consts.PACK_DATE: current_pack_Date,
+            Consts.ITEM_SKU_ID: current_Item_SKU_Id,
+            Consts.ITEM_UNIQUE_ID: current_unique_id,
+            Consts.GTIN: current_gtin,
+            Consts.DATETYPE: dateType,
+            Consts.COMMODITY_ID: current_commodity_id,
+            Consts.COMMODITY_NAME: current_commodity_name,
+          };
+          poInterface!(bundle);
+        }
+
+        if (!isComplete && !ispartialComplete) {
+          finishedGoodsItemSKU.lotNo = current_lot_number;
+          finishedGoodsItemSKU.poNo = goodsItem.poNumber;
+        }
+
+        bool isOnline = globalConfigController.hasStableInternet.value;
+
+        if (productTransfer == "Transfer") {
+          appStorage.specificationByItemSKUList =
+              await dao.getSpecificationByItemSKUFromTableForTransfer(
+                  partnerID!, goodsItem.sku!, goodsItem.sku!);
+        } else {
+          appStorage.specificationByItemSKUList =
+              await dao.getSpecificationByItemSKUFromTable(
+                  partnerID!, goodsItem.sku!, goodsItem.sku!);
+        }
+
+        if (appStorage.specificationByItemSKUList != null &&
+            appStorage.specificationByItemSKUList!.isNotEmpty) {
+          bool isComplete = await dao.isInspectionComplete(
+              partnerID!, current_Item_SKU, current_unique_id);
+          bool ispartialComplete = await dao.isInspectionPartialComplete(
+              partnerID!, current_Item_SKU, current_unique_id);
+
+          Map<String, dynamic> passigData = {};
+          if (!isComplete && !ispartialComplete) {
+            passigData[Consts.SERVER_INSPECTION_ID] = -1;
+          } else {
+            passigData[Consts.SERVER_INSPECTION_ID] = inspectionId;
+            passigData[Consts.SPECIFICATION_NUMBER] = specificationNumber;
+            passigData[Consts.SPECIFICATION_VERSION] = specificationVersion;
+            passigData[Consts.SPECIFICATION_NAME] = specificationName;
+            passigData[Consts.SPECIFICATION_TYPE_NAME] = specificationTypeName;
+          }
+          passigData[Consts.PO_NUMBER] = po_number;
+          passigData[Consts.SEAL_NUMBER] = seal_number;
+          passigData[Consts.PARTNER_NAME] = partnerName;
+          passigData[Consts.PARTNER_ID] = partnerID;
+          passigData[Consts.CARRIER_NAME] = carrierName;
+          passigData[Consts.CARRIER_ID] = carrierID;
+          passigData[Consts.Lot_No] = current_lot_number;
+          passigData[Consts.ITEM_SKU] = current_Item_SKU;
+          passigData[Consts.ITEM_SKU_NAME] = current_Item_SKU_Name;
+          passigData[Consts.ITEM_SKU_ID] = current_Item_SKU_Id;
+          passigData[Consts.PACK_DATE] = current_pack_Date;
+          passigData[Consts.COMPLETED] = isComplete;
+          passigData[Consts.PARTIAL_COMPLETED] = ispartialComplete;
+          passigData[Consts.COMMODITY_ID] = current_commodity_id;
+          passigData[Consts.COMMODITY_NAME] = current_commodity_name;
+          passigData[Consts.ITEM_UNIQUE_ID] = current_unique_id;
+          passigData[Consts.GTIN] = current_gtin;
+          passigData[Consts.PRODUCT_TRANSFER] = productTransfer;
+          passigData[Consts.DATETYPE] = dateType;
+
+          Get.to(
+            () => QCDetailsShortFormScreen(
+              partner: partner,
+              carrier: carrier,
+              commodity: commodity,
+              qcHeaderDetails: qcHeaderDetails,
+              purchaseOrderItem: goodsItem,
+            ),
+            arguments: passigData,
+          );
+        } else {
+          AppAlertDialog.validateAlerts(Get.context!, AppStrings.alert,
+              'No specification alert for $current_Item_SKU');
+        }
+      } else {
+        AppAlertDialog.validateAlerts(
+            Get.context!, AppStrings.alert, 'Lot number alert');
+      }
+    }
   }
 }

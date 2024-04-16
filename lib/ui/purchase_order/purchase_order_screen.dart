@@ -189,49 +189,60 @@ class _SearchItemSkuWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 25.h),
-        child: TextField(
-          onChanged: (value) {
-            Get.find<PurchaseOrderScreenController>()
-                .searchAndAssignOrder(value);
-          },
-          controller:
-              Get.find<PurchaseOrderScreenController>().searchController,
-          decoration: InputDecoration(
-            hintText: AppStrings.searchItem,
-            hintStyle: Get.textTheme.bodyLarge?.copyWith(
-                fontSize: 25.sp, color: AppColors.white.withOpacity(0.5)),
-            isDense: true,
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
-            prefixIcon: Icon(Icons.search, color: AppColors.white),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(5),
-              borderSide: BorderSide(color: AppColors.white),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(5),
-              borderSide: BorderSide(color: AppColors.white),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(5),
-              borderSide: BorderSide(color: AppColors.white),
-            ),
-            suffixIcon: IconButton(
-              onPressed: () {
-                Get.find<PurchaseOrderScreenController>().clearSearch();
-              },
-              icon: Icon(
-                Icons.clear,
-                color: AppColors.white,
+    return GetBuilder<PurchaseOrderScreenController>(
+        id: 'itemSkuList',
+        builder: (context) {
+          return Container(
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 25.h),
+              child: TextField(
+                onChanged: (value) {
+                  Get.find<PurchaseOrderScreenController>()
+                      .searchAndAssignOrder(value);
+                },
+                controller:
+                    Get.find<PurchaseOrderScreenController>().searchController,
+                decoration: InputDecoration(
+                  hintText: AppStrings.searchItem,
+                  hintStyle: Get.textTheme.bodyLarge?.copyWith(
+                      fontSize: 25.sp, color: AppColors.white.withOpacity(0.5)),
+                  isDense: true,
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
+                  prefixIcon: Icon(Icons.search, color: AppColors.white),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                    borderSide: BorderSide(color: AppColors.white),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                    borderSide: BorderSide(color: AppColors.white),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                    borderSide: BorderSide(color: AppColors.white),
+                  ),
+                  suffixIcon: Get.find<PurchaseOrderScreenController>()
+                          .searchController
+                          .text
+                          .trim()
+                          .isEmpty
+                      ? const Offstage()
+                      : IconButton(
+                          onPressed: () {
+                            Get.find<PurchaseOrderScreenController>()
+                                .clearSearch();
+                          },
+                          icon: Icon(
+                            Icons.clear,
+                            color: AppColors.white,
+                          ),
+                        ),
+                ),
               ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
+        });
   }
 }

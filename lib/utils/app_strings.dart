@@ -239,6 +239,8 @@ class AppStrings {
 
   static String exceptions = 'Exceptions';
 
+  static String quantityRejected = 'Quantity rejected';
+
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';
 
