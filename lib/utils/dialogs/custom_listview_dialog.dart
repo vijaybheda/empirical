@@ -132,7 +132,7 @@ class CustomListView extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                   child: Text(
-                    AppStrings.close,
+                    AppStrings.cancel,
                     style: Get.textTheme.labelLarge?.copyWith(
                       color: AppColors.white,
                     ),

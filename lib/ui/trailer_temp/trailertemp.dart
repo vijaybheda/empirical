@@ -80,7 +80,7 @@ class TrailerTemp extends GetView<TrailerTempController> {
                           {
                             AppAlertDialog.confirmationAlert(
                               context,
-                              AppStrings.error,
+                              AppStrings.alert,
                               AppStrings.trailerTemperatureSkipAlert,
                               onYesTap: () {
                                 Get.back();
@@ -106,11 +106,11 @@ class TrailerTemp extends GetView<TrailerTempController> {
                   AppAlertDialog.validateAlerts(context, AppStrings.error,
                       AppStrings.trailer_temperature_no_entries_alert);
                 } else {
-                   controller.saveTemperatureData('N', orderNumber,
+                  controller.saveTemperatureData('N', orderNumber,
                       carrier.id ?? 0, controller.tailerTempData);
-                   controller.saveTemperatureData('M', orderNumber,
+                  controller.saveTemperatureData('M', orderNumber,
                       carrier.id ?? 0, controller.tailerTempData);
-                   controller.saveTemperatureData('B', orderNumber,
+                  controller.saveTemperatureData('B', orderNumber,
                       carrier.id ?? 0, controller.tailerTempData);
                   Get.back();
                 }
@@ -258,7 +258,7 @@ class TrailerTemp extends GetView<TrailerTempController> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                AppStrings.comment,
+                AppStrings.comments,
                 style: GoogleFonts.poppins(
                     fontSize: 30.sp,
                     fontWeight: FontWeight.normal,

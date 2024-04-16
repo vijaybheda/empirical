@@ -243,6 +243,8 @@ class AppStrings {
 
   static String noGradeDocument = 'No Grade Document';
 
+  static String selectItems = 'Select Item(s)';
+
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';
 

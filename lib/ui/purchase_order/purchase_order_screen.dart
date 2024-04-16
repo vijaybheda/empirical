@@ -47,7 +47,7 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
               centerTitle: false,
               backgroundColor: Theme.of(context).primaryColor,
               title: HeaderContentView(
-                title: AppStrings.selectCommodity,
+                title: AppStrings.selectItems,
               ),
             ),
             body: Column(
@@ -74,6 +74,10 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
                 BottomCustomButtonView(
                   title: AppStrings.save,
                   onPressed: () async {
+                    if (true) {
+                      // FIXME: demo purpose
+                      return;
+                    }
                     await controller.navigateToPurchaseOrderDetails(
                         context, partner, carrier, commodity);
                   },
@@ -150,7 +154,7 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
             controller.updateCommodityItem(goodsItem);
           },
           title: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: RichText(
               text: TextSpan(
                 children: [
@@ -206,11 +210,15 @@ class _SearchItemSkuWidget extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: AppStrings.searchItem,
                   hintStyle: Get.textTheme.bodyLarge?.copyWith(
-                      fontSize: 25.sp, color: AppColors.white.withOpacity(0.5)),
+                      fontSize: 25.sp, color: AppColors.white.withOpacity(0.8)),
                   isDense: true,
                   contentPadding:
                       EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
-                  prefixIcon: Icon(Icons.search, color: AppColors.white),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: AppColors.white,
+                    size: 24,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(color: AppColors.white),

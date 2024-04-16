@@ -86,7 +86,7 @@ class FooterContentView extends StatelessWidget {
                       textStyle: TextStyle(color: getMessageColor())),
                 ),
                 SizedBox(
-                  width: 30.w,
+                  width: 20.w,
                 ),
                 GestureDetector(
                   onTap: () async {
@@ -115,6 +115,7 @@ class FooterContentView extends StatelessWidget {
                     AppImages.ic_download,
                     width: 80.w,
                     height: 80.h,
+                    color: getMessageColor(),
                   ),
                 ),
               ],
@@ -145,7 +146,7 @@ class FooterContentView extends StatelessWidget {
 
   String getDaysMessage() {
     int remainDays = Utils().checkCacheDays();
-    return 'Data $remainDays days old.';
+    return 'Data $remainDays days old';
   }
 
   Color getMessageColor() {

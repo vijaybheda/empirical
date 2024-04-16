@@ -207,11 +207,11 @@ class QualityControlHeader extends GetView<QualityControlController> {
                           AppStrings.QCHOPEN6,
                           controller.loadType,
                           AppStrings.QCHOPEN6),
-                      // SizedBox(
-                      //   height: Controller.spacingBetweenFields.h,
-                      // ),
-                      // commonRowTextFieldView(context, AppStrings.QCHOPEN9, '',
-                      //     Controller.transportConditionTextController.value),
+                      SizedBox(
+                        height: controller.spacingBetweenFields.h,
+                      ),
+                      commonRowTextFieldView(context, AppStrings.QCHOPEN9, '',
+                          controller.transportConditionTextController.value),
                     ],
                   )
                 : Container())

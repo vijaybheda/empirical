@@ -309,11 +309,15 @@ class _SearchGradingStandardWidget extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: AppStrings.searchCommodity,
                   hintStyle: Get.textTheme.bodyLarge?.copyWith(
-                      fontSize: 25.sp, color: AppColors.white.withOpacity(0.5)),
+                      fontSize: 25.sp, color: AppColors.white.withOpacity(0.8)),
                   isDense: true,
                   contentPadding:
                       EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
-                  prefixIcon: Icon(Icons.search, color: AppColors.white),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: AppColors.white,
+                    size: 24,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(color: AppColors.white),

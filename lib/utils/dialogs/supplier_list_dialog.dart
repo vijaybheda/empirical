@@ -28,92 +28,105 @@ class SupplierListDialog {
           ),
           content: SizedBox(
             width: double.maxFinite,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  onChanged: (value) {
-                    controller.searchAndAssignNonOpenPartner(value);
-                  },
-                  controller: controller.searchNonOpenSuppController,
-                  decoration: InputDecoration(
-                    hintText: AppStrings.searchPartner,
-                    hintStyle: Get.textTheme.bodyLarge?.copyWith(
-                        fontSize: 25.sp,
-                        color: AppColors.white.withOpacity(0.5)),
-                    isDense: true,
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
-                    prefixIcon: Icon(Icons.search, color: AppColors.white),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5),
-                      borderSide: BorderSide(color: AppColors.white),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5),
-                      borderSide: BorderSide(color: AppColors.white),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5),
-                      borderSide: BorderSide(color: AppColors.white),
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        if (controller
-                            .searchNonOpenSuppController.text.isNotEmpty) {
-                          controller.clearOpenSearch();
-                        }
-                      },
-                      icon: Icon(
-                        Icons.clear,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    onChanged: (value) {
+                      controller.searchAndAssignNonOpenPartner(value);
+                    },
+                    controller: controller.searchNonOpenSuppController,
+                    decoration: InputDecoration(
+                      hintText: AppStrings.searchPartner,
+                      hintStyle: Get.textTheme.bodyLarge?.copyWith(
+                          fontSize: 25.sp,
+                          color: AppColors.white.withOpacity(0.8)),
+                      isDense: true,
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
+                      prefixIcon: Icon(
+                        Icons.search,
                         color: AppColors.white,
+                        size: 24,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                        borderSide: BorderSide(color: AppColors.white),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                        borderSide: BorderSide(color: AppColors.white),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                        borderSide: BorderSide(color: AppColors.white),
+                      ),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          if (controller
+                              .searchNonOpenSuppController.text.isNotEmpty) {
+                            controller.clearOpenSearch();
+                          }
+                        },
+                        icon: Icon(
+                          Icons.clear,
+                          color: AppColors.white,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: Get.height * 0.6,
-                  child: GetBuilder<SelectSupplierScreenController>(
-                    id: 'nonOpenPartnerList',
-                    builder: (controller) {
-                      if (controller.filteredNonOpenPartnersList.isEmpty) {
-                        return noDataFoundWidget();
-                      }
-                      return ListView.separated(
-                        physics: const BouncingScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount:
-                            controller.filteredNonOpenPartnersList.length,
-                        padding: const EdgeInsets.all(0),
-                        itemBuilder: (context, index) {
-                          PartnerItem partnerItem = controller
-                              .filteredNonOpenPartnersList
-                              .elementAt(index);
-                          return CustomRadioListTile(
-                            title: Text(
-                              partnerItem.name ?? '-',
-                              style: Get.textTheme.bodyLarge,
-                            ),
-                            value: index,
-                            groupValue: controller.selectedIndex.value,
-                            onChanged: (value) {
-                              controller.selectedIndex.value = value;
-                              controller.update(['nonOpenPartnerList']);
-                            },
-                          );
-                        },
-                        separatorBuilder: (BuildContext context, int index) {
-                          return const Divider(
-                            height: 1,
-                            color: Colors.grey,
-                          );
-                        },
-                      );
-                    },
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    child: GetBuilder<SelectSupplierScreenController>(
+                      id: 'nonOpenPartnerList',
+                      builder: (controller) {
+                        if (controller.filteredNonOpenPartnersList.isEmpty) {
+                          return SizedBox(
+                              height: Get.height * .3,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(child: noDataFoundWidget()),
+                                ],
+                              ));
+                        }
+                        return ListView.separated(
+                          physics: const BouncingScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount:
+                              controller.filteredNonOpenPartnersList.length,
+                          padding: const EdgeInsets.all(0),
+                          itemBuilder: (context, index) {
+                            PartnerItem partnerItem = controller
+                                .filteredNonOpenPartnersList
+                                .elementAt(index);
+                            return CustomRadioListTile(
+                              title: Text(
+                                partnerItem.name ?? '-',
+                                style: Get.textTheme.bodyLarge,
+                              ),
+                              value: index,
+                              groupValue: controller.selectedIndex.value,
+                              onChanged: (value) {
+                                controller.selectedIndex.value = value;
+                                controller.update(['nonOpenPartnerList']);
+                              },
+                            );
+                          },
+                          separatorBuilder: (BuildContext context, int index) {
+                            return const Divider(
+                              height: 1,
+                              color: Colors.grey,
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           actions: <Widget>[
@@ -181,7 +194,7 @@ class SupplierListDialog {
                       padding: const EdgeInsets.symmetric(
                           vertical: 5, horizontal: 10),
                       child: Text(
-                        AppStrings.close,
+                        AppStrings.cancel,
                         style: Get.textTheme.labelLarge?.copyWith(
                           color: AppColors.white,
                         ),
