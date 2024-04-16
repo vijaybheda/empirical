@@ -277,44 +277,57 @@ class SearchCarrierWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 25.h),
-      child: TextField(
-        onChanged: (value) {
-          Get.find<SelectCarrierScreenController>()
-              .searchAndAssignCarrier(value);
-        },
-        controller: Get.find<SelectCarrierScreenController>().searchController,
-        decoration: InputDecoration(
-          hintText: AppStrings.searchCarrier,
-          hintStyle: Get.textTheme.bodyLarge?.copyWith(
-              fontSize: 25.sp, color: AppColors.white.withOpacity(0.5)),
-          isDense: true,
-          contentPadding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
-          prefixIcon: Icon(Icons.search, color: AppColors.white),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
-            borderSide: BorderSide(color: AppColors.white),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
-            borderSide: BorderSide(color: AppColors.white),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
-            borderSide: BorderSide(color: AppColors.white),
-          ),
-          suffixIcon: IconButton(
-            onPressed: () {
-              Get.find<SelectCarrierScreenController>().clearSearch();
-            },
-            icon: Icon(
-              Icons.clear,
-              color: AppColors.white,
+    return GetBuilder<SelectCarrierScreenController>(
+        id: 'carrierList',
+        builder: (controller) {
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 25.h),
+            child: TextField(
+              onChanged: (value) {
+                Get.find<SelectCarrierScreenController>()
+                    .searchAndAssignCarrier(value);
+              },
+              controller:
+                  Get.find<SelectCarrierScreenController>().searchController,
+              decoration: InputDecoration(
+                hintText: AppStrings.searchCarrier,
+                hintStyle: Get.textTheme.bodyLarge?.copyWith(
+                    fontSize: 25.sp, color: AppColors.white.withOpacity(0.5)),
+                isDense: true,
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
+                prefixIcon: Icon(Icons.search, color: AppColors.white),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  borderSide: BorderSide(color: AppColors.white),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  borderSide: BorderSide(color: AppColors.white),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  borderSide: BorderSide(color: AppColors.white),
+                ),
+                suffixIcon: Get.find<SelectCarrierScreenController>()
+                        .searchController
+                        .text
+                        .trim()
+                        .isEmpty
+                    ? const Offstage()
+                    : IconButton(
+                        onPressed: () {
+                          Get.find<SelectCarrierScreenController>()
+                              .clearSearch();
+                        },
+                        icon: Icon(
+                          Icons.clear,
+                          color: AppColors.white,
+                        ),
+                      ),
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
+        });
   }
 }

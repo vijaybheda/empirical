@@ -82,6 +82,7 @@ class Consts {
   static const String ERROR_CODE = "ErrorCode";
 
   static const String PRODUCT_TRANSFER = "PRODUCT_TRANSFER";
+  static const String IS_GTIN_SAME_PARTNER = "IS_GTIN_SAME_PARTNER";
   static const String DATETYPE = "DATETYPE";
 
   static const int INSPECTION_UPLOAD_NOTREADY = 0;

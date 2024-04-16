@@ -1,5 +1,3 @@
-// ignore_for_file: unused_local_variable, unused_field, prefer_const_constructors, depend_on_referenced_packages, unused_element, unnecessary_null_comparison
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -9,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 
 class PhotoSelectionController extends GetxController {
   final ImagePicker _picker = ImagePicker();
-  XFile? _image;
   RxList imgList = [].obs;
 
   Future getImageFromGallery() async {

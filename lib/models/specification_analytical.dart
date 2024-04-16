@@ -1,16 +1,33 @@
 import 'package:pverify/services/database/column_names.dart';
+import 'package:pverify/utils/utils.dart';
 
 class SpecificationAnalytical {
+  // Number_Specification (String)
+  // Version_Specification (String)
+  // Analytical_ID (int)
+  // Analytical_name (String)
+  // Spec_Min (String)
+  // Spec_Max (int)
+  // Target_Num_Value (String)
+  // Target_Text_Value (String)
+  // UOM_Name (String)
+  // Type_Entry (String)
+  // Description (String)
+  // OrderNo (int)
+  // Picture_Required (String)
+  // Target_Text_Default (String)
+  // Inspection_Result (String)
+
   String? specificationNumber;
   String? specificationVersion;
   String? analyticalName;
   int? analyticalID;
-  double? specMin;
-  double? specMax;
-  double? specTargetNumValue;
+  String? specMin;
+  int? specMax;
+  String? specTargetNumValue;
   String? uomName;
   String? specTargetTextValue;
-  int? specTypeofEntry;
+  String? specTypeofEntry;
   bool? isTargetNumValue;
   String? description;
   int? order;
@@ -38,6 +55,7 @@ class SpecificationAnalytical {
   });
 
   factory SpecificationAnalytical.fromMap(Map<String, dynamic> map) {
+    // printKeysAndValueTypes(map);
     return SpecificationAnalytical(
       specificationNumber:
           map[SpecificationAnalyticalColumn.NUMBER_SPECIFICATION],
@@ -88,12 +106,12 @@ class SpecificationAnalytical {
     String? specificationVersion,
     String? analyticalName,
     int? analyticalID,
-    double? specMin,
-    double? specMax,
-    double? specTargetNumValue,
+    String? specMin,
+    int? specMax,
+    String? specTargetNumValue,
     String? uomName,
     String? specTargetTextValue,
-    int? specTypeofEntry,
+    String? specTypeofEntry,
     bool? isTargetNumValue,
     String? description,
     int? order,

@@ -1,6 +1,8 @@
 import 'dart:convert';
 
-class LoginData {
+import 'package:pverify/services/database/column_names.dart';
+
+class UserData {
   int? id;
   int? status;
   String? userName;
@@ -14,8 +16,9 @@ class LoginData {
   int? enterpriseId;
   int? supplierId;
   int? headquarterSupplierId;
+  int? loginTime;
 
-  LoginData({
+  UserData({
     this.id,
     this.status,
     this.userName,
@@ -29,15 +32,16 @@ class LoginData {
     this.enterpriseId,
     this.supplierId,
     this.headquarterSupplierId,
+    this.loginTime,
   });
 
-  LoginData.fromStringJson(String myJsonString) {
+  UserData.fromStringJson(String myJsonString) {
     Map<String, dynamic> jsonData = jsonDecode(myJsonString);
-    id = jsonData['id'];
+    id = jsonData[UserColumn.ID];
     status = jsonData['status'];
-    userName = jsonData['userName'];
+    userName = jsonData[UserColumn.USER_NAME];
     access1 = jsonData['access1'];
-    language = jsonData['language'];
+    language = jsonData[UserColumn.LANGUAGE];
     displayCarriers = jsonData['displayCarriers'];
     gtinScanning = jsonData['gtinScanning'];
     subscriptionExpired = jsonData['subscriptionExpired'];
@@ -48,14 +52,15 @@ class LoginData {
     enterpriseId = jsonData['enterpriseId'];
     supplierId = jsonData['supplierId'];
     headquarterSupplierId = jsonData['headquarterSupplierId'];
+    loginTime = jsonData[UserColumn.LOGIN_TIME];
   }
 
-  LoginData.fromJson(Map<String, dynamic> jsonData) {
-    id = jsonData['id'];
+  UserData.fromJson(Map<String, dynamic> jsonData) {
+    id = jsonData[UserColumn.ID];
     status = jsonData['status'];
-    userName = jsonData['userName'];
+    userName = jsonData[UserColumn.USER_NAME];
     access1 = jsonData['access1'];
-    language = jsonData['language'];
+    language = jsonData[UserColumn.LANGUAGE];
     displayCarriers = jsonData['displayCarriers'];
     gtinScanning = jsonData['gtinScanning'];
     subscriptionExpired = jsonData['subscriptionExpired'];
@@ -66,15 +71,16 @@ class LoginData {
     enterpriseId = jsonData['enterpriseId'];
     supplierId = jsonData['supplierId'];
     headquarterSupplierId = jsonData['headquarterSupplierId'];
+    loginTime = jsonData[UserColumn.LOGIN_TIME];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
+    data[UserColumn.ID] = id;
     data['status'] = status;
-    data['userName'] = userName;
+    data[UserColumn.USER_NAME] = userName;
     data['access1'] = access1;
-    data['language'] = language;
+    data[UserColumn.LANGUAGE] = language;
     data['displayCarriers'] = displayCarriers;
     data['gtinScanning'] = gtinScanning;
     data['subscriptionExpired'] = subscriptionExpired;
@@ -85,11 +91,21 @@ class LoginData {
     data['enterpriseId'] = enterpriseId;
     data['supplierId'] = supplierId;
     data['headquarterSupplierId'] = headquarterSupplierId;
+    data[UserColumn.LOGIN_TIME] = loginTime;
+    return data;
+  }
+
+  Map<String, dynamic> toUserDBJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data[UserColumn.ID] = id;
+    data[UserColumn.USER_NAME] = userName;
+    data[UserColumn.LANGUAGE] = language;
+    data[UserColumn.LOGIN_TIME] = loginTime;
     return data;
   }
 
   // copyWith
-  LoginData copyWith({
+  UserData copyWith({
     int? id,
     int? status,
     String? userName,
@@ -103,8 +119,9 @@ class LoginData {
     int? enterpriseId,
     int? supplierId,
     int? headquarterSupplierId,
+    int? loginTime,
   }) {
-    return LoginData(
+    return UserData(
       id: id ?? this.id,
       status: status ?? this.status,
       userName: userName ?? this.userName,
@@ -119,6 +136,7 @@ class LoginData {
       supplierId: supplierId ?? this.supplierId,
       headquarterSupplierId:
           headquarterSupplierId ?? this.headquarterSupplierId,
+      loginTime: loginTime ?? this.loginTime,
     );
   }
 }

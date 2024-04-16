@@ -125,10 +125,10 @@ class QualityControlController extends GetxController {
     qcHeaderDetails =
         await dao.findTempQCHeaderDetails(orderNoTextController.value.text);
 
-    if (AppStorage.instance.getLoginData()!.supplierId != 0) {
+    if (AppStorage.instance.getUserData()!.supplierId != 0) {
       purchaseOrderDetails = await dao.getPODetailsFromTable(
           orderNoTextController.value.text,
-          AppStorage.instance.getLoginData()!.supplierId ?? 0);
+          AppStorage.instance.getUserData()!.supplierId ?? 0);
 
       inspIDs = await dao
           .getPartnerSKUInspectionIDsByPONo(orderNoTextController.value.text);

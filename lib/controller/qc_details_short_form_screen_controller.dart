@@ -26,36 +26,36 @@ import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 class QCDetailsShortFormScreenController extends GetxController {
   final PartnerItem partner;
 
-  late final int serverInspectionID;
-  late final bool completed;
-  late final bool partial_completed;
-  late final String partnerName;
-  late final int partnerID;
-  late final String carrierName;
-  late final int carrierID;
-  late final String commodityName;
-  late final int commodityID;
-  late final int sampleSizeByCount;
-  late final String inspectionResult;
-  late final String itemSKU, itemSkuName, lot_No;
-  late final String poNumber;
-  late final String specificationNumber;
-  late final String specificationVersion;
-  late final String specificationName;
-  late final String specificationTypeName;
-  late final String selectedSpecification;
-  late final String productTransfer;
-  late final String callerActivity;
-  late final String is1stTimeActivity;
-  late final bool isMyInspectionScreen;
-  late String gtin,
+  int serverInspectionID = 0;
+  bool? completed;
+  bool? partial_completed;
+  String? partnerName;
+  int? partnerID;
+  String? carrierName;
+  int? carrierID;
+  String? commodityName;
+  int? commodityID;
+  int sampleSizeByCount = 0;
+  String? inspectionResult;
+  String? itemSKU, itemSkuName, lot_No;
+  String? poNumber;
+  String? specificationNumber;
+  String? specificationVersion;
+  String? specificationName;
+  String? specificationTypeName;
+  String? selectedSpecification;
+  String? productTransfer;
+  String? callerActivity;
+  String? is1stTimeActivity;
+  bool? isMyInspectionScreen;
+  String? gtin,
       gln,
       sealNumber,
       varietyName,
       varietySize,
       itemUniqueId,
-      lot_size;
-  late int poLineNo, varietyId, gradeId, item_Sku_Id;
+      lotSize;
+  int? poLineNo, varietyId, gradeId, itemSkuId;
 
   final ApplicationDao dao = ApplicationDao();
 
@@ -125,7 +125,7 @@ class QCDetailsShortFormScreenController extends GetxController {
 
     gtin = args[Consts.GTIN] ?? '';
     itemSkuName = args[Consts.ITEM_SKU_NAME] ?? '';
-    lot_size = args[Consts.LOT_SIZE] ?? '';
+    lotSize = args[Consts.LOT_SIZE] ?? '';
     sealNumber = args[Consts.SEAL_NUMBER] ?? '';
     varietyName = args[Consts.VARIETY_NAME] ?? '';
     varietySize = args[Consts.VARIETY_SIZE] ?? '';
@@ -133,70 +133,68 @@ class QCDetailsShortFormScreenController extends GetxController {
     gradeId = args[Consts.GRADE_ID] ?? 0;
     itemUniqueId = args[Consts.ITEM_UNIQUE_ID] ?? '';
     poLineNo = args[Consts.PO_LINE_NO] ?? 0;
-    item_Sku_Id = args[Consts.ITEM_SKU_ID] ?? 0;
+    itemSkuId = args[Consts.ITEM_SKU_ID] ?? 0;
 
     setUOMSpinner();
     super.onInit();
-    unawaited(
-      () async {
-        await specificationSelection();
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
+      await specificationSelection();
 
-        if (serverInspectionID < 0) {
-          if (!completed && !partial_completed) {
-            await createNewInspection(
-                itemSKU,
-                item_Sku_Id,
-                lot_No,
-                packDate,
-                specificationNumber,
-                specificationVersion,
-                specificationName,
-                specificationTypeName,
-                sampleSizeByCount,
-                gtin,
-                poNumber,
-                poLineNo,
-                itemSkuName);
-          }
-        } else {
-          if (callerActivity != "NewPurchaseOrderDetailsActivity") {
-            await dao.updateInspection(
-                serverInspectionID,
-                commodityID,
-                commodityName,
-                varietyId,
-                varietyName,
-                gradeId,
-                specificationNumber,
-                specificationVersion,
-                specificationName,
-                specificationTypeName,
-                sampleSizeByCount,
-                itemSKU,
-                item_Sku_Id,
-                poNumber,
-                0,
-                "",
-                itemSkuName);
-          }
-          inspectionId = serverInspectionID;
+      if (serverInspectionID < 0) {
+        if (!(completed ?? false) && !(partial_completed ?? false)) {
+          await createNewInspection(
+              itemSKU,
+              itemSkuId,
+              lot_No,
+              packDate,
+              specificationNumber!,
+              specificationVersion!,
+              specificationName ?? '',
+              specificationTypeName ?? '',
+              sampleSizeByCount,
+              gtin,
+              poNumber,
+              poLineNo,
+              itemSkuName);
         }
+      } else {
+        if (callerActivity != "NewPurchaseOrderDetailsActivity") {
+          await dao.updateInspection(
+              serverInspectionID,
+              commodityID!,
+              commodityName!,
+              varietyId!,
+              varietyName!,
+              gradeId!,
+              specificationNumber!,
+              specificationVersion!,
+              specificationName ?? '',
+              specificationTypeName ?? '',
+              sampleSizeByCount,
+              itemSKU!,
+              itemSkuId!,
+              poNumber!,
+              0,
+              "",
+              itemSkuName!);
+        }
+        inspectionId = serverInspectionID;
+      }
 
-        await loadFieldsFromDB();
-        hasInitialised.value = true;
-        _appStorage.specificationAnalyticalList =
-            await dao.getSpecificationAnalyticalFromTable(
-                specificationNumber, specificationVersion);
-        await setSpecAnalyticalTable();
-      }(),
-    );
+      await loadFieldsFromDB();
+      hasInitialised.value = true;
+      _appStorage.specificationAnalyticalList =
+          await dao.getSpecificationAnalyticalFromTable(
+              specificationNumber!, specificationVersion!);
+      await setSpecAnalyticalTable();
+    });
   }
 
   Future<void> specificationSelection() async {
     bool isOnline = globalConfigController.hasStableInternet.value;
-    if (callerActivity == "TrendingReportActivity" || isMyInspectionScreen) {
+    if (callerActivity == "TrendingReportActivity" || isMyInspectionScreen!) {
       await Utils().offlineLoadCommodityVarietyDocuments(
-          specificationNumber, specificationVersion);
+          specificationNumber!, specificationVersion!);
 
       if (_appStorage.commodityVarietyData != null &&
           _appStorage.commodityVarietyData!.exceptions.isNotEmpty) {
@@ -218,13 +216,13 @@ class QCDetailsShortFormScreenController extends GetxController {
             _appStorage.specificationByItemSKUList!.first;
         specificationNumber = specificationByItemSKU.specificationNumber!;
         specificationVersion = specificationByItemSKU.specificationVersion!;
-        specificationName = specificationByItemSKU.specificationName!;
-        selectedSpecification = specificationByItemSKU.specificationName!;
-        specificationTypeName = specificationByItemSKU.specificationTypeName!;
+        specificationName = specificationByItemSKU.specificationName;
+        selectedSpecification = specificationByItemSKU.specificationName;
+        specificationTypeName = specificationByItemSKU.specificationTypeName;
         sampleSizeByCount = specificationByItemSKU.sampleSizeByCount ?? 0;
 
         await Utils().offlineLoadCommodityVarietyDocuments(
-            specificationNumber, specificationVersion);
+            specificationNumber!, specificationVersion!);
 
         if (_appStorage.commodityVarietyData != null &&
             _appStorage.commodityVarietyData!.exceptions.isNotEmpty) {
@@ -239,6 +237,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         }
       }
     }
+    return;
   }
 
   Future<String?> scanBarcode(
@@ -408,14 +407,14 @@ class QCDetailsShortFormScreenController extends GetxController {
     QualityControlItem? qualityControlItems =
         await dao.findQualityControlDetails(inspectionId!);
 
-    if (_appStorage.getLoginData() != null) {
+    if (_appStorage.getUserData() != null) {
       List<PurchaseOrderDetails> purchaseOrderDetails =
           await dao.getPODetailsFromTable(
-              poNumber, _appStorage.getLoginData()!.supplierId!);
+              poNumber!, _appStorage.getUserData()!.supplierId!);
 
       if (purchaseOrderDetails.isNotEmpty) {
         for (var i = 0; i < purchaseOrderDetails.length; i++) {
-          if (item_Sku_Id == purchaseOrderDetails[i].itemSkuId) {
+          if (itemSkuId == purchaseOrderDetails[i].itemSkuId) {
             qtyShippedController.text =
                 purchaseOrderDetails[i].quantity.toString();
           }

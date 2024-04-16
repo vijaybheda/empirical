@@ -11,6 +11,7 @@ import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/ui/components/drawer_header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
+import 'package:pverify/ui/photos_selection/photos_selection.dart';
 import 'package:pverify/ui/qc_short_form/spec_analytical_table.dart';
 import 'package:pverify/ui/side_drawer.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -74,7 +75,7 @@ class QCDetailsShortFormScreen
               //TODO: Implement discard
             },
             onCameraTap: () {
-              //TODO: Implement camera
+              Get.to(() => const PhotosSelection());
             },
             onSpecInstructionTap: () {
               //TODO: Implement spec instruction

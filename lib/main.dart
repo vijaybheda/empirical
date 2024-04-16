@@ -56,9 +56,9 @@ class MyApp extends StatelessWidget {
           popGesture: Get.isPopGestureEnable,
           transitionDuration: const Duration(milliseconds: 500),
           defaultGlobalState: true,
-          home: const Worksheet(),
+          home: const LoginScreen(),
         ),
-        child: Worksheet(),
+        child: LoginScreen(),
       ),
     );
   }

@@ -1,11 +1,10 @@
-// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/photos_selection/photos_selection_controller.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -113,9 +112,9 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
             ],
           ),
         ),
-        // FooterContentView(
-        //   hasLeftButton: false,
-        // )
+        FooterContentView(
+          hasLeftButton: false,
+        )
       ],
     );
   }
@@ -130,7 +129,7 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
           childAspectRatio: 0.90),
       itemBuilder: (BuildContext context, int rowIndex) {
         return Container(
-          padding: EdgeInsets.only(top: 20, bottom: 10),
+          padding: const EdgeInsets.only(top: 20, bottom: 10),
           alignment: Alignment.topCenter,
           color: AppColors.lightGrey,
           child: Column(
@@ -140,7 +139,7 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
                     fit: BoxFit.contain,
                     File(controller.imgList[rowIndex].path)),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               SizedBox(

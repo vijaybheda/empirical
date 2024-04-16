@@ -6,9 +6,9 @@ import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/inspection.dart';
-import 'package:pverify/models/login_data.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/qc_header_details.dart';
+import 'package:pverify/models/user_data.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/cache_download_screen.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_screen.dart';
@@ -70,7 +70,7 @@ class CommodityIDScreenController extends GetxController {
   }
 
   Future<void> assignInitialData() async {
-    LoginData? currentUser = appStorage.getLoginData();
+    UserData? currentUser = appStorage.getUserData();
     if (currentUser == null) {
       return;
     }

@@ -5,7 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/purchase_order_details_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
+import 'package:pverify/models/inspection.dart';
+import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/partner_item_sku_inspections.dart';
 import 'package:pverify/models/purchase_order_item.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/ui/components/bottom_custom_button_view.dart';
@@ -145,15 +148,71 @@ class PurchaseOrderDetailsScreen
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: PurchaseOrderListViewItem(
               goodsItem: goodsItem,
-              inspectTap: () {
-                // Implement your logic
+              inspectTap: (
+                Inspection? inspection,
+                PartnerItemSKUInspections? partnerItemSKU,
+                String lotNo,
+                String packDate,
+                bool isComplete,
+                bool ispartialComplete,
+                int inspectionId,
+                String po_number,
+                String seal_number,
+              ) async {
+                FinishedGoodsItemSKU? finishedGoodsItemSKU = controller
+                    .appStorage.selectedItemSKUList
+                    .elementAtOrNull(index);
+                if (finishedGoodsItemSKU == null || inspection == null) {
+                  return;
+                }
+
+                await controller.onInspectTap(
+                  goodsItem,
+                  finishedGoodsItemSKU,
+                  inspection,
+                  partnerItemSKU,
+                  lotNo,
+                  packDate,
+                  isComplete,
+                  ispartialComplete,
+                  inspectionId,
+                  po_number,
+                  seal_number,
+                  (data) {
+                    // TODO: implement below
+                    // current_lot_number = data[Consts.Lot_No];
+                    // current_Item_SKU = data[Consts.ITEM_SKU];
+                    // current_pack_Date = data[Consts.PACK_DATE];
+                    // current_Item_SKU_ID = data[Consts.ITEM_SKU_ID];
+                    // current_lot_size = data[Consts.LOT_SIZE];
+                    // current_unique_id = data[Consts.ITEM_UNIQUE_ID];
+                    // item_SKU_Name = data[Consts.ITEM_SKU_NAME];
+                    // commodityID = data[Consts.COMMODITY_ID];
+                    // commodityName = data[Consts.COMMODITY_NAME];
+                    // gtin = data[Consts.GTIN];
+                  },
+                );
               },
-              onTapEdit: () {
-                // Implement your logic
+              onTapEdit: (Inspection? inspection,
+                  PartnerItemSKUInspections? partnerItemSKU) async {
+                FinishedGoodsItemSKU? finishedGoodsItemSKU = controller
+                    .appStorage.selectedItemSKUList
+                    .elementAtOrNull(index);
+                if (finishedGoodsItemSKU == null || inspection == null) {
+                  return;
+                }
+                await controller.onEditIconTap(goodsItem, finishedGoodsItemSKU,
+                    inspection, partnerItemSKU);
               },
-              infoTap: () {
-                // Implement your logic
+              infoTap: (Inspection? inspection,
+                  PartnerItemSKUInspections? partnerItemSKU) async {
+                await controller.onInformationIconTap(goodsItem);
               },
+              partnerID: partner.id!,
+              position: index,
+              productTransfer: controller.productTransfer ?? '',
+              po_number: qcHeaderDetails!.poNo!,
+              seal_number: qcHeaderDetails!.sealNo!,
             ),
           ),
         );
@@ -207,15 +266,21 @@ class SearchOrderItemsWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(color: AppColors.white),
             ),
-            suffixIcon: IconButton(
-              onPressed: () {
-                Get.find<PurchaseOrderDetailsController>().clearSearch();
-              },
-              icon: Icon(
-                Icons.clear,
-                color: AppColors.white,
-              ),
-            ),
+            suffixIcon: Get.find<PurchaseOrderDetailsController>()
+                    .searchController
+                    .text
+                    .trim()
+                    .isEmpty
+                ? const Offstage()
+                : IconButton(
+                    onPressed: () {
+                      Get.find<PurchaseOrderDetailsController>().clearSearch();
+                    },
+                    icon: Icon(
+                      Icons.clear,
+                      color: AppColors.white,
+                    ),
+                  ),
           ),
         ),
       ),
