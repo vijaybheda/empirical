@@ -58,8 +58,9 @@ dependencies:
   bcrypt: ^1.1.3
   pointycastle: ^3.7.4
   simple_barcode_scanner: ^0.1.1
-  image_cropper: ^1.4.0  
+  image_cropper: ^1.4.0
   open_file: ^3.3.2
+
 
 dev_dependencies:
   flutter_test:

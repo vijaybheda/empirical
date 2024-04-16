@@ -177,7 +177,7 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
                             context,
                             AppStrings.inspectionPhotoTitle,
                             '',
-                            onYesTap: () {},
+                            onYesTap: (b) {},
                           );
                         },
                         child: Text(AppStrings.title,

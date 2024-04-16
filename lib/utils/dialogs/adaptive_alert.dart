@@ -40,7 +40,7 @@ class AdaptiveAlert {
   static void customAlertWithTextField(
     context, {
     required Text title,
-    required TextField content,
+    required Widget content,
     required List<Widget> actions,
   }) {
     showDialog(

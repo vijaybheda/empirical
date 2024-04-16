@@ -1,5 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
+
 class AppImages {
   static const String appLogo = 'assets/images/ic_logo.png';
   static const String ic_Wifi = 'assets/images/ic_wifi.png';
@@ -21,4 +22,10 @@ class AppImages {
   static const String ic_trailerNose = 'assets/images/trailer_nose.png';
   static const String ic_trailerTail = 'assets/images/trailer_tail.png';
   static const String ic_minus = 'assets/images/minus_icon.png';
+  static const String ic_information = 'assets/images/information_icon.png';
+  static const String ic_informationDisabled = 'assets/images/information_icon_disabled.png';
+  static const String ic_camera = 'assets/images/camera_icon.png';
+  static const String ic_specComments = 'assets/images/spec_comment.png';
+  static const String ic_specCommentsAdded = 'assets/images/spec_comment_added.png';
 }
+

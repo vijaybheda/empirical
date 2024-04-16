@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/adaptive_alert.dart';
@@ -46,7 +47,10 @@ class AppAlertDialog {
     BuildContext context,
     String title,
     String message, {
-    required Function()? onYesTap,
+    required Function(String? value)? onYesTap,
+    double? windowWidth,
+    bool? isMultiLine = false,
+    String? value = '',
   }) {
     String textFieldValue = '';
     AdaptiveAlert.customAlertWithTextField(context,
@@ -57,31 +61,36 @@ class AppAlertDialog {
               fontWeight: FontWeight.w500,
               textStyle: TextStyle(color: AppColors.white)),
         ),
-        content: TextField(
-          style: GoogleFonts.poppins(
-              fontSize: 30.sp,
-              fontWeight: FontWeight.normal,
-              textStyle: TextStyle(color: AppColors.white)),
-          cursorColor: Theme.of(context).textSelectionTheme.cursorColor,
-          decoration: InputDecoration(
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.hintColor),
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Theme.of(context).primaryColor),
-            ),
-            hintText: '',
-            hintStyle: GoogleFonts.poppins(
+        content: SizedBox(
+          width: windowWidth,
+          child: TextFormField(
+            style: GoogleFonts.poppins(
                 fontSize: 30.sp,
                 fontWeight: FontWeight.normal,
-                textStyle: TextStyle(color: AppColors.hintColor)),
-            border: InputBorder.none,
-            isDense: true,
-            contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+                textStyle: TextStyle(color: AppColors.white)),
+            maxLines: isMultiLine == true ? null : 1,
+            cursorColor: Theme.of(context).textSelectionTheme.cursorColor,
+            initialValue: value,
+            decoration: InputDecoration(
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: AppColors.hintColor),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Theme.of(context).primaryColor),
+              ),
+              hintText: '',
+              hintStyle: GoogleFonts.poppins(
+                  fontSize: 30.sp,
+                  fontWeight: FontWeight.normal,
+                  textStyle: TextStyle(color: AppColors.hintColor)),
+              border: InputBorder.none,
+              isDense: true,
+              contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+            ),
+            onChanged: (value) {
+              textFieldValue = value;
+            },
           ),
-          onChanged: (value) {
-            textFieldValue = value;
-          },
         ),
         actions: [
           TextButton(
@@ -99,7 +108,7 @@ class AppAlertDialog {
               onPressed: () {
                 Get.back();
                 if (onYesTap != null) {
-                  onYesTap();
+                  onYesTap(textFieldValue);
                 }
               },
               child: Text(

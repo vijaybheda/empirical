@@ -322,7 +322,7 @@ class ApplicationDao {
           inspectionId = result[0]["Inspection_ID"];
         }
       } catch (e) {
-        print("Error has occurred while finding a user id: $e");
+        debugPrint("Error has occurred while finding a user id: $e");
         return -1;
       }
 
@@ -353,9 +353,9 @@ class ApplicationDao {
         });
       }
 
-      print("Inside specification table");
+      debugPrint("Inside specification table");
     } catch (e) {
-      print("Error has occurred while creating an inspection: $e");
+      debugPrint("Error has occurred while creating an inspection: $e");
       return -1;
     }
 
@@ -471,7 +471,7 @@ class ApplicationDao {
         );
       });
     } catch (e) {
-      print('Error has occurred while updating an inspection: $e');
+      debugPrint('Error has occurred while updating an inspection: $e');
       return -1;
     }
   }
@@ -2438,7 +2438,7 @@ class ApplicationDao {
           inspectionId = cursor[0][ResultRejectionDetailsColumn.INSPECTION_ID];
         }
       } catch (e) {
-        print("Error has occurred while finding a user id: $e");
+        debugPrint("Error has occurred while finding a user id: $e");
         return -1;
       }
 
@@ -2464,7 +2464,7 @@ class ApplicationDao {
             whereArgs: [inspectionID]);
       }
     } catch (e) {
-      print("Error has occurred while creating an inspection: $e");
+      debugPrint("Error has occurred while creating an inspection: $e");
       return -1;
     }
     return inspectionId;
@@ -2489,7 +2489,7 @@ class ApplicationDao {
               cursor.first[ResultRejectionDetailsColumn.INSPECTION_ID] as int?;
         }
       } catch (e) {
-        print("Error has occurred while finding a user id. $e");
+        debugPrint("Error has occurred while finding a user id. $e");
         return -1;
       }
 
@@ -2517,7 +2517,7 @@ class ApplicationDao {
         });
       }
     } catch (e) {
-      print("Error has occurred while creating an inspection. $e");
+      debugPrint("Error has occurred while creating an inspection. $e");
       return -1;
     }
     return inspectionId ?? -1;
@@ -2598,7 +2598,7 @@ class ApplicationDao {
         list.add(item);
       }
     } catch (e) {
-      print('Error has occurred while finding quality control items: $e');
+      debugPrint('Error has occurred while finding quality control items: $e');
       return [];
     }
 
@@ -2622,7 +2622,7 @@ class ApplicationDao {
         return true;
       }
     } catch (e) {
-      print("Error has occurred while finding pfg: $e");
+      debugPrint("Error has occurred while finding pfg: $e");
       return false;
     }
 
