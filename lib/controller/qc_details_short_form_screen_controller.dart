@@ -398,6 +398,7 @@ class QCDetailsShortFormScreenController extends GetxController {
 
       row_no++;
     }
+    update();
   }
 
   Future<void> loadFieldsFromDB() async {

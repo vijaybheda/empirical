@@ -173,7 +173,7 @@ Future<ByteData> loadImageFromAssets(String path) async {
 }
 
 Future<String> saveImage(imageNetworkUrl) async {
-  await FileService.requestFilePermission();
+  // await FileService.requestFilePermission();
   if (imageNetworkUrl.isEmpty) {
     ByteData data = await loadImageFromAssets('assets/app_images/app_icon.png');
     String path = await FileService.getDownloadDirectory();

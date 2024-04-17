@@ -2415,9 +2415,12 @@ class ApplicationDao {
       final Database db = dbProvider.lazyDatabase;
       var cursor = await db.rawQuery(query, args);
 
-      SpecificationAnalyticalRequest? item =
-          SpecificationAnalyticalRequest.fromJson(cursor.first);
-      return item;
+      if (cursor.isNotEmpty) {
+        SpecificationAnalyticalRequest? item =
+            SpecificationAnalyticalRequest.fromJson(cursor.first);
+        return item;
+      }
+      return null;
     } catch (e) {
       debugPrint("Error has occurred while finding quality control items: $e");
       return null;

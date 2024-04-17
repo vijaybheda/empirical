@@ -1,15 +1,12 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:device_info_plus/device_info_plus.dart';
+// import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
-import 'package:file_picker/file_picker.dart';
+// import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:pverify/models/file_upload_model.dart';
 import 'package:pverify/services/network_request_service/api_urls.dart';
 import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
@@ -32,7 +29,7 @@ class FileService {
     return httpClient;
   }
 
-  static Future<FileUploadData?> uploadFile(FilePickerResult? fileResult,
+  /*static Future<FileUploadData?> uploadFile(FilePickerResult? fileResult,
       {OnUploadProgressCallback? onUploadProgress}) async {
     try {
       MultipartRequest request = MultipartRequest(
@@ -108,7 +105,7 @@ class FileService {
           'Error uploading file, Status code: ${onError.toString()}');
     });
     return response;
-  }
+  }*/
 
   static Future<void> fileDownload(String fileUrl,
       {OnUploadProgressCallback? onDownloadProgress}) async {
@@ -144,7 +141,7 @@ class FileService {
     } finally {}
   }
 
-  static Future<bool> requestFilePermission() async {
+  /*static Future<bool> requestFilePermission() async {
     bool checkPermission = false;
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     if (Platform.isAndroid) {
@@ -170,7 +167,7 @@ class FileService {
     }
 
     return checkPermission;
-  }
+  }*/
 
   static Future<Response> uploadOrDeleteProfileImageWithProgress(
       String filePath,

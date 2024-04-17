@@ -21,4 +21,11 @@ class AppImages {
   static const String ic_trailerNose = 'assets/images/trailer_nose.png';
   static const String ic_trailerTail = 'assets/images/trailer_tail.png';
   static const String ic_minus = 'assets/images/minus_icon.png';
+
+  static const String commentAddedImage =
+      'assets/images/spec_comment_added.png';
+  static const String commentImage = 'assets/images/spec_comment.png';
+
+  static const String infoAddedImage = 'assets/images/information_icon.png';
+  static const String infoImage = 'assets/images/information_icon_disabled.png';
 }

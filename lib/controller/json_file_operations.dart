@@ -511,7 +511,6 @@ class JsonFileOperations {
     var storagePath = await Utils().getExternalStoragePath();
     final Directory directory =
         Directory("$storagePath${FileManString.jsonFilesCache}/");
-    print('UOMJson directory ${directory.path}');
 
     String jsonLoadText = await getJsonFileContent(directory,
         fileName: FileManString.UOM_FILENAME);
@@ -557,7 +556,7 @@ class JsonFileOperations {
     return buf.toString();
   }
 
-  void viewGradePdf() async {
+  Future<void> viewGradePdf() async {
     String filename2 =
         "GRADE_${_appStorage.commodityVarietyData!.commodityId}.pdf";
     var storagePath = await Utils().getExternalStoragePath();
