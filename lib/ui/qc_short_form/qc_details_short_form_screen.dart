@@ -40,7 +40,11 @@ class QCDetailsShortFormScreen
   @override
   Widget build(BuildContext context) {
     return GetBuilder<QCDetailsShortFormScreenController>(
-      init: QCDetailsShortFormScreenController(partner: partner),
+      init: QCDetailsShortFormScreenController(
+          partner: partner,
+          carrier: carrier,
+          commodity: commodity,
+          qcHeaderDetails: qcHeaderDetails),
       builder: (controller) {
         if (!controller.hasInitialised.value) {
           return Scaffold(
@@ -83,9 +87,7 @@ class QCDetailsShortFormScreen
             onSpecInstructionTap: () {
               //TODO: Implement spec instruction
             },
-            onSpecificationTap: () {
-              //TODO: Implement specification
-            },
+            onSpecificationTap: () {},
             onGradeTap: () async {
               await JsonFileOperations.instance.viewGradePdf();
             },
@@ -576,9 +578,9 @@ class QCDetailsShortFormScreen
                                           ],
                                         ),
                                         DropdownButtonFormField<UOMItem>(
-                                          value: controller.uom,
+                                          value: controller.selectedUOM,
                                           onChanged: (UOMItem? value) {
-                                            controller.uom = value;
+                                            controller.selectedUOM = value;
                                             controller.update();
                                           },
                                           items: controller.uomList

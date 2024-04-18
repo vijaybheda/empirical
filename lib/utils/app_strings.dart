@@ -608,7 +608,8 @@ class FileManString {
   static const String AGENCY_JSON_STRING_FORMAT = "%d_agency.json";
   static const String GRADE_COMMODITY_DETAIL_STRING_FORMAT =
       "%d_%d_gradedetail.json";
-  static const String COMMODITYDOCS_JSON_STRING_FORMAT = "WS_%s.json";
+  static const String COMMODITYDOCS_JSON_STRING_FORMAT =
+      "specification_%s.json";
   static const String SPECANALYTICAL_JSON_STRING_FORMAT = "SA_%s_%s.json";
   static const String SEVERITIES_JSON_STRING_FORMAT = "SEV_%s.json";
   static const String SPECIFICATION_GRADE_TOLERANCE_JSON_STRING_FORMAT =

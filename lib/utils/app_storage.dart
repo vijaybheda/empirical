@@ -77,7 +77,9 @@ class AppStorage extends GetxController {
   Map<String, String> mapLogin = <String, String>{};
 
   Inspection? currentInspection;
+  String? currentSealNumber;
 
+  bool resumeFromSpecificationAttributes = false;
   // instance of this class
   static AppStorage get instance => _instance;
   static final AppStorage _instance = AppStorage._internal();
