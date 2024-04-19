@@ -102,7 +102,7 @@ class BoxTextFieldLogin extends StatelessWidget {
 class BoxTextField1 extends StatelessWidget {
   final Color? textColor;
   final Color? hintColor;
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final bool obsecure;
   final bool readOnly;
   final VoidCallback onTap;
@@ -115,28 +115,69 @@ class BoxTextField1 extends StatelessWidget {
   final String errorText;
   final String hintText;
   final bool isPasswordField;
+  final String? intialValue;
 
-  const BoxTextField1(
-      {Key? key,
-      this.textColor = Colors.white,
-      this.hintColor = Colors.grey,
-      required this.controller,
-      this.keyboardType = TextInputType.text,
-      this.obsecure = false,
-      required this.onTap,
-      this.isMulti = false,
-      this.readOnly = false,
-      this.hintText = "",
-      this.autofocus = false,
-      required this.errorText,
-      this.enabled = true,
-      this.isPasswordField = false,
-      required this.onEditingCompleted,
-      required this.onChanged})
-      : super(key: key);
+  const BoxTextField1({
+    Key? key,
+    this.textColor = Colors.white,
+    this.hintColor = Colors.grey,
+    this.controller,
+    this.keyboardType = TextInputType.text,
+    this.obsecure = false,
+    required this.onTap,
+    this.isMulti = false,
+    this.readOnly = false,
+    this.hintText = "",
+    this.autofocus = false,
+    required this.errorText,
+    this.enabled = true,
+    this.isPasswordField = false,
+    required this.onEditingCompleted,
+    required this.onChanged,
+    this.intialValue,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      height: 105.h,
+      child: TextFormField(
+        initialValue: intialValue,
+        textAlignVertical: TextAlignVertical.center,
+        onChanged: onChanged,
+        onEditingComplete: onEditingCompleted,
+        autofocus: autofocus,
+        minLines: isMulti ? 4 : 1,
+        maxLines: isMulti ? null : 1,
+        onTap: onTap,
+        enabled: enabled,
+        readOnly: readOnly,
+        keyboardType: keyboardType,
+        controller: controller,
+        style: GoogleFonts.poppins(
+            fontSize: 32.sp,
+            fontWeight: FontWeight.w400,
+            textStyle: TextStyle(color: textColor)),
+        cursorColor: Theme.of(context).textSelectionTheme.cursorColor,
+        decoration: InputDecoration(
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: AppColors.hintColor),
+          ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Theme.of(context).primaryColor),
+          ),
+          hintText: hintText,
+          hintStyle: GoogleFonts.poppins(
+              fontSize: 32.sp,
+              fontWeight: FontWeight.w400,
+              textStyle: TextStyle(color: hintColor)),
+          border: InputBorder.none,
+          isDense: true,
+          contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+        ),
+      ),
+    );
     return GetBuilder(
         init: TextFieldController(),
         builder: (pwdController) {

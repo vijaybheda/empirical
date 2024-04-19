@@ -2,6 +2,8 @@
 
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 
+import '../../models/defect_item.dart';
+
 class DefectsClass {
   RxList<SampleSetsObject>? sampleSet;
   DefectsClass({
@@ -18,6 +20,7 @@ class SampleSetsObject {
   int? lotNumber = 0;
   String? packDate = '';
   bool? complete = false;
+  List<DefectItem>? defectItem;
 
   SampleSetsObject({
     this.sampleValue,
@@ -28,5 +31,6 @@ class SampleSetsObject {
     this.lotNumber,
     this.packDate,
     this.complete,
+    this.defectItem,
   });
 }

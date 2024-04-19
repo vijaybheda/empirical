@@ -7,7 +7,7 @@ import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/trailer_temp.dart';
 import 'package:pverify/models/trailer_temperature_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
-import 'package:pverify/ui/trailer_temp/trailerTempClass.dart';
+import 'package:pverify/ui/trailer_temp/trailertemp_class.dart';
 import 'package:pverify/ui/trailer_temp/trailertemprature_details.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
@@ -188,12 +188,12 @@ class TrailerTempController extends GetxController {
     List? trailerTempMap = await dao.findTempTrailerTemperatureItems(
         carrier1!.id!.toInt(), orderNumber1.toString());
 
-    if(trailerTempMap!=null){
-        for (var element in trailerTempMap) {
-          addData(
-              element['Location'], element['Level'], element['value'].toString());
-        }
-     }
+    if (trailerTempMap != null) {
+      for (var element in trailerTempMap) {
+        addData(
+            element['Location'], element['Level'], element['value'].toString());
+      }
+    }
 
     TrailerTemperatureDetails? temperatureDetails =
         await dao.findTempTrailerTemperatureDetails(

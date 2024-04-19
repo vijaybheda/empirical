@@ -339,7 +339,7 @@ class QCDetailsShortFormScreenController extends GetxController {
       _appStorage.currentInspection?.inspectionId = inspectionId;
       // serverInspectionID = inspectionId!;
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
       return;
     }
   }

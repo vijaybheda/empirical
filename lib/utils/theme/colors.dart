@@ -31,6 +31,7 @@ class AppColors {
   static Color primaryBlack = const Color.fromARGB(255, 0, 0, 0);
   static Color primary = const Color(0xff0ba900);
   static Color accentColor = const Color(0xff0ba900);
+  static Color greenButtonColor = const Color(0xff138909);
   static Color textInput = const Color(0xffFFFFFD);
   static Color textColor = const Color(0xffFFFFFF);
   static Color hintColor = const Color(0xffABABAB);
@@ -82,4 +83,5 @@ class AppColors {
 
   static Color orange = const Color(0xffFFA500);
   static Color yellow = const Color(0xffFFFF00);
+  static Color iconBlue = const Color(0xff5acdf1);
 }

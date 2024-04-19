@@ -557,7 +557,7 @@ class Utils {
         return contents;
       }
     } catch (e) {
-      print('loadFileToStringFromExternalStorage error: $e');
+      debugPrint('loadFileToStringFromExternalStorage error: $e');
     }
     return null;
   }

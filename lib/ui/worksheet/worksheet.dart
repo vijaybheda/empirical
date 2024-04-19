@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_string_interpolations, prefer_is_empty, unnecessary_brace_in_string_interps, unused_local_variable, avoid_init_to_null
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,6 +10,7 @@ import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pverify/models/defect_item.dart';
 import 'package:pverify/ui/worksheet/defects_data.dart';
 import 'package:pverify/controller/worksheet_controller.dart';
 import 'package:pverify/utils/app_const.dart';
@@ -17,6 +20,8 @@ import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
+
+import '../../utils/dialogs/app_alerts.dart';
 
 class Worksheet extends GetView<WorksheetController> {
   const Worksheet({
@@ -187,13 +192,15 @@ class Worksheet extends GetView<WorksheetController> {
         () => Expanded(
           child: ListView.builder(
               itemCount: controller.sampleSetObs.length,
-              itemBuilder: (BuildContext context, int index) {
+              itemBuilder: (BuildContext context, int setIndex) {
                 return Column(
                   children: [
                     sampleSetsUI(
-                        index,
-                        controller.sampleSetObs[index].sampleValue.toString(),
-                        controller),
+                      context,
+                      setIndex,
+                      controller.sampleSetObs[setIndex].sampleValue.toString(),
+                      controller,
+                    ),
                     /* Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -346,6 +353,51 @@ class Worksheet extends GetView<WorksheetController> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               customButton(
+                AppColors.white,
+                AppStrings.specException,
+                (MediaQuery.of(context).size.width / 4.5),
+                320.h,
+                GoogleFonts.poppins(
+                    fontSize: 28.sp,
+                    fontWeight: FontWeight.w500,
+                    textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+                onClickAction: () {},
+              ),
+              SizedBox(
+                width: 20.w,
+              ),
+              customButton(
+                AppColors.white,
+                AppStrings.specification,
+                (MediaQuery.of(context).size.width / 4.5),
+                320.h,
+                GoogleFonts.poppins(
+                    fontSize: 28.sp,
+                    fontWeight: FontWeight.w500,
+                    textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+                onClickAction: () {},
+              ),
+              SizedBox(
+                width: 20.w,
+              ),
+              customButton(
+                  AppColors.white,
+                  AppStrings.grade,
+                  (MediaQuery.of(context).size.width / 4.5),
+                  320.h,
+                  GoogleFonts.poppins(
+                    fontSize: 28.sp,
+                    fontWeight: FontWeight.w500,
+                    textStyle: TextStyle(
+                      color: AppColors.textFieldText_Color,
+                    ),
+                  ), onClickAction: () {
+                controller.openPDFFile(context);
+              }),
+              SizedBox(
+                width: 20.w,
+              ),
+              customButton(
                   AppColors.white,
                   AppStrings.specInstrunction,
                   (MediaQuery.of(context).size.width / 4.5),
@@ -356,50 +408,8 @@ class Worksheet extends GetView<WorksheetController> {
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
                   onClickAction: () {
-
-                  }),
-              SizedBox(
-                width: 20.w,
-              ),
-              customButton(
-                  AppColors.white,
-                  AppStrings.specification,
-                  (MediaQuery.of(context).size.width / 4.5),
-                  320.h,
-                  GoogleFonts.poppins(
-                      fontSize: 28.sp,
-                      fontWeight: FontWeight.w500,
-                      textStyle:
-                          TextStyle(color: AppColors.textFieldText_Color)),
-                  onClickAction: () => {}),
-              SizedBox(
-                width: 20.w,
-              ),
-              customButton(
-                  AppColors.white,
-                  AppStrings.grade,
-                  (MediaQuery.of(context).size.width / 4.5),
-                  320.h,
-                  GoogleFonts.poppins(
-                      fontSize: 28.sp,
-                      fontWeight: FontWeight.w500,
-                      textStyle:
-                          TextStyle(color: AppColors.textFieldText_Color)),
-                  onClickAction: () => {}),
-              SizedBox(
-                width: 20.w,
-              ),
-              customButton(
-                  AppColors.white,
-                  AppStrings.specInstrunction,
-                  (MediaQuery.of(context).size.width / 4.5),
-                  320.h,
-                  GoogleFonts.poppins(
-                      fontSize: 28.sp,
-                      fontWeight: FontWeight.w500,
-                      textStyle:
-                          TextStyle(color: AppColors.textFieldText_Color)),
-                  onClickAction: () => {}),
+                controller.openPDFFile(context);
+              })
             ],
           ),
         ),
@@ -413,8 +423,8 @@ class Worksheet extends GetView<WorksheetController> {
 
 // SAMPLE SET'S LIST UI
 
-Widget sampleSetsUI(
-    int index, String sampleValue, WorksheetController controller) {
+Widget sampleSetsUI(BuildContext context, int index, String sampleValue,
+    WorksheetController controller) {
   return Column(
     children: [
       Container(
@@ -443,37 +453,381 @@ Widget sampleSetsUI(
               child: Container(
                 alignment: Alignment.center,
                 color: index % 2 == 0
-                    ? AppColors.yellow
+                    ? AppColors.orange
                     : AppColors.textFieldText_Color,
                 child: Text(
                   textAlign: TextAlign.center,
                   '${sampleValue.toString()} samples   Set #${index + 1}',
                   style: GoogleFonts.poppins(
-                      fontSize: 32.sp,
-                      fontWeight: FontWeight.w400,
-                      textStyle: TextStyle(
-                          color: index % 2 == 0
-                              ? AppColors.black
-                              : AppColors.white)),
+                    fontSize: 32.sp,
+                    fontWeight: FontWeight.w400,
+                    textStyle: TextStyle(
+                      color: index % 2 == 0 ? AppColors.black : AppColors.white,
+                    ),
+                  ),
                 ),
               ),
             )
           ],
         ),
       ),
-      SizedBox(
-        height: 50.h,
+      controller.sampleSetObs[index].defectItem?.isNotEmpty ?? false
+          ? Column(
+              children: [
+                SizedBox(height: 50.h),
+                defectCategoryTagRow(),
+                SizedBox(height: 50.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 50.w),
+                  child: Divider(),
+                )
+              ],
+            )
+          : const SizedBox(),
+      Column(
+        children: (controller.sampleSetObs[index].defectItem ?? [])
+            .map(
+              (e) => defectRow(
+                context: context,
+                controller: controller,
+                defectItemIndex: controller.getDefectItemIndex(
+                    setIndex: index, defectItem: e),
+                defectItem: e,
+                setIndex: index,
+              ),
+            )
+            .toList(),
       ),
-      Text(
-        AppStrings.addDefect,
-        style: GoogleFonts.poppins(
-            fontSize: 36.sp,
-            fontWeight: FontWeight.w600,
-            textStyle: TextStyle(color: AppColors.primary)),
+      SizedBox(height: 20.h),
+      controller.sampleSetObs[index].defectItem?.isNotEmpty ?? false
+          ? Padding(
+              padding: EdgeInsets.symmetric(horizontal: 50.w),
+              child: Divider(),
+            )
+          : const SizedBox(),
+      SizedBox(height: 20.h),
+      GestureDetector(
+        onTap: () {
+          controller.addDefectRow(setIndex: index);
+        },
+        child: Text(
+          AppStrings.addDefect,
+          style: GoogleFonts.poppins(
+              fontSize: 36.sp,
+              fontWeight: FontWeight.w600,
+              textStyle: TextStyle(color: AppColors.primary)),
+        ),
       ),
-      SizedBox(
-        height: 50.h,
-      ),
+      SizedBox(height: 50.h),
     ],
+  );
+}
+
+Widget defectRow({
+  required BuildContext context,
+  required WorksheetController controller,
+  required DefectItem? defectItem,
+  required int defectItemIndex,
+  required int setIndex,
+}) {
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: 50.w),
+    child: Column(
+      children: [
+        SizedBox(height: 10),
+        Row(
+          children: [
+            Flexible(
+              flex: 1,
+              child: InkWell(
+                onTap: () {
+                  controller.removeDefectRow(
+                    setIndex: setIndex,
+                    rowIndex: defectItemIndex,
+                  );
+                },
+                child: Image.asset(
+                  AppImages.ic_minus,
+                  width: 50.w,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+            SizedBox(width: 10.w),
+            Flexible(
+              flex: 3,
+              child: Container(
+                width: 120,
+                padding: EdgeInsets.only(top: 5),
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  dropdownColor: Theme.of(context).colorScheme.background,
+                  iconEnabledColor: AppColors.hintColor,
+                  value: controller.sampleSetObs[setIndex]
+                          .defectItem?[defectItemIndex].name ??
+                      "Select",
+                  icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+                  items: <String>['Select', 'Yes', 'No', 'N/A']
+                      .map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    controller.onDropDownChange(
+                      value: value ?? "",
+                      setIndex: setIndex,
+                      rowIndex: defectItemIndex,
+                    );
+                  },
+                ),
+              ),
+            ),
+            SizedBox(width: 20.w),
+            Flexible(
+              flex: 1,
+              child: BoxTextField1(
+                keyboardType: TextInputType.number,
+                controller: defectItem?.injuryTextEditingController,
+                onTap: () {
+                  defectItem?.injuryTextEditingController?.text = '';
+                },
+                errorText: '',
+                onEditingCompleted: () {},
+                onChanged: (v) {
+                  controller.onTextChange(
+                    value: v,
+                    setIndex: setIndex,
+                    rowIndex: defectItemIndex,
+                    fieldName: AppStrings.injury,
+                  );
+                },
+              ),
+            ),
+            SizedBox(width: 20.w),
+            Flexible(
+              flex: 1,
+              child: BoxTextField1(
+                keyboardType: TextInputType.number,
+                controller: defectItem?.damageTextEditingController,
+                onTap: () {
+                  defectItem?.damageTextEditingController?.text = '';
+                },
+                errorText: '',
+                onEditingCompleted: () {},
+                onChanged: (v) {
+                  controller.onTextChange(
+                    value: v,
+                    setIndex: setIndex,
+                    rowIndex: defectItemIndex,
+                    fieldName: AppStrings.damage,
+                  );
+                },
+              ),
+            ),
+            SizedBox(width: 20.w),
+            Flexible(
+              flex: 1,
+              child: BoxTextField1(
+                keyboardType: TextInputType.number,
+                controller: defectItem?.sDamageTextEditingController,
+                onTap: () {
+                  defectItem?.sDamageTextEditingController?.text = '';
+                },
+                errorText: '',
+                onEditingCompleted: () {},
+                onChanged: (v) {
+                  controller.onTextChange(
+                    value: v,
+                    setIndex: setIndex,
+                    rowIndex: defectItemIndex,
+                    fieldName: AppStrings.seriousDamage,
+                  );
+                },
+              ),
+            ),
+            SizedBox(width: 20.w),
+            Flexible(
+              flex: 1,
+              child: BoxTextField1(
+                controller: defectItem?.vsDamageTextEditingController,
+                keyboardType: TextInputType.number,
+                onTap: () {
+                  defectItem?.vsDamageTextEditingController?.text = '';
+                },
+                errorText: '',
+                onEditingCompleted: () {},
+                onChanged: (v) {
+                  controller.onTextChange(
+                    value: v,
+                    setIndex: setIndex,
+                    rowIndex: defectItemIndex,
+                    fieldName: AppStrings.verySeriousDamage,
+                  );
+                },
+              ),
+            ),
+            SizedBox(width: 20.w),
+            Flexible(
+              flex: 1,
+              child: BoxTextField1(
+                controller: defectItem?.decayTextEditingController,
+                keyboardType: TextInputType.number,
+                onTap: () {
+                  defectItem?.decayTextEditingController?.text = '';
+                },
+                errorText: '',
+                onEditingCompleted: () {},
+                onChanged: (v) {
+                  controller.onTextChange(
+                    value: v,
+                    setIndex: setIndex,
+                    rowIndex: defectItemIndex,
+                    fieldName: AppStrings.decay,
+                  );
+                },
+              ),
+            ),
+            SizedBox(width: 10.w),
+            Flexible(
+              flex: 1,
+              child: Icon(
+                Icons.photo_camera,
+                color: Colors.cyanAccent,
+                size: 90.w,
+              ),
+            ),
+            SizedBox(width: 10.w),
+            Flexible(
+              flex: 1,
+              child: GestureDetector(
+                onTap: () {
+                  AppAlertDialog.textfiAlert(
+                    context,
+                    AppStrings.enterComment,
+                    '',
+                    onYesTap: (value) {
+                      defectItem?.instruction = value;
+                      controller.onCommentAdd(
+                        value: value ?? "",
+                        setIndex: setIndex,
+                        rowIndex: defectItemIndex,
+                      );
+                    },
+                    windowWidth: MediaQuery.of(context).size.width * 0.9,
+                    isMultiLine: true,
+                    value: defectItem?.instruction,
+                  );
+                },
+                child: Image.asset(
+                  (defectItem?.instruction?.isNotEmpty ?? false)
+                      ? AppImages.ic_specCommentsAdded
+                      : AppImages.ic_specComments,
+                  width: 80.w,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+            SizedBox(width: 10.h),
+            Flexible(
+              flex: 1,
+              child: Image.asset(
+                AppImages.ic_informationDisabled,
+                width: 80.w,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 10.h),
+      ],
+    ),
+  );
+}
+
+Widget defectCategoryTagRow() {
+  TextStyle textStyle = TextStyle(
+    color: Colors.white,
+    fontSize: 32.sp,
+  );
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: 50.w),
+    child: Row(
+      children: [
+        Flexible(flex: 1, child: Container()),
+        SizedBox(width: 15),
+        Flexible(flex: 2, child: Container()),
+        SizedBox(width: 15),
+        Flexible(
+          flex: 1,
+          child: defectCategoryTag(
+            tag: AppStrings.injuryIcon,
+            textStyle: textStyle,
+          ),
+        ),
+        SizedBox(width: 15),
+        Flexible(
+          flex: 1,
+          child: defectCategoryTag(
+            tag: AppStrings.damageIcon,
+            textStyle: textStyle,
+          ),
+        ),
+        SizedBox(width: 15),
+        Flexible(
+          flex: 1,
+          child: defectCategoryTag(
+            tag: AppStrings.seriousDamageIcon,
+            textStyle: textStyle,
+          ),
+        ),
+        SizedBox(width: 15),
+        Flexible(
+          flex: 1,
+          child: defectCategoryTag(
+            tag: AppStrings.verySeriousDamageIcon,
+            textStyle: textStyle,
+          ),
+        ),
+        SizedBox(width: 15),
+        Flexible(
+          flex: 1,
+          child: defectCategoryTag(
+            tag: AppStrings.decayIcon,
+            textStyle: textStyle,
+          ),
+        ),
+        SizedBox(width: 20),
+        Flexible(child: Container()),
+        SizedBox(width: 10),
+        Flexible(child: Container()),
+        SizedBox(width: 10),
+        Flexible(child: Container()),
+      ],
+    ),
+  );
+}
+
+Widget defectCategoryTag({required String tag, TextStyle? textStyle}) {
+  return Container(
+    decoration: BoxDecoration(
+      border: Border.all(color: AppColors.lightGrey), // Border color
+      borderRadius: BorderRadius.circular(15.0), // Border radius
+    ),
+    width: 72.w,
+    child: Text(
+        textAlign: TextAlign.center,
+        tag,
+        style: GoogleFonts.poppins(
+          fontSize: 32.sp,
+          fontWeight: FontWeight.w600,
+          textStyle: TextStyle(
+            color: AppColors.textFieldText_Color,
+          ),
+        ).merge(textStyle)),
   );
 }
