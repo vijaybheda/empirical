@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/overridden_result_item.dart';
 import 'package:pverify/models/partner_item_sku_inspections.dart';
@@ -428,7 +427,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
       if (time != 0) {
         DateTime date = DateTime.fromMillisecondsSinceEpoch(time);
 
-        String formattedDateString = DateFormat('MM-dd-yyyy').format(date);
+        String formattedDateString = Utils().dateFormat.format(date);
 
         appStorage.selectedItemSKUList[widget.position].packDate =
             formattedDateString;

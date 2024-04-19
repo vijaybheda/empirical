@@ -214,8 +214,8 @@ class SelectSupplierScreenController extends GetxController {
                   break;
               }
 
-              DateFormat fromUser = DateFormat("yyMMdd");
-              DateFormat myFormat = DateFormat("MM-dd-yyyy");
+              DateFormat fromUser = Utils().dateFormat;
+              DateFormat myFormat = Utils().dateFormat;
 
               try {
                 packDate = myFormat.format(fromUser.parse(packDate));
@@ -330,7 +330,7 @@ class SelectSupplierScreenController extends GetxController {
                 break;
             }
 
-            DateFormat formatter = DateFormat("MM-dd-yyyy");
+            DateFormat formatter = Utils().dateFormat;
             packDate = formatter.format(DateTime.parse(packDate));
 
             String check03 = barcodeResult.substring(24, 26);

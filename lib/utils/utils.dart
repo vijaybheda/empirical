@@ -43,11 +43,12 @@ class Utils {
   static String? appCurrentLanguage;
   static bool isDialogShowing = true;
 
-  static final _dateFormat = DateFormat.yMMMMd('en_US');
+  DateFormat get dateFormat => _dateFormat;
+  static final _dateFormat = DateFormat('dd-MM-yyyy');
 
   final AppStorage _appStorage = AppStorage.instance;
 
-  static ApplicationDao _dao = ApplicationDao();
+  static final ApplicationDao _dao = ApplicationDao();
 
   static DateTime fromDateTimeToUTCDateTime(
       String dateFormat, String timeFormat) {
@@ -731,4 +732,18 @@ double? parseDoubleOrReturnNull(dynamic value) {
     }
   }
   return null;
+}
+
+String generateUUID() {
+  final math.Random random = math.Random();
+  final StringBuffer buffer = StringBuffer();
+
+  for (int i = 0; i < 32; i++) {
+    if (i == 8 || i == 12 || i == 16 || i == 20) {
+      buffer.write('-');
+    }
+    buffer.write(random.nextInt(16).toRadixString(16));
+  }
+
+  return buffer.toString();
 }

@@ -2874,39 +2874,39 @@ class ApplicationDao {
     }
   }
 
-  Future<int?> createQualityControl(
-    int inspectionId,
-    int brandID,
-    int originID,
-    int qtyShipped,
-    int uomQtyShippedID,
-    String poNumber,
-    int pulpTempMin,
-    int pulpTempMax,
-    int recorderTempMin,
-    int recorderTempMax,
-    String rpc,
-    String claimFiledAgainst,
-    int qtyRejected,
-    int uomQtyRejectedID,
-    int reasonID,
-    String qcComments,
-    int qtyReceived,
-    int uomQtyReceivedID,
-    String specificationName,
-    int packDate,
-    String seal_no,
-    String lot_no,
-    String qcdOpen1,
-    String qcdOpen2,
-    String qcdOpen3,
-    String qcdOpen4,
-    int workDate,
-    String gtin,
-    int lot_size,
-    int shipDate,
-    String dateType,
-  ) async {
+  Future<int?> createQualityControl({
+    required int inspectionId,
+    required int brandID,
+    required int originID,
+    required int qtyShipped,
+    required int uomQtyShippedID,
+    required String poNumber,
+    required int pulpTempMin,
+    required int pulpTempMax,
+    required int recorderTempMin,
+    required int recorderTempMax,
+    required String rpc,
+    required String claimFiledAgainst,
+    required int qtyRejected,
+    required int uomQtyRejectedID,
+    required int reasonID,
+    required String qcComments,
+    required int qtyReceived,
+    required int uomQtyReceivedID,
+    required String specificationName,
+    required int packDate,
+    required String seal_no,
+    required String lot_no,
+    required String qcdOpen1,
+    required String qcdOpen2,
+    required String qcdOpen3,
+    required String qcdOpen4,
+    required int workDate,
+    required String gtin,
+    required int lot_size,
+    required int shipDate,
+    required String dateType,
+  }) async {
     int? qc_id;
     final Database db = dbProvider.lazyDatabase;
 
@@ -2957,21 +2957,21 @@ class ApplicationDao {
     return qc_id;
   }
 
-  Future<void> updateQualityControlShortForm(
-    int qcID,
-    int qtyShipped,
-    int uomQtyShippedID,
-    int qtyRejected,
-    int uomQtyRejectedID,
-    int qtyReceived,
-    int uomQtyReceivedID,
-    String selectedSpecification,
-    int packDate,
-    String lot_no,
-    String gtin,
-    int shipDate,
-    String dateType,
-  ) async {
+  Future<void> updateQualityControlShortForm({
+    required int qcID,
+    required int qtyShipped,
+    required int uomQtyShippedID,
+    required int qtyRejected,
+    required int uomQtyRejectedID,
+    required int qtyReceived,
+    required int uomQtyReceivedID,
+    required String selectedSpecification,
+    required int packDate,
+    required String lot_no,
+    required String gtin,
+    required int shipDate,
+    required String dateType,
+  }) async {
     final Database db = dbProvider.lazyDatabase;
 
     try {
@@ -3242,5 +3242,114 @@ class ApplicationDao {
     }
 
     return list;
+  }
+
+  Future<List<FinishedGoodsItemSKU>> getSelectedItemSKUList() async {
+    List<FinishedGoodsItemSKU> list = [];
+    try {
+      final Database db = await DatabaseHelper.instance.database;
+      String query = "SELECT * FROM ${DBTables.SELECTED_ITEM_SKU_LIST}";
+      List<Map> result = await db.rawQuery(query);
+      for (Map<dynamic, dynamic> item in result) {
+        bool isComplete = item[SelectedItemSkuListColumn.COMPLETE] == 'true';
+        bool isPartialComplete =
+            item[SelectedItemSkuListColumn.PARTIAL_COMPLETE] == 'true';
+        list.add(FinishedGoodsItemSKU(
+          id: item[SelectedItemSkuListColumn.SKU_ID],
+          sku: item[SelectedItemSkuListColumn.SKU_CODE],
+          name: item[SelectedItemSkuListColumn.SKU_NAME],
+          uniqueItemId: item[SelectedItemSkuListColumn.UNIQUE_ITEM_ID],
+          commodityName: item[SelectedItemSkuListColumn.COMMODITY_NAME],
+          commodityID: item[SelectedItemSkuListColumn.COMMODITY_ID],
+          lotNo: item[SelectedItemSkuListColumn.LOT_NUMBER],
+          inspectionId: item[SelectedItemSkuListColumn.INSPECTION_ID],
+          partnerId: item[SelectedItemSkuListColumn.PARTNER_ID],
+          packDate: item[SelectedItemSkuListColumn.PACK_DATE],
+          gtin: item[SelectedItemSkuListColumn.GTIN],
+          partnerName: item[SelectedItemSkuListColumn.PARTNER_NAME],
+          FTLflag: item[SelectedItemSkuListColumn.FTL],
+          Branded: item[SelectedItemSkuListColumn.BRANDED],
+          dateType: item[SelectedItemSkuListColumn.DATE_TYPE],
+          is_Complete: isComplete,
+          isPartialComplete: isPartialComplete,
+        ));
+      }
+    } catch (e) {
+      log('Error has occurred while finding quality control items: $e');
+      return [];
+    }
+    return list;
+  }
+
+  Future<int> createSelectedItemSKU({
+    required int? skuId,
+    required String? itemSKUCode,
+    required String? poNo,
+    required String? lotNo,
+    required String? itemSKUName,
+    required String? commodityName,
+    required String? uniqueId,
+    required int? commodityId,
+    required String? description,
+    required int? partnerID,
+    required String? packDate,
+    required String? GTIN,
+    required String? partnerName,
+    required String? ftl,
+    required String? branded,
+    required String? dateType,
+  }) async {
+    int ttId = 0;
+    try {
+      final Database db = dbProvider.lazyDatabase;
+      Map<String, dynamic> values = {
+        SelectedItemSkuListColumn.SKU_ID: skuId,
+        SelectedItemSkuListColumn.UNIQUE_ITEM_ID: uniqueId,
+        SelectedItemSkuListColumn.PO_NUMBER: poNo,
+        SelectedItemSkuListColumn.LOT_NUMBER: lotNo,
+        SelectedItemSkuListColumn.SKU_CODE: itemSKUCode,
+        SelectedItemSkuListColumn.SKU_NAME: itemSKUName,
+        SelectedItemSkuListColumn.COMMODITY_NAME: commodityName,
+        SelectedItemSkuListColumn.COMMODITY_ID: commodityId,
+        SelectedItemSkuListColumn.DESCRIPTION: description,
+        SelectedItemSkuListColumn.COMPLETE: 'false',
+        SelectedItemSkuListColumn.PARTIAL_COMPLETE: 'false',
+        SelectedItemSkuListColumn.PARTNER_ID: partnerID,
+        SelectedItemSkuListColumn.PACK_DATE: packDate,
+        SelectedItemSkuListColumn.GTIN: GTIN,
+        SelectedItemSkuListColumn.PARTNER_NAME: partnerName,
+        SelectedItemSkuListColumn.FTL: ftl,
+        SelectedItemSkuListColumn.BRANDED: branded,
+        SelectedItemSkuListColumn.DATE_TYPE: dateType,
+      };
+      ttId = await db.insert(DBTables.SELECTED_ITEM_SKU_LIST, values);
+    } catch (e) {
+      log('Error has occurred while creating a trailer temperature: $e');
+      rethrow;
+    }
+    return ttId;
+  }
+
+  Future<void> deleteSelectedItemSKUByUniqueId({
+    required String? uniqueId,
+    required int? itemId,
+    required String? itemCode,
+  }) async {
+    final Database db = await DatabaseHelper.instance.database;
+    try {
+      await db.transaction((txn) async {
+        String query = '''
+        DELETE FROM ${DBTables.SELECTED_ITEM_SKU_LIST}
+        WHERE ${SelectedItemSkuListColumn.UNIQUE_ITEM_ID} = ? AND
+              ${SelectedItemSkuListColumn.SKU_ID} = ? AND
+              ${SelectedItemSkuListColumn.SKU_CODE} = ?
+      ''';
+        List<dynamic> arguments = [uniqueId, itemId.toString(), itemCode];
+        await txn.rawDelete(query, arguments);
+      });
+    } catch (e) {
+      log('Error has occurred while deleting a quality control entries: $e');
+      rethrow;
+    }
   }
 }

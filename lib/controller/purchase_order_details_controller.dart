@@ -97,6 +97,12 @@ class PurchaseOrderDetailsController extends GetxController {
     productTransfer = args[Consts.PRODUCT_TRANSFER] ?? '';
 
     itemSkuList.assignAll(getPurchaseOrderData());
+
+    dao
+        .getSelectedItemSKUList()
+        .then((List<FinishedGoodsItemSKU> selectedItemSKUList) {
+      // appStorage.selectedItemSKUList = selectedItemSKUList;
+    });
     super.onInit();
     filteredInspectionsList.assignAll(itemSkuList);
     listAssigned.value = true;

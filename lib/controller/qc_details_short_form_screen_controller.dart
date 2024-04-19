@@ -1,9 +1,9 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/controller/json_file_operations.dart';
 import 'package:pverify/models/carrier_item.dart';
@@ -27,6 +27,7 @@ import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
+import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/dialogs/custom_listview_dialog.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
@@ -101,6 +102,8 @@ class QCDetailsShortFormScreenController extends GetxController {
 
   bool isPartialComplete = false, isComplete = false;
 
+  var packDateFocusNode = FocusNode();
+
   QCDetailsShortFormScreenController({
     required this.partner,
     required this.carrier,
@@ -133,6 +136,10 @@ class QCDetailsShortFormScreenController extends GetxController {
     sampleSizeByCount = args[Consts.SAMPLE_SIZE_BY_COUNT] ?? 0;
     inspectionResult = args[Consts.INSPECTION_RESULT] ?? '';
     lot_No = args[Consts.Lot_No] ?? '';
+    String packDateString = args[Consts.PACK_DATE] ?? '';
+    if (packDateString.isNotEmpty) {
+      packDate = Utils().dateFormat.parse(packDateString);
+    }
     itemSKU = args[Consts.ITEM_SKU] ?? '';
     poNumber = args[Consts.PO_NUMBER] ?? '';
     specificationNumber = args[Consts.SPECIFICATION_NUMBER] ?? '';
@@ -158,6 +165,20 @@ class QCDetailsShortFormScreenController extends GetxController {
     itemUniqueId = args[Consts.ITEM_UNIQUE_ID] ?? '';
     poLineNo = args[Consts.PO_LINE_NO] ?? 0;
     itemSkuId = args[Consts.ITEM_SKU_ID] ?? 0;
+
+    packDateController.addListener(() {
+      if (packDateFocusNode.hasFocus) {
+        packDateFocusNode.unfocus();
+        selectDate(Get.context!, onDateSelected: (selectedDate) {
+          packDate = selectedDate;
+          packDateController.text = Utils().dateFormat.format(selectedDate);
+        });
+      }
+    });
+
+    if (packDate != null) {
+      packDateController.text = Utils().dateFormat.format(packDate!);
+    }
 
     setUOMSpinner();
     super.onInit();
@@ -241,7 +262,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         specificationNumber = specificationByItemSKU.specificationNumber!;
         specificationVersion = specificationByItemSKU.specificationVersion!;
         specificationName = specificationByItemSKU.specificationName;
-        selectedSpecification = specificationByItemSKU.specificationName;
+        selectedSpecification = specificationByItemSKU.specificationNumber;
         specificationTypeName = specificationByItemSKU.specificationTypeName;
         sampleSizeByCount = specificationByItemSKU.sampleSizeByCount ?? 0;
 
@@ -297,6 +318,12 @@ class QCDetailsShortFormScreenController extends GetxController {
       initialDate: packDate ?? now,
       currentDate: now,
       lastDate: lastDate ?? now.add(const Duration(days: 365)),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.dark(),
+          child: child!,
+        );
+      },
     );
 
     if (selectedDate != null) {
@@ -311,10 +338,36 @@ class QCDetailsShortFormScreenController extends GetxController {
 
     uomList = _appStorage.uomList;
     uomList.sort((a, b) => a.uomName!.compareTo(b.uomName!));
-// todo: walmart demo code
+
+    UOMItem? chileUOMID = getUOMID("Case");
+    chileUOMID ??= getUOMID("Caja");
+
+    if (qualityControlItems != null) {
+      if (qualityControlItems!.uomQtyShippedID != null) {
+        selectedUOM = uomList.firstWhereOrNull(
+            (element) => element.uomID == qualityControlItems!.uomQtyShippedID);
+      }
+    } else {
+      if (qualityControlItems != null) {
+        if (qualityControlItems!.uomQtyShippedID != null) {
+          selectedUOM = getUOMPos(qualityControlItems!.uomQtyShippedID!);
+        }
+      } else {
+        // just for Walmart Chile demo purpose
+        selectedUOM = chileUOMID;
+      }
+    }
     SchedulerBinding.instance.addPostFrameCallback((_) {
       update();
     });
+  }
+
+  UOMItem? getUOMID(String uomName) {
+    return uomList.firstWhereOrNull((uomItem) => uomItem.uomName == uomName);
+  }
+
+  UOMItem? getUOMPos(int uomID) {
+    return uomList.firstWhereOrNull((uomItem) => uomItem.uomID == uomID);
   }
 
   Future<void> createNewInspection(
@@ -467,43 +520,54 @@ class QCDetailsShortFormScreenController extends GetxController {
   }
 
   Future<void> saveAsDraftAndGotoMyInspectionScreen() async {
-    await saveFieldsToDB();
-    // TODO: implement below for saving inspection
-    await saveFieldsToDBSpecAttribute(false);
-    await callStartActivity(false);
+    bool saved = await saveFieldsToDB();
+    if (saved) {
+      bool saveSpecAtt = await saveFieldsToDBSpecAttribute(false);
+      if (saveSpecAtt) {
+        try {
+          await callStartActivity(false);
+        } catch (e) {
+          Utils.hideLoadingDialog();
+        }
+      } else {
+        Utils.hideLoadingDialog();
+      }
+    } else {
+      Utils.hideLoadingDialog();
+    }
   }
 
   Future<bool> saveFieldsToDB() async {
-    ApplicationDao dao = ApplicationDao();
-    bool hasErrors = false;
-
     String qtyShippedString = qtyShippedController.text.trim();
     int qtyShipped = 0;
-    if (qtyShippedString != null) {
+    if (qtyShippedString.isNotEmpty) {
       try {
         qtyShipped = int.parse(qtyShippedString);
         if (qtyShipped < 1) {
-          hasErrors = true;
+          return false;
         }
       } catch (e) {
-        // Handle error, e.g. show a message to the user
-        hasErrors = true;
+        AppSnackBar.error(
+            message: '${AppStrings.errorEnterValidValue} for Shipped Quantity');
+        return false;
       }
     } else {
-      // Handle error, e.g. show a message to the user
-      hasErrors = true;
+      AppSnackBar.error(
+          message: '${AppStrings.errorEnterValidValue} for Shipped Quantity');
+      return false;
     }
 
     String lotNo = lotNoController.text;
     if (lotNo.length > 30) {
-      hasErrors = true;
-      // Handle error, e.g. show a dialog to the user
+      AppAlertDialog.validateAlerts(
+          Get.context!, AppStrings.alert, AppStrings.errorLotNoLength);
+      return false;
     }
 
     String packDateString = packDateController.text.trim();
     int packDate = 0;
     if (packDateString.isNotEmpty) {
-      DateTime parsedDate = DateTime.parse(packDateString);
+      DateTime parsedDate = Utils().dateFormat.parse(packDateString);
       packDate = parsedDate.millisecondsSinceEpoch;
     }
 
@@ -523,10 +587,9 @@ class QCDetailsShortFormScreenController extends GetxController {
     }
 
     String gtin = gtinController.text;
-
-    // If we have no missing fields persist the data.
-    if (!hasErrors) {
-      // No quality control id, create a new one in the database.
+    // Utils.showLoadingDialog();
+    // No quality control id, create a new one in the database.
+    try {
       if (qcID == null) {
         // TODO: null check below variables
         // inspectionId
@@ -534,37 +597,37 @@ class QCDetailsShortFormScreenController extends GetxController {
         // selectedSpecification
         // _appStorage.currentSealNumber
         qcID = await dao.createQualityControl(
-          inspectionId!,
-          brandID,
-          originID,
-          qtyShipped,
-          uomQtyShippedID,
-          poNumber!,
-          0,
-          0,
-          0,
-          0,
-          '',
-          '',
-          0,
-          uomQtyRejectedID,
-          reasonID,
-          '',
-          qtyShipped,
-          uomQtyReceivedID,
-          selectedSpecification!,
-          packDate,
-          _appStorage.currentSealNumber!,
-          lotNo,
-          typeofCut,
-          '',
-          '',
-          '',
-          0,
-          gtin,
-          0,
-          0,
-          dateTypeDesc,
+          inspectionId: inspectionId!,
+          brandID: brandID,
+          originID: originID,
+          qtyShipped: qtyShipped,
+          uomQtyShippedID: uomQtyShippedID,
+          poNumber: poNumber!,
+          pulpTempMin: 0,
+          pulpTempMax: 0,
+          recorderTempMin: 0,
+          recorderTempMax: 0,
+          rpc: '',
+          claimFiledAgainst: '',
+          qtyRejected: 0,
+          uomQtyRejectedID: uomQtyRejectedID,
+          reasonID: reasonID,
+          qcComments: '',
+          qtyReceived: qtyShipped,
+          uomQtyReceivedID: uomQtyReceivedID,
+          specificationName: selectedSpecification!,
+          packDate: packDate,
+          seal_no: _appStorage.currentSealNumber!,
+          lot_no: lotNo,
+          qcdOpen1: typeofCut,
+          qcdOpen2: '',
+          qcdOpen3: '',
+          qcdOpen4: '',
+          workDate: 0,
+          gtin: gtin,
+          lot_size: 0,
+          shipDate: 0,
+          dateType: dateTypeDesc,
         );
       } else {
         int qtyReceived = 0;
@@ -579,209 +642,221 @@ class QCDetailsShortFormScreenController extends GetxController {
         // qcID
         // selectedSpecification
         await dao.updateQualityControlShortForm(
-          qcID!,
-          qtyShipped,
-          uomQtyShippedID,
-          qtyRejected,
-          uomQtyRejectedID,
-          qtyReceived,
-          uomQtyReceivedID,
-          selectedSpecification!,
-          packDate,
-          lotNo,
-          gtin,
-          0,
-          dateTypeDesc,
+          qcID: qcID!,
+          qtyShipped: qtyShipped,
+          uomQtyShippedID: uomQtyShippedID,
+          qtyRejected: qtyRejected,
+          uomQtyRejectedID: uomQtyRejectedID,
+          qtyReceived: qtyReceived,
+          uomQtyReceivedID: uomQtyReceivedID,
+          selectedSpecification: selectedSpecification!,
+          packDate: packDate,
+          lot_no: lotNo,
+          gtin: gtin,
+          shipDate: 0,
+          dateType: dateTypeDesc,
         );
       }
-
-      return true;
+    } catch (e) {
+      log('Error while saving quality control details: $e');
+      return false;
     }
-    return false;
+
+    return true;
   }
 
-  Future<void> saveFieldsToDBSpecAttribute(bool isComplete) async {
-    // TODO: check null for inspectionId
-    await dao.deleteSpecAttributesByInspectionId(inspectionId!);
-    List<String> blankAnalyticalNames = [];
-    List<String> blankCommentNames = [];
+  Future<bool> saveFieldsToDBSpecAttribute(bool isComplete) async {
+    try {
+      // TODO: check null for inspectionId
+      await dao.deleteSpecAttributesByInspectionId(inspectionId!);
+      List<String> blankAnalyticalNames = [];
+      List<String> blankCommentNames = [];
 
-    for (SpecificationAnalyticalRequest item in listSpecAnalyticalsRequest) {
-      if (item.analyticalName != null && item.analyticalName!.length > 1) {
-        if (item.analyticalName!.substring(0, 2) == "02") {
-          if (item.sampleNumValue == 0) {
-            blankAnalyticalNames.add(item.analyticalName!);
+      for (SpecificationAnalyticalRequest item in listSpecAnalyticalsRequest) {
+        if (item.analyticalName != null && item.analyticalName!.length > 1) {
+          if (item.analyticalName!.substring(0, 2) == "02") {
+            if (item.sampleNumValue == 0) {
+              blankAnalyticalNames.add(item.analyticalName!);
+            }
+          } else if (item.analyticalName!.substring(0, 2) == "01" ||
+              item.analyticalName!.substring(0, 2) == "03" ||
+              item.analyticalName!.substring(0, 2) == "05") {
+            if (item.sampleTextValue == "N/A") {
+              blankAnalyticalNames.add(item.analyticalName!);
+            }
           }
-        } else if (item.analyticalName!.substring(0, 2) == "01" ||
-            item.analyticalName!.substring(0, 2) == "03" ||
-            item.analyticalName!.substring(0, 2) == "05") {
-          if (item.sampleTextValue == "N/A") {
-            blankAnalyticalNames.add(item.analyticalName!);
-          }
-        }
-        if (item.analyticalName!.substring(0, 2) == "04" ||
-            item.analyticalName!.substring(0, 2) == "07" ||
-            item.analyticalName!.substring(0, 2) == "09" ||
-            item.analyticalName!.substring(0, 2) == "10" ||
-            item.analyticalName!.substring(0, 2) == "11" ||
-            item.analyticalName!.substring(0, 2) == "12") {
-          if (item.comment == null) {
-            blankCommentNames.add(item.analyticalName!);
+          if (item.analyticalName!.substring(0, 2) == "04" ||
+              item.analyticalName!.substring(0, 2) == "07" ||
+              item.analyticalName!.substring(0, 2) == "09" ||
+              item.analyticalName!.substring(0, 2) == "10" ||
+              item.analyticalName!.substring(0, 2) == "11" ||
+              item.analyticalName!.substring(0, 2) == "12") {
+            if (item.comment == null) {
+              blankCommentNames.add(item.analyticalName!);
+            }
           }
         }
       }
-    }
 
-    if (blankAnalyticalNames.isEmpty) {
-      if (blankCommentNames.isNotEmpty) {
-        // Show dialog with blankCommentNames
-        // On dialog positive button press:
-        for (SpecificationAnalyticalRequest item2
-            in listSpecAnalyticalsRequest) {
-          if ((item2.isPictureRequired ?? false) && item2.comply == "N") {
-            result_comply = "N";
-          } else {
-            result_comply = "Y";
+      if (blankAnalyticalNames.isEmpty) {
+        if (blankCommentNames.isNotEmpty) {
+          // Show dialog with blankCommentNames
+          // On dialog positive button press:
+          for (SpecificationAnalyticalRequest item2
+              in listSpecAnalyticalsRequest) {
+            if ((item2.isPictureRequired ?? false) && item2.comply == "N") {
+              result_comply = "N";
+            } else {
+              result_comply = "Y";
+            }
+            // TODO: null check to below code block
+            await dao.createSpecificationAttributes(
+              inspectionId!,
+              item2.analyticalID!,
+              item2.sampleTextValue!,
+              item2.sampleNumValue!,
+              item2.comply!,
+              item2.comment!,
+              item2.analyticalName!,
+              item2.isPictureRequired!,
+              item2.inspectionResult!,
+            );
           }
-          // TODO: null check to below code block
-          await dao.createSpecificationAttributes(
-            inspectionId!,
-            item2.analyticalID!,
-            item2.sampleTextValue!,
-            item2.sampleNumValue!,
-            item2.comply!,
-            item2.comment!,
-            item2.analyticalName!,
-            item2.isPictureRequired!,
-            item2.inspectionResult!,
-          );
+          _appStorage.resumeFromSpecificationAttributes = true;
+        } else {
+          result_comply = "Y";
+          for (SpecificationAnalyticalRequest item2
+              in listSpecAnalyticalsRequest) {
+            // TODO: Similar to the above code block
+          }
         }
-        _appStorage.resumeFromSpecificationAttributes = true;
       } else {
-        result_comply = "Y";
-        for (SpecificationAnalyticalRequest item2
-            in listSpecAnalyticalsRequest) {
-          // TODO: Similar to the above code block
-        }
+        // TODO: Show dialog with blankAnalyticalNames
       }
-    } else {
-      // TODO: Show dialog with blankAnalyticalNames
+    } catch (e) {
+      return false;
     }
+    return true;
   }
 
   Future<void> callStartActivity(bool isComplete) async {
-    if (callerActivity != "TrendingReportActivity") {
-      await dao.createPartnerItemSKU(
-          partnerID!,
-          itemSKU!,
-          lot_No!,
-          packDateController.text,
-          inspectionId!,
-          lotSize!,
-          itemUniqueId!,
-          poLineNo!,
-          poNumber!);
-      await dao
-          .copyTempTrailerTemperaturesToInspectionTrailerTemperatureTableByPartnerID(
-              inspectionId!, carrierID!, poNumber!);
-      await dao
-          .copyTempTrailerTemperaturesDetailsToInspectionTrailerTemperatureDetailsTableByPartnerID(
-              inspectionId!, carrierID!, poNumber!);
+    try {
+      if (callerActivity != "TrendingReportActivity") {
+        await dao.createPartnerItemSKU(
+            partnerID!,
+            itemSKU!,
+            lot_No!,
+            packDateController.text,
+            inspectionId!,
+            lotSize!,
+            itemUniqueId!,
+            poLineNo!,
+            poNumber!);
+        await dao
+            .copyTempTrailerTemperaturesToInspectionTrailerTemperatureTableByPartnerID(
+                inspectionId!, carrierID!, poNumber!);
+        await dao
+            .copyTempTrailerTemperaturesDetailsToInspectionTrailerTemperatureDetailsTableByPartnerID(
+                inspectionId!, carrierID!, poNumber!);
 
-      await dao.updateItemSKUInspectionComplete(inspectionId!, "false");
-    }
-    if (isComplete) {
-      await dao.updateSelectedItemSKU(inspectionId!, partnerID!, itemSkuId!,
-          itemSKU!, itemUniqueId!, isComplete, false);
-    } else {
-      await dao.updateSelectedItemSKU(inspectionId!, partnerID!, itemSkuId!,
-          itemSKU!, itemUniqueId!, isComplete, true);
-    }
+        await dao.updateItemSKUInspectionComplete(inspectionId!, "false");
+      }
+      if (isComplete) {
+        await dao.updateSelectedItemSKU(inspectionId!, partnerID!, itemSkuId!,
+            itemSKU!, itemUniqueId!, isComplete, false);
+      } else {
+        await dao.updateSelectedItemSKU(inspectionId!, partnerID!, itemSkuId!,
+            itemSKU!, itemUniqueId!, isComplete, true);
+      }
 
-    if (callerActivity == "NewPurchaseOrderDetailsActivity") {
-      Inspection? inspection = await dao.findInspectionByID(inspectionId!);
-      if (inspection != null &&
-          inspection.result != null &&
-          inspection.result != "RJ") {
-        String result = "";
-        if (_appStorage.specificationAnalyticalList != null) {
-          for (SpecificationAnalytical item
-              in _appStorage.specificationAnalyticalList!) {
-            SpecificationAnalyticalRequest? dbobj =
-                await dao.findSpecAnalyticalObj(
-                    inspection.inspectionId!, item.analyticalID!);
+      if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+        Inspection? inspection = await dao.findInspectionByID(inspectionId!);
+        if (inspection != null &&
+            inspection.result != null &&
+            inspection.result != "RJ") {
+          String result = "";
+          if (_appStorage.specificationAnalyticalList != null) {
+            for (SpecificationAnalytical item
+                in _appStorage.specificationAnalyticalList!) {
+              SpecificationAnalyticalRequest? dbobj =
+                  await dao.findSpecAnalyticalObj(
+                      inspection.inspectionId!, item.analyticalID!);
 
-            if (dbobj != null && dbobj.comply == "N") {
-              if (dbobj.inspectionResult != null &&
-                  dbobj.inspectionResult == "N") {
-              } else {
-                // TODO: check null for dbobj.analyticalName
-                result = "RJ";
-                await dao.createOrUpdateResultReasonDetails(
-                    inspection.inspectionId!,
-                    result,
-                    "${dbobj.analyticalName!} = N",
-                    dbobj.comment!);
+              if (dbobj != null && dbobj.comply == "N") {
+                if (dbobj.inspectionResult != null &&
+                    dbobj.inspectionResult == "N") {
+                } else {
+                  // TODO: check null for dbobj.analyticalName
+                  result = "RJ";
+                  await dao.createOrUpdateResultReasonDetails(
+                      inspection.inspectionId!,
+                      result,
+                      "${dbobj.analyticalName!} = N",
+                      dbobj.comment!);
 
-                await dao.updateInspectionResult(
-                    inspection.inspectionId!, result);
-                await dao.updateInspectionComplete(
-                    inspection.inspectionId!, true);
-                await dao.updateItemSKUInspectionComplete(
-                    inspection.inspectionId!, 'true');
-                Utils.setInspectionUploadStatus(
-                    inspection.inspectionId!, Consts.INSPECTION_UPLOAD_READY);
+                  await dao.updateInspectionResult(
+                      inspection.inspectionId!, result);
+                  await dao.updateInspectionComplete(
+                      inspection.inspectionId!, true);
+                  await dao.updateItemSKUInspectionComplete(
+                      inspection.inspectionId!, 'true');
+                  Utils.setInspectionUploadStatus(
+                      inspection.inspectionId!, Consts.INSPECTION_UPLOAD_READY);
 
-                break;
+                  break;
+                }
               }
             }
           }
         }
       }
-    }
 
-    Map<String, dynamic> bundle = {
-      Consts.SERVER_INSPECTION_ID: inspectionId,
-      Consts.PARTNER_NAME: partnerName,
-      Consts.PARTNER_ID: partnerID,
-      Consts.CARRIER_NAME: carrierName,
-      Consts.CARRIER_ID: carrierID,
-      Consts.COMMODITY_NAME: commodityName,
-      Consts.COMMODITY_ID: commodityID,
-      Consts.COMPLETED: completed,
-      Consts.SPECIFICATION_NUMBER: specificationNumber,
-      Consts.SPECIFICATION_VERSION: specificationVersion,
-      Consts.SPECIFICATION_NAME: selectedSpecification,
-      Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
-      Consts.Lot_No: lot_No,
-      Consts.ITEM_SKU: itemSKU,
-      Consts.ITEM_SKU_NAME: itemSkuName,
-      Consts.ITEM_SKU_ID: itemSkuId,
-      Consts.GTIN: gtin,
-      Consts.PACK_DATE: packDate,
-      Consts.QUALITY_COMPLETED: true,
-      Consts.ITEM_UNIQUE_ID: itemUniqueId,
-      Consts.LOT_SIZE: lotSize,
-      Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
-      Consts.PO_NUMBER: poNumber,
-      Consts.PRODUCT_TRANSFER: productTransfer,
-      Consts.DATETYPE: dateTypeDesc,
-    };
+      Map<String, dynamic> bundle = {
+        Consts.SERVER_INSPECTION_ID: inspectionId,
+        Consts.PARTNER_NAME: partnerName,
+        Consts.PARTNER_ID: partnerID,
+        Consts.CARRIER_NAME: carrierName,
+        Consts.CARRIER_ID: carrierID,
+        Consts.COMMODITY_NAME: commodityName,
+        Consts.COMMODITY_ID: commodityID,
+        Consts.COMPLETED: completed,
+        Consts.SPECIFICATION_NUMBER: specificationNumber,
+        Consts.SPECIFICATION_VERSION: specificationVersion,
+        Consts.SPECIFICATION_NAME: selectedSpecification,
+        Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
+        Consts.Lot_No: lot_No,
+        Consts.ITEM_SKU: itemSKU,
+        Consts.ITEM_SKU_NAME: itemSkuName,
+        Consts.ITEM_SKU_ID: itemSkuId,
+        Consts.GTIN: gtin,
+        Consts.PACK_DATE: packDate,
+        Consts.QUALITY_COMPLETED: true,
+        Consts.ITEM_UNIQUE_ID: itemUniqueId,
+        Consts.LOT_SIZE: lotSize,
+        Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
+        Consts.PO_NUMBER: poNumber,
+        Consts.PRODUCT_TRANSFER: productTransfer,
+        Consts.DATETYPE: dateTypeDesc,
+      };
 
-    if ((isMyInspectionScreen ?? false)) {
-      if (isComplete) {
-        setComplete(true);
-        await dao.updateItemSKUInspectionComplete(inspectionId!, "true");
-      }
-      // TODO: Implement navigation to InspectionMenuActivity
-    } else {
-      if (isComplete) {
-        setComplete(true);
-        await dao.updateItemSKUInspectionComplete(inspectionId!, "true");
-        await callNextItemQCDetails();
+      if ((isMyInspectionScreen ?? false)) {
+        if (isComplete) {
+          setComplete(true);
+          await dao.updateItemSKUInspectionComplete(inspectionId!, "true");
+        }
+        // TODO: Implement navigation to InspectionMenuActivity
       } else {
-        // TODO: Implement navigation based on callerActivity
+        if (isComplete) {
+          setComplete(true);
+          await dao.updateItemSKUInspectionComplete(inspectionId!, "true");
+          await callNextItemQCDetails();
+        } else {
+          // TODO: Implement navigation based on callerActivity
+        }
       }
+    } catch (e) {
+      log(e.toString());
+      rethrow;
     }
   }
 
@@ -806,7 +881,7 @@ class QCDetailsShortFormScreenController extends GetxController {
 
   String getDateStingFromTime(int timestamp) {
     DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp);
-    return DateFormat('yyyy-MM-dd').format(date);
+    return Utils().dateFormat.format(date);
   }
 
   Future<void> setComplete(bool complete) async {

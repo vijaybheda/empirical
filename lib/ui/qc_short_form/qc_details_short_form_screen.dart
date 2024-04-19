@@ -93,8 +93,8 @@ class QCDetailsShortFormScreen
             onGradeTap: () async {
               await JsonFileOperations.instance.viewGradePdf();
             },
-            onInspectionTap: () {
-              //TODO: Implement inspection
+            onInspectionTap: () async {
+              await JsonFileOperations.instance.viewSpecInsPdf();
             },
           ),
           body: Column(
@@ -412,19 +412,16 @@ class QCDetailsShortFormScreen
                                         TextField(
                                           controller:
                                               controller.packDateController,
+                                          readOnly: true,
+                                          autofocus: false,
+                                          focusNode:
+                                              controller.packDateFocusNode,
                                           decoration: InputDecoration(
                                             hintText: AppStrings.packdate,
                                             hintStyle: Get.textTheme.bodyLarge!
                                                 .copyWith(
                                               fontSize: 26.sp,
                                             ),
-                                            suffix: GestureDetector(
-                                                onTap: () async {
-                                                  await selectPackDate(
-                                                      context, controller);
-                                                },
-                                                child: const Icon(Icons
-                                                    .calendar_month_outlined)),
                                             suffixIcon: GestureDetector(
                                                 onTap: () async {
                                                   await selectPackDate(
@@ -731,8 +728,9 @@ class QCDetailsShortFormScreen
                                     fontWeight: FontWeight.w600,
                                     textStyle: TextStyle(
                                         color: AppColors.textFieldText_Color)),
-                                onClickAction: () {
-                              // TODO: Implement
+                                onClickAction: () async {
+                              await controller
+                                  .saveAsDraftAndGotoMyInspectionScreen();
                             }),
                           ],
                         ),

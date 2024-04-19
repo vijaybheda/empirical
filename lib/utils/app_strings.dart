@@ -251,6 +251,8 @@ class AppStrings {
   static String noStoragePermission =
       'Storage permission required for this app.';
 
+  static String errorLotNoLength = 'Lot No should not exceed 30 characters';
+
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';
 

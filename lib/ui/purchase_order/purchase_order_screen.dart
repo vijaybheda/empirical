@@ -14,6 +14,7 @@ import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
+import 'package:pverify/utils/utils.dart';
 
 class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
   final PartnerItem partner;
@@ -147,6 +148,38 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           onChanged: (value) {
             goodsItem = goodsItem.copyWith(isSelected: (value!));
+            goodsItem.uniqueItemId = generateUUID();
+            if (value) {
+              controller.appStorage.selectedItemSKUList.add(goodsItem);
+              controller.appStorage.tempSelectedItemSKUList.add(goodsItem);
+              controller.dao.createSelectedItemSKU(
+                skuId: goodsItem.id,
+                itemSKUCode: goodsItem.sku,
+                poNo: "",
+                lotNo: "",
+                itemSKUName: goodsItem.name,
+                commodityName: goodsItem.commodityName,
+                uniqueId: goodsItem.uniqueItemId!,
+                commodityId: goodsItem.commodityID,
+                description: "",
+                partnerID: goodsItem.partnerId,
+                packDate: "",
+                GTIN: "",
+                partnerName: goodsItem.partnerName,
+                ftl: goodsItem.FTLflag,
+                branded: goodsItem.Branded,
+                dateType: goodsItem.dateType,
+              );
+            } else {
+              controller.appStorage.selectedItemSKUList.remove(goodsItem);
+              controller.appStorage.tempSelectedItemSKUList.remove(goodsItem);
+              controller.dao.deleteSelectedItemSKUByUniqueId(
+                uniqueId: goodsItem.uniqueItemId!,
+                itemId: goodsItem.id,
+                itemCode: goodsItem.sku,
+              );
+            }
+
             controller.updateCommodityItem(goodsItem);
           },
           title: Container(

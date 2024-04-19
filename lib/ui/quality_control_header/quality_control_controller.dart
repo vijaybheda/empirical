@@ -133,7 +133,8 @@ class QualityControlController extends GetxController {
       inspIDs = await dao
           .getPartnerSKUInspectionIDsByPONo(orderNoTextController.value.text);
     }
-
+    appStorage.currentSealNumber =
+        sealTextController.value.text.trim().toString();
     if (qcHeaderDetails == null) {
       await dao.createTempQCHeaderDetails(
           carrier.id!,

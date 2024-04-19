@@ -560,8 +560,23 @@ class JsonFileOperations {
   }
 
   Future<void> viewGradePdf() async {
-    String filename2 =
-        "GRADE_${_appStorage.commodityVarietyData!.commodityId}.pdf";
+    return await _viewPdf(isGradePdf: true);
+  }
+
+  Future<void> viewSpecInsPdf() async {
+    return await _viewPdf(isGradePdf: false);
+  }
+
+  Future<void> _viewPdf({required bool isGradePdf}) async {
+    String filename2 = '';
+    if (!isGradePdf) {
+      filename2 =
+          "II_${AppStorage.instance.commodityVarietyData?.commodityId.toString()}.pdf";
+    } else {
+      filename2 =
+          "GRADE_${AppStorage.instance.commodityVarietyData?.commodityId.toString()}.pdf";
+    }
+
     var storagePath = await Utils().getExternalStoragePath();
     final Directory directory =
         Directory("$storagePath${FileManString.commodityVarietyDocument}/");
@@ -578,7 +593,10 @@ class JsonFileOperations {
       //   AppSnackBar.error(message: AppStrings.noStoragePermission);
       // }
     } else {
-      AppSnackBar.error(message: AppStrings.noGradeDocument);
+      AppSnackBar.info(
+          message: isGradePdf
+              ? AppStrings.noGradeDocument
+              : AppStrings.noSpecificationInstructions);
     }
   }
 
