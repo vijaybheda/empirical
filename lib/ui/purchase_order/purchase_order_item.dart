@@ -310,9 +310,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 26, vertical: 2),
                             decoration: BoxDecoration(
-                              // color: widget.goodsItem.status
-                              color: /*Random().nextBool()*/
-                                  true ? Colors.green : Colors.redAccent[700],
+                              color: result_buttonColor,
                               borderRadius: BorderRadius.circular(32),
                             ),
                             child: Text(

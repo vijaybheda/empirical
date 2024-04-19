@@ -15,6 +15,7 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pverify/controller/dialog_progress_controller.dart';
 import 'package:pverify/controller/json_file_operations.dart';
+import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -45,6 +46,8 @@ class Utils {
   static final _dateFormat = DateFormat.yMMMMd('en_US');
 
   final AppStorage _appStorage = AppStorage.instance;
+
+  static ApplicationDao _dao = ApplicationDao();
 
   static DateTime fromDateTimeToUTCDateTime(
       String dateFormat, String timeFormat) {
@@ -534,8 +537,8 @@ class Utils {
 
   Future<void> offlineLoadCommodityVarietyDocuments(
       String specNumber, String specVersion) async {
-    String filename = "${FileManString.COMMODITYDOCS_JSON_STRING_FORMAT}"
-        "${specNumber}_$specVersion";
+    String filename = FileManString.COMMODITYDOCS_JSON_STRING_FORMAT
+        .replaceAll('%s', '${specNumber}_$specVersion');
     String? json = await loadFileToStringFromExternalStorage(
         filename, FileManString.jsonFilesCache);
     if (json != null) {
@@ -546,8 +549,8 @@ class Utils {
 
   Future<String?> loadFileToStringFromExternalStorage(
       String filename, String directory) async {
-    var externalStoragePath =
-        await getApplicationDocumentsDirectory().then((value) => value.path);
+    String externalStoragePath = await Utils().getExternalStoragePath();
+    print('path: $externalStoragePath');
     String path = '$externalStoragePath/$directory/$filename';
     File file = File(path);
     try {
@@ -669,6 +672,12 @@ class Utils {
 
     await Future.delayed(const Duration(milliseconds: 10));
   }
+
+  static Future<void> setInspectionUploadStatus(
+      int inspectionId, int inspectionUploadReady) async {
+    await _dao.updateInspectionUploadStatus(
+        inspectionId, inspectionUploadReady);
+  }
 }
 
 void unFocus() {
@@ -688,4 +697,38 @@ void printKeysAndValueTypes(Map<String, dynamic> json) {
   log(json.entries
       .map((entry) => '${entry.key} (${entry.value.runtimeType})')
       .join(', '));
+}
+
+int? parseIntOrReturnNull(dynamic value) {
+  if (value == null) {
+    return null;
+  }
+  if (value is int) {
+    return value;
+  }
+  if (value is String) {
+    if (value.isEmpty) {
+      return null;
+    } else {
+      return int.tryParse(value);
+    }
+  }
+  return null;
+}
+
+double? parseDoubleOrReturnNull(dynamic value) {
+  if (value == null) {
+    return null;
+  }
+  if (value is double) {
+    return value;
+  }
+  if (value is String) {
+    if (value.isEmpty) {
+      return null;
+    } else {
+      return double.tryParse(value);
+    }
+  }
+  return null;
 }

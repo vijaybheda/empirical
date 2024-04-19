@@ -77,6 +77,7 @@ class AppStrings {
   static const String crop = 'Crop';
   static const String delete = 'Delete';
   static const String title = 'Title';
+  static const String info = 'Info';
 
   static const String saveInspectionButton = 'Save Inspection';
   static const String inspectionCalculateResultButton = 'Calculate Result';
@@ -244,6 +245,11 @@ class AppStrings {
   static String noGradeDocument = 'No Grade Document';
 
   static String selectItems = 'Select Item(s)';
+
+  static String noSpecificationInstructions = 'No Specification Instructions';
+
+  static String noStoragePermission =
+      'Storage permission required for this app.';
 
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';
@@ -626,7 +632,8 @@ class FileManString {
   static const String AGENCY_JSON_STRING_FORMAT = "%d_agency.json";
   static const String GRADE_COMMODITY_DETAIL_STRING_FORMAT =
       "%d_%d_gradedetail.json";
-  static const String COMMODITYDOCS_JSON_STRING_FORMAT = "WS_%s.json";
+  static const String COMMODITYDOCS_JSON_STRING_FORMAT =
+      "specification_%s.json";
   static const String SPECANALYTICAL_JSON_STRING_FORMAT = "SA_%s_%s.json";
   static const String SEVERITIES_JSON_STRING_FORMAT = "SEV_%s.json";
   static const String SPECIFICATION_GRADE_TOLERANCE_JSON_STRING_FORMAT =

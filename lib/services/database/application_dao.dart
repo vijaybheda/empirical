@@ -24,6 +24,7 @@ import 'package:pverify/models/specification.dart';
 import 'package:pverify/models/specification_analytical.dart';
 import 'package:pverify/models/specification_analytical_request_item.dart';
 import 'package:pverify/models/specification_by_item_sku.dart';
+import 'package:pverify/models/specification_grade_tolerance.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/models/trailer_temperature_item.dart';
 import 'package:pverify/models/user_data.dart';
@@ -2371,13 +2372,16 @@ class ApplicationDao {
       final Database db = dbProvider.lazyDatabase;
       var cursor = await db.rawQuery(query, args);
 
-      PartnerItemSKUInspections? item =
-          PartnerItemSKUInspections.fromMap(cursor.first);
-      return item;
+      if (cursor.isNotEmpty) {
+        PartnerItemSKUInspections? item =
+            PartnerItemSKUInspections.fromMap(cursor.first);
+        return item;
+      }
     } catch (e) {
       debugPrint("Error has occurred while finding quality control items: $e");
       return null;
     }
+    return null;
   }
 
   Future<List<SpecificationAnalytical>?> getSpecificationAnalyticalFromDB(
@@ -2415,9 +2419,12 @@ class ApplicationDao {
       final Database db = dbProvider.lazyDatabase;
       var cursor = await db.rawQuery(query, args);
 
-      SpecificationAnalyticalRequest? item =
-          SpecificationAnalyticalRequest.fromJson(cursor.first);
-      return item;
+      if (cursor.isNotEmpty) {
+        SpecificationAnalyticalRequest? item =
+            SpecificationAnalyticalRequest.fromJson(cursor.first);
+        return item;
+      }
+      return null;
     } catch (e) {
       debugPrint("Error has occurred while finding quality control items: $e");
       return null;
@@ -2865,5 +2872,375 @@ class ApplicationDao {
     } else {
       return false;
     }
+  }
+
+  Future<int?> createQualityControl(
+    int inspectionId,
+    int brandID,
+    int originID,
+    int qtyShipped,
+    int uomQtyShippedID,
+    String poNumber,
+    int pulpTempMin,
+    int pulpTempMax,
+    int recorderTempMin,
+    int recorderTempMax,
+    String rpc,
+    String claimFiledAgainst,
+    int qtyRejected,
+    int uomQtyRejectedID,
+    int reasonID,
+    String qcComments,
+    int qtyReceived,
+    int uomQtyReceivedID,
+    String specificationName,
+    int packDate,
+    String seal_no,
+    String lot_no,
+    String qcdOpen1,
+    String qcdOpen2,
+    String qcdOpen3,
+    String qcdOpen4,
+    int workDate,
+    String gtin,
+    int lot_size,
+    int shipDate,
+    String dateType,
+  ) async {
+    int? qc_id;
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      await db.transaction((txn) async {
+        Map<String, dynamic> values = {
+          QualityControlColumn.INSPECTION_ID: inspectionId,
+          QualityControlColumn.BRAND_ID: brandID,
+          QualityControlColumn.ORIGIN_ID: originID,
+          QualityControlColumn.QTY_SHIPPED: qtyShipped,
+          QualityControlColumn.UOM_QTY_SHIPPED_ID: uomQtyShippedID,
+          QualityControlColumn.PO_NO: poNumber,
+          QualityControlColumn.PACK_DATE: packDate,
+          QualityControlColumn.DATE_TYPE: dateType,
+          QualityControlColumn.PULP_TEMP_MIN: pulpTempMin,
+          QualityControlColumn.PULP_TEMP_MAX: pulpTempMax,
+          QualityControlColumn.RECORDER_TEMP_MIN: recorderTempMin,
+          QualityControlColumn.RECORDER_TEMP_MAX: recorderTempMax,
+          QualityControlColumn.LOT_NUMBER: lot_no,
+          QualityControlColumn.SEAL: seal_no,
+          QualityControlColumn.RPC: rpc,
+          QualityControlColumn.CLAIM_FILED_AGAINST: claimFiledAgainst,
+          QualityControlColumn.QTY_REJECTED: qtyRejected,
+          QualityControlColumn.UOM_QTY_REJECTED_ID: uomQtyRejectedID,
+          QualityControlColumn.REASON_ID: reasonID,
+          QualityControlColumn.QC_COMMENTS: qcComments,
+          QualityControlColumn.QTY_RECEIVED: qtyReceived,
+          QualityControlColumn.UOM_QTY_RECEIVED: uomQtyReceivedID,
+          QualityControlColumn.IS_COMPLETE: 1,
+          QualityControlColumn.SPECIFICATION_NAME: specificationName,
+          QualityControlColumn.QCDOPEN1: qcdOpen1,
+          QualityControlColumn.QCDOPEN2: qcdOpen2,
+          QualityControlColumn.QCDOPEN3: qcdOpen3,
+          QualityControlColumn.QCDOPEN4: qcdOpen4,
+          QualityControlColumn.QCDOPEN5: workDate,
+          QualityControlColumn.GTIN: gtin,
+          QualityControlColumn.LOT_SIZE: lot_size,
+          QualityControlColumn.SHIP_DATE: shipDate,
+        };
+
+        qc_id = await txn.insert(DBTables.QUALITY_CONTROL, values);
+      });
+    } catch (e) {
+      log('Error has occurred while creating a quality control entry: $e');
+      return null;
+    }
+
+    return qc_id;
+  }
+
+  Future<void> updateQualityControlShortForm(
+    int qcID,
+    int qtyShipped,
+    int uomQtyShippedID,
+    int qtyRejected,
+    int uomQtyRejectedID,
+    int qtyReceived,
+    int uomQtyReceivedID,
+    String selectedSpecification,
+    int packDate,
+    String lot_no,
+    String gtin,
+    int shipDate,
+    String dateType,
+  ) async {
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      await db.transaction((txn) async {
+        Map<String, dynamic> values = {
+          QualityControlColumn.QTY_SHIPPED: qtyShipped,
+          QualityControlColumn.UOM_QTY_SHIPPED_ID: uomQtyShippedID,
+          QualityControlColumn.PACK_DATE: packDate,
+          QualityControlColumn.LOT_NUMBER: lot_no,
+          QualityControlColumn.QTY_REJECTED: qtyRejected,
+          QualityControlColumn.UOM_QTY_REJECTED_ID: uomQtyRejectedID,
+          QualityControlColumn.QTY_RECEIVED: qtyReceived,
+          QualityControlColumn.UOM_QTY_RECEIVED: uomQtyReceivedID,
+          QualityControlColumn.IS_COMPLETE: 1,
+          QualityControlColumn.SPECIFICATION_NAME: selectedSpecification,
+          QualityControlColumn.GTIN: gtin,
+          QualityControlColumn.SHIP_DATE: shipDate,
+          QualityControlColumn.DATE_TYPE: dateType,
+        };
+
+        await txn.update(
+          DBTables.QUALITY_CONTROL,
+          values,
+          where: '${QualityControlColumn.ID} = ?',
+          whereArgs: [qcID],
+        );
+      });
+    } catch (e) {
+      log('Error has occurred while updating a quality control item: $e');
+      throw e;
+    }
+  }
+
+  Future<void> deleteSpecAttributesByInspectionId(int inspectionId) async {
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      await db.transaction((txn) async {
+        String query =
+            'DELETE FROM ${DBTables.SPECIFICATION_ATTRIBUTES} WHERE ${SpecificationAttributesColumn.INSPECTION_ID} = ?';
+        List<dynamic> args = [inspectionId];
+
+        await txn.rawDelete(query, args);
+      });
+    } catch (e) {
+      log('Error has occurred while deleting a attachment: $e');
+      throw e;
+    }
+  }
+
+  Future<int?> createSpecificationAttributes(
+    int inspectionId,
+    int analyticalId,
+    String sampleTextValue,
+    int sampleValue,
+    String comply,
+    String comment,
+    String analyticalName,
+    bool isPictureRequired,
+    String inspectionResult,
+  ) async {
+    final Database db = dbProvider.lazyDatabase;
+    int? ttId;
+
+    try {
+      await db.transaction((txn) async {
+        Map<String, dynamic> values = {
+          SpecificationAttributesColumn.INSPECTION_ID: inspectionId,
+          SpecificationAttributesColumn.ANALYTICAL_ID: analyticalId,
+          SpecificationAttributesColumn.COMPLY: comply,
+          SpecificationAttributesColumn.SAMPLE_TEXT_VALUE: sampleTextValue,
+          SpecificationAttributesColumn.SAMPLE_VALUE: sampleValue,
+          SpecificationAttributesColumn.COMMENT: comment,
+          SpecificationAttributesColumn.ANALYTICAL_NAME: analyticalName,
+          SpecificationAttributesColumn.PICTURE_REQUIRED:
+              isPictureRequired ? 1 : 0,
+          SpecificationAttributesColumn.INSPECTION_RESULT: inspectionResult,
+        };
+
+        ttId = await txn.insert(DBTables.SPECIFICATION_ATTRIBUTES, values);
+        log('Inspection id - $inspectionId create spec - $sampleValue');
+      });
+    } catch (e) {
+      log('Error has occurred while creating a specification attributes: $e');
+      return null;
+    }
+
+    return ttId;
+  }
+
+  Future<int?> createPartnerItemSKU(
+    int partnerID,
+    String itemSKU,
+    String lotNo,
+    String packDate,
+    int inspectionId,
+    String lotSize,
+    String uniqueId,
+    int poLineNo,
+    String poNo,
+  ) async {
+    final Database db = dbProvider.lazyDatabase;
+    int? ttId;
+
+    try {
+      await db.transaction((txn) async {
+        Map<String, dynamic> values = {
+          PartnerItemSkuColumn.PARTNER_ID: partnerID,
+          PartnerItemSkuColumn.ITEM_SKU: itemSKU,
+          PartnerItemSkuColumn.LOT_NO: lotNo,
+          PartnerItemSkuColumn.PACK_DATE: packDate,
+          PartnerItemSkuColumn.INSPECTION_ID: inspectionId,
+          PartnerItemSkuColumn.LOT_SIZE: lotSize,
+          PartnerItemSkuColumn.UNIQUE_ID: uniqueId,
+          PartnerItemSkuColumn.PO_LINE_NO: poLineNo,
+          PartnerItemSkuColumn.PO_NO: poNo,
+        };
+
+        ttId = await txn.insert(DBTables.PARTNER_ITEMSKU, values);
+      });
+    } catch (e) {
+      log('Error has occurred while creating a trailer temperature: $e');
+      return null;
+    }
+
+    return ttId;
+  }
+
+  Future<void>
+      copyTempTrailerTemperaturesToInspectionTrailerTemperatureTableByPartnerID(
+    int inspectionID,
+    int partnerID,
+    String poNumber,
+  ) async {
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      await db.transaction((txn) async {
+        List<Map> result = await txn.rawQuery(
+          'SELECT * FROM ${DBTables.TEMP_TRAILER_TEMPERATURE} WHERE ${TempTrailerTemperatureColumn.PO_NUMBER} = ?',
+          [poNumber],
+        );
+
+        if (result.isNotEmpty) {
+          for (var row in result) {
+            String location = row[TempTrailerTemperatureColumn.LOCATION];
+            String level = row[TempTrailerTemperatureColumn.LEVEL];
+            int value = row[TempTrailerTemperatureColumn.VALUE];
+            int complete = row[TempTrailerTemperatureColumn.COMPLETE];
+            String ponumber = row[TempTrailerTemperatureColumn.PO_NUMBER];
+
+            Map<String, dynamic> values = {
+              TrailerTemperatureColumn.INSPECTION_ID: inspectionID,
+              TrailerTemperatureColumn.LOCATION: location,
+              TrailerTemperatureColumn.LEVEL: level,
+              TrailerTemperatureColumn.VALUE: value,
+              TrailerTemperatureColumn.COMPLETE: 1,
+              TrailerTemperatureColumn.PO_NUMBER: ponumber,
+            };
+
+            await txn.insert(DBTables.TRAILER_TEMPERATURE, values);
+          }
+        }
+      });
+    } catch (e) {
+      log('Error has occurred while copying trailer temp: $e');
+      rethrow;
+    }
+  }
+
+  Future<void>
+      copyTempTrailerTemperaturesDetailsToInspectionTrailerTemperatureDetailsTableByPartnerID(
+    int inspectionID,
+    int partnerID,
+    String poNumber,
+  ) async {
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      await db.transaction((txn) async {
+        List<Map> result = await txn.rawQuery(
+          'SELECT * FROM ${DBTables.TEMP_TRAILER_TEMPERATURE_DETAILS} WHERE ${TempTrailerTemperatureDetailsColumn.PO_NUMBER} = ?',
+          [poNumber],
+        );
+
+        if (result.isNotEmpty) {
+          for (var row in result) {
+            Map<String, dynamic> values = {
+              TempTrailerTemperatureDetailsColumn.ID: inspectionID,
+              TempTrailerTemperatureDetailsColumn.TEMP_OPEN1:
+                  row[TempTrailerTemperatureDetailsColumn.TEMP_OPEN1],
+              TempTrailerTemperatureDetailsColumn.TEMP_OPEN2:
+                  row[TempTrailerTemperatureDetailsColumn.TEMP_OPEN2],
+              TempTrailerTemperatureDetailsColumn.TEMP_OPEN3:
+                  row[TempTrailerTemperatureDetailsColumn.TEMP_OPEN3],
+              TempTrailerTemperatureDetailsColumn.COMMENTS:
+                  row[TempTrailerTemperatureDetailsColumn.COMMENTS],
+              TempTrailerTemperatureDetailsColumn.PO_NUMBER:
+                  row[TempTrailerTemperatureDetailsColumn.PO_NUMBER],
+            };
+
+            await txn.insert(DBTables.TRAILER_TEMPERATURE_DETAILS, values);
+          }
+        }
+      });
+    } catch (e) {
+      log('Error has occurred while copying trailer temp: $e');
+      throw e;
+    }
+  }
+
+  Future<void> updateSelectedItemSKU(
+    int inspectionId,
+    int partnerID,
+    int itemSkuId,
+    String itemSku,
+    String itemUniqueId,
+    bool isComplete,
+    bool partialComplete,
+  ) async {
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      await db.transaction((txn) async {
+        Map<String, dynamic> values = {
+          SelectedItemSkuListColumn.COMPLETE: isComplete ? 'true' : 'false',
+          SelectedItemSkuListColumn.PARTIAL_COMPLETE:
+              partialComplete ? 'true' : 'false',
+          SelectedItemSkuListColumn.INSPECTION_ID: inspectionId,
+          SelectedItemSkuListColumn.PARTNER_ID: partnerID,
+        };
+
+        int count = await txn.update(
+          DBTables.SELECTED_ITEM_SKU_LIST,
+          values,
+          where:
+              '${SelectedItemSkuListColumn.SKU_ID} = ? AND ${SelectedItemSkuListColumn.UNIQUE_ITEM_ID} = ?',
+          whereArgs: [itemSkuId, itemUniqueId],
+        );
+      });
+    } catch (e) {
+      log('Error has occurred while updating an inspection: $e');
+      throw e;
+    }
+  }
+
+  Future<List<SpecificationGradeTolerance>> getSpecificationGradeTolerance(
+      String number, String version) async {
+    List<SpecificationGradeTolerance> list = [];
+
+    try {
+      final Database db = dbProvider.lazyDatabase;
+      String query =
+          "SELECT Number_Specification, Version_Specification, Severity_Defect_ID, Defect_ID, "
+          "Grade_Tolerance_Percentage, Overridden, Defect_Name, Defect_Category_Name, Severity_Defect_Name "
+          "FROM ${DBTables.SPECIFICATION_GRADE_TOLERANCE} "
+          "WHERE Number_Specification=? AND Version_Specification=?";
+
+      List<Map> result = await db.rawQuery(query, [number, version]);
+
+      for (Map<dynamic, dynamic> map in result) {
+        list.add(
+            SpecificationGradeTolerance.fromJson(map as Map<String, dynamic>));
+      }
+    } catch (e) {
+      log('Error has occurred while finding quality control items: $e');
+      return [];
+    }
+
+    return list;
   }
 }

@@ -87,6 +87,7 @@ class SideDrawer extends StatelessWidget {
               ),
             ),
             onTap: () {
+              Get.back();
               onDefectSaveAndCompleteTap();
             },
           ),
@@ -99,6 +100,7 @@ class SideDrawer extends StatelessWidget {
               ),
             ),
             onTap: () {
+              Get.back();
               onDiscardTap();
             },
           ),
@@ -116,6 +118,7 @@ class SideDrawer extends StatelessWidget {
               ),
             ),
             onTap: () {
+              Get.back();
               onCameraTap();
             },
           ),
@@ -133,6 +136,7 @@ class SideDrawer extends StatelessWidget {
               ),
             ),
             onTap: () {
+              Get.back();
               onSpecInstructionTap();
             },
           ),
@@ -150,6 +154,7 @@ class SideDrawer extends StatelessWidget {
               ),
             ),
             onTap: () {
+              Get.back();
               onSpecificationTap();
             },
           ),
@@ -162,6 +167,7 @@ class SideDrawer extends StatelessWidget {
               ),
             ),
             onTap: () {
+              Get.back();
               onGradeTap();
             },
           ),
@@ -174,6 +180,7 @@ class SideDrawer extends StatelessWidget {
               ),
             ),
             onTap: () {
+              Get.back();
               onInspectionTap();
             },
           ),
@@ -191,6 +198,7 @@ class SideDrawer extends StatelessWidget {
               ),
             ),
             onTap: () {
+              Get.back();
               UserLogoutDialog.showLogoutConfirmation(context,
                   onYesTap: () async {
                 Utils.showLoadingDialog();

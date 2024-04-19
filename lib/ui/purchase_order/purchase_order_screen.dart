@@ -74,10 +74,6 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
                 BottomCustomButtonView(
                   title: AppStrings.save,
                   onPressed: () async {
-                    if (true) {
-                      // FIXME: demo purpose
-                      return;
-                    }
                     await controller.navigateToPurchaseOrderDetails(
                         context, partner, carrier, commodity);
                   },

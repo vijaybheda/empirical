@@ -112,9 +112,7 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
             ],
           ),
         ),
-        FooterContentView(
-          hasLeftButton: false,
-        )
+        FooterContentView()
       ],
     );
   }

@@ -27,5 +27,13 @@ class AppImages {
   static const String ic_camera = 'assets/images/camera_icon.png';
   static const String ic_specComments = 'assets/images/spec_comment.png';
   static const String ic_specCommentsAdded = 'assets/images/spec_comment_added.png';
-}
 
+
+  static const String commentAddedImage =
+      'assets/images/spec_comment_added.png';
+  static const String commentImage = 'assets/images/spec_comment.png';
+
+  static const String infoAddedImage = 'assets/images/information_icon.png';
+  static const String infoImage = 'assets/images/information_icon_disabled.png';
+
+}

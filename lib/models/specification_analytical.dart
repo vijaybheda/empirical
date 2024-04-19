@@ -22,12 +22,12 @@ class SpecificationAnalytical {
   String? specificationVersion;
   String? analyticalName;
   int? analyticalID;
-  String? specMin;
-  int? specMax;
-  String? specTargetNumValue;
+  double? specMin;
+  double? specMax;
+  double? specTargetNumValue;
   String? uomName;
   String? specTargetTextValue;
-  String? specTypeofEntry;
+  var specTypeofEntry;
   bool? isTargetNumValue;
   String? description;
   int? order;
@@ -62,16 +62,20 @@ class SpecificationAnalytical {
       specificationVersion:
           map[SpecificationAnalyticalColumn.VERSION_SPECIFICATION],
       analyticalName: map[SpecificationAnalyticalColumn.ANALYTICAL_NAME],
-      analyticalID: map[SpecificationAnalyticalColumn.ANALYTICAL_ID],
-      specMin: map[SpecificationAnalyticalColumn.SPEC_MIN],
-      specMax: map[SpecificationAnalyticalColumn.SPEC_MAX],
-      specTargetNumValue: map[SpecificationAnalyticalColumn.TARGET_NUM_VALUE],
+      analyticalID: parseIntOrReturnNull(
+          map[SpecificationAnalyticalColumn.ANALYTICAL_ID]),
+      specMin:
+          parseDoubleOrReturnNull(map[SpecificationAnalyticalColumn.SPEC_MIN]),
+      specMax:
+          parseDoubleOrReturnNull(map[SpecificationAnalyticalColumn.SPEC_MAX]),
+      specTargetNumValue: parseDoubleOrReturnNull(
+          map[SpecificationAnalyticalColumn.TARGET_NUM_VALUE]),
       uomName: map[SpecificationAnalyticalColumn.UOM_NAME],
       specTargetTextValue: map[SpecificationAnalyticalColumn.TARGET_TEXT_VALUE],
       specTypeofEntry: map[SpecificationAnalyticalColumn.TYPE_ENTRY],
       isTargetNumValue: map['isTargetNumValue'] == 1,
       description: map[SpecificationAnalyticalColumn.DESCRIPTION],
-      order: map[SpecificationAnalyticalColumn.ORDER_NO],
+      order: parseIntOrReturnNull(map[SpecificationAnalyticalColumn.ORDER_NO]),
       isPictureRequired:
           map[SpecificationAnalyticalColumn.PICTURE_REQUIRED] == 1,
       specTargetTextDefault:
@@ -106,12 +110,12 @@ class SpecificationAnalytical {
     String? specificationVersion,
     String? analyticalName,
     int? analyticalID,
-    String? specMin,
-    int? specMax,
-    String? specTargetNumValue,
+    double? specMin,
+    double? specMax,
+    double? specTargetNumValue,
     String? uomName,
     String? specTargetTextValue,
-    String? specTypeofEntry,
+    var specTypeofEntry,
     bool? isTargetNumValue,
     String? description,
     int? order,

@@ -119,6 +119,7 @@ class PurchaseOrderDetailsController extends GetxController {
       var items = itemSkuList.where((element) {
         String? sku = element.sku;
         String? description = element.description;
+
         return (sku != null &&
                 sku.toLowerCase().contains(searchValue.toLowerCase())) ||
             (description != null &&
@@ -261,6 +262,7 @@ class PurchaseOrderDetailsController extends GetxController {
             if (result == "A-" || result == "AC") {
               QualityControlItem? qualityControlItems =
                   await dao.findQualityControlDetails(inspection.inspectionId!);
+
               bool isQuantityRejected = await dao.updateQuantityRejected(
                   inspection.inspectionId!,
                   0,
@@ -381,8 +383,8 @@ class PurchaseOrderDetailsController extends GetxController {
         arguments: passingData);
   }
 
-  Future<void> onEditTap(PurchaseOrderItem goodsItem, int index) async {
-    /*PartnerItemSKUInspections? partnerItemSKU = await dao.findPartnerItemSKU(
+  /*Future<void> onEditTap(PurchaseOrderItem goodsItem, int index) async {
+    PartnerItemSKUInspections? partnerItemSKU = await dao.findPartnerItemSKU(
         partnerID,
         dataList.get(position).getSku(),
         appStorage.selectedItemSKUList.get(position).getUniqueItemId());
@@ -442,8 +444,8 @@ class PurchaseOrderDetailsController extends GetxController {
               qcHeaderDetails: qcHeaderDetails,
               purchaseOrderItem: goodsItem,
             ),
-        arguments: passingData);*/
-  }
+        arguments: passingData);
+  }*/
 
   Future onInformationIconTap(PurchaseOrderItem goodsItem) async {
     if (productTransfer == "Transfer") {
