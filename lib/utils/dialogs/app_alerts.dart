@@ -52,7 +52,7 @@ class AppAlertDialog {
     bool? isMultiLine = false,
     String? value = '',
   }) {
-    String textFieldValue = '';
+    String textFieldValue = value ?? "";
     AdaptiveAlert.customAlertWithTextField(context,
         title: Text(
           title,

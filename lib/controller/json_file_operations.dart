@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -511,7 +512,7 @@ class JsonFileOperations {
     var storagePath = await Utils().getExternalStoragePath();
     final Directory directory =
         Directory("$storagePath${FileManString.jsonFilesCache}/");
-    print('UOMJson directory ${directory.path}');
+    debugPrint('UOMJson directory ${directory.path}');
 
     String jsonLoadText = await getJsonFileContent(directory,
         fileName: FileManString.UOM_FILENAME);
@@ -527,7 +528,7 @@ class JsonFileOperations {
         list.add(listItem);
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return null;
     }
     return list;
@@ -547,11 +548,11 @@ class JsonFileOperations {
           buf.write(line);
         });
       } else {
-        print('File not found: $path');
+        debugPrint('File not found: $path');
         return null;
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return null;
     }
     return buf.toString();

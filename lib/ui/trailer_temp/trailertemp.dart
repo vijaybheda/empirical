@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
-import 'package:pverify/ui/trailer_temp/trailerTempClass.dart';
+import 'package:pverify/ui/trailer_temp/trailertemp_class.dart';
 import 'package:pverify/ui/trailer_temp/trailertemp_controller.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';

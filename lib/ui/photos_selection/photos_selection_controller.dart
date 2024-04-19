@@ -74,6 +74,7 @@ class PhotoSelectionController extends GetxController {
       returnIntent.putExtra("callerActivity", "InspectionPhotosActivity");
       setResult(RESULT_OK, returnIntent);
       finish(); */
+    Get.back();
   }
 
   // TODO: ANDROID CODE

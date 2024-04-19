@@ -361,6 +361,12 @@ class AppStrings {
   static const String sample = 'sample';
   static const String samples = 'samples';
   static const String errorEnterSize = 'Enter the size of the sample.';
+  static const String defect = 'Defect';
+  static const String defects = 'Defects';
+  static const String cannotBeGreaterThenTheSampleSize =
+      'cannot be greater then the sample size';
+  static const String pleaseEnterValidDefectCount =
+      'please enter a Valid defect count.';
   static const String removeDefect =
       'Are you sure you want to remove this defect?';
   static const String enterComment = 'Enter a Comment';
@@ -552,6 +558,18 @@ class AppStrings {
   static const String banner1Blank = 'Banner 1 cannot be blank';
   static const String banner2Blank = 'Banner 2 cannot be blank';
   static const String serverUrlBlank = 'Server Url cannot be blank';
+  static const String injury_per = 'Injury\n(%)';
+  static const String d_per = "D (%)";
+  static const String sd_per = "SD (%)";
+  static const String vsd_per = "VSD (%)";
+  static const String decay_per = "Decay (%)";
+  static const String total_defects = "Total Defects\n(%)";
+
+  static const String condition_decay = "Condition-\nDecay";
+  static const String quality_trimming = "Quality-\nTrimming";
+  static const String size_offsize = "Size-\nOffsize";
+  static const String color_color = "Color-\nColor";
+  static const String total_severity = "Total Severity";
 
   static const List<String> stowage = ['Internal Managed', 'X-Dock'];
 

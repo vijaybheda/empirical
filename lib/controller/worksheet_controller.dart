@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -11,12 +12,13 @@ import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/utils.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class WorksheetController extends GetxController {
   final sizeOfNewSetTextController = TextEditingController().obs;
   var isFirstTime = true;
   var isDefectEntry = true;
+
+  RxInt activeTabIndex = 1.obs;
 
   var sampleSetObs = <SampleSetsObject>[].obs;
   SampleSetsObject tempSampleObj = SampleSetsObject();
@@ -33,8 +35,21 @@ class WorksheetController extends GetxController {
   }
 
   addSampleSets(String setsValue) {
+    final int index;
+
+    // debugPrint("sampleSetObs.last ${sampleSetObs.reversed.last.sampleId}");
+
+    int id = sampleSetObs.isNotEmpty
+        ? (int.tryParse(sampleSetObs.reversed.last.sampleId ?? "1") ?? 1) + 1
+        : 1;
+    /*  if (sampleSetObs.length >= 1) {
+      index = sampleSetObs.elementAt(sampleSetObs.length - 1).setNumber! + 1;
+    } else {
+      index = sampleSetObs.length + 1;
+    }*/
     tempSampleObj = SampleSetsObject();
     tempSampleObj.sampleValue = setsValue;
+    tempSampleObj.sampleId = id.toString();
     sampleSetObs.insert(0, tempSampleObj);
     sizeOfNewSetTextController.value.text = "";
   }
@@ -69,56 +84,103 @@ class WorksheetController extends GetxController {
     required int setIndex,
     required int rowIndex,
     required String fieldName,
+    required BuildContext context,
   }) {
+    bool isError = false;
+    int sampleSize =
+        int.tryParse(sampleSetObs[setIndex].sampleValue ?? "0") ?? 0;
+    String dropDownValue =
+        sampleSetObs[setIndex].defectItem?[rowIndex].name ?? "";
+    if ((int.tryParse(value) ?? 0) > sampleSize) {
+      isError = true;
+      AppAlertDialog.validateAlerts(
+        context,
+        AppStrings.alert,
+        '${AppStrings.defect} - $dropDownValue${AppStrings.cannotBeGreaterThenTheSampleSize} $sampleSize, ${AppStrings.pleaseEnterValidDefectCount}',
+      );
+    }
+
     switch (fieldName) {
       case AppStrings.injury:
-      // do nothing
+        // do nothing
+        if (isError) {
+          sampleSetObs[setIndex]
+              .defectItem?[rowIndex]
+              .injuryTextEditingController
+              ?.text = '0';
+        }
+        sampleSetObs.refresh();
       case AppStrings.damage:
         sampleSetObs[setIndex]
             .defectItem?[rowIndex]
             .injuryTextEditingController
-            ?.text = value;
+            ?.text = isError ? '0' : value;
+        if (isError) {
+          sampleSetObs[setIndex]
+              .defectItem?[rowIndex]
+              .damageTextEditingController
+              ?.text = isError ? '0' : value;
+        }
         sampleSetObs.refresh();
       case AppStrings.seriousDamage:
         sampleSetObs[setIndex]
             .defectItem?[rowIndex]
             .injuryTextEditingController
-            ?.text = value;
+            ?.text = isError ? '0' : value;
         sampleSetObs[setIndex]
             .defectItem?[rowIndex]
             .damageTextEditingController
-            ?.text = value;
+            ?.text = isError ? '0' : value;
+        if (isError) {
+          sampleSetObs[setIndex]
+              .defectItem?[rowIndex]
+              .sDamageTextEditingController
+              ?.text = isError ? '0' : value;
+        }
         sampleSetObs.refresh();
       case AppStrings.verySeriousDamage:
         sampleSetObs[setIndex]
             .defectItem?[rowIndex]
             .injuryTextEditingController
-            ?.text = value;
+            ?.text = isError ? '0' : value;
         sampleSetObs[setIndex]
             .defectItem?[rowIndex]
             .damageTextEditingController
-            ?.text = value;
+            ?.text = isError ? '0' : value;
         sampleSetObs[setIndex]
             .defectItem?[rowIndex]
             .sDamageTextEditingController
-            ?.text = value;
+            ?.text = isError ? '0' : value;
+        if (isError) {
+          sampleSetObs[setIndex]
+              .defectItem?[rowIndex]
+              .vsDamageTextEditingController
+              ?.text = isError ? '0' : value;
+        }
+
       case AppStrings.decay:
         sampleSetObs[setIndex]
             .defectItem?[rowIndex]
             .injuryTextEditingController
-            ?.text = value;
+            ?.text = isError ? '0' : value;
         sampleSetObs[setIndex]
             .defectItem?[rowIndex]
             .damageTextEditingController
-            ?.text = value;
+            ?.text = isError ? '0' : value;
         sampleSetObs[setIndex]
             .defectItem?[rowIndex]
             .sDamageTextEditingController
-            ?.text = value;
+            ?.text = isError ? '0' : value;
         sampleSetObs[setIndex]
             .defectItem?[rowIndex]
             .vsDamageTextEditingController
-            ?.text = value;
+            ?.text = isError ? '0' : value;
+        if (isError) {
+          sampleSetObs[setIndex]
+              .defectItem?[rowIndex]
+              .decayTextEditingController
+              ?.text = isError ? '0' : value;
+        }
       default:
       // do nothing
     }
@@ -151,9 +213,15 @@ class WorksheetController extends GetxController {
     sampleSetObs.removeAt(index);
   }
 
-  void openPDFFile(BuildContext context) async {
-    String filename =
-        "II_${AppStorage.instance.commodityVarietyData?.commodityId.toString()}.pdf";
+  void openPDFFile(BuildContext context, String type) async {
+    String filename;
+    if (type == "Inspection Instructions") {
+      filename =
+          "II_${AppStorage.instance.commodityVarietyData?.commodityId.toString()}.pdf";
+    } else {
+      filename =
+          "GRADE_${AppStorage.instance.commodityVarietyData?.commodityId.toString()}.pdf";
+    }
 
     var storagePath = await Utils().getExternalStoragePath();
     String path = "$storagePath/${FileManString.COMMODITYDOCS}/$filename";
@@ -170,8 +238,12 @@ class WorksheetController extends GetxController {
             isSuccess: false);
       }
     } else {
-      AppSnackBar.getCustomSnackBar("Error", "No Inspection Instructions",
-          isSuccess: false);
+      if (type == "Inspection Instructions") {
+        AppSnackBar.getCustomSnackBar("Error", "No Inspection Instructions",
+            isSuccess: false);
+      } else {
+        AppSnackBar.getCustomSnackBar("Error", "No Grade", isSuccess: false);
+      }
     }
   }
 
