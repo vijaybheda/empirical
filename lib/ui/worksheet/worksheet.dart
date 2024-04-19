@@ -10,12 +10,14 @@ import 'package:pverify/controller/worksheet_controller.dart';
 import 'package:pverify/ui/worksheet/special_instructions.dart';
 import 'package:pverify/ui/worksheet/tableDialog.dart';
 import 'package:pverify/utils/app_const.dart';
+import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
+import '../../models/worksheet_data_table.dart';
 import '../../utils/dialogs/app_alerts.dart';
 
 class Worksheet extends GetView<WorksheetController> {
@@ -415,7 +417,26 @@ class Worksheet extends GetView<WorksheetController> {
                     fontWeight: FontWeight.w500,
                     textStyle: TextStyle(color: AppColors.textFieldText_Color)),
                 onClickAction: () {
-                  Get.to(const SpecialInstructions(),
+                  List<Map<String, String>> exceptionCollection = [];
+
+                  Map<String, String> map;
+
+                  if (AppStorage.instance.commodityVarietyData?.exceptions !=
+                      null) {
+                    for (var item in AppStorage
+                        .instance.commodityVarietyData!.exceptions) {
+                      map = {
+                        'KEY_TITLE': item.shortDescription.toString(),
+                        'KEY_DETAIL': item.longDescription.toString(),
+                      };
+                      exceptionCollection.add(map);
+                    }
+                  }
+
+                  Get.to(
+                      () => SpecialInstructions(
+                            exceptionCollection: exceptionCollection,
+                          ),
                       transition: Transition.downToUp);
                 },
               ),
@@ -940,6 +961,38 @@ class DefectsTable extends StatelessWidget {
     }
   }
 
+  Widget getDefectTypeTag({required String defectType}) {
+    String text = '';
+    switch (defectType) {
+      case AppStrings.injury:
+        text = AppStrings.injuryIcon;
+      case AppStrings.damage:
+        text = AppStrings.damageIcon;
+      case AppStrings.seriousDamage:
+        text = AppStrings.seriousDamageIcon;
+      case AppStrings.verySeriousDamage:
+        text = AppStrings.verySeriousDamageIcon;
+      case AppStrings.decay:
+        text = AppStrings.decayIcon;
+      default:
+        text = '';
+    }
+
+    return Container(
+      width: 60.w,
+      height: 60.w,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.red,
+      ),
+      child: Text(
+        text,
+        style: TextStyle(fontSize: 16),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -948,13 +1001,13 @@ class DefectsTable extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Severity
           Row(
             children: [
               tableTypeCell(
                 text: AppStrings.dtType,
                 isEnabledTopBorder: true,
               ),
-              tableEmptyCell(isEnabledTopBorder: true),
               tableDefectsCell(
                 defectType: AppStrings.injury,
                 text: AppStrings.defects,
@@ -964,8 +1017,45 @@ class DefectsTable extends StatelessWidget {
                 defectType: AppStrings.damage,
                 text: AppStrings.defects,
                 isEnabledTopBorder: true,
-                isEnabledRightBorder: true,
-                isEnabledLeftBorder: true,
+              ),
+              tableDefectsCell(
+                defectType: AppStrings.damage,
+                text: AppStrings.defects,
+                isEnabledTopBorder: true,
+              ),
+              tableDefectsCell(
+                defectType: AppStrings.damage,
+                text: AppStrings.defects,
+                isEnabledTopBorder: true,
+              ),
+            ],
+          ),
+
+          // Severity
+          Row(
+            children: [
+              tableTypeCell(
+                text: AppStrings.dtSeverity,
+              ),
+              tableDefectsCell(
+                defectType: AppStrings.injury,
+                text: AppStrings.defects,
+                widget: getDefectTypeTag(defectType: AppStrings.damage),
+              ),
+              tableDefectsCell(
+                defectType: AppStrings.damage,
+                text: AppStrings.defects,
+                widget: getDefectTypeTag(defectType: AppStrings.seriousDamage),
+              ),
+              tableDefectsCell(
+                defectType: AppStrings.damage,
+                text: AppStrings.defects,
+                widget: getDefectTypeTag(defectType: AppStrings.seriousDamage),
+              ),
+              tableDefectsCell(
+                defectType: AppStrings.damage,
+                text: AppStrings.defects,
+                widget: getDefectTypeTag(defectType: AppStrings.seriousDamage),
               ),
             ],
           ),
@@ -977,9 +1067,9 @@ class DefectsTable extends StatelessWidget {
                 text: AppStrings.totalQualityDefects,
                 isEnabledTopBorder: true,
               ),
-              tableEmptyCell(),
               tableDefectsCell(defectType: AppStrings.injury, text: "2"),
-              tableDefectsCell(defectType: AppStrings.damage, text: "2"),
+              tableDefectsCell(
+                  defectType: AppStrings.damage, text: "2", colSpanItem: 3),
             ],
           ),
 
@@ -987,9 +1077,9 @@ class DefectsTable extends StatelessWidget {
           Row(
             children: [
               tableTypeCell(text: AppStrings.totalQualityDefectsPercentage),
-              tableEmptyCell(),
               tableDefectsCell(defectType: AppStrings.injury, text: "17 %"),
-              tableDefectsCell(defectType: AppStrings.damage, text: "17 %"),
+              tableDefectsCell(
+                  defectType: AppStrings.damage, text: "17 %", colSpanItem: 3),
             ],
           ),
 
@@ -997,9 +1087,9 @@ class DefectsTable extends StatelessWidget {
           Row(
             children: [
               tableTypeCell(text: AppStrings.totalConditionDefects),
-              tableEmptyCell(),
               tableDefectsCell(defectType: AppStrings.injury, text: "0"),
-              tableDefectsCell(defectType: AppStrings.damage, text: "0"),
+              tableDefectsCell(
+                  defectType: AppStrings.damage, text: "0", colSpanItem: 3),
             ],
           ),
 
@@ -1007,21 +1097,69 @@ class DefectsTable extends StatelessWidget {
           Row(
             children: [
               tableTypeCell(text: AppStrings.totalConditionDefectsPercentage),
-              tableEmptyCell(),
               tableDefectsCell(defectType: AppStrings.injury, text: "0%"),
-              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
+              tableDefectsCell(
+                  defectType: AppStrings.damage, text: "0%", colSpanItem: 3),
             ],
           ),
 
           // Total Severity
           Row(
             children: [
-              tableTypeCell(text: AppStrings.total_severity),
-              tableEmptyCell(),
+              tableTypeCell(text: AppStrings.dtTotalByDefectType),
+              tableDefectsCell(defectType: AppStrings.injury, text: "2"),
+              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
+              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
+              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
+            ],
+          ),
+
+          // Total Severity Percentage
+          Row(
+            children: [
+              tableTypeCell(text: AppStrings.dtPercentByDefectType),
+              tableDefectsCell(defectType: AppStrings.injury, text: "2"),
+              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
+              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
+              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
+            ],
+          ),
+
+          // Size Defect
+          Row(
+            children: [
+              tableTypeCell(text: AppStrings.totalSizeDefects),
               tableDefectsCell(defectType: AppStrings.injury, text: "2"),
               tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
             ],
-          )
+          ),
+
+          // Size Defect Percentage
+          Row(
+            children: [
+              tableTypeCell(text: AppStrings.totalSizeDefectsPercentage),
+              tableDefectsCell(defectType: AppStrings.injury, text: "2"),
+              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
+            ],
+          ),
+
+          // Color defects
+          Row(
+            children: [
+              tableTypeCell(text: AppStrings.totalColorDefects),
+              tableDefectsCell(defectType: AppStrings.injury, text: "2"),
+              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
+            ],
+          ),
+
+          // Color Defects percentage
+          Row(
+            children: [
+              tableTypeCell(text: AppStrings.totalColorDefectsPercentage),
+              tableDefectsCell(defectType: AppStrings.injury, text: "2"),
+              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
+            ],
+          ),
         ],
       ),
     );
@@ -1070,6 +1208,7 @@ class DefectsTable extends StatelessWidget {
   Widget tableDefectsCell({
     required String text,
     required String defectType,
+    int colSpanItem = 1,
     Widget? widget,
     bool? isEnabledTopBorder,
     bool? isEnabledBottomBorder,
@@ -1077,7 +1216,7 @@ class DefectsTable extends StatelessWidget {
     bool? isEnabledLeftBorder = false,
   }) {
     return Container(
-      width: defectColumnWidth,
+      width: (defectColumnWidth * colSpanItem),
       height: cellHeight,
       alignment: Alignment.center,
       decoration: BoxDecoration(
@@ -1106,7 +1245,6 @@ class DefectsTable extends StatelessWidget {
   }
 
   Widget tableEmptyCell({
-    int? flexCount,
     bool? isEnabledTopBorder,
     bool? isEnabledBottomBorder,
   }) {
@@ -1135,7 +1273,6 @@ class DefectsTable extends StatelessWidget {
 
   Widget tableTypeCell({
     required String text,
-    int? flexCount,
     bool? isEnabledTopBorder,
     bool? isEnabledBottomBorder,
   }) {

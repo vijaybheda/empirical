@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/trailer_temp/trailertemp_class.dart';
-import 'package:pverify/ui/trailer_temp/trailertemp_controller.dart';
+import 'package:pverify/controller/trailertemp_controller.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';
@@ -106,11 +106,11 @@ class TrailerTemp extends GetView<TrailerTempController> {
                   AppAlertDialog.validateAlerts(context, AppStrings.error,
                       AppStrings.trailer_temperature_no_entries_alert);
                 } else {
-                   controller.saveTemperatureData('N', orderNumber,
+                  controller.saveTemperatureData('N', orderNumber,
                       carrier.id ?? 0, controller.tailerTempData);
-                   controller.saveTemperatureData('M', orderNumber,
+                  controller.saveTemperatureData('M', orderNumber,
                       carrier.id ?? 0, controller.tailerTempData);
-                   controller.saveTemperatureData('B', orderNumber,
+                  controller.saveTemperatureData('B', orderNumber,
                       carrier.id ?? 0, controller.tailerTempData);
                   Get.back();
                 }
