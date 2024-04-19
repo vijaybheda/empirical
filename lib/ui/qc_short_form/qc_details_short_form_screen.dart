@@ -75,19 +75,21 @@ class QCDetailsShortFormScreen
             ),
           ),
           drawer: SideDrawer(
-            onDefectSaveAndCompleteTap: () {
-              //TODO: Implement defect save and complete
+            onDefectSaveAndCompleteTap: () async {
+              await controller.saveAsDraftAndGotoMyInspectionScreen();
             },
-            onDiscardTap: () {
-              //TODO: Implement discard
+            onDiscardTap: () async {
+              await controller.deleteInspectionAndGotoMyInspectionScreen();
             },
-            onCameraTap: () {
-              Get.to(() => const PhotosSelection());
+            onCameraTap: () async {
+              await controller.onCameraMenuTap();
             },
-            onSpecInstructionTap: () {
-              //TODO: Implement spec instruction
+            onSpecInstructionTap: () async {
+              await controller.onSpecialInstrMenuTap();
             },
-            onSpecificationTap: () {},
+            onSpecificationTap: () async {
+              await controller.onSpecificationTap();
+            },
             onGradeTap: () async {
               await JsonFileOperations.instance.viewGradePdf();
             },

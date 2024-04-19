@@ -77,6 +77,7 @@ class AppStrings {
   static const String crop = 'Crop';
   static const String delete = 'Delete';
   static const String title = 'Title';
+  static const String info = 'Info';
 
   static const String saveInspectionButton = 'Save Inspection';
   static const String inspectionCalculateResultButton = 'Calculate Result';
@@ -244,6 +245,11 @@ class AppStrings {
   static String noGradeDocument = 'No Grade Document';
 
   static String selectItems = 'Select Item(s)';
+
+  static String noSpecificationInstructions = 'No Specification Instructions';
+
+  static String noStoragePermission =
+      'Storage permission required for this app.';
 
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';

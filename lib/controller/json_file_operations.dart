@@ -434,8 +434,8 @@ class JsonFileOperations {
 
         String name = '${specificationNumber}_$specificationVersion';
         name = name.replaceAll(' ', '');
-        String filename = '${'specificationBannerData'}_$name.json';
-        // FIXME: name
+        String filename = FileManString.COMMODITYDOCS_JSON_STRING_FORMAT
+            .replaceAll('%s', name);
 
         await File(join(directory.path, filename))
             .writeAsString(jsonEncode(element));
@@ -463,13 +463,13 @@ class JsonFileOperations {
 
     try {
       Map<String, dynamic> jsonResponse = json.decode(response);
-      String? commodityId = jsonResponse['commodityId'];
-      String? varietyId = jsonResponse['varietyId'];
+      int? commodityId = jsonResponse['commodityId'];
+      int? varietyId = jsonResponse['varietyId'];
       String? varietyName = jsonResponse['varietyName'];
 
       commodityVarietyData = CommodityVarietyData(
-          commodityId: int.tryParse(commodityId!),
-          varietyId: int.tryParse(varietyId!),
+          commodityId: commodityId,
+          varietyId: varietyId,
           varietyName: varietyName);
 
       List<dynamic>? documentsArray = jsonResponse['documents'];
@@ -569,19 +569,24 @@ class JsonFileOperations {
 
     if (await fileLocation2.exists()) {
       final Uri data2 = Uri.file(path2);
-      await _grantPermissions(data2);
+      // bool hasStorageAccess = await _grantPermissions(data2);
+      // if (hasStorageAccess) {
       await openFile(path2);
+      // } else {
+      //   AppSnackBar.error(message: AppStrings.noStoragePermission);
+      // }
     } else {
       AppSnackBar.error(message: AppStrings.noGradeDocument);
     }
   }
 
-  Future<void> _grantPermissions(Uri uri) async {
+  Future<bool> _grantPermissions(Uri uri) async {
     final permissions = <Permission>[Permission.storage];
     for (final permission in permissions) {
       if (await permission.status.isGranted) continue;
       await permission.request();
     }
+    return await permissions.first.status.isGranted;
   }
 
   Future<bool> openFile(String filePath) async {

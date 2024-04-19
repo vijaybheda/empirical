@@ -10,6 +10,7 @@ import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/partner_item_sku_inspections.dart';
 import 'package:pverify/models/purchase_order_details.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/models/quality_control_item.dart';
@@ -18,8 +19,13 @@ import 'package:pverify/models/specification_analytical_request_item.dart';
 import 'package:pverify/models/specification_by_item_sku.dart';
 import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/ui/Home/home.dart';
+import 'package:pverify/ui/inspection_exception/inspection_exception_screen.dart';
+import 'package:pverify/ui/photos_selection/photos_selection.dart';
 import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
+import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/custom_listview_dialog.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -90,6 +96,10 @@ class QCDetailsShortFormScreenController extends GetxController {
   QualityControlItem? qualityControlItems;
 
   List<SpecificationAnalyticalRequest> listSpecAnalyticalsRequest = [];
+
+  String? result_comply;
+
+  bool isPartialComplete = false, isComplete = false;
 
   QCDetailsShortFormScreenController({
     required this.partner,
@@ -459,8 +469,8 @@ class QCDetailsShortFormScreenController extends GetxController {
   Future<void> saveAsDraftAndGotoMyInspectionScreen() async {
     await saveFieldsToDB();
     // TODO: implement below for saving inspection
-    /*await saveFieldsToDBSpecAttribute(false);
-    await callStartActivity(false);*/
+    await saveFieldsToDBSpecAttribute(false);
+    await callStartActivity(false);
   }
 
   Future<bool> saveFieldsToDB() async {
@@ -590,7 +600,7 @@ class QCDetailsShortFormScreenController extends GetxController {
     return false;
   }
 
-  /*Future<void> saveFieldsToDBSpecAttribute(bool isComplete) async {
+  Future<void> saveFieldsToDBSpecAttribute(bool isComplete) async {
     // TODO: check null for inspectionId
     await dao.deleteSpecAttributesByInspectionId(inspectionId!);
     List<String> blankAnalyticalNames = [];
@@ -657,12 +667,20 @@ class QCDetailsShortFormScreenController extends GetxController {
     } else {
       // TODO: Show dialog with blankAnalyticalNames
     }
-  }*/
+  }
 
-  /*Future<void> callStartActivity(bool isComplete) async {
+  Future<void> callStartActivity(bool isComplete) async {
     if (callerActivity != "TrendingReportActivity") {
-      await dao.createPartnerItemSKU(partnerID!, itemSKU!, lotNo!, packDate!,
-          inspectionId!, lotSize!, itemUniqueId!, poLineNo!, poNumber!);
+      await dao.createPartnerItemSKU(
+          partnerID!,
+          itemSKU!,
+          lot_No!,
+          packDateController.text,
+          inspectionId!,
+          lotSize!,
+          itemUniqueId!,
+          poLineNo!,
+          poNumber!);
       await dao
           .copyTempTrailerTemperaturesToInspectionTrailerTemperatureTableByPartnerID(
               inspectionId!, carrierID!, poNumber!);
@@ -674,10 +692,10 @@ class QCDetailsShortFormScreenController extends GetxController {
     }
     if (isComplete) {
       await dao.updateSelectedItemSKU(inspectionId!, partnerID!, itemSkuId!,
-          itemSku!, itemUniqueId!, isComplete, false);
+          itemSKU!, itemUniqueId!, isComplete, false);
     } else {
       await dao.updateSelectedItemSKU(inspectionId!, partnerID!, itemSkuId!,
-          itemSku!, itemUniqueId!, isComplete, true);
+          itemSKU!, itemUniqueId!, isComplete, true);
     }
 
     if (callerActivity == "NewPurchaseOrderDetailsActivity") {
@@ -765,7 +783,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         // TODO: Implement navigation based on callerActivity
       }
     }
-  }*/
+  }
 
   String getDateTypeDesc(String? dateType) {
     switch (dateType) {
@@ -797,47 +815,47 @@ class QCDetailsShortFormScreenController extends GetxController {
     }
   }
 
-  /*Future<void> callNextItemQCDetails() async {
-    currentLotNumber = lot_No;
-    currentItemSKU = itemSKU;
-    currentItemSKUId = itemSkuId;
-    currentUniqueId = itemUniqueId;
-    currentItemSKUName = itemSkuName;
-    currentCommodityId = commodityID;
-    currentCommodityName = commodityName;
-    currentPackDate = packDate;
-    currentGtin = gtin;
+  Future<void> callNextItemQCDetails() async {
+    lot_No = lot_No;
+    itemSKU = itemSKU;
+    itemSkuId = itemSkuId;
+    itemUniqueId = itemUniqueId;
+    itemSkuName = itemSkuName;
+    commodityID = commodityID;
+    commodityName = commodityName;
+    packDate = packDate;
+    gtin = gtin;
 
     for (int j = 0; j < _appStorage.selectedItemSKUList.length; j++) {
       if (_appStorage.selectedItemSKUList[j].uniqueItemId == itemUniqueId) {
-        _appStorage.selectedItemSKUList[j].lotNo = currentLotNumber;
-        _appStorage.selectedItemSKUList[j].sku = currentItemSKU;
-        _appStorage.selectedItemSKUList[j].id = currentItemSKUId;
-        _appStorage.selectedItemSKUList[j].name = currentItemSKUName;
-        _appStorage.selectedItemSKUList[j].commodityID = currentCommodityId;
-        _appStorage.selectedItemSKUList[j].commodityName = currentCommodityName;
-        _appStorage.selectedItemSKUList[j].packDate = currentPackDate;
-        _appStorage.selectedItemSKUList[j].gtin = currentGtin;
+        _appStorage.selectedItemSKUList[j].lotNo = lot_No;
+        _appStorage.selectedItemSKUList[j].sku = itemSKU;
+        _appStorage.selectedItemSKUList[j].id = itemSkuId;
+        _appStorage.selectedItemSKUList[j].name = itemSkuName;
+        _appStorage.selectedItemSKUList[j].commodityID = commodityID;
+        _appStorage.selectedItemSKUList[j].commodityName = commodityName;
+        _appStorage.selectedItemSKUList[j].packDate = packDateController.text;
+        _appStorage.selectedItemSKUList[j].gtin = gtin;
         break;
       }
     }
 
-    PartnerItemSKUInspections? partnerItemSKU = await dao.findPartnerItemSKU(
-        partnerID, currentItemSKU, currentUniqueId);
+    PartnerItemSKUInspections? partnerItemSKU =
+        await dao.findPartnerItemSKU(partnerID!, itemSKU!, itemUniqueId);
     isComplete = false;
     isPartialComplete = false;
 
     if (partnerItemSKU != null) {
-      isComplete = await dao.isInspectionComplete(
-          partnerID, currentItemSKU, currentUniqueId);
+      isComplete =
+          await dao.isInspectionComplete(partnerID!, itemSKU!, itemUniqueId);
       if (!isComplete) {
         isPartialComplete = await dao.isInspectionPartialComplete(
-            partnerID, currentItemSKU, currentUniqueId);
+            partnerID!, itemSKU!, itemUniqueId!);
       }
     }
 
     callPurchaseOrderDetailsActivity();
-  }*/
+  }
 
   void callPurchaseOrderDetailsActivity() {
     Map<String, dynamic> bundle = {
@@ -883,5 +901,94 @@ class QCDetailsShortFormScreenController extends GetxController {
     }
 
     Get.back();
+  }
+
+  Future<void> onCameraMenuTap() async {
+    Map<String, dynamic> passingData = {
+      Consts.PARTNER_NAME: partnerName,
+      Consts.PARTNER_ID: partnerID,
+      Consts.CARRIER_NAME: carrierName,
+      Consts.CARRIER_ID: carrierID,
+      Consts.COMMODITY_NAME: commodityName,
+      Consts.COMMODITY_ID: commodityID,
+      Consts.VIEW_ONLY_MODE: false,
+      Consts.INSPECTION_ID: inspectionId,
+      Consts.PO_NUMBER: poNumber,
+    };
+
+    await Get.to(() => const PhotosSelection(), arguments: passingData);
+  }
+
+  Future onSpecialInstrMenuTap() async {
+    if (_appStorage.commodityVarietyData != null &&
+        (_appStorage.commodityVarietyData?.exceptions ?? []).isNotEmpty) {
+      Get.to(() => const InspectionExceptionScreen());
+    } else {
+      AppSnackBar.info(message: AppStrings.noSpecificationInstructions);
+    }
+  }
+
+  Future onSpecificationTap() async {
+    if ((specificationNumber != null && specificationNumber!.isNotEmpty) &&
+        (specificationVersion != null && specificationVersion!.isNotEmpty)) {}
+
+    _appStorage.specificationGradeToleranceTable =
+        await dao.getSpecificationGradeTolerance(
+            specificationNumber!, specificationVersion!);
+
+    // TODO: Implement below code
+    /*SpecTolearanceTableDialog customDialog2 = SpecTolearanceTableDialog(QC_Details_short_form.this, context,
+        specificationNumber, specificationVersion);
+    customDialog2.show();
+    customDialog2.setCanceledOnTouchOutside(false);*/
+  }
+
+  Future deleteInspectionAndGotoMyInspectionScreen() async {
+    if (serverInspectionID > -1) {
+      await dao.deleteInspection(serverInspectionID);
+
+      Map<String, dynamic> passingData = {
+        Consts.SERVER_INSPECTION_ID: -1,
+        Consts.PARTNER_NAME: partnerName,
+        Consts.PARTNER_ID: partnerID,
+        Consts.CARRIER_NAME: carrierName,
+        Consts.CARRIER_ID: carrierID,
+        Consts.COMMODITY_NAME: commodityName,
+        Consts.COMMODITY_ID: commodityID,
+        Consts.SPECIFICATION_NUMBER: specificationNumber,
+        Consts.SPECIFICATION_VERSION: specificationVersion,
+        Consts.SPECIFICATION_NAME: selectedSpecification,
+        Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
+        Consts.ITEM_SKU: itemSKU,
+        Consts.ITEM_SKU_NAME: itemSkuName,
+        Consts.ITEM_SKU_ID: itemSkuId,
+        Consts.ITEM_UNIQUE_ID: itemUniqueId,
+        Consts.Lot_No: lot_No,
+        Consts.GTIN: gtin,
+        Consts.PACK_DATE: packDate,
+        Consts.LOT_SIZE: lotSize,
+        Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
+        Consts.PO_NUMBER: poNumber,
+        Consts.PRODUCT_TRANSFER: productTransfer,
+        Consts.DATETYPE: dateTypeDesc,
+      };
+
+      if (isMyInspectionScreen ?? false) {
+        Get.offAll(() => const Home(), arguments: passingData);
+      } else {
+        if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+          Get.offAll(
+              () => NewPurchaseOrderDetailsScreen(
+                    partner: partner,
+                    qcHeaderDetails: qcHeaderDetails,
+                    carrier: carrier,
+                    commodity: commodity,
+                  ),
+              arguments: passingData);
+        } else {
+          Get.offAll(() => PurchaseOrderDetails(), arguments: passingData);
+        }
+      }
+    }
   }
 }

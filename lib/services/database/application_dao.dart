@@ -24,6 +24,7 @@ import 'package:pverify/models/specification.dart';
 import 'package:pverify/models/specification_analytical.dart';
 import 'package:pverify/models/specification_analytical_request_item.dart';
 import 'package:pverify/models/specification_by_item_sku.dart';
+import 'package:pverify/models/specification_grade_tolerance.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/models/trailer_temperature_item.dart';
 import 'package:pverify/models/user_data.dart';
@@ -3215,5 +3216,31 @@ class ApplicationDao {
       log('Error has occurred while updating an inspection: $e');
       throw e;
     }
+  }
+
+  Future<List<SpecificationGradeTolerance>> getSpecificationGradeTolerance(
+      String number, String version) async {
+    List<SpecificationGradeTolerance> list = [];
+
+    try {
+      final Database db = dbProvider.lazyDatabase;
+      String query =
+          "SELECT Number_Specification, Version_Specification, Severity_Defect_ID, Defect_ID, "
+          "Grade_Tolerance_Percentage, Overridden, Defect_Name, Defect_Category_Name, Severity_Defect_Name "
+          "FROM ${DBTables.SPECIFICATION_GRADE_TOLERANCE} "
+          "WHERE Number_Specification=? AND Version_Specification=?";
+
+      List<Map> result = await db.rawQuery(query, [number, version]);
+
+      for (Map<dynamic, dynamic> map in result) {
+        list.add(
+            SpecificationGradeTolerance.fromJson(map as Map<String, dynamic>));
+      }
+    } catch (e) {
+      log('Error has occurred while finding quality control items: $e');
+      return [];
+    }
+
+    return list;
   }
 }

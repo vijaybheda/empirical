@@ -7,16 +7,21 @@ class SpecificationGradeTolerance {
   int? defectID;
   bool? overridden;
   String? defectName;
+  String? severityDefectName;
+  String? defectCategoryName;
 
-  SpecificationGradeTolerance(
-      {this.specificationNumber,
-      this.specificationVersion,
-      this.gradeTolerancePercentage,
-      this.specTolerancePercentage,
-      this.severityDefectID,
-      this.defectID,
-      this.overridden,
-      this.defectName});
+  SpecificationGradeTolerance({
+    this.specificationNumber,
+    this.specificationVersion,
+    this.gradeTolerancePercentage,
+    this.specTolerancePercentage,
+    this.severityDefectID,
+    this.defectID,
+    this.overridden,
+    this.defectName,
+    this.severityDefectName,
+    this.defectCategoryName,
+  });
 
 // copyWith method
   SpecificationGradeTolerance copyWith({
@@ -28,6 +33,8 @@ class SpecificationGradeTolerance {
     int? defectID,
     bool? overridden,
     String? defectName,
+    String? severityDefectName,
+    String? defectCategoryName,
   }) {
     return SpecificationGradeTolerance(
       specificationNumber: specificationNumber ?? this.specificationNumber,
@@ -40,6 +47,8 @@ class SpecificationGradeTolerance {
       defectID: defectID ?? this.defectID,
       overridden: overridden ?? this.overridden,
       defectName: defectName ?? this.defectName,
+      severityDefectName: severityDefectName ?? this.severityDefectName,
+      defectCategoryName: defectCategoryName ?? this.defectCategoryName,
     );
   }
 
@@ -54,6 +63,8 @@ class SpecificationGradeTolerance {
       defectID: json['defectID'],
       overridden: json['overridden'],
       defectName: json['defectName'],
+      severityDefectName: json['severityDefectName'],
+      defectCategoryName: json['defectCategoryName'],
     );
   }
 
@@ -68,6 +79,8 @@ class SpecificationGradeTolerance {
     data['defectID'] = this.defectID;
     data['overridden'] = this.overridden;
     data['defectName'] = this.defectName;
+    data['severityDefectName'] = this.severityDefectName;
+    data['defectCategoryName'] = this.defectCategoryName;
     return data;
   }
 }

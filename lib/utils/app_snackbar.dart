@@ -110,6 +110,20 @@ class AppSnackBar {
     );
   }
 
+  static void info({
+    String title = AppStrings.info,
+    required String message,
+    Color backgroundColor = Colors.black,
+    Duration duration = const Duration(seconds: 2),
+  }) {
+    _showSnackbar(
+      title: title,
+      message: message,
+      backgroundColor: backgroundColor,
+      duration: duration,
+    );
+  }
+
   static void success({
     String title = AppStrings.success,
     required String message,
@@ -130,7 +144,7 @@ class AppSnackBar {
     required String title,
     required String message,
     required Color backgroundColor,
-    required Icon icon,
+    Icon? icon,
     required Duration duration,
   }) {
     if (Get.isSnackbarOpen) {

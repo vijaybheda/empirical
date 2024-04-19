@@ -79,6 +79,8 @@ class AppStorage extends GetxController {
   Inspection? currentInspection;
   String? currentSealNumber;
 
+  List<SpecificationGradeTolerance> specificationGradeToleranceTable = [];
+
   bool resumeFromSpecificationAttributes = false;
   // instance of this class
   static AppStorage get instance => _instance;
