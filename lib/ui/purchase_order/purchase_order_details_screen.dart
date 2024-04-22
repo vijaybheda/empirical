@@ -17,6 +17,7 @@ import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_item.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class PurchaseOrderDetailsScreen
@@ -75,14 +76,15 @@ class PurchaseOrderDetailsScreen
                         textStyle: TextStyle(color: AppColors.white)),
                   ),
                 ),
-                const SearchOrderItemsWidget(),
+                const _SearchOrderItemsWidget(),
                 Expanded(flex: 10, child: _purchaseOrderItemSection(context)),
                 BottomCustomButtonView(
                   title: AppStrings.inspectionCalculateResultButton,
                   onPressed: () async {
-                    await controller.calculateResult(context);
+                    await controller.calculateButtonClick(context);
                   },
                 ),
+                _footerMenuView(controller),
                 FooterContentView()
               ],
             ),
@@ -155,14 +157,14 @@ class PurchaseOrderDetailsScreen
                 String packDate,
                 bool isComplete,
                 bool ispartialComplete,
-                int inspectionId,
+                int? inspectionId,
                 String po_number,
                 String seal_number,
               ) async {
                 FinishedGoodsItemSKU? finishedGoodsItemSKU = controller
                     .appStorage.selectedItemSKUList
                     .elementAtOrNull(index);
-                if (finishedGoodsItemSKU == null || inspection == null) {
+                if (finishedGoodsItemSKU == null) {
                   return;
                 }
 
@@ -211,8 +213,8 @@ class PurchaseOrderDetailsScreen
               partnerID: partner.id!,
               position: index,
               productTransfer: controller.productTransfer ?? '',
-              po_number: qcHeaderDetails!.poNo!,
-              seal_number: qcHeaderDetails!.sealNo!,
+              poNumber: qcHeaderDetails!.poNo!,
+              sealNumber: qcHeaderDetails!.sealNo!,
             ),
           ),
         );
@@ -228,10 +230,45 @@ class PurchaseOrderDetailsScreen
       },
     );
   }
+
+  Widget _footerMenuView(PurchaseOrderDetailsController controller) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        IconButton(
+          onPressed: () async {
+            controller.onHomeMenuTap();
+          },
+          icon: Image.asset(AppImages.playImage, height: 80.h, width: 50.w),
+        ),
+        IconButton(
+            onPressed: () async {
+              controller.onTailerTempMenuTap();
+            },
+            icon: Image.asset(AppImages.playImage, height: 50.h, width: 50.w)),
+        IconButton(
+            onPressed: () async {
+              controller.onQCHeaderMenuTap();
+            },
+            icon: Image.asset(AppImages.playImage, height: 50.h, width: 50.w)),
+        IconButton(
+            onPressed: () async {
+              controller.onAddGradingStandardMenuTap();
+            },
+            icon: Image.asset(AppImages.playImage, height: 50.h, width: 50.w)),
+        IconButton(
+          onPressed: () async {
+            controller.onSelectItemMenuTap();
+          },
+          icon: Image.asset(AppImages.playImage, height: 50.h, width: 50.w),
+        ),
+      ],
+    );
+  }
 }
 
-class SearchOrderItemsWidget extends StatelessWidget {
-  const SearchOrderItemsWidget({super.key});
+class _SearchOrderItemsWidget extends StatelessWidget {
+  const _SearchOrderItemsWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

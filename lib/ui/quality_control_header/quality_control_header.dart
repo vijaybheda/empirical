@@ -1,5 +1,7 @@
 // ignore_for_file: must_be_immutable, non_constant_identifier_names, avoid_types_as_parameter_names, prefer_const_constructors, unrelated_type_equality_checks, unused_local_variable
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -15,7 +17,7 @@ import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
-class QualityControlHeader extends GetView<QualityControlController> {
+class QualityControlHeader extends StatefulWidget {
   final CarrierItem carrier;
 
   const QualityControlHeader({
@@ -24,27 +26,35 @@ class QualityControlHeader extends GetView<QualityControlController> {
   });
 
   @override
+  State<QualityControlHeader> createState() => _QualityControlHeaderState();
+}
+
+class _QualityControlHeaderState extends State<QualityControlHeader> {
+  late QualityControlController controller;
+  @override
+  void initState() {
+    String tag = Random().nextInt(1000).toString();
+    controller = Get.put(QualityControlController(), tag: tag);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return GetBuilder(
-        init: QualityControlController(),
-        builder: (controller) {
-          return Scaffold(
-              backgroundColor: AppColors.white,
-              resizeToAvoidBottomInset: false,
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                toolbarHeight: 150.h,
-                backgroundColor: AppColors.primary,
-                title: baseHeaderView(AppStrings.quality_control_header, false),
-              ),
-              body: Container(
-                  color: Theme.of(context).colorScheme.background,
-                  child: contentView(context, carrier, controller)));
-        });
+    return Scaffold(
+        backgroundColor: AppColors.white,
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          toolbarHeight: 150.h,
+          backgroundColor: AppColors.primary,
+          title: baseHeaderView(AppStrings.quality_control_header, false),
+        ),
+        body: Container(
+            color: Theme.of(context).colorScheme.background,
+            child: contentView(context, widget.carrier, controller)));
   }
 
   // CONTENT'S VIEW
-
   Widget contentView(BuildContext context, CarrierItem carrier,
       QualityControlController controller) {
     return Column(
@@ -137,7 +147,6 @@ class QualityControlHeader extends GetView<QualityControlController> {
   }
 
   // MAIN CONTENT VIEW
-
   Widget mainContentUI(
       BuildContext context, QualityControlController controller) {
     return SingleChildScrollView(
@@ -145,8 +154,14 @@ class QualityControlHeader extends GetView<QualityControlController> {
         padding: EdgeInsets.all(15),
         child: Column(
           children: [
-            commonRowTextFieldView(context, AppStrings.purchaseOrderNumber,
-                AppStrings.orderNo, controller.orderNoTextController.value),
+            commonRowTextFieldView(
+              context,
+              AppStrings.purchaseOrderNumber,
+              AppStrings.orderNo,
+              controller.orderNoTextController.value,
+              enabled: controller.orderNoEnabled,
+              readOnly: !controller.orderNoEnabled,
+            ),
             SizedBox(
               height: controller.spacingBetweenFields.h,
             ),
@@ -222,9 +237,9 @@ class QualityControlHeader extends GetView<QualityControlController> {
   }
 
   // COMMONG WIDGET FOR TEXTFIELD VIEW AND DROPDOWN VIEW
-
   Widget commonRowTextFieldView(BuildContext context, String labelTitle,
-      String placeHolder, TextEditingController controller) {
+      String placeHolder, TextEditingController controller,
+      {bool readOnly = false, bool enabled = true}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -248,6 +263,8 @@ class QualityControlHeader extends GetView<QualityControlController> {
               controller: controller,
               onTap: () {},
               errorText: '',
+              readOnly: readOnly,
+              enabled: enabled,
               onEditingCompleted: () {},
               onChanged: (value) {},
               keyboardType: TextInputType.name,

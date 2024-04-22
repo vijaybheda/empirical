@@ -41,6 +41,12 @@ class QualityControlController extends GetxController {
 
   String callerActivity = '';
   String cteType = ''; // As per Android Dev, Right now this value is blank.
+  String seal_number = '';
+  String po_number = '';
+  String carrierName = '';
+  int carrierID = 0;
+
+  bool orderNoEnabled = true;
 
   void setSelected(String value, String type) {
     if (type == 'TruckTempOK') {
@@ -58,6 +64,24 @@ class QualityControlController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    setArguments();
+  }
+
+  void setArguments() {
+    Map<String, dynamic>? args = Get.arguments;
+
+    if (args != null) {
+      carrierName = args[Consts.CARRIER_NAME] ?? '';
+      carrierID = args[Consts.CARRIER_ID] ?? 0;
+      po_number = args[Consts.PO_NUMBER] ?? '';
+      seal_number = args[Consts.SEAL_NUMBER] ?? '';
+      callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
+
+      if (po_number.isNotEmpty) {
+        orderNoTextController.value.text = po_number;
+        orderNoEnabled = false;
+      }
+    }
   }
 
   // LOGIN SCREEN VALIDATION'S

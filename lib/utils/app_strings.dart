@@ -253,6 +253,8 @@ class AppStrings {
 
   static String errorLotNoLength = 'Lot No should not exceed 30 characters';
 
+  static String noItemsCompleted = 'No Items are complete for calculation';
+
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';
 

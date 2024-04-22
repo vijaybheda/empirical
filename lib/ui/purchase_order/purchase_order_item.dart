@@ -10,6 +10,7 @@ import 'package:pverify/models/quality_control_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/utils.dart';
 
 class PurchaseOrderListViewItem extends StatefulWidget {
@@ -22,8 +23,8 @@ class PurchaseOrderListViewItem extends StatefulWidget {
     required this.partnerID,
     required this.position,
     required this.productTransfer,
-    required this.po_number,
-    required this.seal_number,
+    required this.poNumber,
+    required this.sealNumber,
   });
   final Function(
     Inspection? inspection,
@@ -36,17 +37,17 @@ class PurchaseOrderListViewItem extends StatefulWidget {
     String packDate,
     bool isComplete,
     bool ispartialComplete,
-    int inspectionId,
-    String po_number,
-    String seal_number,
+    int? inspectionId,
+    String poNumber,
+    String sealNumber,
   )? inspectTap;
   final Function(
     Inspection? inspection,
     PartnerItemSKUInspections? partnerItemSKU,
   )? onTapEdit;
   final int partnerID;
-  final String po_number;
-  final String seal_number;
+  final String poNumber;
+  final String sealNumber;
   final int position;
   final String productTransfer;
 
@@ -72,19 +73,22 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
   bool isComplete = false;
 
   bool isPartialComplete = false;
-  String inspectButtonImagePath = '';
+  Icon inspectButtonImagePath = const Icon(
+    Icons.play_circle_outline_outlined,
+    size: 30,
+  );
   FocusNode qtyRejectedFocusNode = FocusNode();
 
   Inspection? inspection;
   bool informationIconEnabled = true;
-  String? result_button = null;
-  Color result_buttonColor = Colors.white;
+  String? resultButton;
+  Color resultButtonColor = Colors.white;
   AssetImage informationImagePath =
-      AssetImage('assets/images/info_purple_48.png');
+      const AssetImage(AppImages.ic_informationDisabled);
 
   bool editPencilVisibility = false;
   bool layoutQtyRejectedVisibility = false;
-  bool et_qtyShippedEnabled = false;
+  bool etQtyShippedEnabled = false;
 
   String? specificationNumber;
   String? specificationVersion;
@@ -99,8 +103,11 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
     packDateController = TextEditingController();
     packDateController.text = widget.goodsItem.packDate ?? '';
     lotNumberController.text = widget.goodsItem.lotNumber ?? '';
-    inspectButtonImagePath = 'assets/images/play_circle.png';
-    et_qtyShippedEnabled = false;
+    inspectButtonImagePath = const Icon(
+      Icons.play_circle_outline_outlined,
+      size: 30,
+    );
+    etQtyShippedEnabled = false;
     asyncTask();
     super.initState();
   }
@@ -132,23 +139,24 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: Column(
         children: [
-          _InspectionNameIdInfo(),
-          Text(
-            getPoNumber(widget.position),
-            style: Get.textTheme.bodyLarge,
-          ),
-          Text(
-            getPackDate(widget.position),
-            style: Get.textTheme.bodyLarge,
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          _InspectionStatusInfo(),
-          const SizedBox(
-            height: 8,
-          ),
-          if (layoutQtyRejectedVisibility) _InspectionQuantity(),
+          _inspectionNameIdInfo(),
+          /*Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'PO No: ${getPoNumber(widget.position)}',
+                style: Get.textTheme.bodyLarge,
+              ),
+              Text(
+                'Pack Date: ${getPackDate(widget.position)}',
+                style: Get.textTheme.bodyLarge,
+              ),
+            ],
+          ),*/
+          const SizedBox(height: 8),
+          _inspectionStatusInfo(),
+          const SizedBox(height: 8),
+          if (layoutQtyRejectedVisibility) _inspectionQuantity(),
         ],
       ),
     );
@@ -173,7 +181,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
     return dateTypeDesc;
   }
 
-  Widget _InspectionNameIdInfo() {
+  Widget _inspectionNameIdInfo() {
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -183,7 +191,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           flex: 6,
           child: Text(
             widget.goodsItem.description ?? '-',
-            // style: style,
+            style: Get.textTheme.bodyMedium,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),
@@ -196,20 +204,15 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           flex: 3,
           child: Text(
             widget.goodsItem.sku ?? '-',
-            // style: style.copyWith(color: Colors.grey[500]),
+            style: Get.textTheme.bodyMedium,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),
         const Spacer(),
         IconButton(
-          icon: const Icon(
-            // widget.goodsItem.isCompleted
-            // Random().nextBool()
-            true ? Icons.check_circle_outline : Icons.play_circle_outline,
-            size: 36,
-            color: Colors.black,
-          ),
+          iconSize: 35,
+          icon: inspectButtonImagePath,
           onPressed: () {
             if (widget.inspectTap != null) {
               widget.inspectTap!(
@@ -219,15 +222,14 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
                 packDateController.text,
                 isComplete,
                 isPartialComplete,
-                inspectionId!,
-                widget.po_number,
-                widget.seal_number,
+                inspectionId,
+                widget.poNumber,
+                widget.sealNumber,
               );
             }
           },
         ),
         IconButton(
-          // onPressed: widget.goodsItem.showInfo ? controller.onTapInfo() : null,
           onPressed: () {
             if (!informationIconEnabled) {
               return;
@@ -236,19 +238,17 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
               widget.infoTap!(inspection, partnerItemSKU);
             }
           },
-          icon: Icon(
-            Icons.info,
-            size: 32,
-            // color: widget.goodsItem.showInfo
-            color: /*Random().nextBool()*/
-                true ? Colors.purple[600] : Colors.grey[600],
+          icon: Image.asset(
+            informationImagePath.assetName,
+            width: 30,
+            height: 30,
           ),
         ),
       ],
     );
   }
 
-  Widget _InspectionStatusInfo() {
+  Widget _inspectionStatusInfo() {
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -258,17 +258,14 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           child: RichText(
             text: TextSpan(
               children: [
-                const TextSpan(
+                TextSpan(
                   text: 'Lot No. ',
-                  // style: style.copyWith(color: Colors.black87),
+                  style: Get.textTheme.bodyMedium,
                 ),
                 if (widget.goodsItem.lotNumber != null)
                   TextSpan(
                     text: widget.goodsItem.lotNumber.toString(),
-                    // style: style.copyWith(
-                    //   color: Colors.grey[500],
-                    //   fontWeight: FontWeight.normal,
-                    // ),
+                    style: Get.textTheme.bodyMedium,
                   ),
               ],
             ),
@@ -279,18 +276,14 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           child: RichText(
             text: TextSpan(
               children: [
-                const TextSpan(
+                TextSpan(
                   text: 'Pack Date ',
-                  // style: style.copyWith(color: Colors.black87),
+                  style: Get.textTheme.bodyMedium,
                 ),
                 if (widget.goodsItem.packDate != null)
                   TextSpan(
-                    // text: controller.formatDate(widget.goodsItem.packDate!),
                     text: (widget.goodsItem.packDate!),
-                    // style: style.copyWith(
-                    //   color: Colors.grey[500],
-                    //   fontWeight: FontWeight.normal,
-                    // ),
+                    style: Get.textTheme.bodyMedium,
                   ),
               ],
             ),
@@ -298,50 +291,46 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
         ),
         Expanded(
           flex: 3,
-          // child: widget.goodsItem.isInspectionDone
-          child: /*Random().nextBool()*/
-              true
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        if (result_button != null)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 26, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: result_buttonColor,
-                              borderRadius: BorderRadius.circular(32),
-                            ),
-                            child: Text(
-                              result_button ?? '',
-                              // style: style,
-                            ),
-                          ),
-                        const SizedBox(
-                          width: 12,
-                        ),
-                        if (editPencilVisibility)
-                          IconButton(
-                            onPressed: () {
-                              if (widget.onTapEdit != null) {
-                                widget.onTapEdit!(inspection, partnerItemSKU);
-                              }
-                            },
-                            icon: const Icon(
-                              Icons.edit_outlined,
-                              size: 24,
-                              color: Colors.white,
-                            ),
-                          ),
-                      ],
-                    )
-                  : const SizedBox(),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              if (resultButton != null)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 26, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: resultButtonColor,
+                    borderRadius: BorderRadius.circular(32),
+                  ),
+                  child: Text(
+                    resultButton ?? '',
+                    style: Get.textTheme.bodyMedium,
+                  ),
+                ),
+              const SizedBox(
+                width: 12,
+              ),
+              if (editPencilVisibility)
+                IconButton(
+                  onPressed: () {
+                    if (widget.onTapEdit != null) {
+                      widget.onTapEdit!(inspection, partnerItemSKU);
+                    }
+                  },
+                  icon: const Icon(
+                    Icons.edit_outlined,
+                    size: 24,
+                    color: Colors.white,
+                  ),
+                ),
+            ],
+          ),
         ),
       ],
     );
   }
 
-  Widget _InspectionQuantity() {
+  Widget _inspectionQuantity() {
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -351,17 +340,14 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           child: RichText(
             text: TextSpan(
               children: [
-                const TextSpan(
+                TextSpan(
                   text: 'Qty Shipped * ',
-                  // style: style.copyWith(color: Colors.black87),
+                  style: Get.textTheme.bodyMedium,
                 ),
                 // if (widget.goodsItem.quantityShipped != null)
                 TextSpan(
                   text: lotNumberController.text,
-                  // style: style.copyWith(
-                  //   color: Colors.grey[500],
-                  //   fontWeight: FontWeight.normal,
-                  // ),
+                  style: Get.textTheme.bodyMedium,
                 ),
               ],
             ),
@@ -372,17 +358,14 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           child: RichText(
             text: TextSpan(
               children: [
-                const TextSpan(
+                TextSpan(
                   text: 'Qty Rejected * ',
-                  // style: style.copyWith(color: Colors.black87),
+                  style: Get.textTheme.bodyMedium,
                 ),
                 if (widget.goodsItem.packDate != null)
-                  const TextSpan(
-                    text: '200',
-                    // style: style.copyWith(
-                    //   color: Colors.grey[500],
-                    //   fontWeight: FontWeight.normal,
-                    // ),
+                  TextSpan(
+                    text: '200', // TODO: implement this
+                    style: Get.textTheme.bodyMedium,
                   ),
               ],
             ),
@@ -444,12 +427,19 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           widget.partnerID,
           widget.goodsItem.sku!,
           partnerItemSKU!.uniqueId.toString());
-
-      if (isComplete ||
-          (inspection != null && (inspection?.complete ?? false))) {
-        inspectButtonImagePath = 'assets/images/check_circle.png';
+      bool isC = (inspection != null && inspection!.complete == null)
+          ? false
+          : (inspection?.complete == true.toString());
+      if (isComplete || (inspection != null && isC)) {
+        inspectButtonImagePath = const Icon(
+          Icons.check_circle_outlined,
+          size: 30,
+        );
       } else if (isPartialComplete) {
-        inspectButtonImagePath = 'assets/images/pause.png';
+        inspectButtonImagePath = const Icon(
+          Icons.pause_circle_outline_outlined,
+          size: 30,
+        );
       }
 
       String inspectionResult = "";
@@ -471,8 +461,8 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
 
           if (inspectionResult == "RJ" ||
               inspectionResult == AppStrings.reject) {
-            result_buttonColor = Colors.red;
-            result_button = AppStrings.reject;
+            resultButtonColor = Colors.red;
+            resultButton = AppStrings.reject;
             layoutQtyRejectedVisibility = true;
 
             QualityControlItem? qualityControlItems = await dao
@@ -526,25 +516,25 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
             });
           } else if (inspectionResult == "AC" ||
               inspectionResult == AppStrings.accept) {
-            result_buttonColor = Colors.green;
-            result_button = AppStrings.accept;
+            resultButtonColor = Colors.green;
+            resultButton = AppStrings.accept;
             layoutQtyRejectedVisibility = false;
             // TODO: setting up the color
           } else if (inspectionResult == "A-") {
             // TODO: setting up the color
-            result_buttonColor = Colors.yellow;
-            result_button = "A-";
+            resultButtonColor = Colors.yellow;
+            resultButton = "A-";
             layoutQtyRejectedVisibility = false;
           } else if (inspectionResult == "AW" ||
               inspectionResult.toLowerCase() == AppStrings.acceptCondition) {
             // TODO: setting up the color
-            result_buttonColor = Colors.orange;
-            result_button = "AW";
+            resultButtonColor = Colors.orange;
+            resultButton = "AW";
             layoutQtyRejectedVisibility = false;
           }
         }
 
-        String finalInspectionResult = inspectionResult;
+        // String finalInspectionResult = inspectionResult;
         // TODO: implement below
         /*editPencil.onPressed = () {
           // Assuming OverriddenResultActivity is a Flutter route
@@ -589,10 +579,11 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
 
       if (appStorage.commodityVarietyData != null &&
           (appStorage.commodityVarietyData!.exceptions.isNotEmpty)) {
-        informationImagePath = AssetImage('assets/images/info_purple_48.png');
+        informationImagePath = const AssetImage(AppImages.ic_information);
         informationIconEnabled = true;
       } else {
-        informationImagePath = AssetImage('assets/images/info_48.png');
+        informationImagePath =
+            const AssetImage(AppImages.ic_informationDisabled);
         informationIconEnabled = false;
       }
     }

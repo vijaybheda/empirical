@@ -23,6 +23,7 @@ import 'package:pverify/ui/Home/home.dart';
 import 'package:pverify/ui/inspection_exception/inspection_exception_screen.dart';
 import 'package:pverify/ui/photos_selection/photos_selection.dart';
 import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
+import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
 import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -133,38 +134,54 @@ class QCDetailsShortFormScreenController extends GetxController {
     carrierID = args[Consts.CARRIER_ID] ?? 0;
     commodityName = args[Consts.COMMODITY_NAME] ?? '';
     commodityID = args[Consts.COMMODITY_ID] ?? 0;
-    sampleSizeByCount = args[Consts.SAMPLE_SIZE_BY_COUNT] ?? 0;
-    inspectionResult = args[Consts.INSPECTION_RESULT] ?? '';
+    completed = args[Consts.COMPLETED] ?? false;
+
+    specificationNumber = args[Consts.SPECIFICATION_NUMBER] ?? '';
+    specificationVersion = args[Consts.SPECIFICATION_VERSION] ?? '';
+
+    selectedSpecification = args[Consts.SELECTEDSPECIFICATION] ?? '';
+    specificationTypeName = args[Consts.SPECIFICATION_TYPE_NAME] ?? '';
+
+    poNumber = args[Consts.PO_NUMBER] ?? '';
+
     lot_No = args[Consts.Lot_No] ?? '';
+
     String packDateString = args[Consts.PACK_DATE] ?? '';
     if (packDateString.isNotEmpty) {
       packDate = Utils().dateFormat.parse(packDateString);
+      if (packDate != null) {
+        packDateController.text = Utils().dateFormat.format(packDate!);
+      }
     }
-    itemSKU = args[Consts.ITEM_SKU] ?? '';
-    poNumber = args[Consts.PO_NUMBER] ?? '';
-    specificationNumber = args[Consts.SPECIFICATION_NUMBER] ?? '';
-    specificationVersion = args[Consts.SPECIFICATION_VERSION] ?? '';
-    specificationName = args[Consts.SPECIFICATION_NAME] ?? '';
-    specificationTypeName = args[Consts.SPECIFICATION_TYPE_NAME] ?? '';
-    selectedSpecification = args[Consts.SELECTEDSPECIFICATION] ?? '';
-    productTransfer = args[Consts.PRODUCT_TRANSFER] ?? '';
-    callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
-    is1stTimeActivity = args[Consts.IS1STTIMEACTIVITY] ?? '';
-    isMyInspectionScreen = args[Consts.IS_MY_INSPECTION_SCREEN] ?? false;
-    completed = args[Consts.COMPLETED] ?? false;
-    partial_completed = args[Consts.PARTIAL_COMPLETED] ?? false;
 
     gtin = args[Consts.GTIN] ?? '';
+    dateTypeDesc = args[Consts.DATETYPE] ?? '';
+
+    isMyInspectionScreen = args[Consts.IS_MY_INSPECTION_SCREEN] ?? false;
+
+    itemSKU = args[Consts.ITEM_SKU] ?? '';
+    itemSkuId = args[Consts.ITEM_SKU_ID] ?? 0;
     itemSkuName = args[Consts.ITEM_SKU_NAME] ?? '';
     lotSize = args[Consts.LOT_SIZE] ?? '';
+    partial_completed = args[Consts.PARTIAL_COMPLETED] ?? false;
     sealNumber = args[Consts.SEAL_NUMBER] ?? '';
+
+    specificationName = args[Consts.SPECIFICATION_NAME] ?? '';
+    sampleSizeByCount = args[Consts.SAMPLE_SIZE_BY_COUNT] ?? 0;
     varietyName = args[Consts.VARIETY_NAME] ?? '';
     varietySize = args[Consts.VARIETY_SIZE] ?? '';
     varietyId = args[Consts.VARIETY_ID] ?? 0;
     gradeId = args[Consts.GRADE_ID] ?? 0;
+
     itemUniqueId = args[Consts.ITEM_UNIQUE_ID] ?? '';
     poLineNo = args[Consts.PO_LINE_NO] ?? 0;
-    itemSkuId = args[Consts.ITEM_SKU_ID] ?? 0;
+
+    callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
+    is1stTimeActivity = args[Consts.IS1STTIMEACTIVITY] ?? '';
+    productTransfer = args[Consts.PRODUCT_TRANSFER] ?? '';
+
+    // maybe unused in initial setter
+    inspectionResult = args[Consts.INSPECTION_RESULT] ?? '';
 
     packDateController.addListener(() {
       if (packDateFocusNode.hasFocus) {
@@ -175,10 +192,6 @@ class QCDetailsShortFormScreenController extends GetxController {
         });
       }
     });
-
-    if (packDate != null) {
-      packDateController.text = Utils().dateFormat.format(packDate!);
-    }
 
     setUOMSpinner();
     super.onInit();
@@ -391,7 +404,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         partnerId: partnerID,
         carrierId: carrierID,
         createdTime: DateTime.now().millisecondsSinceEpoch,
-        complete: false,
+        complete: false.toString(),
         downloadId: -1,
         commodityId: commodityID,
         itemSKU: itemSKU,
@@ -501,7 +514,9 @@ class QCDetailsShortFormScreenController extends GetxController {
 
     if (qualityControlItems != null) {
       qcID = qualityControlItems!.qcID;
-      qtyShippedController.text = qualityControlItems!.qtyShipped.toString();
+      if (qualityControlItems!.qtyShipped != null) {
+        qtyShippedController.text = qualityControlItems!.qtyShipped.toString();
+      }
       if (qualityControlItems!.dateType != "") {
         dateTypeDesc = getDateTypeDesc(qualityControlItems!.dateType);
         packDateController.text = dateTypeDesc;
@@ -811,7 +826,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         }
       }
 
-      Map<String, dynamic> bundle = {
+      Map<String, dynamic> passingData = {
         Consts.SERVER_INSPECTION_ID: inspectionId,
         Consts.PARTNER_NAME: partnerName,
         Consts.PARTNER_ID: partnerID,
@@ -844,7 +859,13 @@ class QCDetailsShortFormScreenController extends GetxController {
           setComplete(true);
           await dao.updateItemSKUInspectionComplete(inspectionId!, "true");
         }
+        passingData[Consts.IS_MY_INSPECTION_SCREEN] = true;
+        passingData[Consts.CALLER_ACTIVITY] = 'QCDetailsShortForm';
         // TODO: Implement navigation to InspectionMenuActivity
+        // Get.offAll(
+        //       () => InspectionMenuActivity(),
+        //   arguments: passingData,
+        // );
       } else {
         if (isComplete) {
           setComplete(true);
@@ -852,6 +873,42 @@ class QCDetailsShortFormScreenController extends GetxController {
           await callNextItemQCDetails();
         } else {
           // TODO: Implement navigation based on callerActivity
+          passingData[Consts.CALLER_ACTIVITY] = 'GTINActivity';
+
+          if (isMyInspectionScreen ?? false) {
+            Get.offAll(() => const Home());
+          } else {
+            if (callerActivity == "GTINActivity") {
+              Get.offAll(
+                  () => PurchaseOrderDetailsScreen(
+                        commodity: commodity,
+                        partner: partner,
+                        carrier: carrier,
+                        qcHeaderDetails: qcHeaderDetails,
+                      ),
+                  arguments: passingData);
+            } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+              Get.offAll(
+                () => NewPurchaseOrderDetailsScreen(
+                  partner: partner,
+                  qcHeaderDetails: qcHeaderDetails,
+                  carrier: carrier,
+                  commodity: commodity,
+                ),
+                arguments: passingData,
+              );
+            } else {
+              Get.offAll(
+                () => PurchaseOrderDetailsScreen(
+                  qcHeaderDetails: qcHeaderDetails,
+                  commodity: commodity,
+                  partner: partner,
+                  carrier: carrier,
+                ),
+                arguments: passingData,
+              );
+            }
+          }
         }
       }
     } catch (e) {
@@ -961,7 +1018,14 @@ class QCDetailsShortFormScreenController extends GetxController {
     };
 
     if (callerActivity == 'GTINActivity') {
-      Get.to(() => PurchaseOrderDetails(), arguments: bundle);
+      Get.to(
+          () => PurchaseOrderDetailsScreen(
+                partner: partner,
+                carrier: carrier,
+                commodity: commodity,
+                qcHeaderDetails: qcHeaderDetails,
+              ),
+          arguments: bundle);
     } else if (callerActivity == 'NewPurchaseOrderDetailsActivity') {
       Get.to(
           () => NewPurchaseOrderDetailsScreen(
@@ -972,7 +1036,14 @@ class QCDetailsShortFormScreenController extends GetxController {
               ),
           arguments: bundle);
     } else {
-      Get.to(() => PurchaseOrderDetails(), arguments: bundle);
+      Get.to(
+          () => PurchaseOrderDetailsScreen(
+                partner: partner,
+                carrier: carrier,
+                commodity: commodity,
+                qcHeaderDetails: qcHeaderDetails,
+              ),
+          arguments: bundle);
     }
 
     Get.back();
@@ -1061,7 +1132,13 @@ class QCDetailsShortFormScreenController extends GetxController {
                   ),
               arguments: passingData);
         } else {
-          Get.offAll(() => PurchaseOrderDetails(), arguments: passingData);
+          Get.offAll(
+              () => PurchaseOrderDetailsScreen(
+                  partner: partner,
+                  carrier: carrier,
+                  commodity: commodity,
+                  qcHeaderDetails: qcHeaderDetails),
+              arguments: passingData);
         }
       }
     }

@@ -16,7 +16,7 @@ class Inspection {
   String? managerComment;
   String? status;
   int? downloadId;
-  bool complete;
+  String? complete;
   int? uploadStatus = 0;
   int? completedTime;
   // bool isDefectsComplete = false;
@@ -193,7 +193,7 @@ class Inspection {
     String? managerComment,
     String? status,
     int? downloadId,
-    bool? complete,
+    String? complete,
     int? uploadStatus,
     int? completedTime,
     // bool? isDefectsComplete,

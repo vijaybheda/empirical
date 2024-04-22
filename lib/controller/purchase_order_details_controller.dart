@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
@@ -13,16 +15,26 @@ import 'package:pverify/models/purchase_order_item.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/models/quality_control_item.dart';
 import 'package:pverify/models/specification_analytical_request_item.dart';
+import 'package:pverify/models/specification_grade_tolerance.dart';
 import 'package:pverify/models/specification_grade_tolerance_array.dart';
 import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/ui/Home/home.dart';
+import 'package:pverify/ui/commodity/commodity_id_screen.dart';
+import 'package:pverify/ui/commodity_transfer/commodity_transfer_screen.dart';
 import 'package:pverify/ui/overridden_result/overridden_result_screen.dart';
+import 'package:pverify/ui/purchase_order/purchase_order_screen.dart';
+import 'package:pverify/ui/purchase_order_cte/purchase_order_screen_cte.dart';
 import 'package:pverify/ui/qc_short_form/qc_details_short_form_screen.dart';
+import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
+import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/dialogs/custom_listview_dialog.dart';
 import 'package:pverify/utils/utils.dart';
+
+import '../ui/trailer_temp/trailertemp.dart';
 
 class PurchaseOrderDetailsController extends GetxController {
   final PartnerItem partner;
@@ -52,10 +64,10 @@ class PurchaseOrderDetailsController extends GetxController {
       currentLotSize,
       currentItemSKUName,
       itemUniqueId,
-      callerActivity,
       productTransfer;
   int? itemSkuId;
   bool isGTINSamePartner = true;
+  String callerActivity = '';
 
   PurchaseOrderDetailsController({
     required this.partner,
@@ -101,9 +113,12 @@ class PurchaseOrderDetailsController extends GetxController {
     dao
         .getSelectedItemSKUList()
         .then((List<FinishedGoodsItemSKU> selectedItemSKUList) {
-      // appStorage.selectedItemSKUList = selectedItemSKUList;
+      appStorage.selectedItemSKUList = selectedItemSKUList;
+      Future.delayed(const Duration(milliseconds: 100))
+          .then((value) => update());
     });
     super.onInit();
+    initAsyncActions();
     filteredInspectionsList.assignAll(itemSkuList);
     listAssigned.value = true;
   }
@@ -153,6 +168,109 @@ class PurchaseOrderDetailsController extends GetxController {
           item.Branded));
     }
     return list;
+  }
+
+  Future<void> calculateButtonClick(BuildContext context) async {
+    String itemsSpecStr = "";
+    String result = "";
+
+    List<SpecificationGradeToleranceArray>
+        specificationGradeToleranceArrayList = [];
+
+    for (int i = 0; i < appStorage.selectedItemSKUList.length; i++) {
+      bool isComplete = await dao.isInspectionComplete(
+          partnerID!,
+          appStorage.selectedItemSKUList[i].sku!,
+          appStorage.selectedItemSKUList[i].uniqueItemId);
+
+      if (isComplete) {
+        PartnerItemSKUInspections? partnerItemSKU =
+            await dao.findPartnerItemSKU(
+                partnerID!,
+                appStorage.selectedItemSKUList[i].sku!,
+                appStorage.selectedItemSKUList[i].uniqueItemId);
+        if (partnerItemSKU != null) {
+          Inspection? inspection =
+              await dao.findInspectionByID(partnerItemSKU.inspectionId!);
+          if (inspection != null && inspection.inspectionId != null) {
+            await dao
+                .deleteRejectionDetailByInspectionId(inspection.inspectionId!);
+
+            QCHeaderDetails? qcHeaderDetails =
+                await dao.findTempQCHeaderDetails(inspection.poNumber!);
+
+            if (qcHeaderDetails != null && qcHeaderDetails.truckTempOk == "N") {
+              result = "RJ";
+
+              QualityControlItem? qualityControlItems = await dao
+                  .findQualityControlDetails(partnerItemSKU.inspectionId!);
+
+              if (qualityControlItems != null) {
+                await dao.updateQuantityRejected(inspection.inspectionId!,
+                    qualityControlItems.qtyShipped!, 0);
+              }
+
+              await dao.updateInspectionResult(
+                  inspection.inspectionId!, result);
+              await dao.updateOverriddenResult(
+                  inspection.inspectionId!, result);
+
+              await dao.createOrUpdateInspectionSpecification(
+                  inspection.inspectionId!,
+                  specificationNumber,
+                  specificationVersion,
+                  specificationName);
+
+              await dao.updateInspectionComplete(
+                  inspection.inspectionId!, true);
+              await dao.updateItemSKUInspectionComplete(
+                  inspection.inspectionId!, "true");
+              Utils.setInspectionUploadStatus(
+                  inspection.inspectionId!, Consts.INSPECTION_UPLOAD_READY);
+
+              await dao.createOrUpdateResultReasonDetails(
+                  inspection.inspectionId!, result, "Truck Temp Ok = No", "");
+
+              // footerRightButtonText.visibility = Visibility.visible;
+              // itemAdapter.notifyDataSetChanged();
+              update();
+            } else {
+              try {
+                itemsSpecStr +=
+                    "${inspection.specificationNumber!}:${inspection.specificationVersion!},";
+
+                List<SpecificationGradeTolerance>
+                    specificationGradeToleranceList =
+                    await dao.getSpecificationGradeTolerance(
+                        inspection.specificationNumber!,
+                        inspection.specificationVersion!);
+                specificationGradeToleranceArrayList
+                    .add(SpecificationGradeToleranceArray(
+                  specificationNumber: inspection.specificationNumber,
+                  specificationVersion: inspection.specificationVersion,
+                  specificationGradeToleranceList:
+                      specificationGradeToleranceList,
+                ));
+              } catch (e) {
+                log(e.toString());
+              }
+            }
+          }
+        }
+      }
+    }
+    if (result != "RJ") {
+      if (itemsSpecStr.isNotEmpty && itemsSpecStr.endsWith(",")) {
+        itemsSpecStr = itemsSpecStr.substring(0, itemsSpecStr.length - 1);
+
+        appStorage.specificationGradeToleranceArrayList =
+            specificationGradeToleranceArrayList;
+        calculateResult(context);
+        update();
+      } else {
+        AppSnackBar.info(message: AppStrings.noItemsCompleted);
+      }
+    }
   }
 
   Future<void> calculateResult(BuildContext context) async {
@@ -564,7 +682,7 @@ class PurchaseOrderDetailsController extends GetxController {
           inspection.inspectionId!, inspectionResult!);
     }
 
-    if (inspectionResult != null && inspectionResult.isNotEmpty) {
+    if (inspectionResult.isNotEmpty) {
       // Update UI to show result button and edit pencil
       // This will depend on your actual UI implementation
 
@@ -618,16 +736,16 @@ class PurchaseOrderDetailsController extends GetxController {
   Future onInspectTap(
     PurchaseOrderItem goodsItem,
     FinishedGoodsItemSKU finishedGoodsItemSKU,
-    Inspection inspection,
+    Inspection? inspection,
     PartnerItemSKUInspections? partnerItemSKU,
     String lotNo,
     String packDate,
     bool isComplete,
     bool ispartialComplete,
-    int inspectionId,
+    int? inspectionId,
     String po_number,
     String seal_number,
-    Function(Map data) poInterface,
+    Function(Map data)? poInterface,
   ) async {
     bool checkItemSKUAndLot =
         await dao.checkItemSKUAndLotNo(goodsItem.sku!, lotNo);
@@ -679,10 +797,10 @@ class PurchaseOrderDetailsController extends GetxController {
         String current_pack_Date = packDate;
         int current_Item_SKU_Id = finishedGoodsItemSKU.id!;
         String current_unique_id = finishedGoodsItemSKU.uniqueItemId!;
-        int current_commodity_id = finishedGoodsItemSKU.commodityID!;
+        int? current_commodity_id = finishedGoodsItemSKU.commodityID;
         String current_commodity_name = finishedGoodsItemSKU.commodityName!;
-        String current_gtin = finishedGoodsItemSKU.gtin!;
-        String dateType = finishedGoodsItemSKU.dateType!;
+        String? current_gtin = finishedGoodsItemSKU.gtin;
+        String? dateType = finishedGoodsItemSKU.dateType;
 
         if (poInterface != null) {
           Map<String, dynamic> bundle = {
@@ -697,7 +815,7 @@ class PurchaseOrderDetailsController extends GetxController {
             Consts.COMMODITY_ID: current_commodity_id,
             Consts.COMMODITY_NAME: current_commodity_name,
           };
-          poInterface!(bundle);
+          poInterface(bundle);
         }
 
         if (!isComplete && !ispartialComplete) {
@@ -771,6 +889,158 @@ class PurchaseOrderDetailsController extends GetxController {
       } else {
         AppAlertDialog.validateAlerts(
             Get.context!, AppStrings.alert, 'Lot number alert');
+      }
+    }
+  }
+
+  Future<void> onHomeMenuTap() async {
+    bool isValid = true;
+
+    for (int i = 0; i < appStorage.selectedItemSKUList.length; i++) {
+      bool isComplete = await dao.isInspectionComplete(
+          partnerID!,
+          appStorage.selectedItemSKUList[i].sku!,
+          appStorage.selectedItemSKUList[i].uniqueItemId);
+
+      if (isComplete) {
+        PartnerItemSKUInspections? partnerItemSKU =
+            await dao.findPartnerItemSKU(
+                partnerID!,
+                appStorage.selectedItemSKUList[i].sku!,
+                appStorage.selectedItemSKUList[i].uniqueItemId);
+
+        if (partnerItemSKU != null) {
+          Inspection? inspection =
+              await dao.findInspectionByID(partnerItemSKU.inspectionId!);
+          QualityControlItem? qualityControlItems =
+              await dao.findQualityControlDetails(partnerItemSKU.inspectionId!);
+
+          if (inspection != null &&
+              qualityControlItems != null &&
+              inspection.result != null &&
+              inspection.result == "RJ") {
+            if (qualityControlItems.qtyRejected == 0 ||
+                qualityControlItems.qtyRejected! >
+                    qualityControlItems.qtyShipped!) {
+              isValid = false;
+
+              AppAlertDialog.validateAlerts(
+                  Get.context!, AppStrings.alert, AppStrings.quantityRejected);
+            }
+          }
+        }
+      }
+    }
+
+    if (isValid) {
+      Get.offAll(() => const Home());
+    }
+  }
+
+  void onTailerTempMenuTap() {
+    Get.to(
+        () => TrailerTemp(
+              carrier: carrier,
+              orderNumber: poNumber!,
+            ),
+        arguments: {
+          Consts.PARTNER_NAME: partnerName,
+          Consts.PARTNER_ID: partnerID,
+          Consts.CARRIER_NAME: carrierName,
+          Consts.CARRIER_ID: carrierID,
+          Consts.COMMODITY_ID: commodityID,
+          Consts.COMMODITY_NAME: commodityName,
+          Consts.PO_NUMBER: poNumber,
+          Consts.PRODUCT_TRANSFER: productTransfer,
+          Consts.CALLER_ACTIVITY: "PurchaseOrderDetailsActivity",
+        });
+  }
+
+  Future<void> onQCHeaderMenuTap() async {
+    Get.to(
+        () => QualityControlHeader(
+              carrier: carrier,
+            ),
+        arguments: {
+          Consts.PARTNER_NAME: partnerName,
+          Consts.PARTNER_ID: partnerID,
+          Consts.CARRIER_NAME: carrierName,
+          Consts.CARRIER_ID: carrierID,
+          Consts.COMMODITY_ID: commodityID,
+          Consts.COMMODITY_NAME: commodityName,
+          Consts.PO_NUMBER: poNumber,
+          Consts.PRODUCT_TRANSFER: productTransfer,
+          Consts.CALLER_ACTIVITY: "QualityControlHeaderActivity",
+        });
+  }
+
+  Future<void> onAddGradingStandardMenuTap() async {
+    Map<String, dynamic> passingData = {
+      Consts.PARTNER_NAME: partnerName,
+      Consts.PARTNER_ID: partnerID,
+      Consts.CARRIER_NAME: carrierName,
+      Consts.CARRIER_ID: carrierID,
+      Consts.COMMODITY_ID: commodityID,
+      Consts.COMMODITY_NAME: commodityName,
+      Consts.PO_NUMBER: poNumber,
+      Consts.PRODUCT_TRANSFER: productTransfer,
+      Consts.CALLER_ACTIVITY: "PurchaseOrderDetailsActivity",
+    };
+    if (productTransfer == "Transfer") {
+      Get.to(() => const CommodityTransferScreen(), arguments: passingData);
+    } else {
+      Get.to(
+        () => CommodityIDScreen(
+          partner: partner,
+          carrier: carrier,
+          qcHeaderDetails: qcHeaderDetails,
+        ),
+        arguments: passingData,
+      );
+    }
+  }
+
+  Future<void> onSelectItemMenuTap() async {
+    Map<String, dynamic> passingData = {
+      Consts.PO_NUMBER: poNumber,
+      Consts.SEAL_NUMBER: sealNumber,
+      Consts.PARTNER_NAME: partnerName,
+      Consts.PARTNER_ID: partnerID,
+      Consts.CARRIER_NAME: carrierName,
+      Consts.CARRIER_ID: carrierID,
+      Consts.COMMODITY_ID: commodityID,
+      Consts.COMMODITY_NAME: commodityName,
+      Consts.PRODUCT_TRANSFER: productTransfer,
+    };
+    if (productTransfer == "Transfer") {
+      Get.to(
+        () => const PurchaseOrderScreenCTE(),
+        arguments: passingData,
+      );
+    } else {
+      Get.to(
+        () => PurchaseOrderScreen(
+          carrier: carrier,
+          qcHeaderDetails: qcHeaderDetails,
+          commodity: commodity,
+          partner: partner,
+        ),
+        arguments: passingData,
+      );
+    }
+  }
+
+  void initAsyncActions() {
+    if (callerActivity.isNotEmpty) {
+      if (callerActivity == "GTINActivity") {
+        if (appStorage.selectedItemSKUList.isNotEmpty) {
+          if (!isGTINSamePartner) {
+            Future.delayed(const Duration(milliseconds: 500), () {
+              AppAlertDialog.validateAlerts(Get.context!, AppStrings.alert,
+                  'GTIN has to be for the same supplier: $partnerName\nFinish & upload pfg for $partnerName\n\nFor a new supplier go to the Home page and select Inspect New Product');
+            });
+          }
+        }
       }
     }
   }

@@ -35,4 +35,8 @@ class AppImages {
 
   static const String infoAddedImage = 'assets/images/information_icon.png';
   static const String infoImage = 'assets/images/information_icon_disabled.png';
+
+  static const String pauseImage = 'assets/images/pause.png';
+  static const String checkmarkImage = 'assets/images/checkmark.png';
+  static const String playImage = 'assets/images/play.png';
 }

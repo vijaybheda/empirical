@@ -5,7 +5,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:csv/csv.dart';
-import 'package:flutter/material.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/inspection_attachment.dart';
@@ -323,7 +322,7 @@ class ApplicationDao {
           inspectionId = result[0]["Inspection_ID"];
         }
       } catch (e) {
-        debugPrint("Error has occurred while finding a user id: $e");
+        log("Error has occurred while finding a user id: $e");
         return -1;
       }
 
@@ -354,9 +353,9 @@ class ApplicationDao {
         });
       }
 
-      debugPrint("Inside specification table");
+      log("Inside specification table");
     } catch (e) {
-      debugPrint("Error has occurred while creating an inspection: $e");
+      log("Error has occurred while creating an inspection: $e");
       return -1;
     }
 
@@ -472,7 +471,7 @@ class ApplicationDao {
         );
       });
     } catch (e) {
-      debugPrint('Error has occurred while updating an inspection: $e');
+      log('Error has occurred while updating an inspection: $e');
       return -1;
     }
   }
@@ -573,16 +572,21 @@ class ApplicationDao {
 
   // Delete an inspection by ID
   Future<void> deleteInspection(int inspectionId) async {
-    final Database db = dbProvider.lazyDatabase;
+    try {
+      final Database db = dbProvider.lazyDatabase;
 
-    // Here you would call the methods to delete related entries from other tables, if necessary.
-    // For example: await deleteTrailerTemperatureEntriesByInspectionId(inspectionId);
+      // Here you would call the methods to delete related entries from other tables, if necessary.
+      // For example: await deleteTrailerTemperatureEntriesByInspectionId(inspectionId);
 
-    await db.delete(
-      DBTables.INSPECTION,
-      where: '${BaseColumns.ID} = ?',
-      whereArgs: [inspectionId],
-    );
+      await db.delete(
+        DBTables.INSPECTION,
+        where: '${BaseColumns.ID} = ?',
+        whereArgs: [inspectionId],
+      );
+    } catch (e) {
+      log('Error deleting inspection: $e');
+      throw e;
+    }
   }
 
   // Delete an inspection after upload
@@ -785,7 +789,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.ITEM_GROUP1}');
-        debugPrint('fields ${fields.length} ${DBTables.ITEM_GROUP1}');
+        log('fields ${fields.length} ${DBTables.ITEM_GROUP1}');
         for (var row in fields.skip(1).toList()) {
           // log('rowData $row');
           int igrId = row[0];
@@ -807,7 +811,7 @@ class ApplicationDao {
       log('CSV data inserted into the database successfully.');
       return true;
     } catch (e) {
-      log(e.toString());
+      log('Error: while adding Item Group1 $e');
       return false;
     }
   }
@@ -820,13 +824,13 @@ class ApplicationDao {
         return await txn.delete(DBTables.PARTNER_ITEMSKU);
       });
     } catch (e) {
-      log(e.toString());
+      log('Error: while deleting Partner Item SKU $e');
       return -1;
     }
   }
 
   Future<bool> csvImportItemSKU() async {
-    debugPrint('Importing Item SKU');
+    log('Importing Item SKU');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -846,7 +850,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.ITEM_SKU}');
-        debugPrint('fields ${fields.length} ${DBTables.ITEM_SKU}');
+        log('fields ${fields.length} ${DBTables.ITEM_SKU}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSkuData = {
             ItemSkuColumn.SKU_ID: row[0],
@@ -873,7 +877,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item SKU $e');
@@ -882,7 +886,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportAgency() async {
-    debugPrint('Importing Item Agency');
+    log('Importing Item Agency');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -902,7 +906,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.AGENCY}');
-        debugPrint('fields ${fields.length} ${DBTables.AGENCY}');
+        log('fields ${fields.length} ${DBTables.AGENCY}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemAgencyData = {
             AgencyColumn.ID: row[0],
@@ -913,7 +917,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Agency $e');
@@ -922,7 +926,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportGrade() async {
-    debugPrint('Importing Item Grade');
+    log('Importing Item Grade');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -942,7 +946,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.GRADE}');
-        debugPrint('fields ${fields.length} ${DBTables.GRADE}');
+        log('fields ${fields.length} ${DBTables.GRADE}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemGradeData = {
             GradeColumn.ID: row[0],
@@ -954,7 +958,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Grade $e');
@@ -963,7 +967,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportGradeCommodity() async {
-    debugPrint('Importing Item Grade Commodity');
+    log('Importing Item Grade Commodity');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -983,7 +987,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.GRADE_COMMODITY}');
-        debugPrint('fields ${fields.length} ${DBTables.GRADE_COMMODITY}');
+        log('fields ${fields.length} ${DBTables.GRADE_COMMODITY}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemGradeCommodityData = {
             GradeCommodityColumn.ID: row[0],
@@ -995,7 +999,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Grade Commodity $e');
@@ -1004,7 +1008,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportGradeCommodityDetail() async {
-    debugPrint('Importing Item Grade Commodity Detail');
+    log('Importing Item Grade Commodity Detail');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -1024,8 +1028,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.GRADE_COMMODITY_DETAIL}');
-        debugPrint(
-            'fields ${fields.length} ${DBTables.GRADE_COMMODITY_DETAIL}');
+        log('fields ${fields.length} ${DBTables.GRADE_COMMODITY_DETAIL}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemGradeCommodityDetailData = {
             GradeCommodityDetailColumn.ID: row[0],
@@ -1040,7 +1043,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Grade Commodity Detail $e');
@@ -1049,7 +1052,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportSpecification() async {
-    debugPrint('Importing Item specification');
+    log('Importing Item specification');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -1069,7 +1072,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION}');
-        debugPrint('fields ${fields.length} ${DBTables.SPECIFICATION}');
+        log('fields ${fields.length} ${DBTables.SPECIFICATION}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationData = {
             SpecificationColumn.NUMBER: row[0],
@@ -1084,7 +1087,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item specification $e');
@@ -1093,7 +1096,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportMaterialSpecification() async {
-    debugPrint('Importing Item Material Specification');
+    log('Importing Item Material Specification');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -1113,8 +1116,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.MATERIAL_SPECIFICATION}');
-        debugPrint(
-            'fields ${fields.length} ${DBTables.MATERIAL_SPECIFICATION}');
+        log('fields ${fields.length} ${DBTables.MATERIAL_SPECIFICATION}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemMaterialSpecificationData = {
             MaterialSpecificationColumn.NUMBER_SPECIFICATION: row[0],
@@ -1128,7 +1130,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Material Specification $e');
@@ -1137,7 +1139,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportSpecificationSupplier() async {
-    debugPrint('Importing Item Specification Supplier');
+    log('Importing Item Specification Supplier');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -1157,8 +1159,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION_SUPPLIER}');
-        debugPrint(
-            'fields ${fields.length} ${DBTables.SPECIFICATION_SUPPLIER}');
+        log('fields ${fields.length} ${DBTables.SPECIFICATION_SUPPLIER}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationSupplierData = {
             SpecificationSupplierColumn.NUMBER_SPECIFICATION: row[0],
@@ -1176,7 +1177,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Specification Supplier $e');
@@ -1185,7 +1186,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportSpecificationGradeTolerance() async {
-    debugPrint('Importing Item Specification Grade Tolerance');
+    log('Importing Item Specification Grade Tolerance');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -1206,8 +1207,7 @@ class ApplicationDao {
       await db.transaction((txn) async {
         await txn
             .rawDelete('DELETE FROM ${DBTables.SPECIFICATION_GRADE_TOLERANCE}');
-        debugPrint(
-            'fields ${fields.length} ${DBTables.SPECIFICATION_GRADE_TOLERANCE}');
+        log('fields ${fields.length} ${DBTables.SPECIFICATION_GRADE_TOLERANCE}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationGradeToleranceData = {
             SpecificationGradeToleranceColumn.SPECIFICATION_GRADE_TOLERANCE_ID:
@@ -1231,7 +1231,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Specification Grade Tolerance $e');
@@ -1240,7 +1240,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportSpecificationAnalytical() async {
-    debugPrint('Importing Item Specification Analytical');
+    log('Importing Item Specification Analytical');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -1260,8 +1260,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION_ANALYTICAL}');
-        debugPrint(
-            'fields ${fields.length} ${DBTables.SPECIFICATION_ANALYTICAL}');
+        log('fields ${fields.length} ${DBTables.SPECIFICATION_ANALYTICAL}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationAnalyticalData = {
             SpecificationAnalyticalColumn.NUMBER_SPECIFICATION: row[0],
@@ -1288,7 +1287,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Specification Analytical $e');
@@ -1297,7 +1296,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportSpecificationPackagingFinishedGoods() async {
-    debugPrint('Importing Item Specification Analytical');
+    log('Importing Item Specification Analytical');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -1318,8 +1317,7 @@ class ApplicationDao {
       await db.transaction((txn) async {
         await txn.rawDelete(
             'DELETE FROM ${DBTables.SPECIFICATION_PACKAGING_FINISHED_GOODS}');
-        debugPrint(
-            'fields ${fields.length} ${DBTables.SPECIFICATION_PACKAGING_FINISHED_GOODS}');
+        log('fields ${fields.length} ${DBTables.SPECIFICATION_PACKAGING_FINISHED_GOODS}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationAnalyticalData = {
             SpecificationPackagingFinishedGoodsColumn.FINISHED_GOODS_ID: row[0],
@@ -1335,7 +1333,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Specification Analytical $e');
@@ -1344,7 +1342,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportSpecificationType() async {
-    debugPrint('Importing Item Specification Type');
+    log('Importing Item Specification Type');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -1364,7 +1362,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.SPECIFICATION_TYPE}');
-        debugPrint('fields ${fields.length} ${DBTables.SPECIFICATION_TYPE}');
+        log('fields ${fields.length} ${DBTables.SPECIFICATION_TYPE}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationTypeData = {
             SpecificationTypeColumn.SPECIFICATION_TYPE_ID: row[0],
@@ -1376,7 +1374,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Specification Type $e');
@@ -1385,7 +1383,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportCommodity() async {
-    debugPrint('Importing Item Commodity');
+    log('Importing Item Commodity');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -1405,7 +1403,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.COMMODITY}');
-        debugPrint('fields ${fields.length} ${DBTables.COMMODITY}');
+        log('fields ${fields.length} ${DBTables.COMMODITY}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemCommodityData = {
             CommodityColumn.ID: row[0],
@@ -1418,7 +1416,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Commodity $e');
@@ -1427,7 +1425,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportCommodityKeywords() async {
-    debugPrint('Importing Item Commodity Keywords');
+    log('Importing Item Commodity Keywords');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -1447,7 +1445,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.COMMODITY_KEYWORDS}');
-        debugPrint('fields ${fields.length} ${DBTables.COMMODITY_KEYWORDS}');
+        log('fields ${fields.length} ${DBTables.COMMODITY_KEYWORDS}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemCommodityKeywordsData = {
             CommodityKeywordsColumn.ID: row[0],
@@ -1459,7 +1457,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item Commodity Keywords $e');
@@ -1468,7 +1466,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportPOHeader() async {
-    debugPrint('Importing Item POHeader');
+    log('Importing Item POHeader');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -1488,7 +1486,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.PO_HEADER}');
-        debugPrint('fields ${fields.length} ${DBTables.PO_HEADER}');
+        log('fields ${fields.length} ${DBTables.PO_HEADER}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemPOHeaderData = {
             POHeaderColumn.PO_HEADER_ID: row[0],
@@ -1503,7 +1501,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item POHeader $e');
@@ -1512,7 +1510,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportPODetail() async {
-    debugPrint('Importing Item PODetail');
+    log('Importing Item PODetail');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -1532,7 +1530,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.PO_DETAIL}');
-        debugPrint('fields ${fields.length} ${DBTables.PO_DETAIL}');
+        log('fields ${fields.length} ${DBTables.PO_DETAIL}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemPODetailData = {
             PODetailColumn.PO_DETAIL_ID: row[0],
@@ -1557,7 +1555,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Item PODetail $e');
@@ -1566,7 +1564,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportSpecificationSupplierGtins() async {
-    debugPrint('Importing Item Specification SupplierGtins');
+    log('Importing Item Specification SupplierGtins');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -1587,8 +1585,7 @@ class ApplicationDao {
       await db.transaction((txn) async {
         await txn
             .rawDelete('DELETE FROM ${DBTables.SPECIFICATION_SUPPLIER_GTIN}');
-        debugPrint(
-            'fields ${fields.length} ${DBTables.SPECIFICATION_SUPPLIER_GTIN}');
+        log('fields ${fields.length} ${DBTables.SPECIFICATION_SUPPLIER_GTIN}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationSupplierGtinsData = {
             SpecificationSupplierGtinColumn.SPECIFICATION_SUPPLIER_ID: row[0],
@@ -1600,7 +1597,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Specification Supplier Gtins $e');
@@ -1609,7 +1606,7 @@ class ApplicationDao {
   }
 
   Future<bool> csvImportCommodityCTE() async {
-    debugPrint('Importing Item Commodity CTE');
+    log('Importing Item Commodity CTE');
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -1629,7 +1626,7 @@ class ApplicationDao {
 
       await db.transaction((txn) async {
         await txn.rawDelete('DELETE FROM ${DBTables.COMMODITY_CTE}');
-        debugPrint('fields ${fields.length} ${DBTables.COMMODITY_CTE}');
+        log('fields ${fields.length} ${DBTables.COMMODITY_CTE}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemCommodityCteData = {
             CommodityCteColumn.ID: row[0],
@@ -1642,7 +1639,7 @@ class ApplicationDao {
       });
       return true;
     } on FileSystemException catch (e) {
-      debugPrint('File operation failed: $e');
+      log('File operation failed: $e');
       return false;
     } catch (e) {
       log('Error: while adding Commodity CTE $e');
@@ -1688,7 +1685,7 @@ class ApplicationDao {
         );
       }
     } catch (e) {
-      debugPrint("Error has occurred while finding quality control items: $e");
+      log('Error has occurred while finding qcItem: $e');
     }
     return qcItem;
   }
@@ -1725,7 +1722,7 @@ class ApplicationDao {
         purchaseOrderDetailsList.add(PurchaseOrderDetails.fromMap(result));
       }
     } catch (e) {
-      debugPrint('Error has occurred while finding quality control items: $e');
+      log('Error has occurred while finding pfg: $e');
     }
     return purchaseOrderDetailsList;
   }
@@ -1742,7 +1739,7 @@ class ApplicationDao {
         inspIDs.add(result['inspection_id']);
       }
     } catch (e) {
-      debugPrint('Error has occurred while finding pfg: $e');
+      log('Error has occurred while finding partner sku inspection ids: $e');
     }
     return inspIDs;
   }
@@ -1785,7 +1782,7 @@ class ApplicationDao {
         });
       });
     } catch (e) {
-      debugPrint('Error has occurred while creating a trailer temperature: $e');
+      log('Error has occurred while creating a trailer temperature: $e');
       rethrow;
     }
     return ttId;
@@ -1835,7 +1832,7 @@ class ApplicationDao {
         );
       });
     } catch (e) {
-      debugPrint('Error has occurred while updating a trailer temperature: $e');
+      log('Error has occurred while updating a trailer temperature: $e');
       throw e;
     }
   }
@@ -1938,8 +1935,7 @@ class ApplicationDao {
         }
       });
     } catch (e) {
-      debugPrint("Error has occurred while finding quality control items.");
-      debugPrint(e as String?);
+      log("Error has occurred while finding supplier gtin: $e");
       return null;
     }
 
@@ -1962,7 +1958,7 @@ class ApplicationDao {
         });
       });
     } catch (e) {
-      debugPrint("Error has occurred while creating a trailer temperature: $e");
+      log("Error has occurred while creating a trailer temperature: $e");
     }
     return ttId ?? -1;
   }
@@ -1985,12 +1981,11 @@ class ApplicationDao {
           data.add(row);
         }
         for (var element in data) {
-          debugPrint('element: ${element}');
+          log('element: ${element}');
         }
       }
     } catch (e) {
-      debugPrint(
-          'Error has occurred while finding trailer temperature items: $e');
+      log('Error has occurred while finding trailer temperature items: $e');
       return null;
       // Handle the error
     }
@@ -2022,8 +2017,7 @@ class ApplicationDao {
             result[0]['${TempTrailerTemperatureDetailsColumn.PO_NUMBER}'];
       }
     } catch (e) {
-      debugPrint(
-          "Error has occurred while finding trailer temperature items: $e");
+      log("Error has occurred while finding trailer temperature items: $e");
       // rethrow e;
     }
 
@@ -2043,7 +2037,7 @@ class ApplicationDao {
         return false;
       }
     } catch (e) {
-      debugPrint("Error occurred while checking data existence: $e");
+      log("Error occurred while checking data existence: $e");
       return false;
     }
   }
@@ -2080,7 +2074,7 @@ class ApplicationDao {
         }
       });
     } catch (e) {
-      debugPrint('Error occurred while creating a trailer temperature: $e');
+      log('Error occurred while creating a trailer temperature: $e');
       rethrow;
     }
   }
@@ -2116,8 +2110,7 @@ class ApplicationDao {
         return await txn.delete(DBTables.SELECTED_ITEM_SKU_LIST);
       });
     } catch (e) {
-      debugPrint(
-          'Error has occurred while deleting selected item SKU list: $e');
+      log('Error has occurred while deleting selected item SKU list: $e');
       return -1;
     }
   }
@@ -2192,7 +2185,7 @@ class ApplicationDao {
         itemSKUList.add(item);
       }
     } catch (e) {
-      debugPrint("Error occurred while finding quality control items: $e");
+      log('Error finding finished goods item SKU: $e');
       return null;
     }
     return itemSKUList;
@@ -2200,15 +2193,20 @@ class ApplicationDao {
 
   Future<QualityControlItem?> findQualityControlDetails(
       int inspectionId) async {
-    final Database db = dbProvider.lazyDatabase;
-    List<Map> results = await db.query(
-      DBTables.QUALITY_CONTROL,
-      where: '${QualityControlColumn.INSPECTION_ID} = ?',
-      whereArgs: [inspectionId],
-    );
+    try {
+      final Database db = dbProvider.lazyDatabase;
+      List<Map> results = await db.query(
+        DBTables.QUALITY_CONTROL,
+        where: '${QualityControlColumn.INSPECTION_ID} = ?',
+        whereArgs: [inspectionId],
+      );
 
-    if (results.isNotEmpty) {
-      return QualityControlItem.fromJson(results.first as Map<String, dynamic>);
+      if (results.isNotEmpty) {
+        return QualityControlItem.fromJson(
+            results.first as Map<String, dynamic>);
+      }
+    } catch (e) {
+      log('Error has occurred while finding quality control item: $e');
     }
 
     return null;
@@ -2216,17 +2214,22 @@ class ApplicationDao {
 
   Future<List<TrailerTemperatureItem>> findListTrailerTemperatureItems(
       int inspectionId) async {
-    final Database db = dbProvider.lazyDatabase;
     List<TrailerTemperatureItem> trailerTempList = [];
-    List<Map> results = await db.query(
-      DBTables.TRAILER_TEMPERATURE,
-      where: '${TrailerTemperatureColumn.INSPECTION_ID} = ?',
-      whereArgs: [inspectionId],
-    );
+    try {
+      final Database db = dbProvider.lazyDatabase;
+      List<Map> results = await db.query(
+        DBTables.TRAILER_TEMPERATURE,
+        where: '${TrailerTemperatureColumn.INSPECTION_ID} = ?',
+        whereArgs: [inspectionId],
+      );
 
-    for (Map<dynamic, dynamic> map in results) {
-      trailerTempList
-          .add(TrailerTemperatureItem.fromMap(map as Map<String, dynamic>));
+      for (Map<dynamic, dynamic> map in results) {
+        trailerTempList
+            .add(TrailerTemperatureItem.fromMap(map as Map<String, dynamic>));
+      }
+    } catch (e) {
+      log('Error has occurred while finding trailer temperature items: $e');
+      return [];
     }
 
     return trailerTempList;
@@ -2237,15 +2240,19 @@ class ApplicationDao {
     final Database db = dbProvider.lazyDatabase;
     List<SpecificationAnalyticalRequest> list = [];
 
-    List<Map> results = await db.query(
-      DBTables.SPECIFICATION_ATTRIBUTES,
-      where: '${SpecificationAttributesColumn.INSPECTION_ID} = ?',
-      whereArgs: [inspectionId],
-    );
+    try {
+      List<Map> results = await db.query(
+        DBTables.SPECIFICATION_ATTRIBUTES,
+        where: '${SpecificationAttributesColumn.INSPECTION_ID} = ?',
+        whereArgs: [inspectionId],
+      );
 
-    for (Map<dynamic, dynamic> map in results) {
-      list.add(
-          SpecificationAnalyticalRequest.fromJson(map as Map<String, dynamic>));
+      for (Map<dynamic, dynamic> map in results) {
+        list.add(SpecificationAnalyticalRequest.fromJson(
+            map as Map<String, dynamic>));
+      }
+    } catch (e) {
+      log('Error has occurred while finding specification analytical request: $e');
     }
 
     return list;
@@ -2254,14 +2261,18 @@ class ApplicationDao {
   Future<OverriddenResult?> getOverriddenResult(int inspectionId) async {
     final Database db = dbProvider.lazyDatabase;
     OverriddenResult? item;
+    try {
+      List<Map> results = await db.rawQuery(
+        'SELECT Overridden_By, Overridden_Result, Overridden_Timestamp, Overridden_Comments, Old_Result, Original_Qty_Shipped, Original_Qty_Rejected, New_Qty_Shipped, New_Qty_Rejected FROM ${DBTables.OVERRIDDEN_RESULT} WHERE Inspection_ID = ?',
+        [inspectionId.toString()],
+      );
 
-    List<Map> results = await db.rawQuery(
-      'SELECT Overridden_By, Overridden_Result, Overridden_Timestamp, Overridden_Comments, Old_Result, Original_Qty_Shipped, Original_Qty_Rejected, New_Qty_Shipped, New_Qty_Rejected FROM ${DBTables.OVERRIDDEN_RESULT} WHERE Inspection_ID = ?',
-      [inspectionId.toString()],
-    );
-
-    if (results.isNotEmpty) {
-      item = OverriddenResult.fromMap(results.first as Map<String, dynamic>);
+      if (results.isNotEmpty) {
+        item = OverriddenResult.fromMap(results.first as Map<String, dynamic>);
+      }
+    } catch (e) {
+      log('Error has occurred while finding overridden result: $e');
+      return null;
     }
 
     return item;
@@ -2312,7 +2323,7 @@ class ApplicationDao {
         itemSKUList.add(item);
       }
     } catch (e) {
-      log('Error has occurred while finding quality control items: $e');
+      log('Error has occurred while finding commodity: $e');
       return null;
     }
     return itemSKUList;
@@ -2331,7 +2342,7 @@ class ApplicationDao {
         enterpriseId = result.first[UserOfflineColumn.HEADQUATER_SUPPLIER_ID];
       }
     } catch (e) {
-      debugPrint('Error has occurred while finding a user id: $e');
+      log('Error has occurred while finding a user id: $e');
       return -1;
     }
     return enterpriseId;
@@ -2354,7 +2365,7 @@ class ApplicationDao {
         return true;
       }
     } catch (e) {
-      debugPrint("Error has occurred while finding pfg: $e");
+      log("Error has occurred while finding pfg: $e");
       return false;
     }
     return false;
@@ -2378,7 +2389,7 @@ class ApplicationDao {
         return item;
       }
     } catch (e) {
-      debugPrint("Error has occurred while finding quality control items: $e");
+      log("Error has occurred while finding pfg: $e");
       return null;
     }
     return null;
@@ -2403,7 +2414,7 @@ class ApplicationDao {
         list.add(item);
       }
     } catch (e) {
-      debugPrint("Error has occurred while finding quality control items: $e");
+      log("Error has occurred while finding specification analytical: $e");
       return null;
     }
     return list;
@@ -2426,7 +2437,7 @@ class ApplicationDao {
       }
       return null;
     } catch (e) {
-      debugPrint("Error has occurred while finding quality control items: $e");
+      log("Error has occurred while finding spec analytical obj: $e");
       return null;
     }
   }
@@ -2445,7 +2456,7 @@ class ApplicationDao {
           inspectionId = cursor[0][ResultRejectionDetailsColumn.INSPECTION_ID];
         }
       } catch (e) {
-        debugPrint("Error has occurred while finding a user id: $e");
+        log("Error has occurred while finding a user id: $e");
         return -1;
       }
 
@@ -2471,7 +2482,7 @@ class ApplicationDao {
             whereArgs: [inspectionID]);
       }
     } catch (e) {
-      debugPrint("Error has occurred while creating an inspection: $e");
+      log("Error has occurred while creating an inspection: $e");
       return -1;
     }
     return inspectionId;
@@ -2496,7 +2507,7 @@ class ApplicationDao {
               cursor.first[ResultRejectionDetailsColumn.INSPECTION_ID] as int?;
         }
       } catch (e) {
-        debugPrint("Error has occurred while finding a user id. $e");
+        log("Error has occurred while finding a user id. $e");
         return -1;
       }
 
@@ -2524,7 +2535,7 @@ class ApplicationDao {
         });
       }
     } catch (e) {
-      debugPrint("Error has occurred while creating an inspection. $e");
+      log("Error has occurred while creating an inspection. $e");
       return -1;
     }
     return inspectionId ?? -1;
@@ -2550,7 +2561,7 @@ class ApplicationDao {
         return true;
       });
     } catch (e) {
-      debugPrint("Error has occurred while updating an inspection. $e");
+      log("Error has occurred while updating an inspection. $e");
       return false;
     }
     return false;
@@ -2578,7 +2589,7 @@ class ApplicationDao {
         return true;
       });
     } catch (e) {
-      debugPrint("Error has occurred while updating an inspection. $e");
+      log("Error has occurred while updating an inspection. $e");
       return false;
     }
     return false;
@@ -2605,7 +2616,7 @@ class ApplicationDao {
         list.add(item);
       }
     } catch (e) {
-      debugPrint('Error has occurred while finding quality control items: $e');
+      log('Error has occurred while finding specification analytical: $e');
       return [];
     }
 
@@ -2629,7 +2640,7 @@ class ApplicationDao {
         return true;
       }
     } catch (e) {
-      debugPrint("Error has occurred while finding pfg: $e");
+      log("Error has occurred while finding pfg: $e");
       return false;
     }
 
@@ -2686,7 +2697,7 @@ class ApplicationDao {
         specificationList.add(item);
       }
     } catch (e) {
-      print('Error has occurred while finding quality control items: $e');
+      print('Error has occurred while finding specification by item SKU: $e');
       return null;
     }
 
@@ -2740,7 +2751,7 @@ class ApplicationDao {
         specificationList.add(item);
       }
     } catch (e) {
-      print('Error has occurred while finding quality control items: $e');
+      print('Error specifying item SKU: $e');
     }
 
     return specificationList;
@@ -2762,8 +2773,8 @@ class ApplicationDao {
       if (cursor.isNotEmpty) {
         lot_no = cursor.first[QualityControlColumn.LOT_NUMBER];
       }
-    } catch (_) {
-      log("Error has occurred while finding quality control items.");
+    } catch (e) {
+      log('Error lot number from quality control details: ${e.toString()}');
       return null;
     }
     return lot_no;
@@ -3237,7 +3248,7 @@ class ApplicationDao {
             SpecificationGradeTolerance.fromJson(map as Map<String, dynamic>));
       }
     } catch (e) {
-      log('Error has occurred while finding quality control items: $e');
+      log('Error has occurred while finding specification grade tolerance: $e');
       return [];
     }
 
@@ -3275,7 +3286,7 @@ class ApplicationDao {
         ));
       }
     } catch (e) {
-      log('Error has occurred while finding quality control items: $e');
+      log('Error selected item sku list: $e');
       return [];
     }
     return list;
@@ -3349,6 +3360,42 @@ class ApplicationDao {
       });
     } catch (e) {
       log('Error has occurred while deleting a quality control entries: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateOverriddenResult(int inspectionID, String result) async {
+    try {
+      final Database db = dbProvider.lazyDatabase;
+      await db.transaction((txn) async {
+        Map<String, dynamic> values = {};
+        if (result.isNotEmpty) {
+          values[OverriddenResultColumn.OVERRIDDEN_RESULT] = result;
+        }
+        await txn.update(
+          DBTables.OVERRIDDEN_RESULT,
+          values,
+          where: 'Inspection_ID = ?',
+          whereArgs: [inspectionID],
+        );
+      });
+    } catch (e) {
+      log('Error has occurred while updating an inspection: $e');
+      throw e;
+    }
+  }
+
+  Future<void> deleteRejectionDetailByInspectionId(int inspectionId) async {
+    try {
+      final Database db = dbProvider.lazyDatabase;
+      await db.transaction((txn) async {
+        String query =
+            'DELETE FROM Result_Rejection_Details WHERE Inspection_ID = $inspectionId';
+        await txn.rawDelete(query);
+      });
+    } catch (e) {
+      print(
+          'Error has occurred while deleting a trailer temperature entries: $e');
       rethrow;
     }
   }
