@@ -159,7 +159,6 @@ class PhotoSelectionController extends GetxController {
                 imagesList[i].pathToPhoto ?? '')
             .then((attachmentId) {
           attachmentIds.add(attachmentId);
-          AppStorage.instance.attachmentIds = attachmentIds;
         }).catchError((error) {
           debugPrint('Error creating attachment: $error');
         });
