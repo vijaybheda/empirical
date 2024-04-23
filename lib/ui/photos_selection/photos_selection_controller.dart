@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable, unused_field, prefer_const_constructors, depend_on_referenced_packages, unused_element, unnecessary_null_comparison
+// ignore_for_file: unused_local_variable, unused_field, prefer_const_constructors, depend_on_referenced_packages, unused_element, unnecessary_null_comparison, empty_catches
 
 import 'dart:io';
 
@@ -6,25 +6,58 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pverify/models/inspection_attachment.dart';
+import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/utils/app_storage.dart';
 
 class PhotoSelectionController extends GetxController {
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
-  RxList imgList = [].obs;
+  var imagesList = <PictureData>[].obs;
+  final ApplicationDao dao = ApplicationDao();
+  int? inspectionId;
+  List<int> attachmentIds = [];
+  get title => null;
+  bool? hasAttachmentIds = false;
+
+  Future<String> saveImageToInternalStorage(File imageFile) async {
+    Directory appDir = await getApplicationDocumentsDirectory();
+    String documentsPath = appDir.path;
+    String appFolderPath = '$documentsPath/MyAppFolder';
+    Directory(appFolderPath).createSync(recursive: true);
+
+    String timeStamp = DateTime.now().millisecondsSinceEpoch.toString();
+    String uniqueFileName = "insp_$timeStamp";
+    File newImageFile = File('$appFolderPath/$uniqueFileName.jpg');
+    await newImageFile.writeAsBytes(imageFile.readAsBytesSync());
+    debugPrint('Image saved to: ${newImageFile.path}');
+
+    return newImageFile.path;
+  }
 
   Future getImageFromGallery() async {
     _picker.supportsImageSource(ImageSource.gallery);
     final List<XFile> image = await _picker.pickMultiImage();
-    imgList.addAll(image);
+    for (var element in image) {
+      File file = File(element.path);
+
+      imagesList.add(PictureData(
+          image: file,
+          photoTitle: '',
+          createdTime: DateTime.now().millisecondsSinceEpoch,
+          pathToPhoto: await saveImageToInternalStorage(file)));
+    }
   }
 
   Future getImageFromCamera() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.camera);
-    imgList.add(image);
-  }
-
-  removeImage(int index) {
-    imgList.removeAt(index);
+    File file = File(image?.path ?? '');
+    imagesList.add(PictureData(
+        image: file,
+        photoTitle: '',
+        createdTime: DateTime.now().millisecondsSinceEpoch,
+        pathToPhoto: await saveImageToInternalStorage(file)));
   }
 
   Future<void> cropImage(File imageFile, int index) async {
@@ -60,96 +93,137 @@ class PhotoSelectionController extends GetxController {
         ));
 
     if (croppedImage != null) {
-      imgList.removeAt(index);
-      imgList.insert(index, croppedImage);
+      imagesList.removeAt(index);
+      imagesList.insert(
+          index,
+          PictureData(
+              image: croppedImage,
+              photoTitle: '',
+              createdTime: DateTime.now().millisecondsSinceEpoch,
+              pathToPhoto: await saveImageToInternalStorage(croppedImage)));
     }
   }
 
-  // ANDROID CODE
+  removeImage(int index) {
+    imagesList.removeAt(index);
+  }
 
-  void saveAction() {
-    /* savePicturesToDB();
-      AppInfo.attachmentIds = attachmentIds;
-      Intent returnIntent = new Intent();
+  updateContent(int index, String title) {
+    var data = imagesList[index];
+    imagesList.removeAt(index);
+    imagesList.add(PictureData(
+        image: data.image,
+        photoTitle: title,
+        createdTime: data.createdTime,
+        pathToPhoto: data.pathToPhoto));
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    loadPicturesFromDB();
+  }
+
+  void saveAction() async {
+    await savePicturesToDB();
+    AppStorage.instance.attachmentIds = attachmentIds;
+    /*Intent returnIntent = new Intent();
       returnIntent.putExtra("callerActivity", "InspectionPhotosActivity");
       setResult(RESULT_OK, returnIntent);
-      finish(); */
+     */
     Get.back();
   }
 
-  // TODO: ANDROID CODE
+  // TODO: FLUTTER CODE
 
-  void savePicturesToDB() {
-    // MainApplicationContext appContext = (MainApplicationContext) getApplicationContext();
-    // ApplicationDao dao = appContext.getDao();
-
-    // // Loop through and find the pictures that are not already saved in the database
-    // for (int i = 0; i < pictureList.size(); i++) {
-    //     if (!pictureList.get(i).getSavedInDB()) {
-    //         Long attachmentId = dao.createInspectionAttachment(inspectionId, pictureList.get(i).getPhotoTitle(),
-    //                 pictureList.get(i).getCreatedTime(), pictureList.get(i).getPathToPhoto());
-    //         attachmentIds.add(attachmentId);
-    //     } else {
-    //         attachmentIds.add(pictureList.get(i).getPictureId());
-    //     }
-
-    //     // recycle the bitmaps to free up memory
-    //     //pictureList.get(i).getPhotoBitmap().recycle();
-    // }
+  Future<void> savePicturesToDB() async {
+    for (int i = 0; i < imagesList.length; i++) {
+      if (imagesList[i].savedInDB == true) {
+        attachmentIds.add(imagesList[i].pictureId ?? 0);
+      } else {
+        await dao
+            .createInspectionAttachment(
+                InspectionAttachment(
+                    Inspection_ID: inspectionId ?? 0,
+                    Attachment_ID: 0,
+                    ATTACHMENT_TITLE: imagesList[i].photoTitle ?? '',
+                    CREATED_TIME: imagesList[i].createdTime ?? 0,
+                    FILE_LOCATION: imagesList[i].pathToPhoto ?? ''),
+                imagesList[i].photoTitle ?? '',
+                imagesList[i].createdTime ?? '',
+                imagesList[i].pathToPhoto ?? '')
+            .then((attachmentId) {
+          attachmentIds.add(attachmentId);
+        }).catchError((error) {
+          debugPrint('Error creating attachment: $error');
+        });
+        //attachmentIds.add(attachmentId);
+      }
+      // recycle the bitmaps to free up memory
+      // pictureList[i].photoBitmap?.recycle();
+    }
   }
-
-  // THIS METHOD WILL CALL WHILE TAP ON DELETE BUTTON
 
   void deletePicture(int position) {
-//         MainApplicationContext appContext = (MainApplicationContext) getApplicationContext();
-//         ApplicationDao dao = appContext.getDao();
-
-//         // remove the picture from the database
-//         if (pictureList.get(position).getSavedInDB()) {
-//             try {
-//                 dao.deleteAttachmentByAttachmentId(pictureList.get(position).getPictureId());
-//             } catch (Exception e) {
-//                 e.printStackTrace();
-//             }
-//         }
-
-// //         delete the actual picture from the phones memory
-// //        new File(pictureList.get(position).getPathToPhoto()).delete();
+    if (imagesList[position].savedInDB == true) {
+      try {
+        dao.deleteAttachmentByAttachmentId(imagesList[position].pictureId ?? 0);
+      } catch (e) {}
+    }
   }
 
-  // ANDROID CODE - THIS FUNCTION CALL WHEN VIEW INITIALIZE
-
   void loadPicturesFromDB() {
-    // MainApplicationContext appContext = (MainApplicationContext) getApplicationContext();
-    // ApplicationDao dao = appContext.getDao();
+    List<InspectionAttachment> picsFromDB = [];
+    if (AppStorage.instance.attachmentIds != null) {
+      hasAttachmentIds =
+          AppStorage.instance.attachmentIds!.isNotEmpty ? true : false;
+    }
 
-    // List<InspectionAttachment> picsFromDB = new ArrayList<InspectionAttachment>();
+    try {
+      if (hasAttachmentIds == true) {
+        List<int>? attachmentIds = AppStorage.instance.attachmentIds;
+        if (attachmentIds != null && attachmentIds.isNotEmpty) {
+          for (int i = 0; i < attachmentIds.length; i++) {
+            dao.findAttachmentByAttachmentId(attachmentIds[i]).then((value) {
+              if (value != null) {
+                picsFromDB.add(value);
+              }
+            }).catchError((error) {
+              debugPrint('Error fetching attachment: $error');
+            });
+          }
+        }
+      } else {
+        if (inspectionId != null) {
+          dao
+              .findInspectionAttachmentsByInspectionId(inspectionId!.toInt())
+              .then((value) {
+            picsFromDB = value;
+          }).catchError((error) {
+            debugPrint('Error in else fetching attachment: $error');
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint(e.toString()); // Print any exceptions
+    }
 
-    // try {
-    //     if (hasAttachmentIds) {
-    //         List<Long> attachmentIds = AppInfo.attachmentIds;
-    //         if (attachmentIds != null && !attachmentIds.isEmpty()) {
-    //             for (int i = 0; i < attachmentIds.size(); i++) {
-    //                 picsFromDB.add(dao.findAttachmentByAttachmentId(attachmentIds.get(i)));
-    //             }
-    //         }
-    //     } else {
-    //         picsFromDB = dao.findInspectionAttachmentsByInspectionId(inspectionId);
-    //     }
-
-    // } catch (Exception e) {
-    //     e.printStackTrace();
-    // }
-
-    // if (picsFromDB != null && !picsFromDB.isEmpty()) {
-    //     for (int i = 0; i < picsFromDB.size(); i++) {
-    //         PictureData temp = new PictureData();
-    //         temp.setData(picsFromDB.get(i).getAttachmentId(),
-    //                 picsFromDB.get(i).getFileLocation(),
-    //                 getPic(picsFromDB.get(i).getFileLocation()),
-    //                 true);
-    //         pictureList.add(temp);
-    //     }
-    // }
+    if (picsFromDB != null && picsFromDB.isNotEmpty) {
+      for (int i = 0; i < picsFromDB.length; i++) {
+        PictureData temp = PictureData();
+        /*  temp.setData(
+          picsFromDB[i].attachmentId,
+          picsFromDB[i].fileLocation,
+          getPic(picsFromDB[i].fileLocation),
+          true,
+        );*/
+        imagesList.add(temp);
+      }
+    }
   }
 }

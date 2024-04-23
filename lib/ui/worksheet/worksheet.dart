@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -961,6 +959,49 @@ class DefectsTable extends StatelessWidget {
     }
   }
 
+  WorksheetDataTable worksheetDataTable = WorksheetDataTable(
+    defectType: AppStrings.types,
+    severity: [
+      [AppStrings.injury],
+      [
+        AppStrings.damage,
+        AppStrings.damage,
+        AppStrings.damage,
+      ],
+      [
+        AppStrings.verySeriousDamage,
+      ],
+      [
+        AppStrings.decay,
+      ],
+      [
+        AppStrings.injury,
+      ],
+    ],
+    qualityDefects: [2, 5, 15, 20, 25],
+    qualityDefectsPercentage: [10, 15, 4, 7, 17],
+    conditionDefects: [0, 0, 1, 23, 26],
+    conditionDefectsPercentage: [0, 0, 4, 8, 25],
+    totalSeverity: [
+      [0],
+      [5, 15, 12],
+      [5],
+      [6],
+      [18]
+    ],
+    totalSeverityPercentage: [
+      [1],
+      [11, 12, 14],
+      [11],
+      [12],
+      [18]
+    ],
+    sizeDefects: [12, 13, 17, 16, 18],
+    sizeDefectsPercentage: [11, 14, 18, 20, 12],
+    colorDefects: [11, 14, 17, 22, 17],
+    colorDefectsPercentage: [15, 16, 11, 12, 18],
+  );
+
   Widget getDefectTypeTag({required String defectType}) {
     String text = '';
     switch (defectType) {
@@ -993,6 +1034,72 @@ class DefectsTable extends StatelessWidget {
     );
   }
 
+  Widget getSeverityRowWidget() {
+    List<Widget> widgets = [];
+
+    for (List<String> i in worksheetDataTable.severity) {
+      List<Widget> innnerWidget = [];
+
+      for (String serverity in i) {
+        innnerWidget.add(
+          tableDefectsCell(
+            text: serverity,
+            defectType: serverity,
+            widget: getDefectTypeTag(defectType: serverity),
+          ),
+        );
+      }
+      widgets.addAll(innnerWidget);
+    }
+    return Row(
+      children: widgets,
+    );
+  }
+
+  Widget getSingleDataRowWidgets({
+    required List<num> field,
+    bool? isPercentage = false,
+  }) {
+    List<Widget> widgets = [];
+
+    for (var i = 0; i < field.length; i++) {
+      widgets.add(
+        tableDefectsCell(
+          defectType: worksheetDataTable.severity[i][0],
+          text: "${field[i]}${(isPercentage == true ? "%" : "")}",
+          colSpanItem: worksheetDataTable.severity[i].length ?? 1,
+        ),
+      );
+    }
+    return Row(
+      children: widgets,
+    );
+  }
+
+  Widget getMultipleDataRowWidgets({
+    required List<List<num>> field,
+    bool? isPercentage = false,
+    bool? isColumnHeader,
+  }) {
+    List<Widget> widgets = [];
+
+    for (var i = 0; i < field.length; i++) {
+      List<Widget> innerWidget = [];
+      for (var j = 0; j < field[i].length; j++) {
+        innerWidget.add(tableDefectsCell(
+          defectType: worksheetDataTable.severity[i][0],
+          text: isColumnHeader == true
+              ? AppStrings.defects
+              : "${field[i][j]}${(isPercentage == true ? "%" : "")}",
+        ));
+      }
+      widgets.addAll(innerWidget);
+    }
+    return Row(
+      children: widgets,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -1008,26 +1115,8 @@ class DefectsTable extends StatelessWidget {
                 text: AppStrings.dtType,
                 isEnabledTopBorder: true,
               ),
-              tableDefectsCell(
-                defectType: AppStrings.injury,
-                text: AppStrings.defects,
-                isEnabledTopBorder: true,
-              ),
-              tableDefectsCell(
-                defectType: AppStrings.damage,
-                text: AppStrings.defects,
-                isEnabledTopBorder: true,
-              ),
-              tableDefectsCell(
-                defectType: AppStrings.damage,
-                text: AppStrings.defects,
-                isEnabledTopBorder: true,
-              ),
-              tableDefectsCell(
-                defectType: AppStrings.damage,
-                text: AppStrings.defects,
-                isEnabledTopBorder: true,
-              ),
+              getMultipleDataRowWidgets(
+                  field: worksheetDataTable.totalSeverity, isColumnHeader: true)
             ],
           ),
 
@@ -1037,26 +1126,7 @@ class DefectsTable extends StatelessWidget {
               tableTypeCell(
                 text: AppStrings.dtSeverity,
               ),
-              tableDefectsCell(
-                defectType: AppStrings.injury,
-                text: AppStrings.defects,
-                widget: getDefectTypeTag(defectType: AppStrings.damage),
-              ),
-              tableDefectsCell(
-                defectType: AppStrings.damage,
-                text: AppStrings.defects,
-                widget: getDefectTypeTag(defectType: AppStrings.seriousDamage),
-              ),
-              tableDefectsCell(
-                defectType: AppStrings.damage,
-                text: AppStrings.defects,
-                widget: getDefectTypeTag(defectType: AppStrings.seriousDamage),
-              ),
-              tableDefectsCell(
-                defectType: AppStrings.damage,
-                text: AppStrings.defects,
-                widget: getDefectTypeTag(defectType: AppStrings.seriousDamage),
-              ),
+              getSeverityRowWidget()
             ],
           ),
 
@@ -1067,9 +1137,7 @@ class DefectsTable extends StatelessWidget {
                 text: AppStrings.totalQualityDefects,
                 isEnabledTopBorder: true,
               ),
-              tableDefectsCell(defectType: AppStrings.injury, text: "2"),
-              tableDefectsCell(
-                  defectType: AppStrings.damage, text: "2", colSpanItem: 3),
+              getSingleDataRowWidgets(field: worksheetDataTable.qualityDefects),
             ],
           ),
 
@@ -1077,9 +1145,10 @@ class DefectsTable extends StatelessWidget {
           Row(
             children: [
               tableTypeCell(text: AppStrings.totalQualityDefectsPercentage),
-              tableDefectsCell(defectType: AppStrings.injury, text: "17 %"),
-              tableDefectsCell(
-                  defectType: AppStrings.damage, text: "17 %", colSpanItem: 3),
+              getSingleDataRowWidgets(
+                field: worksheetDataTable.qualityDefectsPercentage,
+                isPercentage: true,
+              ),
             ],
           ),
 
@@ -1087,9 +1156,9 @@ class DefectsTable extends StatelessWidget {
           Row(
             children: [
               tableTypeCell(text: AppStrings.totalConditionDefects),
-              tableDefectsCell(defectType: AppStrings.injury, text: "0"),
-              tableDefectsCell(
-                  defectType: AppStrings.damage, text: "0", colSpanItem: 3),
+              getSingleDataRowWidgets(
+                field: worksheetDataTable.conditionDefects,
+              )
             ],
           ),
 
@@ -1097,9 +1166,10 @@ class DefectsTable extends StatelessWidget {
           Row(
             children: [
               tableTypeCell(text: AppStrings.totalConditionDefectsPercentage),
-              tableDefectsCell(defectType: AppStrings.injury, text: "0%"),
-              tableDefectsCell(
-                  defectType: AppStrings.damage, text: "0%", colSpanItem: 3),
+              getSingleDataRowWidgets(
+                field: worksheetDataTable.conditionDefectsPercentage,
+                isPercentage: true,
+              )
             ],
           ),
 
@@ -1107,10 +1177,9 @@ class DefectsTable extends StatelessWidget {
           Row(
             children: [
               tableTypeCell(text: AppStrings.dtTotalByDefectType),
-              tableDefectsCell(defectType: AppStrings.injury, text: "2"),
-              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
-              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
-              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
+              getMultipleDataRowWidgets(
+                field: worksheetDataTable.totalSeverity,
+              ),
             ],
           ),
 
@@ -1118,10 +1187,10 @@ class DefectsTable extends StatelessWidget {
           Row(
             children: [
               tableTypeCell(text: AppStrings.dtPercentByDefectType),
-              tableDefectsCell(defectType: AppStrings.injury, text: "2"),
-              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
-              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
-              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
+              getMultipleDataRowWidgets(
+                field: worksheetDataTable.totalSeverityPercentage,
+                isPercentage: true,
+              ),
             ],
           ),
 
@@ -1129,8 +1198,9 @@ class DefectsTable extends StatelessWidget {
           Row(
             children: [
               tableTypeCell(text: AppStrings.totalSizeDefects),
-              tableDefectsCell(defectType: AppStrings.injury, text: "2"),
-              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
+              getSingleDataRowWidgets(
+                field: worksheetDataTable.sizeDefects,
+              )
             ],
           ),
 
@@ -1138,8 +1208,10 @@ class DefectsTable extends StatelessWidget {
           Row(
             children: [
               tableTypeCell(text: AppStrings.totalSizeDefectsPercentage),
-              tableDefectsCell(defectType: AppStrings.injury, text: "2"),
-              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
+              getSingleDataRowWidgets(
+                field: worksheetDataTable.sizeDefectsPercentage,
+                isPercentage: true,
+              )
             ],
           ),
 
@@ -1147,17 +1219,22 @@ class DefectsTable extends StatelessWidget {
           Row(
             children: [
               tableTypeCell(text: AppStrings.totalColorDefects),
-              tableDefectsCell(defectType: AppStrings.injury, text: "2"),
-              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
+              getSingleDataRowWidgets(
+                field: worksheetDataTable.colorDefects,
+              )
             ],
           ),
 
           // Color Defects percentage
           Row(
             children: [
-              tableTypeCell(text: AppStrings.totalColorDefectsPercentage),
-              tableDefectsCell(defectType: AppStrings.injury, text: "2"),
-              tableDefectsCell(defectType: AppStrings.damage, text: "0%"),
+              tableTypeCell(
+                  text: AppStrings.totalColorDefectsPercentage,
+                  isEnabledBottomBorder: true),
+              getSingleDataRowWidgets(
+                field: worksheetDataTable.colorDefectsPercentage,
+                isPercentage: true,
+              )
             ],
           ),
         ],

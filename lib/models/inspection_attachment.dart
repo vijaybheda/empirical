@@ -1,58 +1,92 @@
+// ignore_for_file: camel_case_types, non_constant_identifier_names
+
+import 'dart:io';
+
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+
 class InspectionAttachment {
   int? id; // SQLite row id
-  int? inspectionId;
-  int? attachmentId;
-  String? title;
-  int? createdTime;
-  String? fileLocation;
+  int Inspection_ID;
+  int? Attachment_ID;
+  String? ATTACHMENT_TITLE;
+  int? CREATED_TIME;
+  String? FILE_LOCATION;
 
   InspectionAttachment({
     this.id,
-    required this.inspectionId,
-    required this.attachmentId,
-    required this.title,
-    required this.createdTime,
-    required this.fileLocation,
+    required this.Inspection_ID,
+    required this.Attachment_ID,
+    required this.ATTACHMENT_TITLE,
+    required this.CREATED_TIME,
+    required this.FILE_LOCATION,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'inspectionId': inspectionId,
-      'attachmentId': attachmentId,
-      'title': title,
-      'createdTime': createdTime,
-      'fileLocation': fileLocation,
+      'Inspection_ID': Inspection_ID,
+      'Attachment_ID': Attachment_ID,
+      'ATTACHMENT_TITLE': ATTACHMENT_TITLE,
+      'CREATED_TIME': CREATED_TIME,
+      'FILE_LOCATION': FILE_LOCATION,
     };
   }
 
   factory InspectionAttachment.fromMap(Map<String, dynamic> map) {
     return InspectionAttachment(
       id: map['id'],
-      inspectionId: map['inspectionId'],
-      attachmentId: map['attachmentId'],
-      title: map['title'],
-      createdTime: map['createdTime'],
-      fileLocation: map['fileLocation'],
+      Inspection_ID: map['Inspection_ID'],
+      Attachment_ID: map['Attachment_ID'],
+      ATTACHMENT_TITLE: map['ATTACHMENT_TITLE'],
+      CREATED_TIME: map['CREATED_TIME'],
+      FILE_LOCATION: map['FILE_LOCATION'],
     );
   }
 
   // copyWith
   InspectionAttachment copyWith({
     int? id,
-    int? inspectionId,
-    int? attachmentId,
-    String? title,
-    int? createdTime,
-    String? fileLocation,
+    int? Inspection_ID,
+    int? Attachment_ID,
+    String? ATTACHMENT_TITLE,
+    int? CREATED_TIME,
+    String? FILE_LOCATION,
   }) {
     return InspectionAttachment(
       id: id ?? this.id,
-      inspectionId: inspectionId ?? this.inspectionId,
-      attachmentId: attachmentId ?? this.attachmentId,
-      title: title ?? this.title,
-      createdTime: createdTime ?? this.createdTime,
-      fileLocation: fileLocation ?? this.fileLocation,
+      Inspection_ID: Inspection_ID ?? this.Inspection_ID,
+      Attachment_ID: Attachment_ID ?? this.Attachment_ID,
+      ATTACHMENT_TITLE: ATTACHMENT_TITLE ?? this.ATTACHMENT_TITLE,
+      CREATED_TIME: CREATED_TIME ?? this.CREATED_TIME,
+      FILE_LOCATION: FILE_LOCATION ?? this.FILE_LOCATION,
     );
   }
 }
+
+class PictureData {
+  int? pictureId;
+  String? photoTitle;
+  String? pathToPhoto;
+  File? image;
+  int? createdTime;
+  bool? savedInDB = false;
+
+  PictureData({
+    this.pictureId,
+    this.photoTitle,
+    this.pathToPhoto,
+    this.image,
+    this.createdTime,
+    this.savedInDB,
+  });
+}
+
+/*
+        private Long pictureId;
+        private String photoTitle;
+        private String pathToPhoto;
+        private Bitmap photoBitmap;
+        private boolean savedInDB;
+        private int createdTime;
+
+*/
