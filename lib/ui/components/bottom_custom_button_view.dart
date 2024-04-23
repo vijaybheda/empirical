@@ -6,17 +6,19 @@ import 'package:pverify/utils/theme/colors.dart';
 class BottomCustomButtonView extends StatelessWidget {
   final Function()? onPressed;
   final String title;
+  final Color? backgroundColor;
 
   const BottomCustomButtonView({
     super.key,
     this.onPressed,
     required this.title,
+    this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.hintColor,
+      color: backgroundColor ?? AppColors.hintColor,
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       child: Row(
         mainAxisSize: MainAxisSize.max,

@@ -792,9 +792,9 @@ class ApplicationDao {
         log('fields ${fields.length} ${DBTables.ITEM_GROUP1}');
         for (var row in fields.skip(1).toList()) {
           // log('rowData $row');
-          int igrId = row[0];
+          int igrId = Utils.parseIntDefault(row[0]);
           String igrName = row[1];
-          int igrCommodityId = row[2];
+          int igrCommodityId = Utils.parseIntDefault(row[2]);
 
           await txn.insert(
             DBTables.ITEM_GROUP1,
@@ -853,22 +853,22 @@ class ApplicationDao {
         log('fields ${fields.length} ${DBTables.ITEM_SKU}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSkuData = {
-            ItemSkuColumn.SKU_ID: row[0],
+            ItemSkuColumn.SKU_ID: Utils.parseIntDefault(row[0]),
             ItemSkuColumn.CODE: row[1],
-            ItemSkuColumn.COMMODITY_ID: row[2],
+            ItemSkuColumn.COMMODITY_ID: Utils.parseIntDefault(row[2]),
             ItemSkuColumn.NAME: row[3],
             ItemSkuColumn.DESCRIPTION: row[4],
             ItemSkuColumn.STATUS: row[5],
-            ItemSkuColumn.ITEM_GROUP1_ID: row[6],
-            ItemSkuColumn.ITEM_GROUP2_ID: row[7],
-            ItemSkuColumn.GRADE_ID: row[8],
-            ItemSkuColumn.PACKAGING_ID: row[9],
+            ItemSkuColumn.ITEM_GROUP1_ID: Utils.parseIntDefault(row[6]),
+            ItemSkuColumn.ITEM_GROUP2_ID: Utils.parseIntDefault(row[7]),
+            ItemSkuColumn.GRADE_ID: Utils.parseIntDefault(row[8]),
+            ItemSkuColumn.PACKAGING_ID: Utils.parseIntDefault(row[9]),
             ItemSkuColumn.USAGE_TYPE: row[10],
-            ItemSkuColumn.COMMODITY_CATEGORY_ID: row[11],
+            ItemSkuColumn.COMMODITY_CATEGORY_ID: Utils.parseIntDefault(row[11]),
             ItemSkuColumn.ITEM_TYPE: row[12],
-            ItemSkuColumn.GLOBAL_PARTNER_ID: row[13],
-            ItemSkuColumn.COMPANY_ID: row[14],
-            ItemSkuColumn.DIVISION_ID: row[15],
+            ItemSkuColumn.GLOBAL_PARTNER_ID: Utils.parseIntDefault(row[13]),
+            ItemSkuColumn.COMPANY_ID: Utils.parseIntDefault(row[14]),
+            ItemSkuColumn.DIVISION_ID: Utils.parseIntDefault(row[15]),
             ItemSkuColumn.BRANDED: row[16],
             ItemSkuColumn.FTL: row[17],
           };
@@ -909,7 +909,7 @@ class ApplicationDao {
         log('fields ${fields.length} ${DBTables.AGENCY}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemAgencyData = {
-            AgencyColumn.ID: row[0],
+            AgencyColumn.ID: Utils.parseIntDefault(row[0]),
             AgencyColumn.NAME: row[1],
           };
           await txn.insert(DBTables.AGENCY, itemAgencyData);
@@ -949,9 +949,9 @@ class ApplicationDao {
         log('fields ${fields.length} ${DBTables.GRADE}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemGradeData = {
-            GradeColumn.ID: row[0],
+            GradeColumn.ID: Utils.parseIntDefault(row[0]),
             GradeColumn.NAME: row[1],
-            GradeColumn.AGENCY_ID: row[2],
+            GradeColumn.AGENCY_ID: Utils.parseIntDefault(row[2]),
           };
           await txn.insert(DBTables.GRADE, itemGradeData);
         }
@@ -990,9 +990,9 @@ class ApplicationDao {
         log('fields ${fields.length} ${DBTables.GRADE_COMMODITY}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemGradeCommodityData = {
-            GradeCommodityColumn.ID: row[0],
-            GradeCommodityColumn.AGENCY_ID: row[1],
-            GradeCommodityColumn.COMMODITY_ID: row[2],
+            GradeCommodityColumn.ID: Utils.parseIntDefault(row[0]),
+            GradeCommodityColumn.AGENCY_ID: Utils.parseIntDefault(row[1]),
+            GradeCommodityColumn.COMMODITY_ID: Utils.parseIntDefault(row[2]),
           };
           await txn.insert(DBTables.GRADE_COMMODITY, itemGradeCommodityData);
         }
@@ -1031,11 +1031,13 @@ class ApplicationDao {
         log('fields ${fields.length} ${DBTables.GRADE_COMMODITY_DETAIL}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemGradeCommodityDetailData = {
-            GradeCommodityDetailColumn.ID: row[0],
-            GradeCommodityDetailColumn.GRADE_ID: row[1],
-            GradeCommodityDetailColumn.GRADE_COMMODITY_ID: row[2],
+            GradeCommodityDetailColumn.ID: Utils.parseIntDefault(row[0]),
+            GradeCommodityDetailColumn.GRADE_ID: Utils.parseIntDefault(row[1]),
+            GradeCommodityDetailColumn.GRADE_COMMODITY_ID:
+                Utils.parseIntDefault(row[2]),
             GradeCommodityDetailColumn.STATUS: row[3],
-            GradeCommodityDetailColumn.SORT_SEQUENCE_FIELD: row[4],
+            GradeCommodityDetailColumn.SORT_SEQUENCE_FIELD:
+                Utils.parseIntDefault(row[4]),
           };
           await txn.insert(
               DBTables.GRADE_COMMODITY_DETAIL, itemGradeCommodityDetailData);
@@ -1078,9 +1080,10 @@ class ApplicationDao {
             SpecificationColumn.NUMBER: row[0],
             SpecificationColumn.VERSION: row[1],
             SpecificationColumn.NAME: row[2],
-            SpecificationColumn.ITEM_GROUP1_ID: row[3],
-            SpecificationColumn.COMMODITY_ID: row[4],
-            SpecificationColumn.SPECIFICATION_TYPE_ID: row[5],
+            SpecificationColumn.ITEM_GROUP1_ID: Utils.parseIntDefault(row[3]),
+            SpecificationColumn.COMMODITY_ID: Utils.parseIntDefault(row[4]),
+            SpecificationColumn.SPECIFICATION_TYPE_ID:
+                Utils.parseIntDefault(row[5]),
           };
           await txn.insert(DBTables.SPECIFICATION, itemSpecificationData);
         }
@@ -1121,7 +1124,7 @@ class ApplicationDao {
           Map<String, dynamic> itemMaterialSpecificationData = {
             MaterialSpecificationColumn.NUMBER_SPECIFICATION: row[0],
             MaterialSpecificationColumn.VERSION_SPECIFICATION: row[1],
-            MaterialSpecificationColumn.GRADE_ID: row[2],
+            MaterialSpecificationColumn.GRADE_ID: Utils.parseIntDefault(row[2]),
             MaterialSpecificationColumn.STATUS: row[3],
           };
           await txn.insert(
@@ -1164,12 +1167,15 @@ class ApplicationDao {
           Map<String, dynamic> itemSpecificationSupplierData = {
             SpecificationSupplierColumn.NUMBER_SPECIFICATION: row[0],
             SpecificationSupplierColumn.VERSION_SPECIFICATION: row[1],
-            SpecificationSupplierColumn.SUPPLIER_ID: row[2],
+            SpecificationSupplierColumn.SUPPLIER_ID:
+                Utils.parseIntDefault(row[2]),
             SpecificationSupplierColumn.NEGOTIATION_STATUS: row[3],
             SpecificationSupplierColumn.STATUS: row[4],
-            SpecificationSupplierColumn.ITEM_SKU_ID: row[5],
+            SpecificationSupplierColumn.ITEM_SKU_ID:
+                Utils.parseIntDefault(row[5]),
             SpecificationSupplierColumn.GTIN: row[6],
-            SpecificationSupplierColumn.SPECIFICATION_SUPPLIER_ID: row[7],
+            SpecificationSupplierColumn.SPECIFICATION_SUPPLIER_ID:
+                Utils.parseIntDefault(row[7]),
           };
           await txn.insert(
               DBTables.SPECIFICATION_SUPPLIER, itemSpecificationSupplierData);
@@ -1215,12 +1221,12 @@ class ApplicationDao {
             SpecificationGradeToleranceColumn.NUMBER_SPECIFICATION: row[1],
             SpecificationGradeToleranceColumn.VERSION_SPECIFICATION: row[2],
             SpecificationGradeToleranceColumn.SEVERITY_DEFECT_ID: row[3],
-            SpecificationGradeToleranceColumn.DEFECT_ID: row[4],
+            SpecificationGradeToleranceColumn.DEFECT_ID:
+                Utils.parseIntDefault(row[4]),
             SpecificationGradeToleranceColumn.GRADE_TOLERANCE_PERCENTAGE:
-                row[5].toString().isEmpty
-                    ? row[5]
-                    : Utils().parseDoubleDefault(row[5].toString().trim()),
-            SpecificationGradeToleranceColumn.OVERRIDDEN: row[6],
+                Utils.parseDoubleDefault(row[5].toString().trim()),
+            SpecificationGradeToleranceColumn.OVERRIDDEN:
+                Utils.parseIntDefault(row[6]),
             SpecificationGradeToleranceColumn.DEFECT_NAME: row[7],
             SpecificationGradeToleranceColumn.DEFECT_CATEGORY_NAME: row[8],
             SpecificationGradeToleranceColumn.SEVERITY_DEFECT_NAME: row[9],
@@ -1265,21 +1271,25 @@ class ApplicationDao {
           Map<String, dynamic> itemSpecificationAnalyticalData = {
             SpecificationAnalyticalColumn.NUMBER_SPECIFICATION: row[0],
             SpecificationAnalyticalColumn.VERSION_SPECIFICATION: row[1],
-            SpecificationAnalyticalColumn.ANALYTICAL_ID: row[2],
+            SpecificationAnalyticalColumn.ANALYTICAL_ID:
+                Utils.parseIntDefault(row[2]),
             SpecificationAnalyticalColumn.ANALYTICAL_NAME: row[3],
-            SpecificationAnalyticalColumn.SPEC_MIN: row[4],
-            SpecificationAnalyticalColumn.SPEC_MAX: row[5].toString().isEmpty
-                ? row[5]
-                : Utils().parseDoubleDefault(row[5].toString().trim()),
-            SpecificationAnalyticalColumn.TARGET_NUM_VALUE: row[6],
-            SpecificationAnalyticalColumn.TARGET_TEXT_VALUE: row[7],
-            SpecificationAnalyticalColumn.UOM_NAME: row[8],
-            SpecificationAnalyticalColumn.TYPE_ENTRY: row[9],
-            SpecificationAnalyticalColumn.DESCRIPTION: row[10],
-            SpecificationAnalyticalColumn.ORDER_NO: row[11],
-            SpecificationAnalyticalColumn.PICTURE_REQUIRED: row[12],
-            SpecificationAnalyticalColumn.TARGET_TEXT_DEFAULT: row[13],
-            SpecificationAnalyticalColumn.INSPECTION_RESULT: row[14],
+            SpecificationAnalyticalColumn.DESCRIPTION: row[5],
+            SpecificationAnalyticalColumn.SPEC_MIN:
+                Utils.parseDoubleDefault(row[6].toString().trim()),
+            SpecificationAnalyticalColumn.SPEC_MAX:
+                Utils.parseDoubleDefault(row[7].toString().trim()),
+            SpecificationAnalyticalColumn.TARGET_NUM_VALUE:
+                Utils.parseDoubleDefault(row[8]),
+            SpecificationAnalyticalColumn.TARGET_TEXT_VALUE: row[9],
+            SpecificationAnalyticalColumn.UOM_NAME: row[10],
+            SpecificationAnalyticalColumn.TYPE_ENTRY:
+                Utils.parseIntDefault(row[11]),
+            SpecificationAnalyticalColumn.ORDER_NO:
+                Utils.parseIntDefault(row[12]),
+            SpecificationAnalyticalColumn.PICTURE_REQUIRED: row[13],
+            SpecificationAnalyticalColumn.TARGET_TEXT_DEFAULT: row[14],
+            SpecificationAnalyticalColumn.INSPECTION_RESULT: row[15],
           };
           await txn.insert(DBTables.SPECIFICATION_ANALYTICAL,
               itemSpecificationAnalyticalData);
@@ -1320,12 +1330,14 @@ class ApplicationDao {
         log('fields ${fields.length} ${DBTables.SPECIFICATION_PACKAGING_FINISHED_GOODS}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationAnalyticalData = {
-            SpecificationPackagingFinishedGoodsColumn.FINISHED_GOODS_ID: row[0],
+            SpecificationPackagingFinishedGoodsColumn.FINISHED_GOODS_ID:
+                Utils.parseIntDefault(row[0]),
             SpecificationPackagingFinishedGoodsColumn.NUMBER_SPECIFICATION:
                 row[1],
             SpecificationPackagingFinishedGoodsColumn.VERSION_SPECIFICATION:
                 row[2],
-            SpecificationPackagingFinishedGoodsColumn.ITEM_SKU_ID: row[3],
+            SpecificationPackagingFinishedGoodsColumn.ITEM_SKU_ID:
+                Utils.parseIntDefault(row[3]),
           };
           await txn.insert(DBTables.SPECIFICATION_PACKAGING_FINISHED_GOODS,
               itemSpecificationAnalyticalData);
@@ -1365,7 +1377,8 @@ class ApplicationDao {
         log('fields ${fields.length} ${DBTables.SPECIFICATION_TYPE}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationTypeData = {
-            SpecificationTypeColumn.SPECIFICATION_TYPE_ID: row[0],
+            SpecificationTypeColumn.SPECIFICATION_TYPE_ID:
+                Utils.parseIntDefault(row[0]),
             SpecificationTypeColumn.NAME: row[1],
           };
           await txn.insert(
@@ -1406,10 +1419,10 @@ class ApplicationDao {
         log('fields ${fields.length} ${DBTables.COMMODITY}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemCommodityData = {
-            CommodityColumn.ID: row[0],
+            CommodityColumn.ID: Utils.parseIntDefault(row[0]),
             CommodityColumn.NAME: row[1],
-            CommodityColumn.SAMPLE_SIZE_BY_COUNT: row[2],
-            CommodityColumn.KEYWORDS: row[3],
+            CommodityColumn.SAMPLE_SIZE_BY_COUNT: row[4],
+            CommodityColumn.KEYWORDS: row[7],
           };
           await txn.insert(DBTables.COMMODITY, itemCommodityData);
         }
@@ -1448,7 +1461,7 @@ class ApplicationDao {
         log('fields ${fields.length} ${DBTables.COMMODITY_KEYWORDS}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemCommodityKeywordsData = {
-            CommodityKeywordsColumn.ID: row[0],
+            CommodityKeywordsColumn.ID: Utils.parseIntDefault(row[0]),
             CommodityKeywordsColumn.KEYWORDS: row[1],
           };
           await txn.insert(
@@ -1491,9 +1504,9 @@ class ApplicationDao {
           Map<String, dynamic> itemPOHeaderData = {
             POHeaderColumn.PO_HEADER_ID: row[0],
             POHeaderColumn.PO_NUMBER: row[1],
-            POHeaderColumn.PO_DELIVER_TO_ID: row[2],
+            POHeaderColumn.PO_DELIVER_TO_ID: Utils.parseIntDefault(row[2]),
             POHeaderColumn.PO_DELIVER_TO_NAME: row[3],
-            POHeaderColumn.PO_PARTNER_ID: row[4],
+            POHeaderColumn.PO_PARTNER_ID: Utils.parseIntDefault(row[4]),
             POHeaderColumn.PO_PARTNER_NAME: row[5],
           };
           await txn.insert(DBTables.PO_HEADER, itemPOHeaderData);
@@ -1536,18 +1549,18 @@ class ApplicationDao {
             PODetailColumn.PO_DETAIL_ID: row[0],
             PODetailColumn.PO_HEADER_ID: row[1],
             PODetailColumn.PO_DETAIL_NUMBER: row[2],
-            PODetailColumn.PO_DELIVER_TO_ID: row[3],
+            PODetailColumn.PO_DELIVER_TO_ID: Utils.parseIntDefault(row[3]),
             PODetailColumn.PO_DELIVER_TO_NAME: row[4],
-            PODetailColumn.PO_LINE_NUMBER: row[5],
-            PODetailColumn.PO_ITEM_SKU_ID: row[6],
+            PODetailColumn.PO_LINE_NUMBER: Utils.parseIntDefault(row[5]),
+            PODetailColumn.PO_ITEM_SKU_ID: Utils.parseIntDefault(row[6]),
             PODetailColumn.PO_ITEM_SKU_CODE: row[7],
             PODetailColumn.PO_ITEM_SKU_NAME: row[8],
-            PODetailColumn.PO_QUANTITY: row[9],
-            PODetailColumn.PO_QTY_UOM_ID: row[10],
+            PODetailColumn.PO_QUANTITY: Utils.parseDoubleDefault(row[9]),
+            PODetailColumn.PO_QTY_UOM_ID: Utils.parseIntDefault(row[10]),
             PODetailColumn.PO_QTY_UOM_NAME: row[11],
             PODetailColumn.PO_NUMBER_SPEC: row[12],
             PODetailColumn.PO_VERSION_SPEC: row[13],
-            PODetailColumn.PO_COMMODITY_ID: row[14],
+            PODetailColumn.PO_COMMODITY_ID: Utils.parseIntDefault(row[14]),
             PODetailColumn.PO_COMMODITY_NAME: row[15],
           };
           await txn.insert(DBTables.PO_DETAIL, itemPODetailData);
@@ -1588,7 +1601,8 @@ class ApplicationDao {
         log('fields ${fields.length} ${DBTables.SPECIFICATION_SUPPLIER_GTIN}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemSpecificationSupplierGtinsData = {
-            SpecificationSupplierGtinColumn.SPECIFICATION_SUPPLIER_ID: row[0],
+            SpecificationSupplierGtinColumn.SPECIFICATION_SUPPLIER_ID:
+                Utils.parseIntDefault(row[0]),
             SpecificationSupplierGtinColumn.GTIN: row[1],
           };
           await txn.insert(DBTables.SPECIFICATION_SUPPLIER_GTIN,
@@ -1629,10 +1643,10 @@ class ApplicationDao {
         log('fields ${fields.length} ${DBTables.COMMODITY_CTE}');
         for (List<dynamic> row in fields.skip(1).toList()) {
           Map<String, dynamic> itemCommodityCteData = {
-            CommodityCteColumn.ID: row[0],
+            CommodityCteColumn.ID: Utils.parseIntDefault(row[0]),
             CommodityCteColumn.NAME: row[1],
-            CommodityCteColumn.SAMPLE_SIZE_BY_COUNT: row[2],
-            CommodityCteColumn.KEYWORDS: row[3],
+            CommodityCteColumn.SAMPLE_SIZE_BY_COUNT: row[4],
+            CommodityCteColumn.KEYWORDS: row[7],
           };
           await txn.insert(DBTables.COMMODITY_CTE, itemCommodityCteData);
         }
@@ -2421,7 +2435,7 @@ class ApplicationDao {
   }
 
   Future<SpecificationAnalyticalRequest?> findSpecAnalyticalObj(
-      int inspectionId, int analyticalID) async {
+      int? inspectionId, int analyticalID) async {
     try {
       List<dynamic> args = [inspectionId.toString(), analyticalID.toString()];
       String query = "Select * from ${DBTables.SPECIFICATION_ATTRIBUTES} where "

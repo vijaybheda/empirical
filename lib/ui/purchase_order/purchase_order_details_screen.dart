@@ -80,6 +80,7 @@ class PurchaseOrderDetailsScreen
                 Expanded(flex: 10, child: _purchaseOrderItemSection(context)),
                 BottomCustomButtonView(
                   title: AppStrings.inspectionCalculateResultButton,
+                  backgroundColor: AppColors.orange,
                   onPressed: () async {
                     await controller.calculateButtonClick(context);
                   },
@@ -239,28 +240,31 @@ class PurchaseOrderDetailsScreen
           onPressed: () async {
             controller.onHomeMenuTap();
           },
-          icon: Image.asset(AppImages.playImage, height: 80.h, width: 50.w),
+          icon: Image.asset(AppImages.homeImage, height: 80.h, width: 50.w),
         ),
         IconButton(
             onPressed: () async {
               controller.onTailerTempMenuTap();
             },
-            icon: Image.asset(AppImages.playImage, height: 50.h, width: 50.w)),
+            icon: Image.asset(AppImages.tailerTempImage,
+                height: 50.h, width: 50.w)),
         IconButton(
             onPressed: () async {
               controller.onQCHeaderMenuTap();
             },
-            icon: Image.asset(AppImages.playImage, height: 50.h, width: 50.w)),
+            icon: Image.asset(AppImages.qcHeaderImage,
+                height: 50.h, width: 50.w)),
         IconButton(
             onPressed: () async {
               controller.onAddGradingStandardMenuTap();
             },
-            icon: Image.asset(AppImages.playImage, height: 50.h, width: 50.w)),
+            icon: Image.asset(AppImages.gradingAddImage,
+                height: 50.h, width: 50.w)),
         IconButton(
           onPressed: () async {
             controller.onSelectItemMenuTap();
           },
-          icon: Image.asset(AppImages.playImage, height: 50.h, width: 50.w),
+          icon: Image.asset(AppImages.itemsAddImage, height: 50.h, width: 50.w),
         ),
       ],
     );

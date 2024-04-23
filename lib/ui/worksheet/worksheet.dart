@@ -1,12 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pverify/controller/worksheet_controller.dart';
 import 'package:pverify/models/defect_item.dart';
 import 'package:pverify/ui/photos_selection/photos_selection.dart';
-import 'package:pverify/controller/worksheet_controller.dart';
 import 'package:pverify/ui/worksheet/special_instructions.dart';
 import 'package:pverify/ui/worksheet/tableDialog.dart';
 import 'package:pverify/utils/app_const.dart';
@@ -16,6 +14,7 @@ import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
+
 import '../../utils/dialogs/app_alerts.dart';
 
 class Worksheet extends GetView<WorksheetController> {

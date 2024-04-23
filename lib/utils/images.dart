@@ -39,4 +39,9 @@ class AppImages {
   static const String pauseImage = 'assets/images/pause.png';
   static const String checkmarkImage = 'assets/images/checkmark.png';
   static const String playImage = 'assets/images/play.png';
+  static const String homeImage = 'assets/images/home.png';
+  static const String tailerTempImage = 'assets/images/tailer_temp.png';
+  static const String qcHeaderImage = 'assets/images/qc_header.png';
+  static const String gradingAddImage = 'assets/images/add_icon.png';
+  static const String itemsAddImage = 'assets/images/items_add.png';
 }

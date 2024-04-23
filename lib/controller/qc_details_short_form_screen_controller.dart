@@ -105,6 +105,8 @@ class QCDetailsShortFormScreenController extends GetxController {
 
   var packDateFocusNode = FocusNode();
 
+  bool hasErrors2 = false;
+
   QCDetailsShortFormScreenController({
     required this.partner,
     required this.carrier,
@@ -239,7 +241,9 @@ class QCDetailsShortFormScreenController extends GetxController {
         inspectionId = serverInspectionID;
       }
 
-      await loadFieldsFromDB();
+      if (inspectionId != null) {
+        await loadFieldsFromDB();
+      }
       hasInitialised.value = true;
       _appStorage.specificationAnalyticalList =
           await dao.getSpecificationAnalyticalFromTable(
@@ -448,7 +452,7 @@ class QCDetailsShortFormScreenController extends GetxController {
           SpecificationAnalyticalRequest();
 
       final SpecificationAnalyticalRequest? dbobj =
-          await dao.findSpecAnalyticalObj(inspectionId!, item.analyticalID!);
+          await dao.findSpecAnalyticalObj(inspectionId, item.analyticalID!);
 
       reqobj.copyWith(
         analyticalID: item.analyticalID,
@@ -492,9 +496,6 @@ class QCDetailsShortFormScreenController extends GetxController {
   }
 
   Future<void> loadFieldsFromDB() async {
-    if (inspectionId == null) {
-      throw Exception('Inspection ID is null');
-    }
     qualityControlItems = await dao.findQualityControlDetails(inspectionId!);
 
     if (_appStorage.getUserData() != null) {
@@ -1139,6 +1140,90 @@ class QCDetailsShortFormScreenController extends GetxController {
                   commodity: commodity,
                   qcHeaderDetails: qcHeaderDetails),
               arguments: passingData);
+        }
+      }
+    }
+  }
+
+  Future onLongFormClick() async {
+    // TODO: handle hasErrors2 variable
+    if (await saveFieldsToDB()) {
+      if (!hasErrors2) {
+        await saveFieldsToDBSpecAttribute(true);
+
+        if (_appStorage.resumeFromSpecificationAttributes) {
+          _appStorage.resumeFromSpecificationAttributes = false;
+
+          Map<String, dynamic> passingData = {
+            Consts.SERVER_INSPECTION_ID: inspectionId,
+            Consts.COMPLETED: completed,
+            Consts.PARTNER_NAME: partnerName,
+            Consts.PARTNER_ID: partnerID,
+            Consts.CARRIER_NAME: carrierName,
+            Consts.CARRIER_ID: carrierID,
+            Consts.COMMODITY_NAME: commodityName,
+            Consts.COMMODITY_ID: commodityID,
+            Consts.SPECIFICATION_NUMBER: specificationNumber,
+            Consts.SPECIFICATION_VERSION: specificationVersion,
+            Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
+            Consts.SPECIFICATION_NAME: specificationName,
+            Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
+            Consts.ITEM_SKU: itemSKU,
+            Consts.ITEM_SKU_NAME: itemSkuName,
+            Consts.ITEM_SKU_ID: itemSkuId,
+            Consts.ITEM_UNIQUE_ID: itemUniqueId,
+            Consts.Lot_No: lot_No,
+            Consts.GTIN: gtin,
+            Consts.PACK_DATE: packDate,
+            Consts.LOT_SIZE: lotSize,
+            Consts.PO_NUMBER: poNumber,
+            Consts.PO_LINE_NO: poLineNo,
+            Consts.PRODUCT_TRANSFER: productTransfer,
+            Consts.DATETYPE: dateTypeDesc,
+          };
+
+          if (callerActivity == "GTINActivity") {
+            passingData[Consts.CALLER_ACTIVITY] = 'GTINActivity';
+            // TODO: Implement navigation to QualityControlScreen
+            // Get.to(() => QualityControlScreen(), arguments: passingData);
+          } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+            passingData[Consts.CALLER_ACTIVITY] =
+                'NewPurchaseOrderDetailsActivity';
+            // TODO: Implement navigation to QualityControlScreen
+            // Get.to(() => QualityControlScreen(), arguments: passingData);
+          } else {
+            passingData[Consts.CALLER_ACTIVITY] =
+                'PurchaseOrderDetailsActivity';
+            // TODO: Implement navigation to QualityControlScreen
+            // Get.to(() => QualityControlScreen(), arguments: passingData);
+          }
+        }
+      }
+    }
+  }
+
+  Future saveContinue(BuildContext context) async {
+    String qtyShippedString = qtyShippedController.text;
+    if (qtyShippedString.isNotEmpty && int.parse(qtyShippedString) > 3000) {
+      AppAlertDialog.confirmationAlert(context, AppStrings.alert,
+          'Are you sure you want to enter $qtyShippedString quantity?',
+          onYesTap: () async {
+        if (await saveFieldsToDB()) {
+          if (!hasErrors2) {
+            await saveFieldsToDBSpecAttribute(true);
+            if (_appStorage.resumeFromSpecificationAttributes) {
+              await callStartActivity(true);
+            }
+          }
+        }
+      });
+    } else {
+      if (await saveFieldsToDB()) {
+        if (!hasErrors2) {
+          await saveFieldsToDBSpecAttribute(true);
+          if (_appStorage.resumeFromSpecificationAttributes) {
+            await callStartActivity(true);
+          }
         }
       }
     }

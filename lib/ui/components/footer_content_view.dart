@@ -42,105 +42,117 @@ class FooterContentView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double bottomPadding = MediaQuery.of(context).padding.bottom;
-    return Container(
-      padding: const EdgeInsets.only(left: 15, right: 15),
-      height: 120.h + (bottomPadding * .5),
-      color: AppColors.primary,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Expanded(
-            flex: 1,
-            child: Container(
-              child: hasLeftButton
-                  ? GestureDetector(
-                      onTap: () {
-                        Get.back();
-                      },
-                      child: Text(
-                        leftText ?? AppStrings.back,
-                        style: GoogleFonts.poppins(
-                            fontSize: 35.sp,
-                            fontWeight: FontWeight.bold,
-                            textStyle: TextStyle(
-                                color: AppColors.textFieldText_Color)),
-                      ),
-                    )
-                  : const Offstage(),
-            ),
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.only(
+            left: 15,
+            right: 15,
           ),
-          Expanded(
-            flex: 6,
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  getDaysMessage(),
-                  style: GoogleFonts.poppins(
-                      fontSize: 40.sp,
-                      fontWeight: FontWeight.bold,
-                      textStyle: TextStyle(color: getMessageColor())),
-                ),
-                SizedBox(
-                  width: 20.w,
-                ),
-                GestureDetector(
-                  onTap: () async {
-                    debugPrint('Download button tap.');
-                    if (onDownloadTap != null) {
-                      onDownloadTap!();
-                    } else {
-                      if (globalConfigController.hasStableInternet.value) {
-                        UpdateDataAlert.showUpdateDataDialog(
-                          context,
-                          onOkPressed: () {
-                            debugPrint('Download button tap.');
-                            Get.off(() => const CacheDownloadScreen());
+          height: 120.h,
+          color: AppColors.primary,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Expanded(
+                flex: 1,
+                child: Container(
+                  child: hasLeftButton
+                      ? GestureDetector(
+                          onTap: () {
+                            Get.back();
                           },
-                          message: AppStrings.updateDataConfirmation,
-                        );
-                      } else {
-                        UpdateDataAlert.showUpdateDataDialog(context,
-                            onOkPressed: () {
-                          debugPrint('Download button tap.');
-                        }, message: AppStrings.downloadWifiError);
-                      }
-                    }
+                          child: Text(
+                            leftText ?? AppStrings.back,
+                            style: GoogleFonts.poppins(
+                                fontSize: 35.sp,
+                                fontWeight: FontWeight.bold,
+                                textStyle: TextStyle(
+                                    color: AppColors.textFieldText_Color)),
+                          ),
+                        )
+                      : const Offstage(),
+                ),
+              ),
+              Expanded(
+                flex: 6,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      getDaysMessage(),
+                      style: GoogleFonts.poppins(
+                          fontSize: 40.sp,
+                          fontWeight: FontWeight.bold,
+                          textStyle: TextStyle(color: getMessageColor())),
+                    ),
+                    SizedBox(
+                      width: 20.w,
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        debugPrint('Download button tap.');
+                        if (onDownloadTap != null) {
+                          onDownloadTap!();
+                        } else {
+                          if (globalConfigController.hasStableInternet.value) {
+                            UpdateDataAlert.showUpdateDataDialog(
+                              context,
+                              onOkPressed: () {
+                                debugPrint('Download button tap.');
+                                Get.off(() => const CacheDownloadScreen());
+                              },
+                              message: AppStrings.updateDataConfirmation,
+                            );
+                          } else {
+                            UpdateDataAlert.showUpdateDataDialog(context,
+                                onOkPressed: () {
+                              debugPrint('Download button tap.');
+                            }, message: AppStrings.downloadWifiError);
+                          }
+                        }
+                      },
+                      child: Image.asset(
+                        AppImages.ic_download,
+                        width: 80.w,
+                        height: 80.h,
+                        color: getMessageColor(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: GestureDetector(
+                  onTap: () {
+                    UserLogoutDialog.showLogoutConfirmation(context,
+                        onYesTap: () async {
+                      await appLogoutAction();
+                    });
                   },
-                  child: Image.asset(
-                    AppImages.ic_download,
-                    width: 80.w,
-                    height: 80.h,
-                    color: getMessageColor(),
+                  child: Text(
+                    AppStrings.logOut,
+                    style: GoogleFonts.poppins(
+                        fontSize: 35.sp,
+                        fontWeight: FontWeight.bold,
+                        textStyle:
+                            TextStyle(color: AppColors.textFieldText_Color)),
                   ),
                 ),
-              ],
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: GestureDetector(
-              onTap: () {
-                UserLogoutDialog.showLogoutConfirmation(context,
-                    onYesTap: () async {
-                  await appLogoutAction();
-                });
-              },
-              child: Text(
-                AppStrings.logOut,
-                style: GoogleFonts.poppins(
-                    fontSize: 35.sp,
-                    fontWeight: FontWeight.bold,
-                    textStyle: TextStyle(color: AppColors.textFieldText_Color)),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        ),
+        Container(
+          height: bottomPadding,
+          color: AppColors.primary,
+        )
+      ],
     );
   }
 

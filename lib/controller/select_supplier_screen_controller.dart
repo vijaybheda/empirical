@@ -167,7 +167,9 @@ class SelectSupplierScreenController extends GetxController {
     String barcodeResult = contents;
 
     debugPrint(barcodeResult);
-
+    if (barcodeResult.isEmpty) {
+      return;
+    }
     bool isOnline = globalConfigController.hasStableInternet.value;
 
     String packDate = "";

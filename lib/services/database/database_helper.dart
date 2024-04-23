@@ -297,24 +297,24 @@ class DatabaseHelper {
         "${SpecificationAnalyticalColumn.INSPECTION_RESULT} CHAR)");
 
     db.execute("CREATE TABLE ${DBTables.AGENCY}  "
-        "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NULL, "
         "${AgencyColumn.ID} INTEGER NOT NULL, "
         "${AgencyColumn.NAME} CHAR)");
 
     db.execute("CREATE TABLE ${DBTables.GRADE}  "
-        "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NULL, "
         "${GradeColumn.ID} INTEGER NOT NULL, "
         "${GradeColumn.NAME} CHAR, "
         "${GradeColumn.AGENCY_ID} INTEGER )");
 
     db.execute("CREATE TABLE ${DBTables.GRADE_COMMODITY} "
-        "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NULL, "
         "${GradeCommodityColumn.ID} INTEGER NOT NULL, "
         "${GradeCommodityColumn.AGENCY_ID} INTEGER, "
         "${GradeCommodityColumn.COMMODITY_ID} INTEGER )");
 
     db.execute("CREATE TABLE ${DBTables.GRADE_COMMODITY_DETAIL}"
-        " (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        " (${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NULL, "
         "${GradeCommodityDetailColumn.ID} INTEGER NOT NULL, "
         "${GradeCommodityDetailColumn.GRADE_ID} INTEGER, "
         "${GradeCommodityDetailColumn.GRADE_COMMODITY_ID} INTEGER, "
@@ -370,14 +370,14 @@ class DatabaseHelper {
         "${SpecificationPackagingFinishedGoodsColumn.ITEM_SKU_ID} INTEGER)");
 
     db.execute("CREATE TABLE ${DBTables.COMMODITY} "
-        "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NULL, "
         "${CommodityColumn.ID} INTEGER NOT NULL, "
         "${CommodityColumn.NAME} CHAR, "
         "${CommodityColumn.SAMPLE_SIZE_BY_COUNT} INTEGER, "
         "${CommodityColumn.KEYWORDS} CHAR)");
 
     db.execute("CREATE TABLE ${DBTables.COMMODITY_CTE} "
-        "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NULL, "
         "${CommodityCteColumn.ID} INTEGER NOT NULL, "
         "${CommodityCteColumn.NAME} CHAR, "
         "${CommodityCteColumn.SAMPLE_SIZE_BY_COUNT} INTEGER, "
@@ -468,7 +468,7 @@ class DatabaseHelper {
         "${ResultRejectionDetailsColumn.DEFECT_COMMENTS} CHAR )");
 
     db.execute("CREATE TABLE ${DBTables.COMMODITY_KEYWORDS} "
-        "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+        "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT NULL, "
         "${CommodityKeywordsColumn.ID} INTEGER NOT NULL, "
         "${CommodityKeywordsColumn.KEYWORDS} CHAR)");
 

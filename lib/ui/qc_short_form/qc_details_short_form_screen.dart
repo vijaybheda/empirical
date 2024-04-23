@@ -13,7 +13,6 @@ import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/ui/components/drawer_header_content_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
-import 'package:pverify/ui/photos_selection/photos_selection.dart';
 import 'package:pverify/ui/qc_short_form/spec_analytical_table.dart';
 import 'package:pverify/ui/side_drawer.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -674,7 +673,9 @@ class QCDetailsShortFormScreen
                                     fontWeight: FontWeight.w600,
                                     textStyle: TextStyle(
                                         color: AppColors.textFieldText_Color)),
-                                onClickAction: () {}),
+                                onClickAction: () async {
+                              await controller.onLongFormClick();
+                            }),
                             SizedBox(
                               width: 20.w,
                             ),
@@ -684,7 +685,7 @@ class QCDetailsShortFormScreen
                                 size: 50,
                               ),
                               onPressed: () {
-                                Get.to(() => const PhotosSelection());
+                                controller.onCameraMenuTap();
                               },
                             ),
                           ],
@@ -712,8 +713,9 @@ class QCDetailsShortFormScreen
                                     fontWeight: FontWeight.w600,
                                     textStyle: TextStyle(
                                         color: AppColors.textFieldText_Color)),
-                                onClickAction: () {
-                              // TODO:
+                                onClickAction: () async {
+                              await controller
+                                  .deleteInspectionAndGotoMyInspectionScreen();
                             }),
                             SizedBox(
                               width: 38.w,
@@ -729,8 +731,7 @@ class QCDetailsShortFormScreen
                                     textStyle: TextStyle(
                                         color: AppColors.textFieldText_Color)),
                                 onClickAction: () async {
-                              await controller
-                                  .saveAsDraftAndGotoMyInspectionScreen();
+                              await controller.saveContinue(context);
                             }),
                           ],
                         ),

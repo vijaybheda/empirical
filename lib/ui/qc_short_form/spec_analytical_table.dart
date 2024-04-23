@@ -65,20 +65,20 @@ class SpecificationAnalyticalWidget extends StatefulWidget {
 
 class _SpecificationAnalyticalWidgetState
     extends State<SpecificationAnalyticalWidget> {
-  String comply = "N/A";
+  String comply = 'N/A';
   late TextEditingController textEditingController;
   late bool hasErrors;
 
   @override
   void initState() {
+    hasErrors = false;
     super.initState();
     textEditingController = TextEditingController();
-    hasErrors = false;
 
     if (widget.item.specTargetTextDefault == "Y") {
-      comply = "Y";
+      comply = "Yes";
     } else if (widget.item.specTargetTextDefault == "N") {
-      comply = "Y";
+      comply = "Yes";
     }
   }
 
@@ -357,9 +357,9 @@ class _SpecificationAnalyticalWidgetState
     double specMax = widget.item.specMax ?? 0;
 
     if (userValue >= specMin && userValue <= specMax) {
-      comply = "Y";
+      comply = "Yes";
     } else {
-      comply = "N";
+      comply = "No";
     }
 
     if (value.isEmpty) {
@@ -378,9 +378,9 @@ class _SpecificationAnalyticalWidgetState
       int userValue = int.tryParse(textEditingController.text) ?? 0;
 
       if (comply == "N/A") {
-        comply = "N";
+        comply = "No";
       } else if (comply == "No") {
-        comply = "N";
+        comply = "No";
       }
     }
   }

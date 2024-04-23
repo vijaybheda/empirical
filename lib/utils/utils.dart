@@ -7,7 +7,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
+// import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -71,7 +71,7 @@ class Utils {
     return fromDateTimeToUTCDateTime(dateFormat, timeFormat).toIso8601String();
   }
 
-  static Future<XFile?> compressImage(File file,
+  /*static Future<XFile?> compressImage(File file,
       {int quality = 80, int minWidth = 1000, int minHeight = 1000}) async {
     final filePath = file.absolute.path;
 
@@ -79,13 +79,13 @@ class Utils {
     final splitted = filePath.substring(0, (lastIndex));
     final outPath = "${splitted}_out${filePath.substring(lastIndex)}";
 
-    /* Max image compression quality value accept up to 95 */
+    */ /* Max image compression quality value accept up to 95 */ /*
     final compressedImage = await FlutterImageCompress.compressAndGetFile(
         filePath, outPath,
         minWidth: minWidth, minHeight: minHeight, quality: quality);
 
     return compressedImage;
-  }
+  }*/
 
   static Future<bool> hasInternetConnection() async {
     bool isOffline;
@@ -576,11 +576,26 @@ class Utils {
     return directory.path;
   }
 
-  double parseDoubleDefault(String value) {
+  static double parseDoubleDefault(value) {
+    value = value.toString();
+    if (value.isEmpty) {
+      return 0.0;
+    }
     RegExp regExp = RegExp(r'(\d+(\.\d+)?)');
     String numericPart = regExp.firstMatch(value)?.group(0) ?? '0';
 
     return double.parse(numericPart);
+  }
+
+  static int parseIntDefault(value) {
+    value = value.toString();
+    if (value.isEmpty) {
+      return 0;
+    }
+    RegExp regExp = RegExp(r'(\d+(\.\d+)?)');
+    String numericPart = regExp.firstMatch(value)?.group(0) ?? '0';
+
+    return int.parse(numericPart);
   }
 
   int checkCacheDays() {
@@ -696,7 +711,8 @@ void printKeysAndValueTypes(Map<String, dynamic> json) {
   });*/
 
   log(json.entries
-      .map((entry) => '${entry.key} (${entry.value.runtimeType})')
+      .map(
+          (entry) => '${entry.key} ${entry.value} (${entry.value.runtimeType})')
       .join(', '));
 }
 
