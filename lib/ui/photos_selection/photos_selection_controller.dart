@@ -159,6 +159,8 @@ class PhotoSelectionController extends GetxController {
                 imagesList[i].pathToPhoto ?? '')
             .then((attachmentId) {
           attachmentIds.add(attachmentId);
+          AppStorage.instance.attachmentIds = attachmentIds;
+          loadPicturesFromDB();
         }).catchError((error) {
           debugPrint('Error creating attachment: $error');
         });
@@ -177,7 +179,7 @@ class PhotoSelectionController extends GetxController {
     }
   }
 
-  void loadPicturesFromDB() {
+  Future<void> loadPicturesFromDB() async {
     List<InspectionAttachment> picsFromDB = [];
     if (AppStorage.instance.attachmentIds != null) {
       hasAttachmentIds =
@@ -189,7 +191,9 @@ class PhotoSelectionController extends GetxController {
         List<int>? attachmentIds = AppStorage.instance.attachmentIds;
         if (attachmentIds != null && attachmentIds.isNotEmpty) {
           for (int i = 0; i < attachmentIds.length; i++) {
-            dao.findAttachmentByAttachmentId(attachmentIds[i]).then((value) {
+            await dao
+                .findAttachmentByAttachmentId(attachmentIds[i])
+                .then((value) {
               if (value != null) {
                 picsFromDB.add(value);
               }
@@ -200,7 +204,7 @@ class PhotoSelectionController extends GetxController {
         }
       } else {
         if (inspectionId != null) {
-          dao
+          await dao
               .findInspectionAttachmentsByInspectionId(inspectionId!.toInt())
               .then((value) {
             picsFromDB = value;
