@@ -657,8 +657,8 @@ class QCDetailsShortFormScreen
                                     fontWeight: FontWeight.w600,
                                     textStyle: TextStyle(
                                         color: AppColors.textFieldText_Color)),
-                                onClickAction: () {
-                              // TODO: asad;
+                                onClickAction: () async {
+                              await controller.onInspectionWorksheetClick();
                             }),
                             SizedBox(
                               width: 38.w,

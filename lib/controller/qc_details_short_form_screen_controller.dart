@@ -20,6 +20,7 @@ import 'package:pverify/models/specification_by_item_sku.dart';
 import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
+import 'package:pverify/ui/defects/defects_screen.dart';
 import 'package:pverify/ui/inspection_exception/inspection_exception_screen.dart';
 import 'package:pverify/ui/photos_selection/photos_selection.dart';
 import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
@@ -1227,5 +1228,64 @@ class QCDetailsShortFormScreenController extends GetxController {
         }
       }
     }
+  }
+
+  Future<void> onInspectionWorksheetClick() async {
+    if (await saveFieldsToDB()) {
+      if (!hasErrors2) {
+        await saveFieldsToDBSpecAttribute(false);
+      }
+    }
+    if (_appStorage.resumeFromSpecificationAttributes) {
+      startDefectsActivity();
+    }
+  }
+
+  void startDefectsActivity() {
+    Map<String, dynamic> passingData = {
+      Consts.SERVER_INSPECTION_ID: serverInspectionID,
+      Consts.COMPLETED: completed,
+      Consts.PARTNER_NAME: partnerName,
+      Consts.PARTNER_ID: partnerID,
+      Consts.CARRIER_NAME: carrierName,
+      Consts.CARRIER_ID: carrierID,
+      Consts.COMMODITY_NAME: commodityName,
+      Consts.COMMODITY_ID: commodityID,
+      Consts.VARIETY_NAME: varietyName,
+      Consts.VARIETY_SIZE: varietySize,
+      Consts.VARIETY_ID: varietyId,
+      Consts.SPECIFICATION_NUMBER: specificationNumber,
+      Consts.SPECIFICATION_VERSION: specificationVersion,
+      Consts.SAMPLE_SIZE_BY_COUNT: sampleSizeByCount,
+      Consts.SPECIFICATION_NAME: specificationName,
+      Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
+      Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
+      Consts.ITEM_SKU: itemSKU,
+      Consts.ITEM_SKU_ID: itemSkuId,
+      Consts.Lot_No: lotNo,
+      Consts.GTIN: gtin,
+      Consts.PACK_DATE: packDate,
+      Consts.ITEM_UNIQUE_ID: itemUniqueId,
+      Consts.LOT_SIZE: lotSize,
+      Consts.ITEM_SKU_NAME: itemSkuName,
+      Consts.PO_NUMBER: poNumber,
+      Consts.PO_LINE_NO: poLineNo,
+      Consts.PRODUCT_TRANSFER: productTransfer,
+    };
+
+    String callerActivityValue = '';
+    if (callerActivity == 'TrendingReportActivity') {
+      callerActivityValue = 'TrendingReportActivity';
+    } else if (callerActivity == 'GTINActivity') {
+      callerActivityValue = 'GTINActivity';
+    } else if (callerActivity == 'NewPurchaseOrderDetailsActivity') {
+      callerActivityValue = 'NewPurchaseOrderDetailsActivity';
+    } else {
+      callerActivityValue = 'PurchaseOrderDetailsActivity';
+    }
+
+    passingData[Consts.CALLER_ACTIVITY] = callerActivityValue;
+
+    Get.to(() => DefectsScreen(), arguments: passingData);
   }
 }
