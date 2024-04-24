@@ -47,4 +47,3 @@ class AppImages {
   static const String ic_special_instruction =
       'assets/images/ic_special_instruction.png';
 }
-

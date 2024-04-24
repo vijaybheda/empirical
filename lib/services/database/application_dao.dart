@@ -292,7 +292,7 @@ class ApplicationDao {
       });
       return attachmentId;
     } catch (e) {
-      debugPrint('Error creating inspection attachment: $e');
+      log('Error creating inspection attachment: $e');
       throw e;
     }
   }
