@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/commodity_variety_data.dart';
@@ -585,7 +584,7 @@ class JsonFileOperations {
     File fileLocation2 = File(path2);
 
     if (await fileLocation2.exists()) {
-      final Uri data2 = Uri.file(path2);
+      // final Uri data2 = Uri.file(path2);
       // bool hasStorageAccess = await _grantPermissions(data2);
       // if (hasStorageAccess) {
       await openFile(path2);
@@ -600,14 +599,14 @@ class JsonFileOperations {
     }
   }
 
-  Future<bool> _grantPermissions(Uri uri) async {
+  /*Future<bool> _grantPermissions(Uri uri) async {
     final permissions = <Permission>[Permission.storage];
     for (final permission in permissions) {
       if (await permission.status.isGranted) continue;
       await permission.request();
     }
     return await permissions.first.status.isGranted;
-  }
+  }*/
 
   Future<bool> openFile(String filePath) async {
     File file = File(filePath);

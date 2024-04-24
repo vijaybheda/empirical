@@ -154,7 +154,7 @@ class PurchaseOrderDetailsController extends GetxController {
   List<PurchaseOrderItem> getPurchaseOrderData() {
     List<PurchaseOrderItem> list = [];
 
-    for (FinishedGoodsItemSKU item in (appStorage.selectedItemSKUList ?? [])) {
+    for (FinishedGoodsItemSKU item in (appStorage.selectedItemSKUList)) {
       list.add(PurchaseOrderItem.newData(
           item.name,
           item.sku,
@@ -265,7 +265,7 @@ class PurchaseOrderDetailsController extends GetxController {
 
         appStorage.specificationGradeToleranceArrayList =
             specificationGradeToleranceArrayList;
-        calculateResult(context);
+        calculateResult();
         update();
       } else {
         AppSnackBar.info(message: AppStrings.noItemsCompleted);
@@ -273,9 +273,9 @@ class PurchaseOrderDetailsController extends GetxController {
     }
   }
 
-  Future<void> calculateResult(BuildContext context) async {
-    int totalQualityDefectId = 0;
-    int totalConditionDefectId = 0;
+  Future<void> calculateResult() async {
+    // int totalQualityDefectId = 0;
+    // int totalConditionDefectId = 0;
 
     List<FinishedGoodsItemSKU> selectedItemSKUList =
         appStorage.selectedItemSKUList;
@@ -429,7 +429,7 @@ class PurchaseOrderDetailsController extends GetxController {
 
             // TODO: implement logic
           } else {
-            AppAlertDialog.validateAlerts(context, AppStrings.alert,
+            AppAlertDialog.validateAlerts(Get.context!, AppStrings.alert,
                 AppStrings.noGradeTolarenceDataFound);
           }
         }
@@ -453,8 +453,8 @@ class PurchaseOrderDetailsController extends GetxController {
 
     // FIXME: below
     // String current_lot_number = viewHolder.edit_LotNo.getText().toString();
-    String? current_Item_SKU = goodsItem.sku;
-    String? current_Item_SKU_Name = goodsItem.description;
+    String? currentItemSKU = goodsItem.sku;
+    String? currentItemSKUName = goodsItem.description;
     // String? current_pack_Date = packDate;
 
     Map<String, dynamic> passingData = {};
@@ -480,8 +480,8 @@ class PurchaseOrderDetailsController extends GetxController {
 
     // FIXME: below
     // passingData[Consts.Lot_No] = current_lot_number;
-    passingData[Consts.ITEM_SKU] = current_Item_SKU;
-    passingData[Consts.ITEM_SKU_NAME] = current_Item_SKU_Name;
+    passingData[Consts.ITEM_SKU] = currentItemSKU;
+    passingData[Consts.ITEM_SKU_NAME] = currentItemSKUName;
     // passingData[Consts.ITEM_SKU_ID] = current_Item_SKU_Id;
     // passingData[Consts.PACK_DATE] = current_pack_Date;
 
@@ -741,10 +741,10 @@ class PurchaseOrderDetailsController extends GetxController {
     String lotNo,
     String packDate,
     bool isComplete,
-    bool ispartialComplete,
+    bool isPartialComplete,
     int? inspectionId,
-    String po_number,
-    String seal_number,
+    String poNumber,
+    String sealNumber,
     Function(Map data)? poInterface,
   ) async {
     bool checkItemSKUAndLot =
@@ -790,40 +790,40 @@ class PurchaseOrderDetailsController extends GetxController {
     }
 
     if (isValid) {
-      if (isComplete || ispartialComplete || !checkItemSKUAndLot) {
-        String current_lot_number = lotNo;
-        String current_Item_SKU = goodsItem.sku!;
-        String current_Item_SKU_Name = goodsItem.description!;
-        String current_pack_Date = packDate;
-        int current_Item_SKU_Id = finishedGoodsItemSKU.id!;
-        String current_unique_id = finishedGoodsItemSKU.uniqueItemId!;
-        int? current_commodity_id = finishedGoodsItemSKU.commodityID;
-        String current_commodity_name = finishedGoodsItemSKU.commodityName!;
-        String? current_gtin = finishedGoodsItemSKU.gtin;
+      if (isComplete || isPartialComplete || !checkItemSKUAndLot) {
+        String currentLotNumber = lotNo;
+        String currentItemSKU = goodsItem.sku!;
+        String currentItemSKUName = goodsItem.description!;
+        String currentPackDate = packDate;
+        int currentItemSKUId = finishedGoodsItemSKU.id!;
+        String currentUniqueId = finishedGoodsItemSKU.uniqueItemId!;
+        int? currentCommodityId = finishedGoodsItemSKU.commodityID;
+        String currentCommodityName = finishedGoodsItemSKU.commodityName!;
+        String? currentGtin = finishedGoodsItemSKU.gtin;
         String? dateType = finishedGoodsItemSKU.dateType;
 
         if (poInterface != null) {
           Map<String, dynamic> bundle = {
-            Consts.Lot_No: current_lot_number,
-            Consts.ITEM_SKU: current_Item_SKU,
-            Consts.ITEM_SKU_NAME: current_Item_SKU_Name,
-            Consts.PACK_DATE: current_pack_Date,
-            Consts.ITEM_SKU_ID: current_Item_SKU_Id,
-            Consts.ITEM_UNIQUE_ID: current_unique_id,
-            Consts.GTIN: current_gtin,
+            Consts.Lot_No: currentLotNumber,
+            Consts.ITEM_SKU: currentItemSKU,
+            Consts.ITEM_SKU_NAME: currentItemSKUName,
+            Consts.PACK_DATE: currentPackDate,
+            Consts.ITEM_SKU_ID: currentItemSKUId,
+            Consts.ITEM_UNIQUE_ID: currentUniqueId,
+            Consts.GTIN: currentGtin,
             Consts.DATETYPE: dateType,
-            Consts.COMMODITY_ID: current_commodity_id,
-            Consts.COMMODITY_NAME: current_commodity_name,
+            Consts.COMMODITY_ID: currentCommodityId,
+            Consts.COMMODITY_NAME: currentCommodityName,
           };
           poInterface(bundle);
         }
 
-        if (!isComplete && !ispartialComplete) {
-          finishedGoodsItemSKU.lotNo = current_lot_number;
+        if (!isComplete && !isPartialComplete) {
+          finishedGoodsItemSKU.lotNo = currentLotNumber;
           finishedGoodsItemSKU.poNo = goodsItem.poNumber;
         }
 
-        bool isOnline = globalConfigController.hasStableInternet.value;
+        // bool isOnline = globalConfigController.hasStableInternet.value;
 
         if (productTransfer == "Transfer") {
           appStorage.specificationByItemSKUList =
@@ -838,9 +838,9 @@ class PurchaseOrderDetailsController extends GetxController {
         if (appStorage.specificationByItemSKUList != null &&
             appStorage.specificationByItemSKUList!.isNotEmpty) {
           bool isComplete = await dao.isInspectionComplete(
-              partnerID!, current_Item_SKU, current_unique_id);
+              partnerID!, currentItemSKU, currentUniqueId);
           bool ispartialComplete = await dao.isInspectionPartialComplete(
-              partnerID!, current_Item_SKU, current_unique_id);
+              partnerID!, currentItemSKU, currentUniqueId);
 
           Map<String, dynamic> passigData = {};
           if (!isComplete && !ispartialComplete) {
@@ -852,23 +852,23 @@ class PurchaseOrderDetailsController extends GetxController {
             passigData[Consts.SPECIFICATION_NAME] = specificationName;
             passigData[Consts.SPECIFICATION_TYPE_NAME] = specificationTypeName;
           }
-          passigData[Consts.PO_NUMBER] = po_number;
-          passigData[Consts.SEAL_NUMBER] = seal_number;
+          passigData[Consts.PO_NUMBER] = poNumber;
+          passigData[Consts.SEAL_NUMBER] = sealNumber;
           passigData[Consts.PARTNER_NAME] = partnerName;
           passigData[Consts.PARTNER_ID] = partnerID;
           passigData[Consts.CARRIER_NAME] = carrierName;
           passigData[Consts.CARRIER_ID] = carrierID;
-          passigData[Consts.Lot_No] = current_lot_number;
-          passigData[Consts.ITEM_SKU] = current_Item_SKU;
-          passigData[Consts.ITEM_SKU_NAME] = current_Item_SKU_Name;
-          passigData[Consts.ITEM_SKU_ID] = current_Item_SKU_Id;
-          passigData[Consts.PACK_DATE] = current_pack_Date;
+          passigData[Consts.Lot_No] = currentLotNumber;
+          passigData[Consts.ITEM_SKU] = currentItemSKU;
+          passigData[Consts.ITEM_SKU_NAME] = currentItemSKUName;
+          passigData[Consts.ITEM_SKU_ID] = currentItemSKUId;
+          passigData[Consts.PACK_DATE] = currentPackDate;
           passigData[Consts.COMPLETED] = isComplete;
           passigData[Consts.PARTIAL_COMPLETED] = ispartialComplete;
-          passigData[Consts.COMMODITY_ID] = current_commodity_id;
-          passigData[Consts.COMMODITY_NAME] = current_commodity_name;
-          passigData[Consts.ITEM_UNIQUE_ID] = current_unique_id;
-          passigData[Consts.GTIN] = current_gtin;
+          passigData[Consts.COMMODITY_ID] = currentCommodityId;
+          passigData[Consts.COMMODITY_NAME] = currentCommodityName;
+          passigData[Consts.ITEM_UNIQUE_ID] = currentUniqueId;
+          passigData[Consts.GTIN] = currentGtin;
           passigData[Consts.PRODUCT_TRANSFER] = productTransfer;
           passigData[Consts.DATETYPE] = dateType;
 
@@ -884,11 +884,8 @@ class PurchaseOrderDetailsController extends GetxController {
           );
         } else {
           AppAlertDialog.validateAlerts(Get.context!, AppStrings.alert,
-              'No specification alert for $current_Item_SKU');
+              'No specification alert for $currentItemSKU');
         }
-      } else {
-        AppAlertDialog.validateAlerts(
-            Get.context!, AppStrings.alert, 'Lot number alert');
       }
     }
   }

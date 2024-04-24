@@ -1,8 +1,4 @@
-// ignore_for_file: camel_case_types, non_constant_identifier_names
-
 import 'dart:io';
-
-// import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class InspectionAttachment {
   int? id; // SQLite row id

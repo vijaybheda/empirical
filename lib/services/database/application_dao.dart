@@ -2768,7 +2768,7 @@ class ApplicationDao {
         specificationList.add(item);
       }
     } catch (e) {
-      print('Error has occurred while finding specification by item SKU: $e');
+      log('Error has occurred while finding specification by item SKU: $e');
       return null;
     }
 
@@ -2822,7 +2822,7 @@ class ApplicationDao {
         specificationList.add(item);
       }
     } catch (e) {
-      print('Error specifying item SKU: $e');
+      log('Error specifying item SKU: $e');
     }
 
     return specificationList;
@@ -3465,8 +3465,7 @@ class ApplicationDao {
         await txn.rawDelete(query);
       });
     } catch (e) {
-      print(
-          'Error has occurred while deleting a trailer temperature entries: $e');
+      log('Error has occurred while deleting a trailer temperature entries: $e');
       rethrow;
     }
   }

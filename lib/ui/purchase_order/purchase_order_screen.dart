@@ -76,7 +76,7 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
                   title: AppStrings.save,
                   onPressed: () async {
                     await controller.navigateToPurchaseOrderDetails(
-                        context, partner, carrier, commodity);
+                        partner, carrier, commodity);
                   },
                 ),
                 FooterContentView(),
@@ -218,7 +218,7 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
 }
 
 class _SearchItemSkuWidget extends StatelessWidget {
-  const _SearchItemSkuWidget({super.key});
+  const _SearchItemSkuWidget();
 
   @override
   Widget build(BuildContext context) {

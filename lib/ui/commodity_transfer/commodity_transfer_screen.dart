@@ -13,9 +13,9 @@ class CommodityTransferScreen
       builder: (controller) {
         return Scaffold(
           appBar: AppBar(
-            title: Text('Commodity Transfer'),
+            title: const Text('Commodity Transfer'),
           ),
-          body: Center(
+          body: const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[

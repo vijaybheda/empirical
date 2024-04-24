@@ -17,11 +17,11 @@ class OverriddenResultScreen
             appBar: AppBar(
               title: const Text('Overridden Result'),
             ),
-            body: Center(
+            body: const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Text(
+                  Text(
                     'Overridden Result',
                     style: TextStyle(fontSize: 20),
                   ),

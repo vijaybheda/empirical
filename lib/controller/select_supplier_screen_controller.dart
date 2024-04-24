@@ -65,8 +65,8 @@ class SelectSupplierScreenController extends GetxController {
   }
 
   void assignInitialData() {
-    List<PartnerItem>? _partnersList = appStorage.getPartnerList();
-    if (_partnersList == null) {
+    List<PartnerItem>? storedPartnersList = appStorage.getPartnerList();
+    if (storedPartnersList == null) {
       partnersList.value = [];
       filteredPartnerList.value = [];
       listAssigned.value = true;
@@ -82,9 +82,9 @@ class SelectSupplierScreenController extends GetxController {
       filteredNonOpenPartnersList.clear();
       nonOpenPartnersList.clear();
 
-      partnersList.addAll(_partnersList);
+      partnersList.addAll(storedPartnersList);
 
-      List<PartnerItem> nonOpenPartners = _partnersList
+      List<PartnerItem> nonOpenPartners = storedPartnersList
           .where((element) => (element.name != null &&
               !(element.name!.toLowerCase().contains("open"))))
           .toList();
@@ -93,7 +93,7 @@ class SelectSupplierScreenController extends GetxController {
 
       partnersList.sort((a, b) => a.name!.compareTo(b.name!));
 
-      filteredPartnerList.addAll(_partnersList);
+      filteredPartnerList.addAll(storedPartnersList);
       filteredPartnerList.sort((a, b) => a.name!.compareTo(b.name!));
       listAssigned.value = true;
       update(['partnerList']);

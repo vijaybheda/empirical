@@ -26,7 +26,7 @@ class ScorecardScreen extends GetWidget<ScorecardScreenController> {
                 HeaderContentView(
                   title: partner.name ?? '-',
                 ),
-                Expanded(
+                const Expanded(
                   child: Column(
                     children: [
                       TableHeader(),

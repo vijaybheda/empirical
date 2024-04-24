@@ -14,20 +14,16 @@ class HeaderController extends GetxController {
   final NetworkConnectivity _networkConnectivity = NetworkConnectivity.instance;
   Map _source = {ConnectivityResult.none: false};
   var wifiImage1 = AppImages.ic_Wifi_off.obs;
-  final isConnectedToNetwork_iOS = false.obs;
+  final isConnectedToNetworkIOS = false.obs;
   var appVersion = ''.obs;
   final Connectivity _networkConnectivityIOS = Connectivity();
   final FlutterInternetSignal internetSignal = FlutterInternetSignal();
   RxBool hasStableInternet = false.obs;
   final StreamController<bool> _hasStableInternetController =
       StreamController<bool>.broadcast();
-  final StreamController<int> _wifiLevelController =
-      StreamController<int>.broadcast();
 
   ValueNotifier<int> rssiValueNotifier = ValueNotifier(-120);
   static const stream = EventChannel(AppStrings.platformEventIOS);
-
-  late StreamSubscription _streamSubscription;
 
   @override
   void onInit() {
@@ -84,17 +80,17 @@ class HeaderController extends GetxController {
 
   void appversion() {
     PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
-      String appName = packageInfo.appName;
-      String packageName = packageInfo.packageName;
+      // String appName = packageInfo.appName;
+      // String packageName = packageInfo.packageName;
       String version = packageInfo.version;
-      String buildNumber = packageInfo.buildNumber;
+      // String buildNumber = packageInfo.buildNumber;
       appVersion.value = version;
     });
   }
 
   void networkChecker() async {
     final FlutterInternetSignal internetSignal = FlutterInternetSignal();
-    final int? mobileSignal = await internetSignal.getMobileSignalStrength();
+    // final int? mobileSignal = await internetSignal.getMobileSignalStrength();
     final int wifiSignal = await internetSignal.getWifiSignalStrength() ?? 0;
 
     if (wifiSignal <= -50 && wifiSignal >= -60) {

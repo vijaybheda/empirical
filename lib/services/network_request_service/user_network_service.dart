@@ -61,12 +61,12 @@ class UserService extends BaseRequestService {
         //handled exception
         rethrow;
         // Utils.hideLoadingDialog();
-        throw Exception(e.message);
+        // throw Exception(e.message);
       } else {
         // internal exception
         throw Exception('Oops! Something went wrong.');
       }
-      return null;
+      // return null;
     }
   }
 }

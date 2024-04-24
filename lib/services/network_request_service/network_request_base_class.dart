@@ -42,7 +42,7 @@ class BaseRequestService extends GetConnect {
         throw CustomException(response
             .body?["message"]); //user phone/otp number not registered/wrong
       case 401:
-        String message = response.body?["message"];
+        // String message = response.body?["message"];
         // await LoginServices.unAuthorizedRedirection(message);
         throw CustomException(unAuthorizedMessage);
       case 404:
@@ -50,7 +50,7 @@ class BaseRequestService extends GetConnect {
       case 500:
         throw CustomException(response.body?["message"]);
       case 403:
-        String message = response.body?["message"];
+        // String message = response.body?["message"];
         // await LoginServices.unAuthorizedRedirection(message);
         throw CustomException(unAuthorizedMessage);
       case null:

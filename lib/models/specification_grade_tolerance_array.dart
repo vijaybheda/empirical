@@ -40,7 +40,7 @@ class SpecificationGradeToleranceArray {
 
   // toJson method
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['specificationGradeToleranceList'] =
         this.specificationGradeToleranceList != null
             ? this

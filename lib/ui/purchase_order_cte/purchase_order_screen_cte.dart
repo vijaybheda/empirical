@@ -13,9 +13,9 @@ class PurchaseOrderScreenCTE
       builder: (controller) {
         return Scaffold(
           appBar: AppBar(
-            title: Text('Purchase Order Screen CTE'),
+            title: const Text('Purchase Order Screen CTE'),
           ),
-          body: Center(
+          body: const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[

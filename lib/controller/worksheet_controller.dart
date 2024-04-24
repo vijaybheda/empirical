@@ -1,6 +1,7 @@
 // ignore_for_file: unused_local_variable
 
 import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -208,7 +209,7 @@ class WorksheetController extends GetxController {
 
   void getDropDownValues() {
     List<CommodityItem>? commodityItemsList = AppStorage.instance.commodityList;
-    debugPrint("commodity ${commodityItemsList}");
+    debugPrint("commodity $commodityItemsList");
   }
 
   removeSampleSets(int index) {

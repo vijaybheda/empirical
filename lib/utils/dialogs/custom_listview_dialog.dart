@@ -57,8 +57,7 @@ class CustomListView extends StatelessWidget {
   final List<ExceptionItem> exceptions;
   final Function(String selectedValue) onSelected;
   const CustomListView(
-      {Key? key, required this.exceptions, required this.onSelected})
-      : super(key: key);
+      {super.key, required this.exceptions, required this.onSelected});
 
   @override
   Widget build(BuildContext context) {

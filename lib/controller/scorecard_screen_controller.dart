@@ -109,8 +109,8 @@ class ScorecardScreenController extends GetxController {
     }
   }
 
-  sortArray_Item() {
-    if (sortType == 'asc') {
+  void sortArrayItem() {
+    if (sortType.value == 'asc') {
       sortType.value = 'dsc';
       listOfInspection
           .sort((b, a) => a['Item'].toString().compareTo(b['Item'].toString()));

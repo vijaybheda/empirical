@@ -89,7 +89,7 @@ class GlobalConfigController extends GetxController {
 
     _networkConnectivity.onConnectivityChanged.listen((result) async {
       if (Platform.isAndroid) {
-        if (result == ConnectivityResult.none) {
+        if (result.contains(ConnectivityResult.none)) {
           hasStableInternet.value = false;
           _hasStableInternetController.add(hasStableInternet.value);
           wifiLevel.value = 0;

@@ -4,11 +4,7 @@ class GradeCommodityDetailItem {
   String? gradeName;
 
   GradeCommodityDetailItem(
-      int? gradeCommodityDetailId, int? gradeId, String? gradeName) {
-    this.gradeCommodityDetailId = gradeCommodityDetailId;
-    this.gradeId = gradeId;
-    this.gradeName = gradeName;
-  }
+      this.gradeCommodityDetailId, this.gradeId, this.gradeName);
 
   GradeCommodityDetailItem.fromJson(Map<String, dynamic> json) {
     gradeCommodityDetailId = json['gradeCommodityDetailId'];

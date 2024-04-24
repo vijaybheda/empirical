@@ -2,10 +2,7 @@ class DeliveryToItem {
   int? partnerID;
   String? partnerName;
 
-  DeliveryToItem(int? partnerID, String? partnerName) {
-    this.partnerID = partnerID;
-    this.partnerName = partnerName;
-  }
+  DeliveryToItem(this.partnerID, this.partnerName);
 
   DeliveryToItem.fromJson(Map<String, dynamic> json) {
     partnerID = json['partnerID'];

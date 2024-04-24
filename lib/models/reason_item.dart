@@ -2,10 +2,7 @@ class ReasonItem {
   int? reasonID;
   String? reasonName;
 
-  ReasonItem(int? reasonID, String? reasonName) {
-    this.reasonID = reasonID;
-    this.reasonName = reasonName;
-  }
+  ReasonItem(this.reasonID, this.reasonName);
 
   ReasonItem.fromJson(Map<String, dynamic> json) {
     reasonID = json['reasonID'];

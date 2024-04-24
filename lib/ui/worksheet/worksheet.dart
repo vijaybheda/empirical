@@ -6,7 +6,7 @@ import 'package:pverify/controller/worksheet_controller.dart';
 import 'package:pverify/models/defect_item.dart';
 import 'package:pverify/ui/photos_selection/photos_selection.dart';
 import 'package:pverify/ui/worksheet/special_instructions.dart';
-import 'package:pverify/ui/worksheet/tableDialog.dart';
+import 'package:pverify/ui/worksheet/table_dialog.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -938,10 +938,10 @@ Widget defectCategoryTag({required String tag, TextStyle? textStyle}) {
 class DefectsTable extends StatelessWidget {
   DefectsTable({super.key});
 
-  double typeColumnWidth = 160.w;
-  double emptyColumnWidth = 80.w;
-  double defectColumnWidth = 170.w;
-  double cellHeight = 140.h;
+  final double typeColumnWidth = 160.w;
+  final double emptyColumnWidth = 80.w;
+  final double defectColumnWidth = 170.w;
+  final double cellHeight = 140.h;
 
   Color getDataColumnColor(String defectType) {
     switch (defectType) {
@@ -960,7 +960,7 @@ class DefectsTable extends StatelessWidget {
     }
   }
 
-  WorksheetDataTable worksheetDataTable = WorksheetDataTable(
+  final WorksheetDataTable worksheetDataTable = WorksheetDataTable(
     defectType: AppStrings.types,
     severity: [
       [AppStrings.injury],
@@ -1030,7 +1030,7 @@ class DefectsTable extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: TextStyle(fontSize: 16),
+        style: const TextStyle(fontSize: 16),
       ),
     );
   }
@@ -1068,7 +1068,7 @@ class DefectsTable extends StatelessWidget {
         tableDefectsCell(
           defectType: worksheetDataTable.severity[i][0],
           text: "${field[i]}${(isPercentage == true ? "%" : "")}",
-          colSpanItem: worksheetDataTable.severity[i].length ?? 1,
+          colSpanItem: worksheetDataTable.severity[i].length,
         ),
       );
     }

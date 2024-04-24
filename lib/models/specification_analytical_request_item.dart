@@ -6,7 +6,7 @@ class SpecificationAnalyticalRequest {
   final String? comply;
   String? comment;
   final String? analyticalName;
-  final specTypeofEntry;
+  final int? specTypeofEntry;
   final bool? isPictureRequired;
   final String? description;
   final double? specMin;
@@ -73,7 +73,7 @@ class SpecificationAnalyticalRequest {
     String? comply,
     String? comment,
     String? analyticalName,
-    var specTypeofEntry,
+    int? specTypeofEntry,
     bool? isPictureRequired,
     String? description,
     double? specMin,

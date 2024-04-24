@@ -2,10 +2,7 @@ class UOMItem {
   String? uomName;
   int? uomID;
 
-  UOMItem(int? uomID, String? uomName) {
-    this.uomID = uomID;
-    this.uomName = uomName;
-  }
+  UOMItem(this.uomID, this.uomName);
 
   UOMItem.fromJson(Map<String, dynamic> json) {
     uomID = json['uomID'];

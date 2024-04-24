@@ -108,7 +108,7 @@ class SideDrawer extends StatelessWidget {
             indent: 0,
             endIndent: 0,
           ),
-          _TitleText(AppStrings.inspectionPhotoHeading),
+          _titleText(AppStrings.inspectionPhotoHeading),
           ListTile(
             leading: const Icon(Icons.camera_alt),
             title: Text(
@@ -126,7 +126,7 @@ class SideDrawer extends StatelessWidget {
             indent: 0,
             endIndent: 0,
           ),
-          _TitleText(AppStrings.referencesHeading),
+          _titleText(AppStrings.referencesHeading),
           ListTile(
             leading: const Icon(Icons.edit_document),
             title: Text(
@@ -188,7 +188,7 @@ class SideDrawer extends StatelessWidget {
             indent: 0,
             endIndent: 0,
           ),
-          _TitleText(AppStrings.connectionHeading),
+          _titleText(AppStrings.connectionHeading),
           ListTile(
             leading: const Icon(Icons.logout),
             title: Text(
@@ -215,7 +215,7 @@ class SideDrawer extends StatelessWidget {
     );
   }
 
-  Container _TitleText(String title) {
+  Container _titleText(String title) {
     return Container(
       padding: const EdgeInsets.only(left: 16, top: 10),
       child: Text(

@@ -5,11 +5,7 @@ class DefectCategories {
   String? name;
   List<DefectItem>? defectList;
 
-  DefectCategories(int? id, String? name, List<DefectItem>? defectList) {
-    this.id = id;
-    this.name = name;
-    this.defectList = defectList;
-  }
+  DefectCategories(this.id, this.name, this.defectList);
 
   DefectCategories.fromJson(Map<String, dynamic> json) {
     id = json['id'];

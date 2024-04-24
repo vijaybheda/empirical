@@ -533,7 +533,7 @@ class Utils {
   static Future<int> checkWifiLevel() async {
     int level = 0;
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.wifi) {
+    if (connectivityResult.contains(ConnectivityResult.wifi)) {
       level = 3;
       // FIXME: check wifi level
     } else {
@@ -572,7 +572,7 @@ class Utils {
   Future<String?> loadFileToStringFromExternalStorage(
       String filename, String directory) async {
     String externalStoragePath = await Utils().getExternalStoragePath();
-    print('path: $externalStoragePath');
+    log('path: $externalStoragePath');
     String path = '$externalStoragePath/$directory/$filename';
     File file = File(path);
     try {

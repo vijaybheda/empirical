@@ -48,8 +48,8 @@ class SelectCarrierScreenController extends GetxController {
   }
 
   void assignInitialData() {
-    List<CarrierItem>? _carriersList = appStorage.getCarrierList();
-    if (_carriersList == null) {
+    List<CarrierItem>? storedCarriersList = appStorage.getCarrierList();
+    if (storedCarriersList == null) {
       carriersList.value = [];
       filteredCarrierList.value = [];
       listAssigned.value = true;
@@ -58,10 +58,10 @@ class SelectCarrierScreenController extends GetxController {
       carriersList.value = [];
       filteredCarrierList.value = [];
 
-      carriersList.addAll(_carriersList);
+      carriersList.addAll(storedCarriersList);
       carriersList.sort((a, b) => a.name!.compareTo(b.name!));
 
-      filteredCarrierList.addAll(_carriersList);
+      filteredCarrierList.addAll(storedCarriersList);
       filteredCarrierList.sort((a, b) => a.name!.compareTo(b.name!));
       listAssigned.value = true;
       update(['carrierList']);

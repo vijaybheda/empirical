@@ -5,14 +5,7 @@ class Severity {
   String? abbrevation;
   int? sortSequence;
 
-  Severity(int? id, String? name, String? color, String? abbrevation,
-      int? sortSequence) {
-    this.id = id;
-    this.name = name;
-    this.color = color;
-    this.abbrevation = abbrevation;
-    this.sortSequence = sortSequence;
-  }
+  Severity(this.id, this.name, this.color, this.abbrevation, this.sortSequence);
 
   Severity.fromJson(Map<String, dynamic> json) {
     id = json['id'];

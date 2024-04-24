@@ -77,12 +77,12 @@ class CommodityIDScreenController extends GetxController {
     int enterpriseId =
         await dao.getEnterpriseIdByUserId(currentUser.userName!.toLowerCase());
 
-    List<CommodityItem>? _commoditiesList =
+    List<CommodityItem>? commoditiesList =
         await dao.getCommodityByPartnerFromTable(partner.id!, enterpriseId,
             currentUser.supplierId!, currentUser.headquarterSupplierId!);
-    appStorage.saveMainCommodityList(_commoditiesList ?? []);
+    appStorage.saveMainCommodityList(commoditiesList ?? []);
 
-    if (_commoditiesList == null) {
+    if (commoditiesList == null) {
       commodityList.value = [];
       filteredCommodityList.value = [];
       listAssigned.value = true;
@@ -91,11 +91,11 @@ class CommodityIDScreenController extends GetxController {
       commodityList.value = [];
       filteredCommodityList.value = [];
 
-      commodityList.addAll(_commoditiesList);
+      commodityList.addAll(commoditiesList);
 
       commodityList.sort((a, b) => a.name!.compareTo(b.name!));
 
-      filteredCommodityList.addAll(_commoditiesList);
+      filteredCommodityList.addAll(commoditiesList);
       filteredCommodityList.sort((a, b) => a.name!.compareTo(b.name!));
       listAssigned.value = true;
       update(['commodityList']);

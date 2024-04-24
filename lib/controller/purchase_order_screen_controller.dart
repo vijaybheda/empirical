@@ -80,7 +80,7 @@ class PurchaseOrderScreenController extends GetxController {
         int enterpriseId =
             await dao.getEnterpriseIdByUserId(userData.userName!.toLowerCase());
         // TODO:
-        List<FinishedGoodsItemSKU>? _filteredItemSkuList =
+        List<FinishedGoodsItemSKU>? finishedGoodItems =
             await dao.getFinishedGoodItemSkuFromTable(
           partner.id!,
           enterpriseId,
@@ -91,7 +91,7 @@ class PurchaseOrderScreenController extends GetxController {
           partner.name!,
         );
 
-        itemSkuList.addAll(_filteredItemSkuList ?? []);
+        itemSkuList.addAll(finishedGoodItems ?? []);
         filteredItemSkuList.addAll(itemSkuList);
         listAssigned.value = true;
         update();
@@ -105,7 +105,7 @@ class PurchaseOrderScreenController extends GetxController {
   }
 
   void updateCommodityItem(FinishedGoodsItemSKU partner) {
-    appStorage.selectedItemSKUList ??= <FinishedGoodsItemSKU>[];
+    appStorage.selectedItemSKUList = appStorage.selectedItemSKUList;
 
     // remove if exist in appStorage.selectedItemSKUList
     appStorage.selectedItemSKUList.removeWhere((element) {
@@ -122,18 +122,17 @@ class PurchaseOrderScreenController extends GetxController {
 
     if (index != -1) {
       filteredItemSkuList[index] = partner;
-      int _index = filteredItemSkuList.indexWhere((element) {
+      int filteredIndex = filteredItemSkuList.indexWhere((element) {
         return element.id == partner.id;
       });
-      if (_index != -1) {
-        itemSkuList[_index] = partner;
+      if (filteredIndex != -1) {
+        itemSkuList[filteredIndex] = partner;
       }
       update(['itemSkuList']);
     }
   }
 
   Future<void> navigateToPurchaseOrderDetails(
-    BuildContext context,
     PartnerItem partner,
     CarrierItem carrier,
     CommodityItem commodity,
@@ -186,7 +185,7 @@ class PurchaseOrderScreenController extends GetxController {
       }
     } else {
       AppAlertDialog.validateAlerts(
-        context,
+        Get.context!,
         AppStrings.alert,
         AppStrings.selectItemsku,
       );

@@ -2,10 +2,7 @@ class AgencyItem {
   int? agencyID;
   String? agencyName;
 
-  AgencyItem(int? agencyID, String? agencyName) {
-    this.agencyID = agencyID;
-    this.agencyName = agencyName;
-  }
+  AgencyItem(this.agencyID, this.agencyName);
 
   AgencyItem.fromJson(Map<String, dynamic> json) {
     agencyID = json['agencyID'];

@@ -157,10 +157,10 @@ class PurchaseOrderDetailsScreen
                 String lotNo,
                 String packDate,
                 bool isComplete,
-                bool ispartialComplete,
+                bool isPartialComplete,
                 int? inspectionId,
-                String po_number,
-                String seal_number,
+                String poNumber,
+                String sealNumber,
               ) async {
                 FinishedGoodsItemSKU? finishedGoodsItemSKU = controller
                     .appStorage.selectedItemSKUList
@@ -177,10 +177,10 @@ class PurchaseOrderDetailsScreen
                   lotNo,
                   packDate,
                   isComplete,
-                  ispartialComplete,
+                  isPartialComplete,
                   inspectionId,
-                  po_number,
-                  seal_number,
+                  poNumber,
+                  sealNumber,
                   (data) {
                     // TODO: implement below
                     // current_lot_number = data[Consts.Lot_No];
@@ -272,7 +272,7 @@ class PurchaseOrderDetailsScreen
 }
 
 class _SearchOrderItemsWidget extends StatelessWidget {
-  const _SearchOrderItemsWidget({super.key});
+  const _SearchOrderItemsWidget();
 
   @override
   Widget build(BuildContext context) {

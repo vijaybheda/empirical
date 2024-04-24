@@ -375,7 +375,7 @@ class _SpecificationAnalyticalWidgetState
 
     // Handle compliance changes
     if (widget.item.specTypeofEntry == 3 && comply != "N") {
-      int userValue = int.tryParse(textEditingController.text) ?? 0;
+      // int userValue = int.tryParse(textEditingController.text) ?? 0;
 
       if (comply == "N/A") {
         comply = "No";

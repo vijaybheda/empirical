@@ -78,7 +78,7 @@ class AuthController extends GetxController {
           try {
             int userid = await dao.getEnterpriseIdByUserId(mUsername);
             if (userid == 0) {
-              int? _id = await dao.createOrUpdateOfflineUser(
+              await dao.createOrUpdateOfflineUser(
                 mUsername.toLowerCase(),
                 userData.access1!,
                 userData.enterpriseId!,
@@ -154,7 +154,7 @@ class AuthController extends GetxController {
             await persistUserName();
             if (isLoginButton) {
               if (offlineUser != null && offlineUser.isSubscriptionExpired ||
-                  offlineUser?.status == 3) {
+                  offlineUser?.status == '3') {
                 // show Info Alert Dialog
                 await Utils.hideLoadingDialog();
                 AppAlertDialog.validateAlerts(

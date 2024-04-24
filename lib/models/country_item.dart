@@ -2,10 +2,7 @@ class CountryItem {
   int? countryID;
   String? countryName;
 
-  CountryItem(int? countryID, String? countryName) {
-    this.countryID = countryID;
-    this.countryName = countryName;
-  }
+  CountryItem(this.countryID, this.countryName);
 
   CountryItem.fromJson(Map<String, dynamic> json) {
     countryID = json['countryID'];

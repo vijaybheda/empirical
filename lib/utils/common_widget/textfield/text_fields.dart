@@ -2,10 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/utils/common_widget/textfield/textfield_controller.dart';
 import 'package:pverify/utils/theme/colors.dart';
-import 'package:get/state_manager.dart';
 import 'package:pverify/utils/theme/theme.dart';
 
 class BoxTextFieldLogin extends StatelessWidget {
@@ -23,8 +23,8 @@ class BoxTextFieldLogin extends StatelessWidget {
   final String hintText;
   final bool isPasswordField;
 
-  BoxTextFieldLogin(
-      {Key? key,
+  const BoxTextFieldLogin(
+      {super.key,
       required this.controller,
       this.keyboardType = TextInputType.text,
       this.obsecure = false,
@@ -37,8 +37,7 @@ class BoxTextFieldLogin extends StatelessWidget {
       this.enabled = true,
       this.isPasswordField = false,
       required this.onEditingCompleted,
-      required this.onChanged})
-      : super(key: key);
+      required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +117,7 @@ class BoxTextField1 extends StatelessWidget {
   final String? intialValue;
 
   const BoxTextField1({
-    Key? key,
+    super.key,
     this.textColor = Colors.white,
     this.hintColor = Colors.grey,
     this.controller,
@@ -135,7 +134,7 @@ class BoxTextField1 extends StatelessWidget {
     required this.onEditingCompleted,
     required this.onChanged,
     this.intialValue,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +177,7 @@ class BoxTextField1 extends StatelessWidget {
         ),
       ),
     );
-    return GetBuilder(
+    /*return GetBuilder(
         init: TextFieldController(),
         builder: (pwdController) {
           return Container(
@@ -220,7 +219,7 @@ class BoxTextField1 extends StatelessWidget {
               ),
             ),
           );
-        });
+        });*/
   }
 
   textFieldfocused() {}
@@ -244,7 +243,7 @@ class BoxTextField2 extends StatelessWidget {
   final FocusNode focusNode;
 
   const BoxTextField2(
-      {Key? key,
+      {super.key,
       required this.controller,
       this.keyboardType = TextInputType.text,
       this.obsecure = false,
@@ -258,8 +257,7 @@ class BoxTextField2 extends StatelessWidget {
       this.isPasswordField = false,
       required this.onEditingCompleted,
       required this.onChanged,
-      required this.focusNode})
-      : super(key: key);
+      required this.focusNode});
 
   @override
   Widget build(BuildContext context) {

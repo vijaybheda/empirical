@@ -2,10 +2,7 @@ class ToLocationItem {
   int? partnerID;
   String? partnerName;
 
-  ToLocationItem(int? partnerID, String? partnerName) {
-    this.partnerID = partnerID;
-    this.partnerName = partnerName;
-  }
+  ToLocationItem(this.partnerID, this.partnerName);
 
   ToLocationItem.fromJson(Map<String, dynamic> json) {
     partnerID = json['partnerID'];

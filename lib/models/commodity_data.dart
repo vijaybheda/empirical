@@ -4,11 +4,7 @@ class Commodity {
   String? keywords;
   String? keywordName;
 
-  Commodity(int? id, String? name, String? keywords) {
-    this.id = id;
-    this.name = name;
-    this.keywords = keywords;
-  }
+  Commodity(this.id, this.name, this.keywords);
 
   Commodity.fromJson(Map<String, dynamic> json) {
     id = json['id'];

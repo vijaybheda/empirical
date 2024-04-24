@@ -7,7 +7,7 @@ class PurchaseOrderItem {
   int? commodityId;
   String? commodityName;
   String? packDate;
-  String? Ftl, Branded;
+  String? ftl, Branded;
 
   PurchaseOrderItem({
     required this.description,
@@ -18,7 +18,7 @@ class PurchaseOrderItem {
     required this.commodityId,
     required this.commodityName,
     required this.packDate,
-    required this.Ftl,
+    required this.ftl,
     required this.Branded,
   });
 
@@ -41,7 +41,7 @@ class PurchaseOrderItem {
     this.commodityId = commodityId;
     this.commodityName = commodityName;
     this.packDate = packDate;
-    this.Ftl = Ftl;
+    this.ftl = Ftl;
     this.Branded = Branded;
   }
 
@@ -54,7 +54,7 @@ class PurchaseOrderItem {
     int? commodityId,
     String? commodityName,
     String? packDate,
-    String? Ftl,
+    String? ftl,
     String? Branded,
   }) {
     return PurchaseOrderItem(
@@ -66,7 +66,7 @@ class PurchaseOrderItem {
       commodityId: commodityId ?? this.commodityId,
       commodityName: commodityName ?? this.commodityName,
       packDate: packDate ?? this.packDate,
-      Ftl: Ftl ?? this.Ftl,
+      ftl: ftl ?? this.ftl,
       Branded: Branded ?? this.Branded,
     );
   }
@@ -81,7 +81,7 @@ class PurchaseOrderItem {
       commodityId: json['commodityId'],
       commodityName: json['commodityName'],
       packDate: json['packDate'],
-      Ftl: json['Ftl'],
+      ftl: json['Ftl'],
       Branded: json['Branded'],
     );
   }
@@ -96,7 +96,7 @@ class PurchaseOrderItem {
       'commodityId': commodityId,
       'commodityName': commodityName,
       'packDate': packDate,
-      'Ftl': Ftl,
+      'Ftl': ftl,
       'Branded': Branded,
     };
   }

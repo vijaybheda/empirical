@@ -70,17 +70,17 @@ class SpecificationGradeTolerance {
 
   // toJson method
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['specificationNumber'] = this.specificationNumber;
-    data['specificationVersion'] = this.specificationVersion;
-    data['gradeTolerancePercentage'] = this.gradeTolerancePercentage;
-    data['specTolerancePercentage'] = this.specTolerancePercentage;
-    data['severityDefectID'] = this.severityDefectID;
-    data['defectID'] = this.defectID;
-    data['overridden'] = this.overridden;
-    data['defectName'] = this.defectName;
-    data['severityDefectName'] = this.severityDefectName;
-    data['defectCategoryName'] = this.defectCategoryName;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['specificationNumber'] = specificationNumber;
+    data['specificationVersion'] = specificationVersion;
+    data['gradeTolerancePercentage'] = gradeTolerancePercentage;
+    data['specTolerancePercentage'] = specTolerancePercentage;
+    data['severityDefectID'] = severityDefectID;
+    data['defectID'] = defectID;
+    data['overridden'] = overridden;
+    data['defectName'] = defectName;
+    data['severityDefectName'] = severityDefectName;
+    data['defectCategoryName'] = defectCategoryName;
     return data;
   }
 }
