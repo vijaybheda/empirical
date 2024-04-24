@@ -232,12 +232,69 @@ class ApplicationDao {
     return res;
   }
 
-  Future<int> createInspectionAttachment(
-      InspectionAttachment attachment) async {
+  Future<int> createInspectionAttachment(InspectionAttachment attachment,
+      photoTitle, createdTime, pathToPhoto) async {
     final Database db = dbProvider.lazyDatabase;
-    var res =
-        await db.insert(DBTables.INSPECTION_ATTACHMENT, attachment.toMap());
-    return res;
+    // var res =
+    //     await db.insert(DBTables.INSPECTION_ATTACHMENT, attachment.toMap());
+
+    /*  var sampleId = await db.insert(
+      DBTables.INSPECTION_ATTACHMENT,
+      {
+        InspectionDefectAttachmentColumn.ID: [BaseColumns.ID],
+        InspectionDefectAttachmentColumn.INSPECTION_ID:
+            attachment.Inspection_ID,
+        InspectionDefectAttachmentColumn.ATTACHMENT_ID:
+            attachment.Attachment_ID,
+        InspectionDefectAttachmentColumn.CREATED_TIME: attachment.CREATED_TIME,
+        InspectionDefectAttachmentColumn.FILE_LOCATION:
+            attachment.FILE_LOCATION,
+      },
+    );
+    return sampleId;*/
+
+    int attachmentId = 0;
+    try {
+      await db.transaction((txn) async {
+        var values = {
+          InspectionDefectAttachmentColumn.INSPECTION_ID:
+              attachment.Inspection_ID.toString(),
+          InspectionDefectAttachmentColumn.ATTACHMENT_ID: "0",
+          InspectionDefectAttachmentColumn.CREATED_TIME:
+              attachment.CREATED_TIME.toString(),
+          InspectionDefectAttachmentColumn.FILE_LOCATION:
+              attachment.FILE_LOCATION.toString(),
+        };
+
+        attachmentId = await txn.insert(DBTables.INSPECTION_ATTACHMENT, values
+            /*{
+            // InspectionDefectAttachmentColumn.ID: 7,
+            InspectionDefectAttachmentColumn.INSPECTION_ID:
+                attachment.Inspection_ID.toString(),
+            InspectionDefectAttachmentColumn.ATTACHMENT_ID: "0",
+            InspectionDefectAttachmentColumn.CREATED_TIME:
+                attachment.CREATED_TIME.toString(),
+            InspectionDefectAttachmentColumn.FILE_LOCATION:
+                attachment.FILE_LOCATION.toString(),
+          },*/
+            );
+
+        // Update record with attachment_id
+        await txn.update(
+          DBTables.INSPECTION_ATTACHMENT,
+          {
+            InspectionDefectAttachmentColumn.ATTACHMENT_ID:
+                attachmentId.toString()
+          },
+          where: '${InspectionDefectAttachmentColumn.ID} = ?',
+          whereArgs: [attachmentId],
+        );
+      });
+      return attachmentId;
+    } catch (e) {
+      debugPrint('Error creating inspection attachment: $e');
+      throw e;
+    }
   }
 
   Future<List<InspectionAttachment>> findInspectionAttachmentsByInspectionId(

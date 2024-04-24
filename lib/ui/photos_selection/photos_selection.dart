@@ -14,13 +14,39 @@ import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class PhotosSelection extends GetView<PhotoSelectionController> {
-  const PhotosSelection({super.key});
+  final String? partnerName;
+  final String? partnerID;
+  final String? carrierName;
+  final String? carrierID;
+  final String? commodityName;
+  final int? commodityID;
+  final String? varietyName;
+  final String? varietySize;
+  final String? varietyId;
+  final bool? isViewOnlyMode;
+  final int? inspectionId;
+  final String? callerActivity;
+  const PhotosSelection(
+      {super.key,
+      this.partnerName,
+      this.partnerID,
+      this.carrierName,
+      this.carrierID,
+      this.commodityName,
+      this.commodityID,
+      this.varietyName,
+      this.varietySize,
+      this.varietyId,
+      this.isViewOnlyMode,
+      this.inspectionId,
+      this.callerActivity});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<PhotoSelectionController>(
         init: PhotoSelectionController(),
         builder: (controller) {
+          controller.inspectionId = inspectionId;
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
             resizeToAvoidBottomInset: false,
@@ -119,7 +145,7 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
 
   Widget photosListView() {
     return GridView.builder(
-      itemCount: controller.imgList.length, // Number of rows
+      itemCount: controller.imagesList.length, // Number of rows
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 30.0.w,
@@ -135,7 +161,7 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
               Expanded(
                 child: Image.file(
                     fit: BoxFit.contain,
-                    File(controller.imgList[rowIndex].path)),
+                    File(controller.imagesList[rowIndex].image?.path ?? '')),
               ),
               const SizedBox(
                 height: 10,
@@ -163,7 +189,9 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
                     TextButton(
                         onPressed: () {
                           controller.cropImage(
-                              File(controller.imgList[rowIndex].path),
+                              File(
+                                  controller.imagesList[rowIndex].image?.path ??
+                                      ''),
                               rowIndex);
                         },
                         child: Text(AppStrings.crop,
@@ -174,7 +202,9 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
                             context,
                             AppStrings.inspectionPhotoTitle,
                             '',
-                            onYesTap: (b) {},
+                            onYesTap: (b) {
+                              controller.updateContent(rowIndex, b.toString());
+                            },
                           );
                         },
                         child: Text(AppStrings.title,

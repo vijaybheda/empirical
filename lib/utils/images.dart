@@ -44,4 +44,7 @@ class AppImages {
   static const String qcHeaderImage = 'assets/images/qc_header.png';
   static const String gradingAddImage = 'assets/images/add_icon.png';
   static const String itemsAddImage = 'assets/images/items_add.png';
+  static const String ic_special_instruction =
+      'assets/images/ic_special_instruction.png';
 }
+
