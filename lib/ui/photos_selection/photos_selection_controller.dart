@@ -1,6 +1,7 @@
-// ignore_for_file: unused_local_variable, unused_field, prefer_const_constructors, depend_on_referenced_packages, unused_element, unnecessary_null_comparison, empty_catches
+// ignore_for_file: unused_local_variable, unused_field, prefer_const_constructors, depend_on_referenced_packages, unused_element, unnecessary_null_comparison, empty_catches, unnecessary_new
 
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -198,7 +199,7 @@ class PhotoSelectionController extends GetxController {
       } else {
         if (inspectionId != null) {
           await dao
-              .findInspectionAttachmentsByInspectionId(inspectionId!.toInt())
+              .findInspectionAttachmentsByInspectionId((inspectionId ?? 0))
               .then((value) {
             picsFromDB = value;
           }).catchError((error) {
@@ -213,14 +214,11 @@ class PhotoSelectionController extends GetxController {
     if (picsFromDB != null && picsFromDB.isNotEmpty) {
       for (int i = 0; i < picsFromDB.length; i++) {
         PictureData temp = PictureData();
-        /*  temp.setData(
-          picsFromDB[i].attachmentId,
-          picsFromDB[i].fileLocation,
-          getPic(picsFromDB[i].fileLocation),
-          true,
-        );*/
+        temp.setData(picsFromDB[i].Attachment_ID, picsFromDB[i].FILE_LOCATION,
+            true, new File(picsFromDB[i].FILE_LOCATION.toString()));
         imagesList.add(temp);
       }
     }
+    log(imagesList.length);
   }
 }

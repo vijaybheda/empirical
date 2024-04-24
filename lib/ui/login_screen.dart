@@ -74,7 +74,9 @@ class LoginScreen extends GetView<AuthController> {
                           controller: authController.emailTextController.value,
                           onTap: () {},
                           errorText: '',
-                          onEditingCompleted: () {},
+                          onEditingCompleted: () {
+                            FocusScope.of(context).unfocus();
+                          },
                           onChanged: (value) {},
                           keyboardType: TextInputType.emailAddress,
                           hintText: AppStrings.username,
@@ -89,7 +91,9 @@ class LoginScreen extends GetView<AuthController> {
                               authController.passwordTextController.value,
                           onTap: () {},
                           errorText: '',
-                          onEditingCompleted: () {},
+                          onEditingCompleted: () {
+                            FocusScope.of(context).unfocus();
+                          },
                           onChanged: (value) {},
                           keyboardType: TextInputType.name,
                           hintText: AppStrings.password,

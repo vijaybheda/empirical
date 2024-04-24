@@ -27,7 +27,7 @@ class SpecificationAnalytical {
   double? specTargetNumValue;
   String? uomName;
   String? specTargetTextValue;
-  var specTypeofEntry;
+  int? specTypeofEntry;
   bool? isTargetNumValue;
   String? description;
   int? order;

@@ -273,7 +273,9 @@ class TrailerTemp extends GetView<TrailerTempController> {
                   controller: controller.commentTextController.value,
                   onTap: () {},
                   errorText: '',
-                  onEditingCompleted: () {},
+                  onEditingCompleted: () {
+                    FocusScope.of(context).unfocus();
+                  },
                   onChanged: (value) {},
                   keyboardType: TextInputType.name,
                   hintText: '',

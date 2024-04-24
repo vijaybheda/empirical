@@ -8,7 +8,9 @@
             "name": "pverify",
             "request": "launch",
             "type": "dart",
-            "args": ["--dart-define-from-file=config.json"]
+            "args": [
+                "--dart-define-from-file=config.json"
+            ]
         },
         {
             "name": "pverify (profile mode)",

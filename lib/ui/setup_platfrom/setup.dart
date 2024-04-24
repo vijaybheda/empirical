@@ -167,7 +167,9 @@ class SetupScreen extends GetView<SetupController> {
                   controller: controller,
                   onTap: () {},
                   errorText: '',
-                  onEditingCompleted: () {},
+                  onEditingCompleted: () {
+                    FocusScope.of(context).unfocus();
+                  },
                   onChanged: (value) {},
                   keyboardType: TextInputType.name,
                   hintText: labelTitle,
