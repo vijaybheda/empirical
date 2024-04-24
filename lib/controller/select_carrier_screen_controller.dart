@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
+import 'package:pverify/controller/json_file_operations.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
@@ -18,38 +19,43 @@ class SelectCarrierScreenController extends GetxController {
       Get.find<GlobalConfigController>();
 
   final ApplicationDao dao = ApplicationDao();
+  final JsonFileOperations jsonFileOperations = JsonFileOperations.instance;
 
   RxList<CarrierItem> filteredCarrierList = <CarrierItem>[].obs;
   RxList<CarrierItem> carriersList = <CarrierItem>[].obs;
+
   RxBool listAssigned = false.obs;
 
   final TextEditingController searchController = TextEditingController();
 
   double get listHeight => 190.h;
 
-  late final String callerActivity;
-  late final String name;
-  late final int id;
+  String? callerActivity;
+  String? name;
+  int? id;
 
   @override
   void onInit() {
     Map? args = Get.arguments;
-    if (args == null) {
-      Get.back();
-      throw Exception('Arguments not allowed');
-    }
 
-    callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
-    name = args[Consts.NAME] ?? '';
-    id = args[Consts.ID] ?? 0;
+    callerActivity = args?[Consts.CALLER_ACTIVITY] ?? '';
+    name = args?[Consts.NAME] ?? '';
+    id = args?[Consts.ID] ?? 0;
 
     super.onInit();
     assignInitialData();
   }
 
-  void assignInitialData() {
+  Future<void> assignInitialData() async {
+    await dao.deleteRowsTempTrailerTable();
+    await dao.deleteTempTrailerTemperatureDetails();
+    //clear out temporary selected ItemSKUs
+    appStorage.selectedItemSKUList.clear();
+    await dao.deleteSelectedItemSKUList();
+
     List<CarrierItem>? storedCarriersList = appStorage.getCarrierList();
     if (storedCarriersList == null) {
+      await jsonFileOperations.offlineLoadCarriersData();
       carriersList.value = [];
       filteredCarrierList.value = [];
       listAssigned.value = true;
@@ -67,7 +73,8 @@ class SelectCarrierScreenController extends GetxController {
       update(['carrierList']);
 
       if (filteredCarrierList.length == 1) {
-        navigateToQcHeader(filteredCarrierList.first);
+        // FIXME: Demo purpose only: This is a temporary fix to navigate to QC Header if only one carrier is available
+        // navigateToQcHeader(filteredCarrierList.first);
       }
     }
   }
@@ -77,10 +84,12 @@ class SelectCarrierScreenController extends GetxController {
     if (searchValue.isEmpty) {
       filteredCarrierList.addAll(carriersList);
     } else {
-      filteredCarrierList.value = carriersList
+      List<CarrierItem> data = carriersList
           .where((element) =>
               element.name!.toLowerCase().contains(searchValue.toLowerCase()))
           .toList();
+
+      filteredCarrierList.addAll(data);
     }
     update(['carrierList']);
   }
@@ -111,8 +120,12 @@ class SelectCarrierScreenController extends GetxController {
   }
 
   void navigateToQcHeader(CarrierItem carrier) {
-    Future.delayed(const Duration(milliseconds: 100), () {
-      Get.off(QualityControlHeader(carrier: carrier));
+    Future.delayed(const Duration(milliseconds: 10), () {
+      Get.off(QualityControlHeader(carrier: carrier), arguments: {
+        Consts.CALLER_ACTIVITY: 'TrendingReportActivity',
+        Consts.NAME: carrier.name,
+        Consts.ID: carrier.id
+      });
     });
   }
 

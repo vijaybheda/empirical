@@ -5,7 +5,6 @@ import 'package:pverify/controller/select_supplier_screen_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/qc_header_details.dart';
-import 'package:pverify/ui/components/app_name_header.dart';
 import 'package:pverify/ui/components/bottom_custom_button_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
@@ -34,14 +33,13 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
               leadingWidth: 0,
               centerTitle: false,
               backgroundColor: Theme.of(context).primaryColor,
-              title: const AppNameHeader(),
+              title: HeaderContentView(
+                title: AppStrings.selectPartner,
+                isVersionShow: false,
+              ),
             ),
             body: Column(
               children: [
-                HeaderContentView(
-                  title: AppStrings.selectPartner,
-                  isVersionShow: false,
-                ),
                 const SearchSupplierWidget(),
                 Expanded(flex: 10, child: _partnerListSection(context)),
                 BottomCustomButtonView(

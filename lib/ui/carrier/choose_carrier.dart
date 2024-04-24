@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/select_carrier_screen_controller.dart';
 import 'package:pverify/models/carrier_item.dart';
-import 'package:pverify/ui/components/app_name_header.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
@@ -27,14 +26,13 @@ class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
               leadingWidth: 0,
               centerTitle: false,
               backgroundColor: Theme.of(context).primaryColor,
-              title: const AppNameHeader(),
+              title: HeaderContentView(
+                title: AppStrings.selectCarrier,
+                isVersionShow: false,
+              ),
             ),
             body: Column(
               children: [
-                HeaderContentView(
-                  title: AppStrings.selectCarrier,
-                  isVersionShow: false,
-                ),
                 const SearchCarrierWidget(),
                 Expanded(flex: 10, child: _carrierListSection(context)),
                 FooterContentView(),

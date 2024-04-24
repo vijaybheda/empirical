@@ -197,10 +197,11 @@ class PurchaseOrderScreenController extends GetxController {
     if (value.isEmpty) {
       filteredItemSkuList.addAll(itemSkuList);
     } else {
-      filteredItemSkuList.value = itemSkuList.where((element) {
+      List<FinishedGoodsItemSKU> data = itemSkuList.where((element) {
         return element.name!.toLowerCase().contains(value.toLowerCase()) ||
             element.sku!.toLowerCase().contains(value.toLowerCase());
       }).toList();
+      filteredItemSkuList.addAll(data);
     }
     update(['itemSkuList']);
   }

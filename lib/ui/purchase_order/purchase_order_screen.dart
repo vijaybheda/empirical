@@ -136,7 +136,60 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
       itemBuilder: (context, index) {
         FinishedGoodsItemSKU goodsItem =
             controller.filteredItemSkuList.elementAt(index);
-        return CheckboxListTile(
+        return InkWell(
+          onTap: () {
+            goodsItem = onCheckboxChange(
+                goodsItem, !(goodsItem.isSelected ?? false), controller);
+          },
+          child: Container(
+            margin: const EdgeInsets.only(left: 10, right: 20),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: goodsItem.sku ?? '-',
+                            style: Get.textTheme.bodyMedium?.copyWith(
+                                color: AppColors.white, fontSize: 50.h),
+                          ),
+                          const TextSpan(text: ' '),
+                          TextSpan(
+                            text: goodsItem.name ?? '-',
+                            style: Get.textTheme.bodyMedium?.copyWith(
+                                color: AppColors.primary, fontSize: 50.h),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Transform.scale(
+                  scale: 1.5,
+                  child: Checkbox(
+                    value: goodsItem.isSelected ?? false,
+                    onChanged: (bool? newValue) {
+                      goodsItem =
+                          onCheckboxChange(goodsItem, newValue, controller);
+                    },
+                    fillColor: MaterialStateProperty.all(
+                      (goodsItem.isSelected ?? false)
+                          ? AppColors.primary
+                          : Colors.transparent,
+                    ),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    activeColor: Colors.transparent,
+                    checkColor: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+        /*return CheckboxListTile(
           value: goodsItem.isSelected ?? false,
           visualDensity: VisualDensity.compact,
           contentPadding: EdgeInsets.zero,
@@ -147,40 +200,7 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
               : Colors.transparent),
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           onChanged: (value) {
-            goodsItem = goodsItem.copyWith(isSelected: (value!));
-            goodsItem.uniqueItemId = generateUUID();
-            if (value) {
-              controller.appStorage.selectedItemSKUList.add(goodsItem);
-              controller.appStorage.tempSelectedItemSKUList.add(goodsItem);
-              controller.dao.createSelectedItemSKU(
-                skuId: goodsItem.id,
-                itemSKUCode: goodsItem.sku,
-                poNo: "",
-                lotNo: "",
-                itemSKUName: goodsItem.name,
-                commodityName: goodsItem.commodityName,
-                uniqueId: goodsItem.uniqueItemId!,
-                commodityId: goodsItem.commodityID,
-                description: "",
-                partnerID: goodsItem.partnerId,
-                packDate: "",
-                GTIN: "",
-                partnerName: goodsItem.partnerName,
-                ftl: goodsItem.FTLflag,
-                branded: goodsItem.Branded,
-                dateType: goodsItem.dateType,
-              );
-            } else {
-              controller.appStorage.selectedItemSKUList.remove(goodsItem);
-              controller.appStorage.tempSelectedItemSKUList.remove(goodsItem);
-              controller.dao.deleteSelectedItemSKUByUniqueId(
-                uniqueId: goodsItem.uniqueItemId!,
-                itemId: goodsItem.id,
-                itemCode: goodsItem.sku,
-              );
-            }
-
-            controller.updateCommodityItem(goodsItem);
+            goodsItem = onCheckboxChange(goodsItem, value, controller);
           },
           title: Container(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -202,7 +222,7 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
               ),
             ),
           ),
-        );
+        );*/
       },
       separatorBuilder: (BuildContext context, int index) {
         return Divider(
@@ -214,6 +234,45 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
         );
       },
     );
+  }
+
+  FinishedGoodsItemSKU onCheckboxChange(FinishedGoodsItemSKU goodsItem,
+      bool? value, PurchaseOrderScreenController controller) {
+    goodsItem = goodsItem.copyWith(isSelected: (value!));
+    goodsItem.uniqueItemId = generateUUID();
+    if (value) {
+      controller.appStorage.selectedItemSKUList.add(goodsItem);
+      controller.appStorage.tempSelectedItemSKUList.add(goodsItem);
+      controller.dao.createSelectedItemSKU(
+        skuId: goodsItem.id,
+        itemSKUCode: goodsItem.sku,
+        poNo: "",
+        lotNo: "",
+        itemSKUName: goodsItem.name,
+        commodityName: goodsItem.commodityName,
+        uniqueId: goodsItem.uniqueItemId!,
+        commodityId: goodsItem.commodityID,
+        description: "",
+        partnerID: goodsItem.partnerId,
+        packDate: "",
+        GTIN: "",
+        partnerName: goodsItem.partnerName,
+        ftl: goodsItem.FTLflag,
+        branded: goodsItem.Branded,
+        dateType: goodsItem.dateType,
+      );
+    } else {
+      controller.appStorage.selectedItemSKUList.remove(goodsItem);
+      controller.appStorage.tempSelectedItemSKUList.remove(goodsItem);
+      controller.dao.deleteSelectedItemSKUByUniqueId(
+        uniqueId: goodsItem.uniqueItemId!,
+        itemId: goodsItem.id,
+        itemCode: goodsItem.sku,
+      );
+    }
+
+    controller.updateCommodityItem(goodsItem);
+    return goodsItem;
   }
 }
 

@@ -38,9 +38,9 @@ class BottomCustomButtonView extends StatelessWidget {
               ),
               child: Text(title,
                   style: Get.textTheme.titleLarge!.copyWith(
-                      color: AppColors.black,
+                      color: AppColors.textFieldText_Color,
                       fontSize: 30.sp,
-                      fontWeight: FontWeight.w700)),
+                      fontWeight: FontWeight.bold)),
             ),
           )
         ],

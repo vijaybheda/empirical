@@ -116,10 +116,11 @@ class SelectSupplierScreenController extends GetxController {
     if (searchValue.isEmpty) {
       filteredPartnerList.addAll(partnersList);
     } else {
-      filteredPartnerList.value = partnersList
+      List<PartnerItem> data = partnersList
           .where((element) =>
               element.name!.toLowerCase().contains(searchValue.toLowerCase()))
           .toList();
+      filteredPartnerList.addAll(data);
     }
     update(['partnerList']);
   }
@@ -130,10 +131,11 @@ class SelectSupplierScreenController extends GetxController {
     if (searchValue.isEmpty) {
       filteredNonOpenPartnersList.addAll(nonOpenPartnersList);
     } else {
-      filteredNonOpenPartnersList.value = nonOpenPartnersList
+      List<PartnerItem> data = nonOpenPartnersList
           .where((element) =>
               element.name!.toLowerCase().contains(searchValue.toLowerCase()))
           .toList();
+      filteredNonOpenPartnersList.addAll(data);
     }
     update(['nonOpenPartnerList']);
   }
