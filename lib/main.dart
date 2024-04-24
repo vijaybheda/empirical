@@ -8,6 +8,7 @@ import 'package:pverify/controller/auth_controller.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/services/database/database_helper.dart';
 import 'package:pverify/ui/login_screen.dart';
+import 'package:pverify/ui/photos_selection/photos_selection.dart';
 import 'package:pverify/ui/worksheet/worksheet.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_storage.dart';

@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
-import 'package:pverify/ui/quality_control_header/quality_control_controller.dart';
+import 'package:pverify/controller/quality_control_controller.dart';
 import 'package:pverify/ui/trailer_temp/trailertemp.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
@@ -265,7 +265,9 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
               errorText: '',
               readOnly: readOnly,
               enabled: enabled,
-              onEditingCompleted: () {},
+              onEditingCompleted: () {
+                FocusScope.of(context).unfocus();
+              },
               onChanged: (value) {},
               keyboardType: TextInputType.name,
               hintText: placeHolder,

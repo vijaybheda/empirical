@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_this, non_constant_identifier_names
+
 import 'dart:io';
 
 class InspectionAttachment {
@@ -75,14 +77,11 @@ class PictureData {
     this.createdTime,
     this.savedInDB,
   });
+
+  void setData(
+      int? attachment_id, String? file_location, bool savedInDB, File pic) {
+    this.pictureId = attachment_id;
+    this.pathToPhoto = file_location;
+    this.savedInDB = savedInDB;
+  }
 }
-
-/*
-        private Long pictureId;
-        private String photoTitle;
-        private String pathToPhoto;
-        private Bitmap photoBitmap;
-        private boolean savedInDB;
-        private int createdTime;
-
-*/

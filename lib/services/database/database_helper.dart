@@ -539,5 +539,6 @@ final class BaseColumns {
   BaseColumns();
 
   static const String ID = "_id";
+  static const int ID2 = 0;
   static const String COUNT = "count";
 }

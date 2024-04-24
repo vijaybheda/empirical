@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pverify/ui/Home/home_controller.dart';
+import 'package:pverify/controller/home_controller.dart';
 import 'package:pverify/ui/carrier/choose_carrier.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/utils/app_const.dart';
@@ -334,7 +334,7 @@ class Home extends GetView<HomeController> {
         customButton(
             AppColors.primary,
             AppStrings.inspectNewProduct.toUpperCase(),
-            320,
+            520.w,
             125,
             GoogleFonts.poppins(
                 fontSize: 38.sp,

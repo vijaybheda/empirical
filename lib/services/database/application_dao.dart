@@ -1,10 +1,11 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers, use_rethrow_when_possible, prefer_adjacent_string_concatenation, prefer_interpolation_to_compose_strings, unused_local_variable, unnecessary_brace_in_string_interps, non_constant_identifier_names, unnecessary_string_interpolations, unrelated_type_equality_checks
+// ignore_for_file: no_leading_underscores_for_local_identifiers, use_rethrow_when_possible, prefer_adjacent_string_concatenation, prefer_interpolation_to_compose_strings, unused_local_variable, unnecessary_brace_in_string_interps, non_constant_identifier_names, unnecessary_string_interpolations, unrelated_type_equality_checks, unnecessary_cast
 
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:csv/csv.dart';
+import 'package:flutter/material.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/inspection_attachment.dart';
@@ -235,23 +236,6 @@ class ApplicationDao {
   Future<int> createInspectionAttachment(InspectionAttachment attachment,
       photoTitle, createdTime, pathToPhoto) async {
     final Database db = dbProvider.lazyDatabase;
-    // var res =
-    //     await db.insert(DBTables.INSPECTION_ATTACHMENT, attachment.toMap());
-
-    /*  var sampleId = await db.insert(
-      DBTables.INSPECTION_ATTACHMENT,
-      {
-        InspectionDefectAttachmentColumn.ID: [BaseColumns.ID],
-        InspectionDefectAttachmentColumn.INSPECTION_ID:
-            attachment.Inspection_ID,
-        InspectionDefectAttachmentColumn.ATTACHMENT_ID:
-            attachment.Attachment_ID,
-        InspectionDefectAttachmentColumn.CREATED_TIME: attachment.CREATED_TIME,
-        InspectionDefectAttachmentColumn.FILE_LOCATION:
-            attachment.FILE_LOCATION,
-      },
-    );
-    return sampleId;*/
 
     int attachmentId = 0;
     try {
@@ -301,7 +285,7 @@ class ApplicationDao {
       int inspectionId) async {
     final Database db = dbProvider.lazyDatabase;
     List<Map> maps = await db.query(DBTables.INSPECTION_ATTACHMENT,
-        where: '${InspectionAttachmentColumn.INSPECTION_ID} = ?',
+        where: '${InspectionDefectAttachmentColumn.INSPECTION_ID} = ?',
         whereArgs: [inspectionId]);
     List<InspectionAttachment> attachments = [];
     if (maps.isNotEmpty) {
@@ -316,11 +300,25 @@ class ApplicationDao {
   Future<InspectionAttachment?> findAttachmentByAttachmentId(
       int attachmentId) async {
     final Database db = dbProvider.lazyDatabase;
-    List<Map> maps = await db.query(DBTables.INSPECTION_ATTACHMENT,
-        where: '${BaseColumns.ID} = ?', whereArgs: [attachmentId]);
-    if (maps.isNotEmpty) {
-      return InspectionAttachment.fromMap(maps.first as Map<String, dynamic>);
+    // List<Map> maps = await db.query(DBTables.INSPECTION_ATTACHMENT,
+    //     where: '${int.tryParse(BaseColumns.ID)} = ?',
+    //     whereArgs: [attachmentId]);
+
+    String query = "SELECT * FROM " +
+        DBTables.INSPECTION_ATTACHMENT +
+        " WHERE " +
+        BaseColumns.ID.toString() +
+        " = " +
+        attachmentId.toString();
+    List<Map<String, dynamic>> result = await db.rawQuery(query);
+
+    if (result.isNotEmpty) {
+      return InspectionAttachment.fromMap(result.first as Map<String, dynamic>);
     }
+
+    // if (maps.isNotEmpty) {
+    //   return InspectionAttachment.fromMap(maps.first as Map<String, dynamic>);
+    // }
     return null;
   }
 
@@ -3466,6 +3464,7 @@ class ApplicationDao {
       });
     } catch (e) {
       log('Error has occurred while deleting a trailer temperature entries: $e');
+
       rethrow;
     }
   }

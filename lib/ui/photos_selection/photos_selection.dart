@@ -10,6 +10,7 @@ import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/header/header.dart';
+import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
@@ -46,7 +47,8 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
     return GetBuilder<PhotoSelectionController>(
         init: PhotoSelectionController(),
         builder: (controller) {
-          controller.inspectionId = inspectionId;
+          Map<String, dynamic> passingData = Get.arguments;
+          controller.inspectionId = passingData[Consts.INSPECTION_ID];
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
             resizeToAvoidBottomInset: false,
@@ -138,7 +140,7 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
             ],
           ),
         ),
-        FooterContentView()
+        // FooterContentView()
       ],
     );
   }

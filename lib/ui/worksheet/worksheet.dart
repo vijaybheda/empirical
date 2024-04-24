@@ -180,7 +180,9 @@ class Worksheet extends GetView<WorksheetController> {
                                       .sizeOfNewSetTextController.value,
                                   onTap: () {},
                                   errorText: '',
-                                  onEditingCompleted: () {},
+                                  onEditingCompleted: () {
+                                    FocusScope.of(context).unfocus();
+                                  },
                                   onChanged: (value) {},
                                   keyboardType: TextInputType.number,
                                   hintText: AppStrings.sizeOfNewSample,
@@ -690,7 +692,9 @@ Widget defectRow({
                   defectItem?.injuryTextEditingController?.text = '';
                 },
                 errorText: '',
-                onEditingCompleted: () {},
+                onEditingCompleted: () {
+                  FocusScope.of(context).unfocus();
+                },
                 onChanged: (v) {
                   controller.onTextChange(
                     value: v,
@@ -712,7 +716,9 @@ Widget defectRow({
                   defectItem?.damageTextEditingController?.text = '';
                 },
                 errorText: '',
-                onEditingCompleted: () {},
+                onEditingCompleted: () {
+                  FocusScope.of(context).unfocus();
+                },
                 onChanged: (v) {
                   controller.onTextChange(
                     value: v,
@@ -734,7 +740,9 @@ Widget defectRow({
                   defectItem?.sDamageTextEditingController?.text = '';
                 },
                 errorText: '',
-                onEditingCompleted: () {},
+                onEditingCompleted: () {
+                  FocusScope.of(context).unfocus();
+                },
                 onChanged: (v) {
                   controller.onTextChange(
                     value: v,
@@ -756,7 +764,9 @@ Widget defectRow({
                   defectItem?.vsDamageTextEditingController?.text = '';
                 },
                 errorText: '',
-                onEditingCompleted: () {},
+                onEditingCompleted: () {
+                  FocusScope.of(context).unfocus();
+                },
                 onChanged: (v) {
                   controller.onTextChange(
                     value: v,
@@ -778,7 +788,9 @@ Widget defectRow({
                   defectItem?.decayTextEditingController?.text = '';
                 },
                 errorText: '',
-                onEditingCompleted: () {},
+                onEditingCompleted: () {
+                  FocusScope.of(context).unfocus();
+                },
                 onChanged: (v) {
                   controller.onTextChange(
                     value: v,
