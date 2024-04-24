@@ -48,13 +48,12 @@ class CacheDownloadService extends BaseRequestService {
         try {
           await directory.delete();
           log('Deleted directory: ${directory.path}');
-          return null;
         } catch (e) {
           log('Error deleting directory ${directory.path}: $e');
           return null;
         }
       }
-      directory.createSync(recursive: true);
+      await directory.create(recursive: true);
 
       File? savedZipFile =
           await downloadFile(requestUrl, directory.path, fileName: 'file.zip');

@@ -87,11 +87,18 @@ class BaseRequestService extends GetConnect {
         // await LoginServices.unAuthorizedRedirection(message);
         throw CustomException(message);
       case null:
-        if ((response.statusText ?? "").contains(timeOut) ||
-            (response.statusText ?? "").contains(timeOut2)) {
-          throw CustomException("Timeout, Please try again after some time.");
-        } else if ((response.statusText ?? "").startsWith(platformException)) {
-          throw CustomException("Please check your internet connection.");
+        if ((response.statusText ?? "").contains('SocketException')) {
+          throw CustomException(
+              "Looks like there's a problem connecting to the network. Please check your internet connection and try again.");
+        } else if ((response.statusText ?? "").contains('FormatException')) {
+          throw CustomException(
+              "Oops! Something went wrong while processing the data from the server. Please try again later.");
+        } else if ((response.statusText ?? "").contains('TimeoutException')) {
+          throw CustomException(
+              "Oh no! It seems like the request took too long to complete. Please check your internet connection and try again.");
+        } else if ((response.statusText ?? "").contains('ClientException')) {
+          throw CustomException(
+              "Looks like there's an issue with your request. Please double-check your information and try again.");
         }
         throw CustomException(response.statusText!);
       default:

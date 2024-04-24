@@ -31,18 +31,13 @@ class AuthController extends GetxController {
   final AppStorage appStorage = AppStorage.instance;
   final JsonFileOperations jsonFileOperations = JsonFileOperations.instance;
   final ApplicationDao dao = ApplicationDao();
-  int wifiLevel = 0;
+  late final GlobalConfigController globalConfigController;
 
   @override
   void onInit() {
     super.onInit();
     Get.lazyPut(() => GlobalConfigController(), fenix: true);
-    final GlobalConfigController globalConfigController =
-        Get.find<GlobalConfigController>();
-
-    globalConfigController.wifiLevelStream.listen((value) {
-      wifiLevel = value;
-    });
+    globalConfigController = Get.find<GlobalConfigController>();
 
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       // request for storage permission
@@ -246,7 +241,7 @@ class AuthController extends GetxController {
   Future<void> downloadCloudData(BuildContext context) async {
     if (appStorage.getBool(StorageKey.kIsCSVDownloaded1) == false) {
       if (await Utils.hasInternetConnection()) {
-        if (wifiLevel >= 2) {
+        if (globalConfigController.wifiLevel >= 2) {
           await appStorage.setBool(StorageKey.kIsCSVDownloaded1, true);
           await appStorage.setInt(
               StorageKey.kCacheDate, DateTime.now().millisecondsSinceEpoch);
