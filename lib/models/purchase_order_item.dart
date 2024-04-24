@@ -7,7 +7,8 @@ class PurchaseOrderItem {
   int? commodityId;
   String? commodityName;
   String? packDate;
-  String? ftl, Branded;
+  String? ftl;
+  String? branded;
 
   PurchaseOrderItem({
     required this.description,
@@ -19,7 +20,7 @@ class PurchaseOrderItem {
     required this.commodityName,
     required this.packDate,
     required this.ftl,
-    required this.Branded,
+    required this.branded,
   });
 
   PurchaseOrderItem.newData(
@@ -31,8 +32,8 @@ class PurchaseOrderItem {
       int? commodityId,
       String? commodityName,
       String? packDate,
-      String? Ftl,
-      String? Branded) {
+      String? ftl,
+      String? branded) {
     this.description = description;
     this.sku = sku;
     this.poNumber = poNumber;
@@ -41,8 +42,8 @@ class PurchaseOrderItem {
     this.commodityId = commodityId;
     this.commodityName = commodityName;
     this.packDate = packDate;
-    this.ftl = Ftl;
-    this.Branded = Branded;
+    this.ftl = ftl;
+    this.branded = branded;
   }
 
   PurchaseOrderItem copyWith({
@@ -67,7 +68,7 @@ class PurchaseOrderItem {
       commodityName: commodityName ?? this.commodityName,
       packDate: packDate ?? this.packDate,
       ftl: ftl ?? this.ftl,
-      Branded: Branded ?? this.Branded,
+      branded: Branded ?? branded,
     );
   }
 
@@ -82,7 +83,7 @@ class PurchaseOrderItem {
       commodityName: json['commodityName'],
       packDate: json['packDate'],
       ftl: json['Ftl'],
-      Branded: json['Branded'],
+      branded: json['Branded'],
     );
   }
 
@@ -97,7 +98,7 @@ class PurchaseOrderItem {
       'commodityName': commodityName,
       'packDate': packDate,
       'Ftl': ftl,
-      'Branded': Branded,
+      'Branded': branded,
     };
   }
 }

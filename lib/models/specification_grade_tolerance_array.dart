@@ -42,14 +42,10 @@ class SpecificationGradeToleranceArray {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['specificationGradeToleranceList'] =
-        this.specificationGradeToleranceList != null
-            ? this
-                .specificationGradeToleranceList!
-                .map((v) => v.toJson())
-                .toList()
-            : null;
-    data['specificationNumber'] = this.specificationNumber;
-    data['specificationVersion'] = this.specificationVersion;
+        specificationGradeToleranceList?.map((v) => v.toJson())
+                .toList();
+    data['specificationNumber'] = specificationNumber;
+    data['specificationVersion'] = specificationVersion;
     return data;
   }
 }

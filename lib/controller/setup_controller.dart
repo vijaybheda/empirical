@@ -16,10 +16,6 @@ class SetupController extends GetxController {
     selectetdDateFormat.value = value;
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-  }
 
   // SETUP SCREEN VALIDATION'S
 

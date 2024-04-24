@@ -288,7 +288,7 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
 }
 
 class _SearchGradingStandardWidget extends StatelessWidget {
-  const _SearchGradingStandardWidget({super.key});
+  const _SearchGradingStandardWidget();
 
   @override
   Widget build(BuildContext context) {

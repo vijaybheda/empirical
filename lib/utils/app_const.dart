@@ -5,10 +5,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pverify/services/network_request_service/file_service.dart';
 import 'package:pverify/utils/enumeration.dart';
 import 'package:pverify/utils/theme/magic_number.dart';
 
@@ -170,26 +168,6 @@ Future<String> saveAssetImageToFile(String assetImagePath) async {
 
 Future<ByteData> loadImageFromAssets(String path) async {
   return await rootBundle.load(path);
-}
-
-Future<String> saveImage(imageNetworkUrl) async {
-  // await FileService.requestFilePermission();
-  if (imageNetworkUrl.isEmpty) {
-    ByteData data = await loadImageFromAssets('assets/app_images/app_icon.png');
-    String path = await FileService.getDownloadDirectory();
-    File file = File('${path}bigPicture.png');
-    if (await file.exists()) {
-      return file.path;
-    }
-    await file.writeAsBytes(data.buffer.asUint8List());
-    return file.path;
-  } else {
-    final http.Response response = await http.get(Uri.parse(imageNetworkUrl));
-    String path = await FileService.getDownloadDirectory();
-    File file = File('$path${imageNetworkUrl.split('/').last}');
-    await file.writeAsBytes(response.bodyBytes);
-    return file.path;
-  }
 }
 
 String filterFileName(String url) {

@@ -2,10 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/trailer_temp.dart';
-import 'package:pverify/models/trailer_temperature_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/trailer_temp/trailertemp_class.dart';
 import 'package:pverify/ui/trailer_temp/trailertemprature_details.dart';

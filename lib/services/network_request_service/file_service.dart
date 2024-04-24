@@ -2,10 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
-// import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
-// import 'package:file_picker/file_picker.dart';
-import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:pverify/services/network_request_service/api_urls.dart';
 import 'package:pverify/utils/app_snackbar.dart';
@@ -269,31 +266,5 @@ class FileService {
       AppSnackBar.getCustomSnackBar("Error", "Something went wrong",
           isSuccess: false);
     }
-  }
-}
-
-class MultipartRequest extends http.MultipartRequest {
-  MultipartRequest(
-    super.method,
-    super.url, {
-    required this.onProgress,
-  });
-
-  final void Function(int bytes, int totalBytes) onProgress;
-  @override
-  http.ByteStream finalize() {
-    final byteStream = super.finalize();
-    final total = contentLength;
-    int bytes = 0;
-
-    final t = StreamTransformer.fromHandlers(
-      handleData: (List<int> data, EventSink<List<int>> sink) {
-        bytes += data.length;
-        onProgress.call(bytes, total);
-        sink.add(data);
-      },
-    );
-    final stream = byteStream.transform(t);
-    return http.ByteStream(stream);
   }
 }
