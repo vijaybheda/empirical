@@ -44,10 +44,10 @@ class HeaderController extends GetxController {
     _networkConnectivityIOS.onConnectivityChanged.listen(
       (result) async {
         try {
-          ConnectivityResult connectivityResult =
+          List<ConnectivityResult> connectivityResult =
               await Connectivity().checkConnectivity();
           hasStableInternet.value =
-              (connectivityResult == ConnectivityResult.wifi);
+              (connectivityResult.contains(ConnectivityResult.wifi));
 
           wifiImage1.value = hasStableInternet.value
               ? AppImages.ic_Wifi_bar_3
@@ -132,23 +132,43 @@ class NetworkConnectivity {
   Stream get myStream => _controller.stream;
   // 1.
   void initialise() async {
-    ConnectivityResult result = await _networkConnectivity.checkConnectivity();
-    _checkStatus(result);
+    List<ConnectivityResult> results =
+        await _networkConnectivity.checkConnectivity();
+    _checkStatus(results);
     _networkConnectivity.onConnectivityChanged.listen((result) {
       _checkStatus(result);
     });
   }
 
 // 2.
-  void _checkStatus(ConnectivityResult result) async {
+  void _checkStatus(List<ConnectivityResult> results) async {
     bool isOnline = false;
-    try {
-      final result = await InternetAddress.lookup('example.com');
-      isOnline = result.isNotEmpty && result[0].rawAddress.isNotEmpty;
-    } on SocketException catch (_) {
-      isOnline = false;
+    bool isWifi = false;
+
+    // Checking if any of the results indicate online connectivity
+    for (var result in results) {
+      if (result != ConnectivityResult.none) {
+        isOnline = true;
+        if (result == ConnectivityResult.wifi) {
+          isWifi = true;
+        }
+        break;
+      }
     }
-    _controller.sink.add({result: isOnline});
+
+    // Checking if device is online by attempting to resolve a domain
+    if (isOnline) {
+      try {
+        final lookupResult = await InternetAddress.lookup('example.com');
+        isOnline =
+            lookupResult.isNotEmpty && lookupResult[0].rawAddress.isNotEmpty;
+      } on SocketException catch (_) {
+        isOnline = false;
+      }
+    }
+
+    _controller.sink.add(
+        {ConnectivityResult.none: !isOnline, ConnectivityResult.wifi: isWifi});
   }
 
   void disposeStream() => _controller.close();

@@ -6,7 +6,6 @@ import 'dart:math' as math;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 // import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -88,6 +87,28 @@ class Utils {
   }*/
 
   static Future<bool> hasInternetConnection() async {
+    try {
+      List<ConnectivityResult> connectivityResults =
+          await Connectivity().checkConnectivity();
+
+      // Iterating through the list of connectivity results to check for any connection
+      for (var connectivityResult in connectivityResults) {
+        if (connectivityResult == ConnectivityResult.mobile ||
+            connectivityResult == ConnectivityResult.wifi) {
+          // Device is connected to either mobile or WiFi network
+          return true;
+        }
+      }
+
+      // No valid connection found
+      return false;
+    } catch (_) {
+      // Error occurred, assuming offline
+      return false;
+    }
+  }
+
+  /*static Future<bool> hasInternetConnection() async {
     bool isOffline;
     try {
       ConnectivityResult connectivityResult =
@@ -111,7 +132,7 @@ class Utils {
       isOffline = false;
       return isOffline;
     }
-  }
+  }*/
 
   static String formatDate(DateTime? date) {
     if (date == null) return '';

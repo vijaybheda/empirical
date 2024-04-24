@@ -105,10 +105,10 @@ class GlobalConfigController extends GetxController {
         _wifiLevelController.add(networkStrength ?? 0);
         update();
       } else if (Platform.isIOS) {
-        ConnectivityResult connectivityResult =
+        List<ConnectivityResult> connectivityResult =
             await Connectivity().checkConnectivity();
         hasStableInternet.value =
-            (connectivityResult == ConnectivityResult.wifi);
+            (connectivityResult.contains(ConnectivityResult.wifi));
 
         wifiLevel.value = hasStableInternet.value ? 3 : 0;
         _hasStableInternetController.add(hasStableInternet.value);
