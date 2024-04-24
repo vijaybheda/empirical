@@ -140,11 +140,11 @@ class PurchaseOrderDetailsController extends GetxController {
       var items = itemSkuList.where((element) {
         String? sku = element.sku;
         String? description = element.description;
+        String searchKey = searchValue.toLowerCase();
 
-        return (sku != null &&
-                sku.toLowerCase().contains(searchValue.toLowerCase())) ||
+        return (sku != null && sku.toLowerCase().contains(searchKey)) ||
             (description != null &&
-                description.toLowerCase().contains(searchValue.toLowerCase()));
+                description.toLowerCase().contains(searchKey));
       }).toList();
       filteredInspectionsList.addAll(items);
     }

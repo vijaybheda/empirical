@@ -32,6 +32,7 @@ class CommodityIDScreenController extends GetxController {
   late final String cteType;
 
   final TextEditingController searchController = TextEditingController();
+
   CommodityIDScreenController({
     required this.partner,
     required this.carrier,
@@ -107,13 +108,14 @@ class CommodityIDScreenController extends GetxController {
     if (searchValue.isEmpty) {
       filteredCommodityList.addAll(commodityList);
     } else {
-      var items = commodityList
-          .where((element) =>
-              element.keywords != null &&
-              element.keywords!
-                  .toLowerCase()
-                  .contains(searchValue.toLowerCase()))
-          .toList();
+      var items = commodityList.where((element) {
+        String? keywords = element.keywords;
+        String? name = element.name;
+        String searchKey = searchValue.trim().toLowerCase();
+        return (keywords != null &&
+                keywords.toLowerCase().contains(searchKey)) ||
+            (name != null && name.toLowerCase().contains(searchKey));
+      }).toList();
       filteredCommodityList.addAll(items);
     }
     update(['commodityList']);
