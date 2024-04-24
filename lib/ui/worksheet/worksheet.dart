@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/worksheet_controller.dart';
 import 'package:pverify/models/defect_item.dart';
+import 'package:pverify/ui/components/footer_content_view.dart';
+import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/photos_selection/photos_selection.dart';
 import 'package:pverify/ui/worksheet/special_instructions.dart';
 import 'package:pverify/ui/worksheet/table_dialog.dart';
@@ -11,7 +13,6 @@ import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
-import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -36,7 +37,7 @@ class Worksheet extends GetView<WorksheetController> {
               automaticallyImplyLeading: false,
               toolbarHeight: 150.h,
               backgroundColor: AppColors.primary,
-              title: baseHeaderView(AppStrings.trailerTempRange, false),
+              title: HeaderContentView(title: AppStrings.trailerTempRange),
             ),
             body: Container(
               color: Theme.of(context).colorScheme.background,
@@ -495,9 +496,9 @@ class Worksheet extends GetView<WorksheetController> {
             ],
           ),
         ),
-        // FooterContentView(
-        //   hasLeftButton: false,
-        // )
+        FooterContentView(
+          hasLeftButton: false,
+        )
       ],
     );
   }

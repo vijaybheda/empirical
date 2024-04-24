@@ -46,44 +46,39 @@ class GlobalConfigController extends GetxController {
         debugPrint('_wifiLevel $wifiLevel');
       });
     });
+    // _streamSubscription = Stream.periodic(const Duration(seconds: 5), (x) => x)
+    //     .listen((event) async {
+    //   await checkInternet();
+    // });
   }
 
-  // void _eventChannelStartListener() {
-  //   _streamSubscription = stream.receiveBroadcastStream().listen(_listenStream);
-  // }
-
-  // void _listenStream(value) {
-  //   hasStableInternet.value = value;
-  //   _hasStableInternetController.add(hasStableInternet.value);
-  //   _wifiLevelController.add(hasStableInternet.value ? 3 : 0);
-  // }
-
-  Future<int?> networkChecker() async {
-    final int wifiSignal = await internetSignal.getWifiSignalStrength() ?? 0;
-
-    if (wifiSignal <= -50 && wifiSignal >= -60) {
-      return 4;
-    } else if (wifiSignal <= -61 && wifiSignal >= -70) {
-      return 3;
-    } else if (wifiSignal <= -71 && wifiSignal >= -80) {
-      return 2;
-    } else if (wifiSignal <= -81 && wifiSignal >= -90) {
-      return 1;
-    } else if (wifiSignal <= -91) {
-      return null;
+  Future<int> networkChecker() async {
+    final int? wifiSignal = await internetSignal.getWifiSignalStrength();
+    // log('wifiSignal $wifiSignal');
+    if (wifiSignal != null) {
+      if (wifiSignal >= -50) {
+        return 4;
+      } else if (wifiSignal >= -60) {
+        return 3;
+      } else if (wifiSignal >= -70) {
+        return 2;
+      } else if (wifiSignal >= -80) {
+        return 1;
+      } else {
+        return 0;
+      }
     } else {
-      return 4;
+      return 0;
     }
   }
 
   Future<void> checkInternet() async {
     if (Platform.isAndroid) {
       int? networkStrength = await networkChecker();
-      hasStableInternet.value =
-          (networkStrength != null && networkStrength > 2);
+      hasStableInternet.value = (networkStrength > 2);
       _hasStableInternetController.add(hasStableInternet.value);
-      wifiLevel.value = networkStrength ?? 0;
-      _wifiLevelController.add(networkStrength ?? 0);
+      wifiLevel.value = networkStrength;
+      _wifiLevelController.add(networkStrength);
       update();
     }
 
@@ -98,11 +93,10 @@ class GlobalConfigController extends GetxController {
           return;
         }
         int? networkStrength = await networkChecker();
-        hasStableInternet.value =
-            (networkStrength != null && networkStrength > 2);
+        hasStableInternet.value = (networkStrength > 2);
         _hasStableInternetController.add(hasStableInternet.value);
-        wifiLevel.value = networkStrength ?? 0;
-        _wifiLevelController.add(networkStrength ?? 0);
+        wifiLevel.value = networkStrength;
+        _wifiLevelController.add(networkStrength);
         update();
       } else if (Platform.isIOS) {
         List<ConnectivityResult> connectivityResult =
@@ -130,14 +124,14 @@ class GlobalConfigController extends GetxController {
     super.onReady();
   }
 
-  /* @override
+  @override
   void dispose() {
     log('GlobalConfigController dispose');
     // _streamSubscription.cancel();
     _hasStableInternetController.close();
     _wifiLevelController.close();
     super.dispose();
-  }*/
+  }
 
   @override
   void onClose() {

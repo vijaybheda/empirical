@@ -79,45 +79,6 @@ class CacheDownloadService extends BaseRequestService {
         }
       }
 
-      // final response = await getCall(requestUrl, headers: headerMap);
-
-      /*if (response.statusCode == HttpStatus.ok) {
-        var storagePath = await Utils().getExternalStoragePath();
-        final Directory directory =
-            Directory("$storagePath/${FileManString.csvFilesCache}/");
-        if (directory.existsSync()) {
-          directory.deleteSync(recursive: true);
-        }
-        directory.createSync(recursive: true);
-
-        final List<int> bytes = [];
-        await response.bodyBytes?.forEach((chunk) {
-          bytes.addAll(chunk);
-        });
-
-        final zipInputStream = ZipDecoder().decodeBytes(bytes);
-
-        for (ArchiveFile zipEntry in zipInputStream) {
-          log('Extracting: ${zipEntry.name}');
-          final innerFileName = '${directory.path}/${zipEntry.name}';
-          final innerFile = File(innerFileName);
-
-          if (!zipEntry.isFile) {
-            await innerFile.create(recursive: true);
-          } else {
-            await innerFile.create(recursive: true);
-            await innerFile.writeAsBytes(zipEntry.content);
-          }
-        }
-
-        return File(directory.path);
-      } else if (response.statusCode == HttpStatus.unauthorized) {
-        log('Error in downloadZip: 401 Unauthorized');
-      } else if (response.statusCode == HttpStatus.notFound) {
-        log('Error in downloadZip: 404 Not Found');
-      } else {
-        log('Error in downloadZip: ${response.statusCode}');
-      }*/
       return savedZipFile;
     } catch (e) {
       log('Error in downloadZip');

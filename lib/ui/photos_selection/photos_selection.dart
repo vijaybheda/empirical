@@ -5,11 +5,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
+import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/photos_selection/photos_selection_controller.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
-import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
@@ -54,7 +54,7 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
               automaticallyImplyLeading: false,
               toolbarHeight: 150.h,
               backgroundColor: AppColors.primary,
-              title: baseHeaderView(AppStrings.trailerTempRange, false),
+              title: HeaderContentView(title: AppStrings.trailerTempRange),
             ),
             body: Container(
               color: Theme.of(context).colorScheme.background,

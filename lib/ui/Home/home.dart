@@ -1,7 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, avoid_types_as_parameter_names, must_be_immutable, avoid_unnecessary_containers, unrelated_type_equality_checks, unused_element, sized_box_for_whitespace
 
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -9,11 +7,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/ui/Home/home_controller.dart';
 import 'package:pverify/ui/carrier/choose_carrier.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
+import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
-import 'package:pverify/utils/common_widget/header/header.dart';
-import 'package:pverify/utils/dialogs/user_logout.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
@@ -32,7 +29,7 @@ class Home extends GetView<HomeController> {
               automaticallyImplyLeading: false,
               toolbarHeight: 150.h,
               backgroundColor: AppColors.primary,
-              title: baseHeaderView(AppStrings.home, false),
+              title: HeaderContentView(title: AppStrings.home),
             ),
             body: Container(
                 color: Theme.of(context).colorScheme.background,
@@ -346,7 +343,6 @@ class Home extends GetView<HomeController> {
         SizedBox(
           height: 35.h,
         ),
-        // bottomContent(context)
         FooterContentView(
           hasLeftButton: false,
         )
@@ -652,57 +648,5 @@ class Home extends GetView<HomeController> {
       );
     }
     return indicators;
-  }
-
-  // BOTTOM VIEW
-
-  Widget bottomContent(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(left: 15, right: 15),
-      height: 120.h,
-      color: AppColors.primary,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Spacer(),
-          Text(
-            AppStrings.data0DaysOld,
-            style: GoogleFonts.poppins(
-                fontSize: 40.sp,
-                fontWeight: FontWeight.bold,
-                textStyle: TextStyle(color: AppColors.white)),
-          ),
-          SizedBox(
-            width: 40.w,
-          ),
-          InkWell(
-            onTap: () {
-              debugPrint('Download button tap.');
-            },
-            child: Image.asset(
-              AppImages.ic_download,
-              width: 80.w,
-              height: 80.h,
-            ),
-          ),
-          const Spacer(),
-          InkWell(
-            onTap: () {
-              UserLogoutDialog.showLogoutConfirmation(context, onYesTap: () {
-                log('Logout button tap.');
-              });
-            },
-            child: Text(
-              AppStrings.logOut,
-              style: GoogleFonts.poppins(
-                  fontSize: 35.sp,
-                  fontWeight: FontWeight.bold,
-                  textStyle: TextStyle(color: AppColors.textFieldText_Color)),
-            ),
-          )
-        ],
-      ),
-    );
   }
 }

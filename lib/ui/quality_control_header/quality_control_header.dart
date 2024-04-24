@@ -8,11 +8,11 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
+import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/quality_control_header/quality_control_controller.dart';
 import 'package:pverify/ui/trailer_temp/trailertemp.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
-import 'package:pverify/utils/common_widget/header/header.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -47,7 +47,7 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
           automaticallyImplyLeading: false,
           toolbarHeight: 150.h,
           backgroundColor: AppColors.primary,
-          title: baseHeaderView(AppStrings.quality_control_header, false),
+          title: HeaderContentView(title: AppStrings.quality_control_header),
         ),
         body: Container(
             color: Theme.of(context).colorScheme.background,
