@@ -25,6 +25,8 @@ class AppStrings {
   static const String userNameValid = 'Please enter valid username.';
   static const String error = 'Error!';
   static const String success = 'Success';
+  static const String pic1NotSave =
+      'There is 1 picture not saved, are you sure you want to go back?';
 
   static const String inspectionMenu = 'Inspection Menu';
   static const String cacheupdate = 'Cache updated successfully';

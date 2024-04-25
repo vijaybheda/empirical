@@ -6,7 +6,7 @@ import 'package:pverify/controller/worksheet_controller.dart';
 import 'package:pverify/models/defect_item.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
-import 'package:pverify/ui/photos_selection/photos_selection.dart';
+import 'package:pverify/ui/inspection_photos/inspection_photos_screen.dart';
 import 'package:pverify/ui/worksheet/special_instructions.dart';
 import 'package:pverify/ui/worksheet/table_dialog.dart';
 import 'package:pverify/utils/app_const.dart';
@@ -808,7 +808,7 @@ Widget defectRow({
               flex: 1,
               child: GestureDetector(
                 onTap: () {
-                  Get.to(const PhotosSelection());
+                  Get.to(const InspectionPhotos());
                 },
                 child: Icon(
                   Icons.photo_camera,

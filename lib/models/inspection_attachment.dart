@@ -6,15 +6,15 @@ class InspectionAttachment {
   int? id; // SQLite row id
   int Inspection_ID;
   int? Attachment_ID;
-  String? ATTACHMENT_TITLE;
-  int? CREATED_TIME;
+  String? Attachment_Title;
+  String? CREATED_TIME;
   String? FILE_LOCATION;
 
   InspectionAttachment({
     this.id,
     required this.Inspection_ID,
     required this.Attachment_ID,
-    required this.ATTACHMENT_TITLE,
+    required this.Attachment_Title,
     required this.CREATED_TIME,
     required this.FILE_LOCATION,
   });
@@ -24,9 +24,9 @@ class InspectionAttachment {
       'id': id,
       'Inspection_ID': Inspection_ID,
       'Attachment_ID': Attachment_ID,
-      'ATTACHMENT_TITLE': ATTACHMENT_TITLE,
-      'CREATED_TIME': CREATED_TIME,
-      'FILE_LOCATION': FILE_LOCATION,
+      'Attachment_Title': Attachment_Title,
+      'Created_Time': CREATED_TIME,
+      'File_Location': FILE_LOCATION,
     };
   }
 
@@ -35,9 +35,9 @@ class InspectionAttachment {
       id: map['id'],
       Inspection_ID: map['Inspection_ID'],
       Attachment_ID: map['Attachment_ID'],
-      ATTACHMENT_TITLE: map['ATTACHMENT_TITLE'],
-      CREATED_TIME: map['CREATED_TIME'],
-      FILE_LOCATION: map['FILE_LOCATION'],
+      Attachment_Title: map['Attachment_Title'],
+      CREATED_TIME: map['Created_Time'],
+      FILE_LOCATION: map['File_Location'],
     );
   }
 
@@ -47,14 +47,14 @@ class InspectionAttachment {
     int? Inspection_ID,
     int? Attachment_ID,
     String? ATTACHMENT_TITLE,
-    int? CREATED_TIME,
+    String? CREATED_TIME,
     String? FILE_LOCATION,
   }) {
     return InspectionAttachment(
       id: id ?? this.id,
       Inspection_ID: Inspection_ID ?? this.Inspection_ID,
       Attachment_ID: Attachment_ID ?? this.Attachment_ID,
-      ATTACHMENT_TITLE: ATTACHMENT_TITLE ?? this.ATTACHMENT_TITLE,
+      Attachment_Title: ATTACHMENT_TITLE ?? this.Attachment_Title,
       CREATED_TIME: CREATED_TIME ?? this.CREATED_TIME,
       FILE_LOCATION: FILE_LOCATION ?? this.FILE_LOCATION,
     );
@@ -63,7 +63,7 @@ class InspectionAttachment {
 
 class PictureData {
   int? pictureId;
-  String? photoTitle;
+  String? Attachment_Title;
   String? pathToPhoto;
   File? image;
   int? createdTime;
@@ -71,7 +71,7 @@ class PictureData {
 
   PictureData({
     this.pictureId,
-    this.photoTitle,
+    this.Attachment_Title,
     this.pathToPhoto,
     this.image,
     this.createdTime,
@@ -83,5 +83,6 @@ class PictureData {
     this.pictureId = attachment_id;
     this.pathToPhoto = file_location;
     this.savedInDB = savedInDB;
+    this.image = pic;
   }
 }

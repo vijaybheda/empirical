@@ -23,6 +23,7 @@ import 'package:pverify/utils/utils.dart';
 
 class FooterContentView extends StatelessWidget {
   final void Function()? onDownloadTap;
+  final void Function()? onBackTap;
 
   final ApplicationDao dao = ApplicationDao();
   final AppStorage appStorage = AppStorage.instance;
@@ -35,6 +36,7 @@ class FooterContentView extends StatelessWidget {
   FooterContentView({
     super.key,
     this.onDownloadTap,
+    this.onBackTap,
     this.hasLeftButton = true,
     this.leftText,
   });
@@ -62,7 +64,11 @@ class FooterContentView extends StatelessWidget {
                   child: hasLeftButton
                       ? GestureDetector(
                           onTap: () {
-                            Get.back();
+                            if (onBackTap != null) {
+                              onBackTap!();
+                            } else {
+                              Get.back();
+                            }
                           },
                           child: Text(
                             leftText ?? AppStrings.back,

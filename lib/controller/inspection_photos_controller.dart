@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable, unused_field, prefer_const_constructors, depend_on_referenced_packages, unused_element, unnecessary_null_comparison, empty_catches, unnecessary_new
+// ignore_for_file: unused_local_variable, unused_field, prefer_const_constructors, depend_on_referenced_packages, unused_element, unnecessary_null_comparison, empty_catches, unnecessary_new, prefer_is_empty
 
 import 'dart:io';
 import 'dart:math';
@@ -11,11 +11,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/dialogs/app_alerts.dart';
 
-class PhotoSelectionController extends GetxController {
+class InspectionPhotosController extends GetxController {
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
   var imagesList = <PictureData>[].obs;
+  var imagesListBackup = <PictureData>[];
   final ApplicationDao dao = ApplicationDao();
   int? inspectionId;
   List<int> attachmentIds = [];
@@ -45,7 +48,13 @@ class PhotoSelectionController extends GetxController {
 
       imagesList.add(PictureData(
           image: file,
-          photoTitle: '',
+          Attachment_Title: '',
+          createdTime: DateTime.now().millisecondsSinceEpoch,
+          pathToPhoto: await saveImageToInternalStorage(file)));
+
+      imagesListBackup.add(PictureData(
+          image: file,
+          Attachment_Title: '',
           createdTime: DateTime.now().millisecondsSinceEpoch,
           pathToPhoto: await saveImageToInternalStorage(file)));
     }
@@ -56,7 +65,13 @@ class PhotoSelectionController extends GetxController {
     File file = File(image?.path ?? '');
     imagesList.add(PictureData(
         image: file,
-        photoTitle: '',
+        Attachment_Title: '',
+        createdTime: DateTime.now().millisecondsSinceEpoch,
+        pathToPhoto: await saveImageToInternalStorage(file)));
+
+    imagesListBackup.add(PictureData(
+        image: file,
+        Attachment_Title: '',
         createdTime: DateTime.now().millisecondsSinceEpoch,
         pathToPhoto: await saveImageToInternalStorage(file)));
   }
@@ -99,7 +114,15 @@ class PhotoSelectionController extends GetxController {
           index,
           PictureData(
               image: croppedImage,
-              photoTitle: '',
+              Attachment_Title: '',
+              createdTime: DateTime.now().millisecondsSinceEpoch,
+              pathToPhoto: await saveImageToInternalStorage(croppedImage)));
+
+      imagesListBackup.insert(
+          index,
+          PictureData(
+              image: croppedImage,
+              Attachment_Title: '',
               createdTime: DateTime.now().millisecondsSinceEpoch,
               pathToPhoto: await saveImageToInternalStorage(croppedImage)));
     }
@@ -107,6 +130,7 @@ class PhotoSelectionController extends GetxController {
 
   removeImage(int index) {
     imagesList.removeAt(index);
+    imagesListBackup.removeAt(index);
   }
 
   updateContent(int index, String title) {
@@ -114,7 +138,13 @@ class PhotoSelectionController extends GetxController {
     imagesList.removeAt(index);
     imagesList.add(PictureData(
         image: data.image,
-        photoTitle: title,
+        Attachment_Title: title,
+        createdTime: data.createdTime,
+        pathToPhoto: data.pathToPhoto));
+
+    imagesListBackup.add(PictureData(
+        image: data.image,
+        Attachment_Title: title,
         createdTime: data.createdTime,
         pathToPhoto: data.pathToPhoto));
   }
@@ -147,29 +177,56 @@ class PhotoSelectionController extends GetxController {
                 InspectionAttachment(
                     Inspection_ID: inspectionId ?? 0,
                     Attachment_ID: 0,
-                    ATTACHMENT_TITLE: imagesList[i].photoTitle ?? '',
-                    CREATED_TIME: imagesList[i].createdTime ?? 0,
+                    Attachment_Title: imagesList[i].Attachment_Title ?? '',
+                    CREATED_TIME: imagesList[i].createdTime.toString(),
                     FILE_LOCATION: imagesList[i].pathToPhoto ?? ''),
-                imagesList[i].photoTitle ?? '',
+                imagesList[i].Attachment_Title ?? '',
                 imagesList[i].createdTime ?? '',
                 imagesList[i].pathToPhoto ?? '')
             .then((attachmentId) {
           attachmentIds.add(attachmentId);
+          imagesListBackup.clear();
         }).catchError((error) {
           debugPrint('Error creating attachment: $error');
         });
-        //attachmentIds.add(attachmentId);
       }
-      // recycle the bitmaps to free up memory
-      // pictureList[i].photoBitmap?.recycle();
     }
   }
 
-  void deletePicture(int position) {
+  Future<void> deletePicture(int position) async {
     if (imagesList[position].savedInDB == true) {
       try {
-        dao.deleteAttachmentByAttachmentId(imagesList[position].pictureId ?? 0);
-      } catch (e) {}
+        await dao.deleteAttachmentByAttachmentId(
+            imagesList[position].pictureId ?? 0);
+      } catch (e) {
+        debugPrint('Error creating attachment: $e');
+      }
+    }
+  }
+
+  void backAction(BuildContext context) {
+    if (imagesListBackup.length == 0) {
+      Get.back();
+    } else {
+      if (imagesListBackup.length == 1) {
+        AppAlertDialog.confirmationAlert(
+          context,
+          AppStrings.error,
+          AppStrings.pic1NotSave,
+          onYesTap: () {
+            Get.back();
+          },
+        );
+      } else {
+        AppAlertDialog.confirmationAlert(
+          context,
+          AppStrings.error,
+          'There are ${imagesListBackup.length} pictures not saved, are you sure you want to back?',
+          onYesTap: () {
+            Get.back();
+          },
+        );
+      }
     }
   }
 
@@ -220,5 +277,6 @@ class PhotoSelectionController extends GetxController {
       }
     }
     log(imagesList.length);
+    imagesListBackup.clear();
   }
 }

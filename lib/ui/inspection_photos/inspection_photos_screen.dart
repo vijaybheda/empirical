@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_is_empty
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -6,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
-import 'package:pverify/ui/photos_selection/photos_selection_controller.dart';
+import 'package:pverify/controller/inspection_photos_controller.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
@@ -14,7 +16,7 @@ import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
-class PhotosSelection extends GetView<PhotoSelectionController> {
+class InspectionPhotos extends GetView<InspectionPhotosController> {
   final String? partnerName;
   final String? partnerID;
   final String? carrierName;
@@ -27,7 +29,7 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
   final bool? isViewOnlyMode;
   final int? inspectionId;
   final String? callerActivity;
-  const PhotosSelection(
+  const InspectionPhotos(
       {super.key,
       this.partnerName,
       this.partnerID,
@@ -44,11 +46,11 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<PhotoSelectionController>(
-        init: PhotoSelectionController(),
+    return GetBuilder<InspectionPhotosController>(
+        init: InspectionPhotosController(),
         builder: (controller) {
-          Map<String, dynamic> passingData = Get.arguments;
-          controller.inspectionId = passingData[Consts.INSPECTION_ID];
+          Map<String, dynamic>? passingData = Get.arguments;
+          controller.inspectionId = passingData?[Consts.INSPECTION_ID];
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
             resizeToAvoidBottomInset: false,
@@ -60,14 +62,15 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
             ),
             body: Container(
               color: Theme.of(context).colorScheme.background,
-              child: contentView(context, controller),
+              child: contentView(context, controller,
+                  passingData?[Consts.COMMODITY_NAME] ?? ''),
             ),
           );
         });
   }
 
-  Widget contentView(
-      BuildContext context, PhotoSelectionController controller) {
+  Widget contentView(BuildContext context,
+      InspectionPhotosController controller, String title) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -77,7 +80,7 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
           height: 70.h,
           width: ResponsiveHelper.getDeviceWidth(context),
           child: Text(
-            'Cheese',
+            title.toString(),
             style: GoogleFonts.poppins(
                 fontSize: 35.sp,
                 fontWeight: FontWeight.w600,
@@ -140,7 +143,11 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
             ],
           ),
         ),
-        FooterContentView()
+        FooterContentView(
+          onBackTap: () {
+            controller.backAction(context);
+          },
+        )
       ],
     );
   }
@@ -179,8 +186,9 @@ class PhotosSelection extends GetView<PhotoSelectionController> {
                             context,
                             '',
                             AppStrings.pictureMessage,
-                            onYesTap: () {
-                              controller.removeImage(rowIndex);
+                            onYesTap: () async {
+                              await controller.deletePicture(rowIndex);
+                              //controller.removeImage(rowIndex);
                             },
                           );
                         },

@@ -22,7 +22,7 @@ import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
 import 'package:pverify/ui/defects/defects_screen.dart';
 import 'package:pverify/ui/inspection_exception/inspection_exception_screen.dart';
-import 'package:pverify/ui/photos_selection/photos_selection.dart';
+import 'package:pverify/ui/inspection_photos/inspection_photos_screen.dart';
 import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
 import 'package:pverify/utils/app_snackbar.dart';
@@ -1064,7 +1064,7 @@ class QCDetailsShortFormScreenController extends GetxController {
       Consts.PO_NUMBER: poNumber,
     };
 
-    await Get.to(() => const PhotosSelection(), arguments: passingData);
+    await Get.to(() => const InspectionPhotos(), arguments: passingData);
   }
 
   Future onSpecialInstrMenuTap() async {

@@ -243,32 +243,26 @@ class ApplicationDao {
         var values = {
           InspectionDefectAttachmentColumn.INSPECTION_ID:
               attachment.Inspection_ID.toString(),
-          InspectionDefectAttachmentColumn.ATTACHMENT_ID: "0",
+          InspectionDefectAttachmentColumn.ATTACHMENT_ID: 0,
           InspectionDefectAttachmentColumn.CREATED_TIME:
-              attachment.CREATED_TIME.toString(),
+              int.tryParse(attachment.CREATED_TIME.toString()),
           InspectionDefectAttachmentColumn.FILE_LOCATION:
               attachment.FILE_LOCATION.toString(),
         };
 
-        attachmentId = await txn.insert(DBTables.INSPECTION_ATTACHMENT, values
-            /*{
-            // InspectionDefectAttachmentColumn.ID: 7,
-            InspectionDefectAttachmentColumn.INSPECTION_ID:
-                attachment.Inspection_ID.toString(),
-            InspectionDefectAttachmentColumn.ATTACHMENT_ID: "0",
-            InspectionDefectAttachmentColumn.CREATED_TIME:
-                attachment.CREATED_TIME.toString(),
-            InspectionDefectAttachmentColumn.FILE_LOCATION:
-                attachment.FILE_LOCATION.toString(),
-          },*/
-            );
+        attachmentId = await txn.insert(DBTables.INSPECTION_ATTACHMENT, values);
 
         // Update record with attachment_id
         await txn.update(
           DBTables.INSPECTION_ATTACHMENT,
           {
-            InspectionDefectAttachmentColumn.ATTACHMENT_ID:
-                attachmentId.toString()
+            InspectionDefectAttachmentColumn.ATTACHMENT_ID: attachmentId,
+            InspectionDefectAttachmentColumn.INSPECTION_ID:
+                attachment.Inspection_ID.toString(),
+            InspectionDefectAttachmentColumn.CREATED_TIME:
+                attachment.CREATED_TIME.toString(),
+            InspectionDefectAttachmentColumn.FILE_LOCATION:
+                attachment.FILE_LOCATION.toString(),
           },
           where: '${InspectionDefectAttachmentColumn.ID} = ?',
           whereArgs: [attachmentId],
@@ -310,10 +304,10 @@ class ApplicationDao {
         BaseColumns.ID.toString() +
         " = " +
         attachmentId.toString();
-    List<Map<String, dynamic>> result = await db.rawQuery(query);
 
+    var result = await db.rawQuery(query);
     if (result.isNotEmpty) {
-      return InspectionAttachment.fromMap(result.first as Map<String, dynamic>);
+      return InspectionAttachment.fromMap(result.first);
     }
 
     // if (maps.isNotEmpty) {
@@ -325,7 +319,8 @@ class ApplicationDao {
   Future<void> deleteAttachmentByAttachmentId(int attachmentId) async {
     final Database db = dbProvider.lazyDatabase;
     await db.delete(DBTables.INSPECTION_ATTACHMENT,
-        where: '${BaseColumns.ID} = ?', whereArgs: [attachmentId]);
+        where: '${BaseColumns.ID.toString()} = ?',
+        whereArgs: [attachmentId.toString()]);
   }
 
 // Additional methods like updateInspectionStatus, updateInspectionResult, etc., to be added here
