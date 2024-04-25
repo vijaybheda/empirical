@@ -12,6 +12,7 @@ import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 
 class InspectionPhotosController extends GetxController {
@@ -20,10 +21,47 @@ class InspectionPhotosController extends GetxController {
   var imagesList = <PictureData>[].obs;
   var imagesListBackup = <PictureData>[];
   final ApplicationDao dao = ApplicationDao();
-  int? inspectionId;
   List<int> attachmentIds = [];
   get title => null;
   bool? hasAttachmentIds = false;
+
+  String partnerName = '';
+  String? partnerID;
+  String carrierName = '';
+  String? carrierID;
+  String? commodityName;
+  int commodityID = 0;
+  String? varietyName;
+  String? varietySize;
+  String? varietyId;
+  bool isViewOnlyMode = true;
+  int inspectionId = -1;
+  String callerActivity = '';
+
+  @override
+  void onInit() {
+    super.onInit();
+    Map<String, dynamic>? args = Get.arguments;
+    if (args == null) {
+      Get.back();
+      throw Exception('Arguments not allowed');
+    }
+
+    partnerName = args[Consts.PARTNER_NAME] ?? '';
+    partnerID = args[Consts.PARTNER_ID];
+    carrierName = args[Consts.CARRIER_NAME] ?? '';
+    carrierID = args[Consts.CARRIER_ID];
+    commodityName = args[Consts.COMMODITY_NAME];
+    commodityID = args[Consts.COMMODITY_ID] ?? 0;
+    varietyName = args[Consts.VARIETY_NAME];
+    varietySize = args[Consts.VARIETY_SIZE];
+    varietyId = args[Consts.VARIETY_ID];
+    isViewOnlyMode = args[Consts.IS_VIEW_ONLY_MODE] ?? true;
+    inspectionId = args[Consts.INSPECTION_ID] ?? -1;
+    callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
+
+    isViewOnlyMode = false;
+  }
 
   Future<String> saveImageToInternalStorage(File imageFile) async {
     Directory appDir = await getApplicationDocumentsDirectory();

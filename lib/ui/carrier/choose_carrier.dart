@@ -149,10 +149,11 @@ class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
             child: Column(
               children: [
                 getAlphabetContent(controller.filteredCarrierList, index),
-                GestureDetector(
+                InkWell(
                   onTap: () {
                     controller.navigateToQcHeader(carrier);
                   },
+                  highlightColor: Colors.transparent,
                   child: SizedBox(
                     height: controller.listHeight,
                     child: Column(

@@ -3,11 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/purchase_order_screen_controller.dart';
-import 'package:pverify/models/carrier_item.dart';
-import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/item_sku_data.dart';
-import 'package:pverify/models/partner_item.dart';
-import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/ui/components/bottom_custom_button_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
@@ -17,26 +13,27 @@ import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
 
 class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
-  final PartnerItem partner;
-  final CarrierItem carrier;
-  final CommodityItem commodity;
-  final QCHeaderDetails? qcHeaderDetails;
+  // final PartnerItem partner;
+  // final CarrierItem carrier;
+  // final CommodityItem commodity;
+  // final QCHeaderDetails? qcHeaderDetails;
   const PurchaseOrderScreen({
     super.key,
-    required this.partner,
-    required this.carrier,
-    required this.commodity,
-    required this.qcHeaderDetails,
+    // required this.partner,
+    // required this.carrier,
+    // required this.commodity,
+    // required this.qcHeaderDetails,
   });
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<PurchaseOrderScreenController>(
         init: PurchaseOrderScreenController(
-            carrier: carrier,
-            partner: partner,
-            commodity: commodity,
-            qcHeaderDetails: qcHeaderDetails),
+            // carrier: carrier,
+            // partner: partner,
+            // commodity: commodity,
+            // qcHeaderDetails: qcHeaderDetails,
+            ),
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -61,7 +58,7 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
                   color: AppColors.textFieldText_Color,
                   width: double.infinity,
                   child: Text(
-                    partner.name ?? '-',
+                    controller.partnerName ?? '-',
                     textAlign: TextAlign.start,
                     maxLines: 3,
                     style: GoogleFonts.poppins(
@@ -76,7 +73,8 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
                   title: AppStrings.save,
                   onPressed: () async {
                     await controller.navigateToPurchaseOrderDetails(
-                        partner, carrier, commodity);
+                        // partner, carrier, commodity,
+                        );
                   },
                 ),
                 FooterContentView(),

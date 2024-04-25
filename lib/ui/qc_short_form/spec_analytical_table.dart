@@ -157,21 +157,8 @@ class _SpecificationAnalyticalWidgetState
                 enabledBorder: UnderlineInputBorder(),
               )),
         ),
-        DropdownButton(
-          value: 'N/A',
-          items: <String>['N/A', 'Yes', 'No']
-              .map((String value) => DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  ))
-              .toList(),
-          onChanged: (value) {
-            // Your logic for handling dropdown selection
-          },
-          dropdownColor: AppColors.textFieldText_Color,
-        ),
         Text(
-          comply,
+          getComply(),
           style: Get.textTheme.bodyMedium?.copyWith(
               // color: AppColors.textFieldText_Color,
               ),
@@ -206,6 +193,19 @@ class _SpecificationAnalyticalWidgetState
         ),
       ],
     );
+  }
+
+  String getComply() {
+    String _comply = comply;
+    if (_comply == 'N/A') {
+      return 'N/A';
+    } else if (_comply == 'Yes') {
+      return 'Y';
+    } else if (_comply == 'No') {
+      return 'N';
+    } else {
+      return 'N/A';
+    }
   }
 
   Future<Function?> infoButtonTap() async {
@@ -276,7 +276,7 @@ class _SpecificationAnalyticalWidgetState
             style: Get.textTheme.titleMedium,
           ),
           content: TextField(
-            autofocus: true,
+            autofocus: false,
             maxLines: 3,
             minLines: 1,
             controller: commentController,

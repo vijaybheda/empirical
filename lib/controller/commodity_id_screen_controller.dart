@@ -3,10 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/dialog_progress_controller.dart';
 import 'package:pverify/controller/global_config_controller.dart';
-import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/inspection.dart';
-import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/models/user_data.dart';
 import 'package:pverify/services/database/application_dao.dart';
@@ -20,9 +18,9 @@ import 'package:pverify/utils/dialogs/update_data_dialog.dart';
 import 'package:pverify/utils/utils.dart';
 
 class CommodityIDScreenController extends GetxController {
-  final PartnerItem partner;
-  final CarrierItem carrier;
-  final QCHeaderDetails? qcHeaderDetails;
+  // final PartnerItem partner;
+  // final CarrierItem carrier;
+  // final QCHeaderDetails? qcHeaderDetails;
   late final int partnerID;
   late final String partnerName;
   late final String sealNumber;
@@ -33,11 +31,13 @@ class CommodityIDScreenController extends GetxController {
 
   final TextEditingController searchController = TextEditingController();
 
-  CommodityIDScreenController({
+  CommodityIDScreenController();
+
+  /*CommodityIDScreenController({
     required this.partner,
     required this.carrier,
     required this.qcHeaderDetails,
-  });
+  });*/
 
   final ScrollController scrollController = ScrollController();
   final AppStorage appStorage = AppStorage.instance;
@@ -79,7 +79,7 @@ class CommodityIDScreenController extends GetxController {
         await dao.getEnterpriseIdByUserId(currentUser.userName!.toLowerCase());
 
     List<CommodityItem>? commoditiesList =
-        await dao.getCommodityByPartnerFromTable(partner.id!, enterpriseId,
+        await dao.getCommodityByPartnerFromTable(partnerID, enterpriseId,
             currentUser.supplierId!, currentUser.headquarterSupplierId!);
     appStorage.saveMainCommodityList(commoditiesList ?? []);
 
@@ -156,14 +156,15 @@ class CommodityIDScreenController extends GetxController {
       Consts.CARRIER_ID: carrierID,
       Consts.COMMODITY_ID: commodity.id,
       Consts.COMMODITY_NAME: commodity.name,
-      Consts.PRODUCT_TRANSFER: qcHeaderDetails?.productTransfer ?? '',
+      // Consts.PRODUCT_TRANSFER: qcHeaderDetails?.productTransfer ?? '',
     };
     Get.to(
         () => PurchaseOrderScreen(
-            partner: partner,
-            carrier: carrier,
-            qcHeaderDetails: qcHeaderDetails,
-            commodity: commodity),
+            // partner: partner,
+            // carrier: carrier,
+            // qcHeaderDetails: qcHeaderDetails,
+            // commodity: commodity,
+            ),
         arguments: passingData);
   }
 

@@ -3,9 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pverify/controller/global_config_controller.dart';
-import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/partner_item.dart';
-import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/commodity/commodity_id_screen.dart';
@@ -13,7 +11,6 @@ import 'package:pverify/ui/scorecard/scorecard_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/supplier_list_dialog.dart';
-import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
 import 'package:simple_barcode_scanner/enum.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
@@ -23,11 +20,12 @@ class SelectSupplierScreenController extends GetxController {
   final AppStorage appStorage = AppStorage.instance;
   final GlobalConfigController globalConfigController =
       Get.find<GlobalConfigController>();
-  final CarrierItem carrier;
-  final QCHeaderDetails? qcHeaderDetails;
+  // final CarrierItem carrier;
+  // final QCHeaderDetails? qcHeaderDetails;
 
   // constructor
-  SelectSupplierScreenController({required this.carrier, this.qcHeaderDetails});
+  SelectSupplierScreenController(
+      /*{required this.carrier, this.qcHeaderDetails}*/);
 
   final TextEditingController searchSuppController = TextEditingController();
 
@@ -45,9 +43,14 @@ class SelectSupplierScreenController extends GetxController {
 
   double get listHeight => 200.h;
 
-  late final String callerActivity;
-  late final String name;
-  late final int id;
+  String? callerActivity;
+  String? name;
+  int? id;
+  String? sealNumber;
+  String? poNumber;
+  String? carrierName;
+  int? carrierID;
+  String? cteType;
 
   @override
   void onInit() {
@@ -59,6 +62,11 @@ class SelectSupplierScreenController extends GetxController {
     callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
     name = args[Consts.NAME] ?? '';
     id = args[Consts.ID] ?? 0;
+    sealNumber = args[Consts.SEAL_NUMBER] ?? '';
+    poNumber = args[Consts.PO_NUMBER] ?? '';
+    carrierName = args[Consts.CARRIER_NAME] ?? '';
+    carrierID = args[Consts.CARRIER_ID] ?? 0;
+    cteType = args[Consts.CTEType] ?? '';
 
     super.onInit();
     assignInitialData();
@@ -197,26 +205,7 @@ class SelectSupplierScreenController extends GetxController {
               debugPrint("gtin 2 = $packDate");
 
               dateType = check02;
-              switch (check02) {
-                case "11":
-                  dateTypeDesc = "Production Date";
-                  break;
-                case "12":
-                  dateTypeDesc = "Due Date";
-                  break;
-                case "13":
-                  dateTypeDesc = "Pack Date";
-                  break;
-                case "15":
-                  dateTypeDesc = "Best Before Date";
-                  break;
-                case "16":
-                  dateTypeDesc = "Sell By Date";
-                  break;
-                case "17":
-                  dateTypeDesc = "Expiration Date";
-                  break;
-              }
+              dateTypeDesc = getDateTypeDesc(check02, dateTypeDesc);
 
               DateFormat fromUser = Utils().dateFormat;
               DateFormat myFormat = Utils().dateFormat;
@@ -313,26 +302,7 @@ class SelectSupplierScreenController extends GetxController {
             debugPrint("gtin 2 = $packDate");
 
             dateType = check02;
-            switch (check02) {
-              case "11":
-                dateTypeDesc = "Production Date";
-                break;
-              case "12":
-                dateTypeDesc = "Due Date";
-                break;
-              case "13":
-                dateTypeDesc = "Pack Date";
-                break;
-              case "15":
-                dateTypeDesc = "Best Before Date";
-                break;
-              case "16":
-                dateTypeDesc = "Sell By Date";
-                break;
-              case "17":
-                dateTypeDesc = "Expiration Date";
-                break;
-            }
+            dateTypeDesc = getDateTypeDesc(check02, dateTypeDesc);
 
             DateFormat formatter = Utils().dateFormat;
             packDate = formatter.format(DateTime.parse(packDate));
@@ -410,6 +380,30 @@ class SelectSupplierScreenController extends GetxController {
     }
   }
 
+  String getDateTypeDesc(String check02, String dateTypeDesc) {
+    switch (check02) {
+      case "11":
+        dateTypeDesc = "Production Date";
+        break;
+      case "12":
+        dateTypeDesc = "Due Date";
+        break;
+      case "13":
+        dateTypeDesc = "Pack Date";
+        break;
+      case "15":
+        dateTypeDesc = "Best Before Date";
+        break;
+      case "16":
+        dateTypeDesc = "Sell By Date";
+        break;
+      case "17":
+        dateTypeDesc = "Expiration Date";
+        break;
+    }
+    return dateTypeDesc;
+  }
+
   Future<void> loadGtinOfflineMode(String dateType) async {
     List<SpecificationSupplierGTIN>? specificationSupplierGTINList =
         appStorage.getSpecificationSupplierGTINList();
@@ -452,21 +446,21 @@ class SelectSupplierScreenController extends GetxController {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  if (AppInfo.selectedItemSKUList != null &&
-                      AppInfo.selectedItemSKUList.isNotEmpty) {
+                  if (appStorage.selectedItemSKUList != null &&
+                      appStorage.selectedItemSKUList.isNotEmpty) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => PurchaseOrderDetailsActivity(
-                          partnerName: AppInfo
+                          partnerName: appStorage
                               .specificationSupplierGTINList[0].supplierName,
                           partnerId: int.parse(
-                              AppInfo.selectedItemSKUList[0].partnerId),
+                              appStorage.selectedItemSKUList[0].partnerId),
                           carrierName: carrierName,
                           carrierId: carrierID,
                           commodityId:
-                              AppInfo.selectedItemSKUList[0].commodityID,
-                          commodityName: AppInfo
+                              appStorage.selectedItemSKUList[0].commodityID,
+                          commodityName: appStorage
                               .specificationSupplierGTINList[0].commodityName,
                           poNumber: po_number,
                         ),
@@ -497,21 +491,21 @@ class SelectSupplierScreenController extends GetxController {
         },
       );
     } else {
-      if (AppInfo.selectedItemSKUList != null &&
-          AppInfo.selectedItemSKUList.isNotEmpty &&
+      if (appStorage.selectedItemSKUList != null &&
+          appStorage.selectedItemSKUList.isNotEmpty &&
           specificationSupplierGTINList.isNotEmpty &&
           int.parse(specificationSupplierGTINList[0].supplierId) !=
-              int.parse(AppInfo.selectedItemSKUList[0].partnerId)) {
+              int.parse(appStorage.selectedItemSKUList[0].partnerId)) {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => PurchaseOrderDetailsActivity(
-              partnerId: int.parse(AppInfo.selectedItemSKUList[0].partnerId),
+              partnerId: int.parse(appStorage.selectedItemSKUList[0].partnerId),
               carrierName: carrierName,
               carrierId: carrierID,
               poNumber: po_number,
-              commodityName: AppInfo.selectedItemSKUList[0].commodityName,
-              commodityId: AppInfo.selectedItemSKUList[0].commodityID,
+              commodityName: appStorage.selectedItemSKUList[0].commodityName,
+              commodityId: appStorage.selectedItemSKUList[0].commodityID,
               isGTINSamePartner: false,
             ),
           ),
@@ -519,7 +513,7 @@ class SelectSupplierScreenController extends GetxController {
       } else {
         if (specificationSupplierGTINList.isNotEmpty) {
           String itemUniqueId = Uuid().v4();
-          dao.createSelectedItemSKU(
+          await dao.createSelectedItemSKU(
             int.parse(specificationSupplierGTINList[0].itemSkuId),
             specificationSupplierGTINList[0].itemSkuCode,
             po_number,
@@ -537,7 +531,7 @@ class SelectSupplierScreenController extends GetxController {
             "",
             dateType,
           );
-          AppInfo.selectedItemSKUList.add(
+          appStorage.selectedItemSKUList.add(
             FinishedGoodsItemSKU(
               int.parse(specificationSupplierGTINList[0].itemSkuId),
               specificationSupplierGTINList[0].itemSkuCode,
@@ -614,35 +608,36 @@ class SelectSupplierScreenController extends GetxController {
         // TODO: handle other type of partner Item
         Get.to(
             () => CommodityIDScreen(
-                  partner: selectedPartner,
-                  qcHeaderDetails: qcHeaderDetails,
-                  carrier: carrier,
+                // partner: selectedPartner,
+                // qcHeaderDetails: qcHeaderDetails,
+                // carrier: carrier,
                 ),
             arguments: {
               Consts.PARTNER_ID: partner.id,
               Consts.PARTNER_NAME: partner.name,
-              Consts.SEAL_NUMBER: qcHeaderDetails?.sealNo,
-              Consts.PO_NUMBER: qcHeaderDetails?.poNo,
-              Consts.CARRIER_NAME: carrier.name,
-              Consts.CARRIER_ID: carrier.id,
-              Consts.CTEType: qcHeaderDetails?.cteType,
+              Consts.SEAL_NUMBER: sealNumber,
+              Consts.PO_NUMBER: poNumber,
+              Consts.CARRIER_NAME: carrierName,
+              Consts.CARRIER_ID: carrierID,
+              Consts.CTEType: cteType,
             });
       }
     } else {
       clearSearch();
       Get.to(
           () => CommodityIDScreen(
-              partner: partner,
-              qcHeaderDetails: qcHeaderDetails,
-              carrier: carrier),
+              // partner: partner,
+              // qcHeaderDetails: qcHeaderDetails,
+              // carrier: carrier,
+              ),
           arguments: {
             Consts.PARTNER_ID: partner.id,
             Consts.PARTNER_NAME: partner.name,
-            Consts.SEAL_NUMBER: qcHeaderDetails?.sealNo,
-            Consts.PO_NUMBER: qcHeaderDetails?.poNo,
-            Consts.CARRIER_NAME: carrier.name,
-            Consts.CARRIER_ID: carrier.id,
-            Consts.CTEType: qcHeaderDetails?.cteType,
+            Consts.SEAL_NUMBER: sealNumber,
+            Consts.PO_NUMBER: poNumber,
+            Consts.CARRIER_NAME: carrierName,
+            Consts.CARRIER_ID: carrierID,
+            Consts.CTEType: cteType,
           });
     }
   }
@@ -718,10 +713,10 @@ class SelectSupplierScreenController extends GetxController {
     String? res = await Get.to(() => SimpleBarcodeScannerPage(
           scanType: ScanType.barcode,
           centerTitle: true,
-          appBarTitle: 'Scan a Barcode',
-          cancelButtonText: 'Cancel',
-          isShowFlashIcon: true,
-          lineColor: AppColors.primaryColor.value.toString(),
+          // appBarTitle: 'Scan a Barcode',
+          // cancelButtonText: 'Cancel',
+          // isShowFlashIcon: true,
+          // lineColor: AppColors.primaryColor.value.toString(),
         ));
     if (res != null) {
       // if (onBarcodeScanned != null) {

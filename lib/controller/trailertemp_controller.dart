@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/trailer_temp.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/trailer_temp/trailertemp_class.dart';
@@ -45,8 +44,9 @@ class TrailerTempController extends GetxController {
   String callerActivity = '';
   final ApplicationDao dao = ApplicationDao();
 
-  CarrierItem? carrier1;
+  // CarrierItem? carrier1;
   String? orderNumber1;
+  String? carrierId;
 
   var isOrderNumberAvailable = false;
 
@@ -109,7 +109,7 @@ class TrailerTempController extends GetxController {
           pallet3_bottom_TextController.value, pallet3_bottom_FocusNode);
     });
 
-    debugPrint('carrier ID ${carrier1?.id}');
+    debugPrint('carrier ID ${carrierId}');
     debugPrint('orderNumber1${orderNumber1 ?? ''}');
     isOrderNumberAvailable = false;
   }
@@ -184,7 +184,7 @@ class TrailerTempController extends GetxController {
 
   void loadDataFromDB() async {
     List? trailerTempMap = await dao.findTempTrailerTemperatureItems(
-        carrier1!.id!.toInt(), orderNumber1.toString());
+        int.parse(carrierId!), orderNumber1.toString());
 
     if (trailerTempMap != null) {
       for (var element in trailerTempMap) {
@@ -195,7 +195,7 @@ class TrailerTempController extends GetxController {
 
     TrailerTemperatureDetails? temperatureDetails =
         await dao.findTempTrailerTemperatureDetails(
-            carrier1!.id!.toInt(), orderNumber1.toString());
+            int.parse(carrierId!), orderNumber1.toString());
 
     if (temperatureDetails != null) {
       commentTextController.value.text = temperatureDetails.comments ?? '';

@@ -3,10 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/commodity_id_screen_controller.dart';
-import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
-import 'package:pverify/models/partner_item.dart';
-import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
@@ -14,23 +11,24 @@ import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
-  final PartnerItem partner;
-  final CarrierItem carrier;
-  final QCHeaderDetails? qcHeaderDetails;
+  // final PartnerItem partner;
+  // final CarrierItem carrier;
+  // final QCHeaderDetails? qcHeaderDetails;
   const CommodityIDScreen({
     super.key,
-    required this.partner,
-    required this.carrier,
-    required this.qcHeaderDetails,
+    // required this.partner,
+    // required this.carrier,
+    // required this.qcHeaderDetails,
   });
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<CommodityIDScreenController>(
         init: CommodityIDScreenController(
-            partner: partner,
-            carrier: carrier,
-            qcHeaderDetails: qcHeaderDetails),
+            // partner: partner,
+            // carrier: carrier,
+            // qcHeaderDetails: qcHeaderDetails,
+            ),
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -55,7 +53,7 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
                   color: AppColors.textFieldText_Color,
                   width: double.infinity,
                   child: Text(
-                    "${partner.name ?? '-'} > ${carrier.name ?? '-'}",
+                    "${controller.partnerName} > ${controller.carrierName}",
                     textAlign: TextAlign.start,
                     maxLines: 3,
                     style: GoogleFonts.poppins(

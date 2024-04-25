@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/trailertemp_controller.dart';
-import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/trailer_temp/trailertemp_class.dart';
@@ -17,18 +16,21 @@ import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/theme/theme.dart';
 
 class TrailerTemp extends GetView<TrailerTempController> {
-  final CarrierItem carrier;
-  final String orderNumber;
-  const TrailerTemp(
-      {super.key, required this.carrier, required this.orderNumber});
+  // final CarrierItem carrier;
+  // final String orderNumber;
+  const TrailerTemp({
+    super.key,
+    // required this.carrier,
+    // required this.orderNumber,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<TrailerTempController>(
         init: TrailerTempController(),
         builder: (controller) {
-          controller.carrier1 = carrier;
-          controller.orderNumber1 = orderNumber;
+          // controller.carrier1 = carrier;
+          // controller.orderNumber1 = orderNumber;
           if (controller.isOrderNumberAvailable == false) {
             controller.loadDataFromDB();
             controller.isOrderNumberAvailable = true;
@@ -106,12 +108,21 @@ class TrailerTemp extends GetView<TrailerTempController> {
                   AppAlertDialog.validateAlerts(context, AppStrings.error,
                       AppStrings.trailer_temperature_no_entries_alert);
                 } else {
-                  controller.saveTemperatureData('N', orderNumber,
-                      carrier.id ?? 0, controller.tailerTempData);
-                  controller.saveTemperatureData('M', orderNumber,
-                      carrier.id ?? 0, controller.tailerTempData);
-                  controller.saveTemperatureData('B', orderNumber,
-                      carrier.id ?? 0, controller.tailerTempData);
+                  controller.saveTemperatureData(
+                      'N',
+                      controller.orderNumber1!,
+                      int.tryParse(controller.carrierId ?? '0') ?? 0,
+                      controller.tailerTempData);
+                  controller.saveTemperatureData(
+                      'M',
+                      controller.orderNumber1!,
+                      int.tryParse(controller.carrierId ?? '0') ?? 0,
+                      controller.tailerTempData);
+                  controller.saveTemperatureData(
+                      'B',
+                      controller.orderNumber1!,
+                      int.tryParse(controller.carrierId ?? '0') ?? 0,
+                      controller.tailerTempData);
                   Get.back();
                 }
               }),

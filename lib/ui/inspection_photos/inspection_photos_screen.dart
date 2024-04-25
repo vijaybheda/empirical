@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pverify/controller/inspection_photos_controller.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
-import 'package:pverify/controller/inspection_photos_controller.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
@@ -51,26 +51,31 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
         builder: (controller) {
           Map<String, dynamic>? passingData = Get.arguments;
           controller.inspectionId = passingData?[Consts.INSPECTION_ID];
-          return Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.background,
-            resizeToAvoidBottomInset: false,
-            appBar: AppBar(
-              automaticallyImplyLeading: false,
-              toolbarHeight: 150.h,
-              backgroundColor: AppColors.primary,
-              title: HeaderContentView(title: AppStrings.trailerTempRange),
-            ),
-            body: Container(
-              color: Theme.of(context).colorScheme.background,
-              child: contentView(context, controller,
-                  passingData?[Consts.COMMODITY_NAME] ?? ''),
+          return WillPopScope(
+            onWillPop: () async {
+              controller.backAction(context);
+              return true;
+            },
+            child: Scaffold(
+              backgroundColor: Theme.of(context).colorScheme.background,
+              resizeToAvoidBottomInset: false,
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                toolbarHeight: 150.h,
+                backgroundColor: AppColors.primary,
+                title: HeaderContentView(title: AppStrings.trailerTempRange),
+              ),
+              body: Container(
+                color: Theme.of(context).colorScheme.background,
+                child: contentView(context, controller),
+              ),
             ),
           );
         });
   }
 
-  Widget contentView(BuildContext context,
-      InspectionPhotosController controller, String title) {
+  Widget contentView(
+      BuildContext context, InspectionPhotosController controller) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -80,7 +85,7 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
           height: 70.h,
           width: ResponsiveHelper.getDeviceWidth(context),
           child: Text(
-            title.toString(),
+            controller.partnerName ?? '',
             style: GoogleFonts.poppins(
                 fontSize: 35.sp,
                 fontWeight: FontWeight.w600,

@@ -12,6 +12,7 @@ class Consts {
   static const String SAMPLE_SIZE_BY_COUNT = "SampleSizeByCount";
   static const String VARIETY_NAME = "VARIETY_NAME";
   static const String VARIETY_ID = "VARIETY_ID";
+  static const String IS_VIEW_ONLY_MODE = "isViewOnlyMode";
   static const String NAME = "NAME";
   static const String ID = "ID";
   static const String VARIETY_SIZE = "VARIETY_SIZE";
@@ -50,7 +51,7 @@ class Consts {
   static const String PACK_DATE = "PACK_DATE";
   static const String SEAL_NUMBER = "SEAL_NUMBER";
   static const String ORDERNUMBER = "ORDERNUMBER";
-  static const String CARRIER = "CARRIER";
+  // static const String CARRIER = "CARRIER";
   static const String PARTIAL_COMPLETED = "PARTIAL_COMPLETED";
   static const String IS_MY_INSPECTION_SCREEN = "IS_MY_INSPECTION_SCREEN";
   static const String ITEM_SKU_ID = "ITEM_SKU_ID";

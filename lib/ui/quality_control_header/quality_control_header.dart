@@ -7,7 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/quality_control_controller.dart';
-import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/trailer_temp/trailertemp.dart';
@@ -18,11 +17,11 @@ import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class QualityControlHeader extends StatefulWidget {
-  final CarrierItem carrier;
+  // final CarrierItem carrier;
 
   const QualityControlHeader({
     super.key,
-    required this.carrier,
+    // required this.carrier,
   });
 
   @override
@@ -51,12 +50,12 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
         ),
         body: Container(
             color: Theme.of(context).colorScheme.background,
-            child: contentView(context, widget.carrier, controller)));
+            child: contentView(context, controller)));
   }
 
   // CONTENT'S VIEW
-  Widget contentView(BuildContext context, CarrierItem carrier,
-      QualityControlController controller) {
+  Widget contentView(
+      BuildContext context, QualityControlController controller) {
     return Column(
       children: [
         Expanded(child: mainContentUI(context, controller)),
@@ -81,14 +80,17 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
                 if (controller.isQualityControlFields_Validate(context)) {
                   Get.to(
                       () => TrailerTemp(
-                          carrier: carrier,
-                          orderNumber: controller
-                              .orderNoTextController.value.text
-                              .trim()),
+                          // carrier: carrier,
+                          // orderNumber: controller
+                          //     .orderNoTextController.value.text
+                          //     .trim(),
+                          ),
                       arguments: {
                         Consts.ORDERNUMBER:
                             controller.orderNoTextController.value.text.trim(),
-                        Consts.CARRIER: carrier,
+                        Consts.CARRIER_ID: controller.carrierID,
+                        Consts.CARRIER_NAME: controller.carrierName,
+                        // Consts.CARRIER: carrier,
                       });
                 }
               }),
@@ -134,7 +136,7 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
                   textStyle: TextStyle(color: AppColors.textFieldText_Color)),
               onClickAction: () async {
             if (controller.isQualityControlFields_Validate(context)) {
-              await controller.saveAction(carrier);
+              await controller.saveAction();
             }
           }),
         ),

@@ -3,14 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/purchase_order_details_controller.dart';
-import 'package:pverify/models/carrier_item.dart';
-import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/item_sku_data.dart';
-import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/partner_item_sku_inspections.dart';
 import 'package:pverify/models/purchase_order_item.dart';
-import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/ui/components/bottom_custom_button_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
@@ -22,26 +18,27 @@ import 'package:pverify/utils/theme/colors.dart';
 
 class PurchaseOrderDetailsScreen
     extends GetWidget<PurchaseOrderDetailsController> {
-  final PartnerItem partner;
-  final CarrierItem carrier;
-  final CommodityItem commodity;
-  final QCHeaderDetails? qcHeaderDetails;
+  // final PartnerItem partner;
+  // final CarrierItem carrier;
+  // final CommodityItem commodity;
+  // final QCHeaderDetails? qcHeaderDetails;
   const PurchaseOrderDetailsScreen({
     super.key,
-    required this.partner,
-    required this.carrier,
-    required this.commodity,
-    required this.qcHeaderDetails,
+    // required this.partner,
+    // required this.carrier,
+    // required this.commodity,
+    // required this.qcHeaderDetails,
   });
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<PurchaseOrderDetailsController>(
         init: PurchaseOrderDetailsController(
-            partner: partner,
-            carrier: carrier,
-            commodity: commodity,
-            qcHeaderDetails: qcHeaderDetails),
+            // partner: partner,
+            // carrier: carrier,
+            // commodity: commodity,
+            // qcHeaderDetails: qcHeaderDetails,
+            ),
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -54,7 +51,7 @@ class PurchaseOrderDetailsScreen
               backgroundColor: Theme.of(context).primaryColor,
               title: HeaderContentView(
                 title: AppStrings.beginInspection,
-                message: 'PO# ${qcHeaderDetails?.poNo ?? '-'}',
+                message: 'PO# ${controller.poNumber ?? '-'}',
               ),
             ),
             body: Column(
@@ -67,7 +64,7 @@ class PurchaseOrderDetailsScreen
                   color: AppColors.textFieldText_Color,
                   width: double.infinity,
                   child: Text(
-                    partner.name ?? '-',
+                    controller.partnerName ?? '-',
                     textAlign: TextAlign.start,
                     maxLines: 3,
                     style: GoogleFonts.poppins(
@@ -211,11 +208,11 @@ class PurchaseOrderDetailsScreen
                   PartnerItemSKUInspections? partnerItemSKU) async {
                 await controller.onInformationIconTap(goodsItem);
               },
-              partnerID: partner.id!,
+              partnerID: controller.partnerID!,
               position: index,
               productTransfer: controller.productTransfer ?? '',
-              poNumber: qcHeaderDetails!.poNo!,
-              sealNumber: qcHeaderDetails!.sealNo!,
+              poNumber: controller.poNumber!,
+              sealNumber: controller.sealNumber!,
             ),
           ),
         );
@@ -233,40 +230,72 @@ class PurchaseOrderDetailsScreen
   }
 
   Widget _footerMenuView(PurchaseOrderDetailsController controller) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        IconButton(
-          onPressed: () async {
-            controller.onHomeMenuTap();
-          },
-          icon: Image.asset(AppImages.homeImage, height: 80.h, width: 50.w),
-        ),
-        IconButton(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
             onPressed: () async {
+              await controller.onHomeMenuTap();
+            },
+            icon: Image.asset(
+              AppImages.homeImage,
+              height: 65.w,
+              width: 65.w,
+              color: Colors.white,
+            ),
+          ),
+          IconButton(
+            onPressed: () {
               controller.onTailerTempMenuTap();
             },
-            icon: Image.asset(AppImages.tailerTempImage,
-                height: 50.h, width: 50.w)),
-        IconButton(
+            icon: Image.asset(
+              AppImages.tailerTempImage,
+              height: 80.w,
+              width: 80.w,
+              color: Colors.white,
+            ),
+            iconSize: 80.w,
+          ),
+          IconButton(
             onPressed: () async {
-              controller.onQCHeaderMenuTap();
+              await controller.onQCHeaderMenuTap();
             },
-            icon: Image.asset(AppImages.qcHeaderImage,
-                height: 50.h, width: 50.w)),
-        IconButton(
+            icon: Image.asset(
+              AppImages.qcHeaderImage,
+              height: 80.w,
+              width: 80.w,
+              color: Colors.white,
+            ),
+            iconSize: 80.w,
+          ),
+          IconButton(
             onPressed: () async {
-              controller.onAddGradingStandardMenuTap();
+              await controller.onAddGradingStandardMenuTap();
             },
-            icon: Image.asset(AppImages.gradingAddImage,
-                height: 50.h, width: 50.w)),
-        IconButton(
-          onPressed: () async {
-            controller.onSelectItemMenuTap();
-          },
-          icon: Image.asset(AppImages.itemsAddImage, height: 50.h, width: 50.w),
-        ),
-      ],
+            icon: Image.asset(
+              AppImages.gradingAddImage,
+              height: 80.w,
+              width: 80.w,
+              color: Colors.white,
+            ),
+            iconSize: 80.w,
+          ),
+          IconButton(
+            onPressed: () async {
+              await controller.onSelectItemMenuTap();
+            },
+            icon: Image.asset(
+              AppImages.itemsAddImage,
+              height: 80.w,
+              width: 80.w,
+              color: Colors.white,
+            ),
+            iconSize: 80.w,
+          ),
+        ],
+      ),
     );
   }
 }

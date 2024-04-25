@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/select_supplier_screen_controller.dart';
-import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/partner_item.dart';
-import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/ui/components/bottom_custom_button_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
@@ -13,16 +11,19 @@ import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
-  final CarrierItem carrier;
-  final QCHeaderDetails? qcHeaderDetails;
-  const SelectSupplierScreen(
-      {super.key, required this.carrier, this.qcHeaderDetails});
+  // final CarrierItem carrier;
+  // final QCHeaderDetails? qcHeaderDetails;
+  const SelectSupplierScreen({
+    super.key,
+    // required this.carrier,
+    // this.qcHeaderDetails,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SelectSupplierScreenController>(
         init: SelectSupplierScreenController(
-            carrier: carrier, qcHeaderDetails: qcHeaderDetails),
+            /*carrier: carrier, qcHeaderDetails: qcHeaderDetails*/),
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -48,7 +49,7 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
                     String? barcode = await controller.scanBarcode();
                     if (barcode != null) {
                       await controller.scanGTINResultContents(barcode);
-                      controller.navigateToScanBarcodeScreen();
+                      // controller.navigateToScanBarcodeScreen();
                     }
                   },
                 ),

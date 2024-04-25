@@ -3,13 +3,10 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
-import 'package:pverify/models/carrier_item.dart';
-import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/inspection_sample.dart';
 import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/overridden_result_item.dart';
-import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/partner_item_sku_inspections.dart';
 import 'package:pverify/models/purchase_order_item.dart';
 import 'package:pverify/models/qc_header_details.dart';
@@ -37,10 +34,10 @@ import 'package:pverify/utils/utils.dart';
 import '../ui/trailer_temp/trailertemp.dart';
 
 class PurchaseOrderDetailsController extends GetxController {
-  final PartnerItem partner;
-  final CarrierItem carrier;
-  final CommodityItem commodity;
-  final QCHeaderDetails? qcHeaderDetails;
+  // final PartnerItem partner;
+  // final CarrierItem carrier;
+  // final CommodityItem commodity;
+  // final QCHeaderDetails? qcHeaderDetails;
 
   final TextEditingController searchController = TextEditingController();
 
@@ -69,12 +66,14 @@ class PurchaseOrderDetailsController extends GetxController {
   bool isGTINSamePartner = true;
   String callerActivity = '';
 
-  PurchaseOrderDetailsController({
+  PurchaseOrderDetailsController();
+
+  /*PurchaseOrderDetailsController({
     required this.partner,
     required this.carrier,
     required this.commodity,
     required this.qcHeaderDetails,
-  });
+  });*/
 
   @override
   void onInit() {
@@ -282,12 +281,11 @@ class PurchaseOrderDetailsController extends GetxController {
     for (int i = 0; i < selectedItemSKUList.length; i++) {
       FinishedGoodsItemSKU itemSKU = selectedItemSKUList.elementAt(i);
       bool isComplete = await dao.isInspectionComplete(
-          partner.id!, itemSKU.sku!, itemSKU.uniqueItemId);
+          partnerID!, itemSKU.sku!, itemSKU.uniqueItemId);
 
       if (isComplete) {
-        PartnerItemSKUInspections? partnerItemSKU =
-            await dao.findPartnerItemSKU(
-                partner.id!, itemSKU.sku!, itemSKU.uniqueItemId);
+        PartnerItemSKUInspections? partnerItemSKU = await dao
+            .findPartnerItemSKU(partnerID!, itemSKU.sku!, itemSKU.uniqueItemId);
 
         if (partnerItemSKU != null) {
           Inspection? inspection = await dao
@@ -447,9 +445,9 @@ class PurchaseOrderDetailsController extends GetxController {
     FinishedGoodsItemSKU? finishedGoodsItemSKU =
         appStorage.selectedItemSKUList[index];
     bool isComplete = await dao.isInspectionComplete(
-        partner.id!, goodsItem.sku!, finishedGoodsItemSKU.id.toString());
+        partnerID!, goodsItem.sku!, finishedGoodsItemSKU.id.toString());
     bool ispartialComplete = await dao.isInspectionPartialComplete(
-        partner.id!, goodsItem.sku!, finishedGoodsItemSKU.id.toString());
+        partnerID!, goodsItem.sku!, finishedGoodsItemSKU.id.toString());
 
     // FIXME: below
     // String current_lot_number = viewHolder.edit_LotNo.getText().toString();
@@ -498,11 +496,11 @@ class PurchaseOrderDetailsController extends GetxController {
 
     await Get.to(
         () => QCDetailsShortFormScreen(
-              partner: partner,
-              carrier: carrier,
-              commodity: commodity,
-              qcHeaderDetails: qcHeaderDetails,
-              purchaseOrderItem: goodsItem,
+            // partner: partner,
+            // carrier: carrier,
+            // commodity: commodity,
+            // qcHeaderDetails: qcHeaderDetails,
+            // purchaseOrderItem: goodsItem,
             ),
         arguments: passingData);
   }
@@ -611,9 +609,9 @@ class PurchaseOrderDetailsController extends GetxController {
       Inspection inspection,
       PartnerItemSKUInspections? partnerItemSKU) async {
     bool isComplete = await dao.isInspectionComplete(
-        partner.id!, goodsItem.sku!, finishedGoodsItemSKU.id.toString());
+        partnerID!, goodsItem.sku!, finishedGoodsItemSKU.id.toString());
     bool ispartialComplete = await dao.isInspectionPartialComplete(
-        partner.id!, goodsItem.sku!, finishedGoodsItemSKU.id.toString());
+        partnerID!, goodsItem.sku!, finishedGoodsItemSKU.id.toString());
 
     if (productTransfer == "Transfer") {
       appStorage.specificationByItemSKUList =
@@ -874,12 +872,12 @@ class PurchaseOrderDetailsController extends GetxController {
 
           Get.to(
             () => QCDetailsShortFormScreen(
-              partner: partner,
-              carrier: carrier,
-              commodity: commodity,
-              qcHeaderDetails: qcHeaderDetails,
-              purchaseOrderItem: goodsItem,
-            ),
+                // partner: partner,
+                // carrier: carrier,
+                // commodity: commodity,
+                // qcHeaderDetails: qcHeaderDetails,
+                // purchaseOrderItem: goodsItem,
+                ),
             arguments: passigData,
           );
         } else {
@@ -937,8 +935,8 @@ class PurchaseOrderDetailsController extends GetxController {
   void onTailerTempMenuTap() {
     Get.to(
         () => TrailerTemp(
-              carrier: carrier,
-              orderNumber: poNumber!,
+            // carrier: carrier,
+            // orderNumber: poNumber!,
             ),
         arguments: {
           Consts.PARTNER_NAME: partnerName,
@@ -956,7 +954,7 @@ class PurchaseOrderDetailsController extends GetxController {
   Future<void> onQCHeaderMenuTap() async {
     Get.to(
         () => QualityControlHeader(
-              carrier: carrier,
+            // carrier: carrier,
             ),
         arguments: {
           Consts.PARTNER_NAME: partnerName,
@@ -988,10 +986,10 @@ class PurchaseOrderDetailsController extends GetxController {
     } else {
       Get.to(
         () => CommodityIDScreen(
-          partner: partner,
-          carrier: carrier,
-          qcHeaderDetails: qcHeaderDetails,
-        ),
+            // partner: partner,
+            // carrier: carrier,
+            // qcHeaderDetails: qcHeaderDetails,
+            ),
         arguments: passingData,
       );
     }
@@ -1017,11 +1015,11 @@ class PurchaseOrderDetailsController extends GetxController {
     } else {
       Get.to(
         () => PurchaseOrderScreen(
-          carrier: carrier,
-          qcHeaderDetails: qcHeaderDetails,
-          commodity: commodity,
-          partner: partner,
-        ),
+            // carrier: carrier,
+            // qcHeaderDetails: qcHeaderDetails,
+            // commodity: commodity,
+            // partner: partner,
+            ),
         arguments: passingData,
       );
     }
@@ -1033,8 +1031,11 @@ class PurchaseOrderDetailsController extends GetxController {
         if (appStorage.selectedItemSKUList.isNotEmpty) {
           if (!isGTINSamePartner) {
             Future.delayed(const Duration(milliseconds: 500), () {
-              AppAlertDialog.validateAlerts(Get.context!, AppStrings.alert,
-                  'GTIN has to be for the same supplier: $partnerName\nFinish & upload pfg for $partnerName\n\nFor a new supplier go to the Home page and select Inspect New Product');
+              AppAlertDialog.validateAlerts(
+                  Get.context!,
+                  AppStrings.alert,
+                  "GTIN has to be for the same supplier: $partnerName\nFinish & upload pfg for $partnerName\n\n"
+                  "For a new supplier go to the Home page and select Inspect New Product");
             });
           }
         }

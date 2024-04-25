@@ -1,13 +1,10 @@
 import 'package:get/get.dart';
-import 'package:pverify/models/carrier_item.dart';
-import 'package:pverify/models/commodity_item.dart';
-import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/utils/const.dart';
 
 class NewPurchaseOrderDetailsController extends GetxController {
-  final PartnerItem partner;
-  final CarrierItem carrier;
-  final CommodityItem commodity;
+  // final PartnerItem partner;
+  // final CarrierItem carrier;
+  // final CommodityItem commodity;
 
   late final int serverInspectionID;
   late final String partnerName;
@@ -19,11 +16,13 @@ class NewPurchaseOrderDetailsController extends GetxController {
   late final String poNumber;
   late final String sealNumber;
 
-  NewPurchaseOrderDetailsController({
+  NewPurchaseOrderDetailsController();
+
+  /*NewPurchaseOrderDetailsController({
     required this.partner,
     required this.carrier,
     required this.commodity,
-  });
+  });*/
 
   @override
   void onInit() {

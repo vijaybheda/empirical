@@ -2,7 +2,6 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/purchase_order_details.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/services/database/application_dao.dart';
@@ -145,7 +144,7 @@ class QualityControlController extends GetxController {
     }
   }
 
-  Future<void> saveAction(CarrierItem carrier) async {
+  Future<void> saveAction() async {
     qcHeaderDetails =
         await dao.findTempQCHeaderDetails(orderNoTextController.value.text);
 
@@ -161,7 +160,7 @@ class QualityControlController extends GetxController {
         sealTextController.value.text.trim().toString();
     if (qcHeaderDetails == null) {
       await dao.createTempQCHeaderDetails(
-          carrier.id!,
+          carrierID,
           orderNoTextController.value.text,
           sealTextController.value.text,
           certificateDepartureTextController.value.text,
@@ -199,11 +198,11 @@ class QualityControlController extends GetxController {
     if (purchaseOrderDetails.length != 0) {
     } else {
       // Here need to call showPurchaseOrder function.
-      showPurchaseOrder(carrier);
+      showPurchaseOrder();
     }
   }
 
-  void showPurchaseOrder(CarrierItem carrier) {
+  void showPurchaseOrder() {
     if (callerActivity.isNotEmpty) {
       if (callerActivity == "QualityControlHeaderActivity") {
         // CallerActivity are blank now.
@@ -242,11 +241,16 @@ class QualityControlController extends GetxController {
             */
           }
         } else {
+          po_number = orderNoTextController.value.text.trim();
           Get.to(
               () => SelectSupplierScreen(
-                  carrier: carrier, qcHeaderDetails: qcHeaderDetails),
+                  /*carrier: carrier, qcHeaderDetails: qcHeaderDetails*/),
               arguments: {
                 Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
+                Consts.CARRIER_ID: carrierID,
+                Consts.CARRIER_NAME: carrierName,
+                Consts.PO_NUMBER: po_number,
+                Consts.SEAL_NUMBER: seal_number,
                 // TODO: Need to pass dynamic value
                 // 'name': ,
                 // 'id': ,
@@ -302,11 +306,16 @@ class QualityControlController extends GetxController {
           'carrierID': 'carrierID', // Need to pass dynamic value
         });
         */
+        po_number = orderNoTextController.value.text.trim();
         Get.to(
             () => SelectSupplierScreen(
-                carrier: carrier, qcHeaderDetails: qcHeaderDetails),
+                /*carrier: carrier, qcHeaderDetails: qcHeaderDetails*/),
             arguments: {
               Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
+              Consts.CARRIER_ID: carrierID,
+              Consts.CARRIER_NAME: carrierName,
+              Consts.PO_NUMBER: po_number,
+              Consts.SEAL_NUMBER: seal_number,
               // TODO: Need to pass dynamic value
               // 'name': ,
               // 'id': ,

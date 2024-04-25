@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
-import 'package:pverify/models/carrier_item.dart';
-import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/item_sku_data.dart';
-import 'package:pverify/models/partner_item.dart';
-import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/models/user_data.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
@@ -17,10 +13,10 @@ import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/utils.dart';
 
 class PurchaseOrderScreenController extends GetxController {
-  final PartnerItem partner;
-  final CarrierItem carrier;
-  final CommodityItem commodity;
-  final QCHeaderDetails? qcHeaderDetails;
+  // final PartnerItem partner;
+  // final CarrierItem carrier;
+  // final CommodityItem commodity;
+  // final QCHeaderDetails? qcHeaderDetails;
 
   late final String poNumber;
   late final String sealNumber;
@@ -33,12 +29,14 @@ class PurchaseOrderScreenController extends GetxController {
   late final String productTransfer;
 
   final TextEditingController searchController = TextEditingController();
-  PurchaseOrderScreenController({
-    required this.partner,
-    required this.carrier,
-    required this.commodity,
-    required this.qcHeaderDetails,
-  });
+  PurchaseOrderScreenController(
+      // {
+      // required this.partner,
+      // required this.carrier,
+      // required this.commodity,
+      // required this.qcHeaderDetails,
+      // }
+      );
 
   final AppStorage appStorage = AppStorage.instance;
   final GlobalConfigController globalConfigController =
@@ -82,13 +80,13 @@ class PurchaseOrderScreenController extends GetxController {
         // TODO:
         List<FinishedGoodsItemSKU>? finishedGoodItems =
             await dao.getFinishedGoodItemSkuFromTable(
-          partner.id!,
+          partnerID,
           enterpriseId,
-          commodity.id!,
-          commodity.name!,
+          commodityID,
+          commodityName,
           userData.supplierId!,
           userData.headquarterSupplierId!,
-          partner.name!,
+          partnerName,
         );
 
         itemSkuList.addAll(finishedGoodItems ?? []);
@@ -133,10 +131,10 @@ class PurchaseOrderScreenController extends GetxController {
   }
 
   Future<void> navigateToPurchaseOrderDetails(
-    PartnerItem partner,
-    CarrierItem carrier,
-    CommodityItem commodity,
-  ) async {
+      // PartnerItem partner,
+      // CarrierItem carrier,
+      // CommodityItem commodity,
+      ) async {
     UserData? userData = appStorage.getUserData();
 
     if (userData == null) {
@@ -150,37 +148,37 @@ class PurchaseOrderScreenController extends GetxController {
       if (userId == 4180) {
         Get.to(
             () => NewPurchaseOrderDetailsScreen(
-                partner: partner,
-                carrier: carrier,
-                commodity: commodity,
-                qcHeaderDetails: qcHeaderDetails),
+                // partner: partner,
+                // carrier: carrier,
+                // commodity: commodity,
+                // qcHeaderDetails: qcHeaderDetails,
+                ),
             arguments: {
-              Consts.SERVER_INSPECTION_ID: qcHeaderDetails?.id ?? 0,
-              Consts.PARTNER_NAME: partner..name,
-              Consts.PARTNER_ID: partner.id,
-              Consts.CARRIER_NAME: carrier.name,
-              Consts.CARRIER_ID: carrier.id,
-              Consts.COMMODITY_ID: commodity.id,
-              Consts.COMMODITY_NAME: commodity.name,
-              Consts.PO_NUMBER: qcHeaderDetails?.poNo,
-              Consts.SEAL_NUMBER: qcHeaderDetails?.sealNo,
+              Consts.PARTNER_NAME: partnerName,
+              Consts.PARTNER_ID: partnerID,
+              Consts.CARRIER_NAME: carrierName,
+              Consts.CARRIER_ID: carrierID,
+              Consts.COMMODITY_ID: commodityID,
+              Consts.COMMODITY_NAME: commodityName,
+              Consts.PO_NUMBER: poNumber,
+              Consts.SEAL_NUMBER: sealNumber,
             });
       } else {
         Get.to(
             () => PurchaseOrderDetailsScreen(
-                partner: partner,
-                carrier: carrier,
-                commodity: commodity,
-                qcHeaderDetails: qcHeaderDetails),
+                // partner: partner,
+                // carrier: carrier,
+                // commodity: commodity,
+                // qcHeaderDetails: qcHeaderDetails,
+                ),
             arguments: {
-              Consts.SERVER_INSPECTION_ID: qcHeaderDetails?.id ?? 0,
-              Consts.PARTNER_ID: partner.id,
-              Consts.PARTNER_NAME: partner.name,
-              Consts.CARRIER_ID: carrier.id,
-              Consts.CARRIER_NAME: carrier.name,
-              Consts.COMMODITY_ID: commodity.id,
-              Consts.COMMODITY_NAME: commodity.name,
-              Consts.PO_NUMBER: qcHeaderDetails?.poNo,
+              Consts.PARTNER_ID: partnerID,
+              Consts.PARTNER_NAME: partnerName,
+              Consts.CARRIER_ID: carrierID,
+              Consts.CARRIER_NAME: carrierName,
+              Consts.COMMODITY_ID: commodityID,
+              Consts.COMMODITY_NAME: commodityName,
+              Consts.PO_NUMBER: poNumber,
             });
       }
     } else {

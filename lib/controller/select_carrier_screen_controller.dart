@@ -121,7 +121,7 @@ class SelectCarrierScreenController extends GetxController {
 
   void navigateToQcHeader(CarrierItem carrier) {
     Future.delayed(const Duration(milliseconds: 10), () {
-      Get.off(QualityControlHeader(carrier: carrier), arguments: {
+      Get.off(() => QualityControlHeader(/*carrier: carrier*/), arguments: {
         Consts.CALLER_ACTIVITY: 'TrendingReportActivity',
         Consts.NAME: carrier.name,
         Consts.ID: carrier.id
