@@ -7,7 +7,7 @@ class InspectionAttachment {
   int Inspection_ID;
   int? Attachment_ID;
   String? Attachment_Title;
-  String? CREATED_TIME;
+  int? CREATED_TIME;
   String? FILE_LOCATION;
 
   InspectionAttachment({
@@ -47,7 +47,7 @@ class InspectionAttachment {
     int? Inspection_ID,
     int? Attachment_ID,
     String? ATTACHMENT_TITLE,
-    String? CREATED_TIME,
+    int? CREATED_TIME,
     String? FILE_LOCATION,
   }) {
     return InspectionAttachment(

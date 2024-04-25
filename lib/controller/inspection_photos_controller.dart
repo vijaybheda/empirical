@@ -178,7 +178,7 @@ class InspectionPhotosController extends GetxController {
                     Inspection_ID: inspectionId ?? 0,
                     Attachment_ID: 0,
                     Attachment_Title: imagesList[i].Attachment_Title ?? '',
-                    CREATED_TIME: imagesList[i].createdTime.toString(),
+                    CREATED_TIME: imagesList[i].createdTime ?? 0,
                     FILE_LOCATION: imagesList[i].pathToPhoto ?? ''),
                 imagesList[i].Attachment_Title ?? '',
                 imagesList[i].createdTime ?? '',
@@ -198,6 +198,9 @@ class InspectionPhotosController extends GetxController {
       try {
         await dao.deleteAttachmentByAttachmentId(
             imagesList[position].pictureId ?? 0);
+
+        imagesList.removeAt(position);
+        imagesListBackup.removeAt(position);
       } catch (e) {
         debugPrint('Error creating attachment: $e');
       }

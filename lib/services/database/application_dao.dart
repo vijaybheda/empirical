@@ -242,10 +242,10 @@ class ApplicationDao {
       await db.transaction((txn) async {
         var values = {
           InspectionDefectAttachmentColumn.INSPECTION_ID:
-              attachment.Inspection_ID.toString(),
+              attachment.Inspection_ID,
           InspectionDefectAttachmentColumn.ATTACHMENT_ID: 0,
           InspectionDefectAttachmentColumn.CREATED_TIME:
-              int.tryParse(attachment.CREATED_TIME.toString()),
+              attachment.CREATED_TIME,
           InspectionDefectAttachmentColumn.FILE_LOCATION:
               attachment.FILE_LOCATION.toString(),
         };
@@ -258,9 +258,9 @@ class ApplicationDao {
           {
             InspectionDefectAttachmentColumn.ATTACHMENT_ID: attachmentId,
             InspectionDefectAttachmentColumn.INSPECTION_ID:
-                attachment.Inspection_ID.toString(),
+                attachment.Inspection_ID,
             InspectionDefectAttachmentColumn.CREATED_TIME:
-                attachment.CREATED_TIME.toString(),
+                attachment.CREATED_TIME,
             InspectionDefectAttachmentColumn.FILE_LOCATION:
                 attachment.FILE_LOCATION.toString(),
           },

@@ -188,7 +188,7 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
                             AppStrings.pictureMessage,
                             onYesTap: () async {
                               await controller.deletePicture(rowIndex);
-                              //controller.removeImage(rowIndex);
+                              controller.removeImage(rowIndex);
                             },
                           );
                         },
