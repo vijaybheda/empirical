@@ -1015,11 +1015,12 @@ class PurchaseOrderDetailsController extends GetxController {
     } else {
       Get.to(
         () => PurchaseOrderScreen(
-            // carrier: carrier,
-            // qcHeaderDetails: qcHeaderDetails,
-            // commodity: commodity,
-            // partner: partner,
-            ),
+          // carrier: carrier,
+          // qcHeaderDetails: qcHeaderDetails,
+          // commodity: commodity,
+          // partner: partner,
+          tag: commodityID.toString(),
+        ),
         arguments: passingData,
       );
     }

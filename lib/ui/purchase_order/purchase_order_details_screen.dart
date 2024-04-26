@@ -16,14 +16,17 @@ import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
+// Main class
 class PurchaseOrderDetailsScreen
-    extends GetWidget<PurchaseOrderDetailsController> {
+    extends GetView<PurchaseOrderDetailsController> {
   // final PartnerItem partner;
   // final CarrierItem carrier;
   // final CommodityItem commodity;
   // final QCHeaderDetails? qcHeaderDetails;
+  final String tag;
   const PurchaseOrderDetailsScreen({
     super.key,
+    required this.tag,
     // required this.partner,
     // required this.carrier,
     // required this.commodity,
@@ -39,6 +42,7 @@ class PurchaseOrderDetailsScreen
             // commodity: commodity,
             // qcHeaderDetails: qcHeaderDetails,
             ),
+        tag: tag,
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -73,7 +77,7 @@ class PurchaseOrderDetailsScreen
                         textStyle: TextStyle(color: AppColors.white)),
                   ),
                 ),
-                const _SearchOrderItemsWidget(),
+                _SearchOrderItemsWidget(tag),
                 Expanded(flex: 10, child: _purchaseOrderItemSection(context)),
                 BottomCustomButtonView(
                   title: AppStrings.inspectionCalculateResultButton,
@@ -94,6 +98,7 @@ class PurchaseOrderDetailsScreen
       BuildContext context) {
     return GetBuilder<PurchaseOrderDetailsController>(
       id: 'inspectionItems',
+      tag: tag,
       builder: (controller) {
         return Container(
           padding: EdgeInsets.symmetric(vertical: 20.h),
@@ -301,7 +306,8 @@ class PurchaseOrderDetailsScreen
 }
 
 class _SearchOrderItemsWidget extends StatelessWidget {
-  const _SearchOrderItemsWidget();
+  final String tag;
+  const _SearchOrderItemsWidget(this.tag);
 
   @override
   Widget build(BuildContext context) {
@@ -311,11 +317,12 @@ class _SearchOrderItemsWidget extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 25.h),
         child: TextField(
           onChanged: (value) {
-            Get.find<PurchaseOrderDetailsController>()
+            Get.find<PurchaseOrderDetailsController>(tag: tag)
                 .searchAndAssignItems(value);
           },
-          controller:
-              Get.find<PurchaseOrderDetailsController>().searchController,
+          controller: Get.find<PurchaseOrderDetailsController>(
+            tag: tag,
+          ).searchController,
           decoration: InputDecoration(
             hintText: AppStrings.searchItem,
             hintStyle: Get.textTheme.bodyLarge?.copyWith(
@@ -340,15 +347,15 @@ class _SearchOrderItemsWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(color: AppColors.white),
             ),
-            suffixIcon: Get.find<PurchaseOrderDetailsController>()
-                    .searchController
-                    .text
-                    .trim()
-                    .isEmpty
+            suffixIcon: Get.find<PurchaseOrderDetailsController>(
+              tag: tag,
+            ).searchController.text.trim().isEmpty
                 ? const Offstage()
                 : IconButton(
                     onPressed: () {
-                      Get.find<PurchaseOrderDetailsController>().clearSearch();
+                      Get.find<PurchaseOrderDetailsController>(
+                        tag: tag,
+                      ).clearSearch();
                     },
                     icon: Icon(
                       Icons.clear,

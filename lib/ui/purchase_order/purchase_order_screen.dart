@@ -12,13 +12,15 @@ import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
 
-class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
+class PurchaseOrderScreen extends StatelessWidget {
   // final PartnerItem partner;
   // final CarrierItem carrier;
   // final CommodityItem commodity;
   // final QCHeaderDetails? qcHeaderDetails;
+  final String tag;
   const PurchaseOrderScreen({
     super.key,
+    required this.tag,
     // required this.partner,
     // required this.carrier,
     // required this.commodity,
@@ -34,6 +36,7 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
             // commodity: commodity,
             // qcHeaderDetails: qcHeaderDetails,
             ),
+        tag: tag,
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -67,7 +70,7 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
                         textStyle: TextStyle(color: AppColors.white)),
                   ),
                 ),
-                const _SearchItemSkuWidget(),
+                _SearchItemSkuWidget(tag),
                 Expanded(flex: 10, child: _itemSkuListSection(context)),
                 BottomCustomButtonView(
                   title: AppStrings.save,
@@ -88,6 +91,7 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
       BuildContext context) {
     return GetBuilder<PurchaseOrderScreenController>(
       id: 'itemSkuList',
+      tag: tag,
       builder: (controller) {
         return Container(
           padding: EdgeInsets.symmetric(vertical: 20.h),
@@ -275,12 +279,14 @@ class PurchaseOrderScreen extends GetWidget<PurchaseOrderScreenController> {
 }
 
 class _SearchItemSkuWidget extends StatelessWidget {
-  const _SearchItemSkuWidget();
+  final String tag;
+  const _SearchItemSkuWidget(this.tag);
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<PurchaseOrderScreenController>(
         id: 'itemSkuList',
+        tag: tag,
         builder: (context) {
           return Container(
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
@@ -288,11 +294,13 @@ class _SearchItemSkuWidget extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 25.h),
               child: TextField(
                 onChanged: (value) {
-                  Get.find<PurchaseOrderScreenController>()
-                      .searchAndAssignOrder(value);
+                  Get.find<PurchaseOrderScreenController>(
+                    tag: tag,
+                  ).searchAndAssignOrder(value);
                 },
-                controller:
-                    Get.find<PurchaseOrderScreenController>().searchController,
+                controller: Get.find<PurchaseOrderScreenController>(
+                  tag: tag,
+                ).searchController,
                 decoration: InputDecoration(
                   hintText: AppStrings.searchItem,
                   hintStyle: Get.textTheme.bodyLarge?.copyWith(
@@ -317,16 +325,15 @@ class _SearchItemSkuWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(color: AppColors.white),
                   ),
-                  suffixIcon: Get.find<PurchaseOrderScreenController>()
-                          .searchController
-                          .text
-                          .trim()
-                          .isEmpty
+                  suffixIcon: Get.find<PurchaseOrderScreenController>(
+                    tag: tag,
+                  ).searchController.text.trim().isEmpty
                       ? const Offstage()
                       : IconButton(
                           onPressed: () {
-                            Get.find<PurchaseOrderScreenController>()
-                                .clearSearch();
+                            Get.find<PurchaseOrderScreenController>(
+                              tag: tag,
+                            ).clearSearch();
                           },
                           icon: Icon(
                             Icons.clear,

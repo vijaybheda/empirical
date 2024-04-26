@@ -918,12 +918,15 @@ class QCDetailsShortFormScreenController extends GetxController {
             Get.offAll(() => const Home());
           } else {
             if (callerActivity == "GTINActivity") {
+              final String tag =
+                  DateTime.now().millisecondsSinceEpoch.toString();
               Get.offAll(
                   () => PurchaseOrderDetailsScreen(
-                      // commodity: commodity,
-                      // partner: partner,
-                      // carrier: carrier,
-                      // qcHeaderDetails: qcHeaderDetails,
+                        // commodity: commodity,
+                        // partner: partner,
+                        // carrier: carrier,
+                        // qcHeaderDetails: qcHeaderDetails,
+                        tag: tag,
                       ),
                   arguments: passingData);
             } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
@@ -937,13 +940,16 @@ class QCDetailsShortFormScreenController extends GetxController {
                 arguments: passingData,
               );
             } else {
+              final String tag =
+                  DateTime.now().millisecondsSinceEpoch.toString();
               Get.offAll(
                 () => PurchaseOrderDetailsScreen(
-                    // qcHeaderDetails: qcHeaderDetails,
-                    // commodity: commodity,
-                    // partner: partner,
-                    // carrier: carrier,
-                    ),
+                  // qcHeaderDetails: qcHeaderDetails,
+                  // commodity: commodity,
+                  // partner: partner,
+                  // carrier: carrier,
+                  tag: tag,
+                ),
                 arguments: passingData,
               );
             }
@@ -1057,12 +1063,14 @@ class QCDetailsShortFormScreenController extends GetxController {
     };
 
     if (callerActivity == 'GTINActivity') {
+      final String tag = DateTime.now().millisecondsSinceEpoch.toString();
       Get.to(
           () => PurchaseOrderDetailsScreen(
-              // partner: partner,
-              // carrier: carrier,
-              // commodity: commodity,
-              // qcHeaderDetails: qcHeaderDetails,
+                // partner: partner,
+                // carrier: carrier,
+                // commodity: commodity,
+                // qcHeaderDetails: qcHeaderDetails,
+                tag: tag,
               ),
           arguments: bundle);
     } else if (callerActivity == 'NewPurchaseOrderDetailsActivity') {
@@ -1075,12 +1083,14 @@ class QCDetailsShortFormScreenController extends GetxController {
               ),
           arguments: bundle);
     } else {
+      final String tag = DateTime.now().millisecondsSinceEpoch.toString();
       Get.to(
           () => PurchaseOrderDetailsScreen(
-              // partner: partner,
-              // carrier: carrier,
-              // commodity: commodity,
-              // qcHeaderDetails: qcHeaderDetails,
+                // partner: partner,
+                // carrier: carrier,
+                // commodity: commodity,
+                // qcHeaderDetails: qcHeaderDetails,
+                tag: tag,
               ),
           arguments: bundle);
     }
@@ -1171,12 +1181,14 @@ class QCDetailsShortFormScreenController extends GetxController {
                   ),
               arguments: passingData);
         } else {
+          final String tag = DateTime.now().millisecondsSinceEpoch.toString();
           Get.offAll(
               () => PurchaseOrderDetailsScreen(
-                  // partner: partner,
-                  // carrier: carrier,
-                  // commodity: commodity,
-                  // qcHeaderDetails: qcHeaderDetails,
+                    // partner: partner,
+                    // carrier: carrier,
+                    // commodity: commodity,
+                    // qcHeaderDetails: qcHeaderDetails,
+                    tag: tag,
                   ),
               arguments: passingData);
         }

@@ -160,10 +160,11 @@ class CommodityIDScreenController extends GetxController {
     };
     Get.to(
         () => PurchaseOrderScreen(
-            // partner: partner,
-            // carrier: carrier,
-            // qcHeaderDetails: qcHeaderDetails,
-            // commodity: commodity,
+              // partner: partner,
+              // carrier: carrier,
+              // qcHeaderDetails: qcHeaderDetails,
+              // commodity: commodity,
+              tag: commodity.id.toString(),
             ),
         arguments: passingData);
   }

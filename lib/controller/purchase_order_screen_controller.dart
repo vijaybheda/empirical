@@ -164,12 +164,14 @@ class PurchaseOrderScreenController extends GetxController {
               Consts.SEAL_NUMBER: sealNumber,
             });
       } else {
+        final String tag = DateTime.now().millisecondsSinceEpoch.toString();
         Get.to(
             () => PurchaseOrderDetailsScreen(
-                // partner: partner,
-                // carrier: carrier,
-                // commodity: commodity,
-                // qcHeaderDetails: qcHeaderDetails,
+                  // partner: partner,
+                  // carrier: carrier,
+                  // commodity: commodity,
+                  // qcHeaderDetails: qcHeaderDetails,
+                  tag: tag,
                 ),
             arguments: {
               Consts.PARTNER_ID: partnerID,
