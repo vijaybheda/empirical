@@ -44,8 +44,6 @@ class SelectSupplierScreenController extends GetxController {
   double get listHeight => 200.h;
 
   String? callerActivity;
-  String? name;
-  int? id;
   String? sealNumber;
   String? poNumber;
   String? carrierName;
@@ -60,8 +58,6 @@ class SelectSupplierScreenController extends GetxController {
       throw Exception('Arguments not allowed');
     }
     callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
-    name = args[Consts.NAME] ?? '';
-    id = args[Consts.ID] ?? 0;
     sealNumber = args[Consts.SEAL_NUMBER] ?? '';
     poNumber = args[Consts.PO_NUMBER] ?? '';
     carrierName = args[Consts.CARRIER_NAME] ?? '';

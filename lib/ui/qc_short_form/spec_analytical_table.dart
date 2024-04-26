@@ -20,10 +20,7 @@ class SpecAnalyticalTable
       itemCount: controller.listSpecAnalyticals.length,
       itemBuilder: (context, index) {
         SpecificationAnalytical item = controller.listSpecAnalyticals[index];
-        SpecificationAnalyticalRequest reqobj =
-            SpecificationAnalyticalRequest();
-
-        reqobj.copyWith(
+        SpecificationAnalyticalRequest reqobj = SpecificationAnalyticalRequest(
           analyticalID: item.analyticalID,
           analyticalName: item.description,
           specTypeofEntry: item.specTypeofEntry,
@@ -183,7 +180,8 @@ class _SpecificationAnalyticalWidgetState
         ),
         IconButton(
           icon: Image.asset(
-            (widget.reqobj.comment != null && widget.reqobj.comment!.isNotEmpty)
+            (widget.item.specTypeofEntry == 1 ||
+                    widget.item.specTypeofEntry == 3)
                 ? AppImages.infoAddedImage
                 : AppImages.infoImage,
             height: 50.w,

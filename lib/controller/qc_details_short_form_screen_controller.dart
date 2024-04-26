@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/controller/json_file_operations.dart';
 import 'package:pverify/models/inspection.dart';
+import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/models/partner_item_sku_inspections.dart';
 import 'package:pverify/models/purchase_order_details.dart';
 import 'package:pverify/models/quality_control_item.dart';
@@ -445,7 +446,7 @@ class QCDetailsShortFormScreenController extends GetxController {
 
     listSpecAnalyticals.sort((a, b) => a.order!.compareTo(b.order!));
 
-    // int row_no = 1;
+    int row_no = 1;
     for (SpecificationAnalytical item in listSpecAnalyticals) {
       final SpecificationAnalyticalRequest reqobj =
           SpecificationAnalyticalRequest();
@@ -464,32 +465,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         inspectionResult: item.inspectionResult,
       );
 
-      /*comment.setOnClickListener((v) {
-        AlertDialog.Builder alert = AlertDialog.Builder(QC_Details_short_form.this);
-        EditText edittext = EditText(QC_Details_short_form.this);
-        edittext.setHorizontallyScrolling(false);
-        edittext.setMaxLines(int.maxValue);
-
-        if (reqobj.comment != null) {
-          edittext.setText(reqobj.comment);
-        }
-        alert.setTitle(getString(R.string.comments));
-        alert.setView(edittext);
-        alert.setPositiveButton(getString(R.string.save), (dialog, whichButton) {
-          String commentvalue = edittext.text.toString();
-          reqobj.comment = commentvalue;
-          if (commentvalue != "")
-            comment.setImageDrawable(getResources().getDrawable(R.drawable.spec_comment_added));
-          else
-            comment.setImageDrawable(getResources().getDrawable(R.drawable.spec_comment));
-        });
-        alert.setNegativeButton(getString(R.string.cancel), (dialog, whichButton) {
-          dialog.dismiss();
-        });
-        alert.show();
-      });*/
-
-      // row_no++;
+      row_no++;
     }
     update();
   }
@@ -683,10 +659,14 @@ class QCDetailsShortFormScreenController extends GetxController {
   Future<bool> saveFieldsToDBSpecAttribute(bool isComplete) async {
     try {
       // TODO: check null for inspectionId
+      // Delete existing records
       await dao.deleteSpecAttributesByInspectionId(inspectionId!);
+
+      /// Lists to store blank names
       List<String> blankAnalyticalNames = [];
       List<String> blankCommentNames = [];
 
+      /// Loop through items
       for (SpecificationAnalyticalRequest item in listSpecAnalyticalsRequest) {
         if (item.analyticalName != null && item.analyticalName!.length > 1) {
           if (item.analyticalName!.substring(0, 2) == "02") {
@@ -713,26 +693,122 @@ class QCDetailsShortFormScreenController extends GetxController {
         }
       }
 
+      /// If there are no blank analytical names
       if (blankAnalyticalNames.isEmpty) {
+        /// If there are blank comments
         if (blankCommentNames.isNotEmpty) {
           String message = '';
           for (var i = 0; i < blankCommentNames.length; i++) {
             message += 'Please enter a comment for ${blankCommentNames[i]}\n';
           }
-          Get.defaultDialog(
-            title: 'Alert',
-            middleText: message,
-            textConfirm: 'OK',
-            confirmTextColor: Colors.white,
-            onConfirm: () async {
-              Get.back();
-              for (var item2 in listSpecAnalyticalsRequest) {
+
+          AppAlertDialog.confirmationAlert(
+              Get.context!, AppStrings.alert, message, onYesTap: () async {
+            Get.back();
+
+            for (SpecificationAnalyticalRequest item2
+                in listSpecAnalyticalsRequest) {
+              if ((item2.isPictureRequired ?? false) && item2.comply == 'No') {
+                resultComply = 'No';
+              } else {
+                resultComply = 'Yes';
+              }
+              await dao.createSpecificationAttributes(
+                inspectionId!,
+                item2.analyticalID!,
+                item2.sampleTextValue!,
+                item2.sampleNumValue!,
+                item2.comply!,
+                item2.comment!,
+                item2.analyticalName!,
+                item2.isPictureRequired!,
+                item2.inspectionResult!,
+              );
+            }
+            _appStorage.resumeFromSpecificationAttributes = true;
+          });
+        } else {
+          resultComply = 'Yes';
+          for (SpecificationAnalyticalRequest item2
+              in listSpecAnalyticalsRequest) {
+            if (item2.specTypeofEntry == 1) {
+              if (item2.sampleNumValue == 0) {
+                hasErrors2 = true;
+                break;
+              } else {
+                hasErrors2 = false;
+
                 if ((item2.isPictureRequired ?? false) &&
-                    item2.comply == 'No') {
-                  resultComply = 'No';
-                } else {
-                  resultComply = 'Yes';
+                    item2.comply == "No") {
+                  resultComply = "No";
                 }
+
+                await dao.createSpecificationAttributes(
+                  inspectionId!,
+                  item2.analyticalID!,
+                  item2.sampleTextValue!,
+                  item2.sampleNumValue!,
+                  item2.comply!,
+                  item2.comment!,
+                  item2.analyticalName!,
+                  item2.isPictureRequired!,
+                  item2.inspectionResult!,
+                );
+
+                if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+                  if (item2.description?.contains("Quality Check") ?? false) {
+                    if (item2.sampleNumValue! > 0 &&
+                        item2.sampleNumValue! < item2.specMin!) {
+                      await dao.updateInspectionRating(
+                          inspectionId!, item2.sampleNumValue!);
+                      await dao.updateInspectionResult(inspectionId!, "RJ");
+                    } else if (item2.sampleNumValue! >= item2.specMin! &&
+                        item2.sampleNumValue! <= item2.specMax!) {
+                      await dao.updateInspectionRating(
+                          inspectionId!, item2.sampleNumValue!);
+                      await dao.updateInspectionResult(inspectionId!, "AC");
+                    }
+
+                    await dao.updateItemSKUInspectionComplete(
+                        inspectionId!, "true");
+                    await dao.updateInspectionComplete(inspectionId!, true);
+                    await dao.updateSelectedItemSKU(
+                      inspectionId!,
+                      partnerID!,
+                      itemSkuId!,
+                      itemSKU!,
+                      itemUniqueId!,
+                      true,
+                      false,
+                    );
+                    Utils.setInspectionUploadStatus(
+                        inspectionId!, Consts.INSPECTION_UPLOAD_READY);
+
+                    await dao.createOrUpdateInspectionSpecification(
+                      inspectionId!,
+                      specificationNumber,
+                      specificationVersion,
+                      specificationName,
+                    );
+                  }
+                }
+              }
+            } else if (item2.specTypeofEntry == 2) {
+              if (item2.sampleTextValue == "Select") {
+                hasErrors2 = true;
+
+                AppAlertDialog.confirmationAlert(Get.context!, AppStrings.alert,
+                    "Please enter value for spec attributes with 'Select'",
+                    onYesTap: () {
+                  hasErrors2 = false;
+                });
+              } else {
+                hasErrors2 = false;
+                if ((item2.isPictureRequired ?? false) &&
+                    item2.comply == "No") {
+                  resultComply = "No";
+                }
+
                 await dao.createSpecificationAttributes(
                   inspectionId!,
                   item2.analyticalID!,
@@ -745,31 +821,111 @@ class QCDetailsShortFormScreenController extends GetxController {
                   item2.inspectionResult!,
                 );
               }
-              _appStorage.resumeFromSpecificationAttributes = true;
-            },
-            textCancel: 'Cancel',
-            onCancel: () {
-              Get.back();
-            },
-          );
-        } else {
-          resultComply = 'Yes';
-          for (SpecificationAnalyticalRequest item2
-              in listSpecAnalyticalsRequest) {
-            if ((item2.isPictureRequired ?? false) && item2.comply == 'No') {
-              resultComply = 'No';
+            } else if (item2.specTypeofEntry == 3) {
+              if (item2.sampleTextValue == "Select") {
+                hasErrors2 = true;
+
+                AppAlertDialog.confirmationAlert(Get.context!, AppStrings.alert,
+                    "Please enter value for spec attributes with 'Select'",
+                    onYesTap: () {
+                  hasErrors2 = false;
+                });
+              } else if (item2.sampleNumValue == 0) {
+                hasErrors2 = true;
+              } else {
+                hasErrors2 = false;
+                if ((item2.isPictureRequired ?? false) &&
+                    item2.comply == "No") {
+                  resultComply = "No";
+                }
+
+                await dao.createSpecificationAttributes(
+                  inspectionId!,
+                  item2.analyticalID!,
+                  item2.sampleTextValue!,
+                  item2.sampleNumValue!,
+                  item2.comply!,
+                  item2.comment!,
+                  item2.analyticalName!,
+                  item2.isPictureRequired!,
+                  item2.inspectionResult!,
+                );
+
+                if (item2.description?.contains("Quality Check") ?? false) {
+                  await dao.updateInspectionRating(
+                      inspectionId!, item2.sampleNumValue!);
+                }
+
+                if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+                  if (item2.description?.contains("Quality Check") ?? false) {
+                    if (item2.sampleNumValue! > 0 &&
+                        item2.sampleNumValue! < item2.specMin!) {
+                      await dao.updateInspectionResult(inspectionId!, "RJ");
+                    } else if (item2.sampleNumValue! >= item2.specMin! &&
+                        item2.sampleNumValue! <= item2.specMax!) {
+                      await dao.updateInspectionResult(inspectionId!, "AC");
+                    }
+
+                    await dao.updateItemSKUInspectionComplete(
+                        inspectionId!, "true");
+                    await dao.updateInspectionComplete(inspectionId!, true);
+                    await dao.updateSelectedItemSKU(
+                      inspectionId!,
+                      partnerID!,
+                      itemSkuId!,
+                      itemSKU!,
+                      itemUniqueId!,
+                      true,
+                      false,
+                    );
+                    Utils.setInspectionUploadStatus(
+                        inspectionId!, Consts.INSPECTION_UPLOAD_READY);
+
+                    await dao.createOrUpdateInspectionSpecification(
+                      inspectionId!,
+                      specificationNumber,
+                      specificationVersion,
+                      specificationName,
+                    );
+                  }
+                }
+              }
+            } else {
+              if ((item2.isPictureRequired ?? false) && item2.comply == 'No') {
+                resultComply = 'No';
+              }
+              await dao.createSpecificationAttributes(
+                inspectionId!,
+                item2.analyticalID!,
+                item2.sampleTextValue!,
+                item2.sampleNumValue!,
+                item2.comply!,
+                item2.comment!,
+                item2.analyticalName!,
+                item2.isPictureRequired!,
+                item2.inspectionResult!,
+              );
             }
-            await dao.createSpecificationAttributes(
-              inspectionId!,
-              item2.analyticalID!,
-              item2.sampleTextValue!,
-              item2.sampleNumValue!,
-              item2.comply!,
-              item2.comment!,
-              item2.analyticalName!,
-              item2.isPictureRequired!,
-              item2.inspectionResult!,
-            );
+          }
+
+          if (resultComply != null && resultComply == "No") {
+            List<InspectionAttachment> picsFromDB = [];
+            picsFromDB = await dao
+                .findInspectionAttachmentsByInspectionId(inspectionId!);
+            if (picsFromDB.isEmpty) {
+              hasErrors2 = true;
+
+              AppAlertDialog.confirmationAlert(Get.context!, AppStrings.alert,
+                  "At least one picture is required", onYesTap: () {
+                hasErrors2 = false;
+              });
+            }
+          }
+
+          if (!hasErrors2) {
+            _appStorage.resumeFromSpecificationAttributes = true;
+          } else {
+            _appStorage.resumeFromSpecificationAttributes = false;
           }
         }
       } else {
@@ -777,15 +933,8 @@ class QCDetailsShortFormScreenController extends GetxController {
         for (var i = 0; i < blankAnalyticalNames.length; i++) {
           message += 'Please enter a value for ${blankAnalyticalNames[i]}\n';
         }
-        Get.defaultDialog(
-          title: 'Alert',
-          middleText: message,
-          textConfirm: 'OK',
-          confirmTextColor: Colors.white,
-          onConfirm: () {
-            Get.back();
-          },
-        );
+
+        AppAlertDialog.validateAlerts(Get.context!, AppStrings.alert, message);
       }
     } catch (e) {
       return false;

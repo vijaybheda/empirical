@@ -13,8 +13,8 @@ class Consts {
   static const String VARIETY_NAME = "VARIETY_NAME";
   static const String VARIETY_ID = "VARIETY_ID";
   static const String IS_VIEW_ONLY_MODE = "isViewOnlyMode";
-  static const String NAME = "NAME";
-  static const String ID = "ID";
+  // static const String NAME = "NAME";
+  // static const String ID = "ID";
   static const String VARIETY_SIZE = "VARIETY_SIZE";
   static const String SCORECARD_NAME = "SCORECARD_NAME";
   static const String SCORECARD_ID = "SCORECARD_ID";

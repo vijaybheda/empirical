@@ -31,16 +31,16 @@ class SelectCarrierScreenController extends GetxController {
   double get listHeight => 190.h;
 
   String? callerActivity;
-  String? name;
-  int? id;
+  String? carrierName;
+  int? carrierID;
 
   @override
   void onInit() {
     Map? args = Get.arguments;
 
     callerActivity = args?[Consts.CALLER_ACTIVITY] ?? '';
-    name = args?[Consts.NAME] ?? '';
-    id = args?[Consts.ID] ?? 0;
+    carrierName = args?[Consts.CARRIER_NAME] ?? '';
+    carrierID = args?[Consts.CARRIER_ID] ?? 0;
 
     super.onInit();
     assignInitialData();
@@ -123,8 +123,8 @@ class SelectCarrierScreenController extends GetxController {
     Future.delayed(const Duration(milliseconds: 10), () {
       Get.off(() => QualityControlHeader(/*carrier: carrier*/), arguments: {
         Consts.CALLER_ACTIVITY: 'TrendingReportActivity',
-        Consts.NAME: carrier.name,
-        Consts.ID: carrier.id
+        Consts.CARRIER_NAME: carrier.name,
+        Consts.CARRIER_ID: carrier.id
       });
     });
   }

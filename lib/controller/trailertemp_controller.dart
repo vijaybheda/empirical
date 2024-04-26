@@ -7,6 +7,7 @@ import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/trailer_temp/trailertemp_class.dart';
 import 'package:pverify/ui/trailer_temp/trailertemprature_details.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 
 class TrailerTempController extends GetxController {
@@ -46,13 +47,21 @@ class TrailerTempController extends GetxController {
 
   // CarrierItem? carrier1;
   String? orderNumber1;
-  String? carrierId;
+  int carrierId = 0;
+  String carrierName = '';
 
   var isOrderNumberAvailable = false;
 
   @override
   void onInit() {
     super.onInit();
+
+    Map<String, dynamic>? args = Get.arguments;
+    if (args != null) {
+      orderNumber1 = args[Consts.PO_NUMBER] ?? '';
+      carrierId = args[Consts.CARRIER_ID] ?? 0;
+      carrierName = args[Consts.CARRIER_NAME] ?? '';
+    }
 
     tailerTempData.nose = TrailerTempPallet();
     tailerTempData.middle = TrailerTempPallet();
@@ -184,7 +193,7 @@ class TrailerTempController extends GetxController {
 
   void loadDataFromDB() async {
     List? trailerTempMap = await dao.findTempTrailerTemperatureItems(
-        int.parse(carrierId!), orderNumber1.toString());
+        carrierId, orderNumber1.toString());
 
     if (trailerTempMap != null) {
       for (var element in trailerTempMap) {
@@ -193,9 +202,8 @@ class TrailerTempController extends GetxController {
       }
     }
 
-    TrailerTemperatureDetails? temperatureDetails =
-        await dao.findTempTrailerTemperatureDetails(
-            int.parse(carrierId!), orderNumber1.toString());
+    TrailerTemperatureDetails? temperatureDetails = await dao
+        .findTempTrailerTemperatureDetails(carrierId, orderNumber1.toString());
 
     if (temperatureDetails != null) {
       commentTextController.value.text = temperatureDetails.comments ?? '';

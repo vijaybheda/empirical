@@ -108,21 +108,12 @@ class TrailerTemp extends GetView<TrailerTempController> {
                   AppAlertDialog.validateAlerts(context, AppStrings.error,
                       AppStrings.trailer_temperature_no_entries_alert);
                 } else {
-                  controller.saveTemperatureData(
-                      'N',
-                      controller.orderNumber1!,
-                      int.tryParse(controller.carrierId ?? '0') ?? 0,
-                      controller.tailerTempData);
-                  controller.saveTemperatureData(
-                      'M',
-                      controller.orderNumber1!,
-                      int.tryParse(controller.carrierId ?? '0') ?? 0,
-                      controller.tailerTempData);
-                  controller.saveTemperatureData(
-                      'B',
-                      controller.orderNumber1!,
-                      int.tryParse(controller.carrierId ?? '0') ?? 0,
-                      controller.tailerTempData);
+                  controller.saveTemperatureData('N', controller.orderNumber1!,
+                      controller.carrierId, controller.tailerTempData);
+                  controller.saveTemperatureData('M', controller.orderNumber1!,
+                      controller.carrierId, controller.tailerTempData);
+                  controller.saveTemperatureData('B', controller.orderNumber1!,
+                      controller.carrierId, controller.tailerTempData);
                   Get.back();
                 }
               }),

@@ -70,6 +70,7 @@ class CustomListView extends StatelessWidget {
         AppStrings.exceptions,
         style: Get.textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
+          color: AppColors.white,
         ),
       ),
       content: SizedBox(
@@ -92,12 +93,12 @@ class CustomListView extends StatelessWidget {
                     title: Text(
                       item.shortDescription ?? '',
                       style: Get.textTheme.titleMedium
-                          ?.copyWith(color: Colors.white),
+                          ?.copyWith(color: AppColors.white),
                     ),
                     subtitle: Text(
                       item.shortDescription ?? '',
                       style: Get.textTheme.titleSmall
-                          ?.copyWith(color: Colors.white),
+                          ?.copyWith(color: AppColors.white),
                     ),
                   );
                 },
