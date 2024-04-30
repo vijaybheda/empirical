@@ -3,13 +3,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pverify/controller/global_config_controller.dart';
+import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/commodity/commodity_id_screen.dart';
+import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
 import 'package:pverify/ui/scorecard/scorecard_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
+import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/dialogs/supplier_list_dialog.dart';
 import 'package:pverify/utils/utils.dart';
 import 'package:simple_barcode_scanner/enum.dart';
@@ -20,6 +24,10 @@ class SelectSupplierScreenController extends GetxController {
   final AppStorage appStorage = AppStorage.instance;
   final GlobalConfigController globalConfigController =
       Get.find<GlobalConfigController>();
+
+  String gtinStr = "";
+  String lotNumber = "";
+  String packDate2 = "";
   // final CarrierItem carrier;
   // final QCHeaderDetails? qcHeaderDetails;
 
@@ -178,11 +186,8 @@ class SelectSupplierScreenController extends GetxController {
     }
     bool isOnline = globalConfigController.hasStableInternet.value;
 
-    String packDate = "";
     String dateType = "";
     String dateTypeDesc = "";
-    String gtinStr = "";
-    String lotNumber = "";
 
     if (barcodeResult.length > 18) {
       String check01;
@@ -197,8 +202,8 @@ class SelectSupplierScreenController extends GetxController {
             debugPrint("gtin 1 = $check02");
 
             if (["11", "12", "13", "15", "16", "17"].contains(check02)) {
-              packDate = barcodeResult.substring(22, 28);
-              debugPrint("gtin 2 = $packDate");
+              packDate2 = barcodeResult.substring(22, 28);
+              debugPrint("gtin 2 = $packDate2");
 
               dateType = check02;
               dateTypeDesc = getDateTypeDesc(check02, dateTypeDesc);
@@ -207,7 +212,7 @@ class SelectSupplierScreenController extends GetxController {
               DateFormat myFormat = Utils().dateFormat;
 
               try {
-                packDate = myFormat.format(fromUser.parse(packDate));
+                packDate2 = myFormat.format(fromUser.parse(packDate2));
               } catch (e) {
                 debugPrint(e as String?);
               }
@@ -294,14 +299,14 @@ class SelectSupplierScreenController extends GetxController {
           debugPrint("gtin 1 = $check02");
 
           if (["11", "12", "13", "15", "16", "17"].contains(check02)) {
-            packDate = barcodeResult.substring(18, 24);
-            debugPrint("gtin 2 = $packDate");
+            packDate2 = barcodeResult.substring(18, 24);
+            debugPrint("gtin 2 = $packDate2");
 
             dateType = check02;
             dateTypeDesc = getDateTypeDesc(check02, dateTypeDesc);
 
             DateFormat formatter = Utils().dateFormat;
-            packDate = formatter.format(DateTime.parse(packDate));
+            packDate2 = formatter.format(DateTime.parse(packDate2));
 
             String check03 = barcodeResult.substring(24, 26);
             debugPrint("gtin 3 = $check03");
@@ -401,183 +406,126 @@ class SelectSupplierScreenController extends GetxController {
   }
 
   Future<void> loadGtinOfflineMode(String dateType) async {
-    List<SpecificationSupplierGTIN>? specificationSupplierGTINList =
-        appStorage.getSpecificationSupplierGTINList();
+    List<SpecificationSupplierGTIN> specificationSupplierGTINList =
+        appStorage.getSpecificationSupplierGTINList() ?? [];
 
     debugPrint(
-        'specificationSupplierGTINList ${specificationSupplierGTINList?.length}');
-    /*if (specificationSupplierGTINList.length > 1) {
+        'specificationSupplierGTINList ${specificationSupplierGTINList.length}');
+
+    if (specificationSupplierGTINList.length > 1) {
       List<FinishedGoodsItemSKU> list = [];
-      for (int i = 0; i < specificationSupplierGTINList.length; i++) {
-        FinishedGoodsItemSKU listItem = FinishedGoodsItemSKU(
-          itemSkuId: int.parse(specificationSupplierGTINList[i].itemSkuId),
-          itemSkuCode: specificationSupplierGTINList[i].itemSkuCode,
-          itemSkuName: specificationSupplierGTINList[i].itemSkuName,
-          commodityId: specificationSupplierGTINList[i].commodityId,
-          commodityName: specificationSupplierGTINList[i].commodityName,
-          supplierId: specificationSupplierGTINList[i].supplierId,
-          supplierName: specificationSupplierGTINList[i].supplierName,
+
+      for (var item in specificationSupplierGTINList) {
+        FinishedGoodsItemSKU listItem = FinishedGoodsItemSKU.fromGtinOffline(
+          id: int.parse(item.itemSkuId!),
+          sku: item.itemSkuId,
+          name: item.itemSkuName,
+          commodityID: item.commodityId,
+          commodityName: item.commodityName,
+          partnerId: item.supplierId,
+          partnerName: item.supplierName,
           dateType: dateType,
-          gtin: gtinstr,
-          lotNumber: lotNumber,
+          gtin: gtinStr,
+          lotNo: lotNumber,
           packDate: packDate2,
         );
+
         list.add(listItem);
       }
-      itemListAdapter = GtinItemsAdapter(list: list, dao: dao);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Select an item"),
-            content: Container(
-              width: double.maxFinite,
-              child: itemListAdapter,
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text("Cancel"),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  if (appStorage.selectedItemSKUList != null &&
-                      appStorage.selectedItemSKUList.isNotEmpty) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PurchaseOrderDetailsActivity(
-                          partnerName: appStorage
-                              .specificationSupplierGTINList[0].supplierName,
-                          partnerId: int.parse(
-                              appStorage.selectedItemSKUList[0].partnerId),
-                          carrierName: carrierName,
-                          carrierId: carrierID,
-                          commodityId:
-                              appStorage.selectedItemSKUList[0].commodityID,
-                          commodityName: appStorage
-                              .specificationSupplierGTINList[0].commodityName,
-                          poNumber: po_number,
-                        ),
-                      ),
-                    );
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text("Alert"),
-                          content: Text("Please select an item."),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: Text("OK"),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  }
-                },
-                child: Text("OK"),
-              ),
-            ],
-          );
-        },
-      );
+
+      // TODO: Implement GtinItemsAdapter and AlertDialog in Flutter
     } else {
-      if (appStorage.selectedItemSKUList != null &&
-          appStorage.selectedItemSKUList.isNotEmpty &&
-          specificationSupplierGTINList.isNotEmpty &&
-          int.parse(specificationSupplierGTINList[0].supplierId) !=
-              int.parse(appStorage.selectedItemSKUList[0].partnerId)) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PurchaseOrderDetailsActivity(
-              partnerId: int.parse(appStorage.selectedItemSKUList[0].partnerId),
-              carrierName: carrierName,
-              carrierId: carrierID,
-              poNumber: po_number,
-              commodityName: appStorage.selectedItemSKUList[0].commodityName,
-              commodityId: appStorage.selectedItemSKUList[0].commodityID,
-              isGTINSamePartner: false,
-            ),
-          ),
+      if (appStorage.selectedItemSKUList.isNotEmpty &&
+          specificationSupplierGTINList[0].supplierId !=
+              appStorage.selectedItemSKUList[0].partnerId) {
+        Map<String, dynamic> arguments = {
+          Consts.PARTNER_ID: appStorage.selectedItemSKUList[0].partnerId,
+          Consts.CARRIER_NAME: carrierName,
+          Consts.CARRIER_ID: carrierID,
+          Consts.PO_NUMBER: poNumber,
+          Consts.COMMODITY_NAME:
+              appStorage.selectedItemSKUList[0].commodityName,
+          Consts.COMMODITY_ID: appStorage.selectedItemSKUList[0].commodityID,
+          Consts.IS_GTIN_SAME_PARTNER: false,
+          Consts.CALLER_ACTIVITY: "GTINActivity",
+        };
+
+        final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+        Get.to(
+          () => PurchaseOrderDetailsScreen(tag: tag),
+          arguments: arguments,
         );
       } else {
         if (specificationSupplierGTINList.isNotEmpty) {
-          String itemUniqueId = Uuid().v4();
+          String itemUniqueId = generateUUID();
+          SpecificationSupplierGTIN item =
+              specificationSupplierGTINList.elementAt(0);
+
           await dao.createSelectedItemSKU(
-            int.parse(specificationSupplierGTINList[0].itemSkuId),
-            specificationSupplierGTINList[0].itemSkuCode,
-            po_number,
-            lotNumber,
-            specificationSupplierGTINList[0].itemSkuName,
-            specificationSupplierGTINList[0].commodityName,
-            itemUniqueId,
-            specificationSupplierGTINList[0].commodityId,
-            "",
-            specificationSupplierGTINList[0].supplierId,
-            packDate2,
-            gtinstr,
-            specificationSupplierGTINList[0].supplierName,
-            "",
-            "",
-            dateType,
+            skuId: int.parse(item.itemSkuId!),
+            itemSKUCode: item.itemSkuCode,
+            poNo: poNumber,
+            lotNo: lotNumber,
+            itemSKUName: item.itemSkuName,
+            commodityName: item.commodityName,
+            uniqueId: itemUniqueId,
+            commodityId: item.commodityId,
+            description: "",
+            partnerID: item.supplierId,
+            packDate: packDate2,
+            GTIN: gtinStr,
+            partnerName: item.supplierName,
+            ftl: "",
+            branded: "",
+            dateType: dateType,
           );
+
           appStorage.selectedItemSKUList.add(
-            FinishedGoodsItemSKU(
-              int.parse(specificationSupplierGTINList[0].itemSkuId),
-              specificationSupplierGTINList[0].itemSkuCode,
-              specificationSupplierGTINList[0].itemSkuName,
-              specificationSupplierGTINList[0].commodityId,
-              specificationSupplierGTINList[0].commodityName,
-              itemUniqueId,
-              lotNumber,
-              packDate2,
-              specificationSupplierGTINList[0].supplierId,
-              gtinstr,
-              specificationSupplierGTINList[0].supplierName,
-              dateType,
+            FinishedGoodsItemSKU.fromGtinStorage(
+              id: int.parse(item.itemSkuId!),
+              sku: item.itemSkuCode,
+              name: item.itemSkuName,
+              commodityID: item.commodityId,
+              commodityName: item.commodityName,
+              uniqueItemId: itemUniqueId,
+              lotNo: lotNumber,
+              packDate: packDate2,
+              partnerId: item.supplierId,
+              gtin: gtinStr,
+              partnerName: item.supplierName,
+              dateType: dateType,
             ),
           );
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PurchaseOrderDetailsActivity(
-                partnerName: specificationSupplierGTINList[0].supplierName,
-                partnerId:
-                    int.parse(specificationSupplierGTINList[0].supplierId),
-                carrierName: carrierName,
-                carrierId: carrierID,
-                poNumber: po_number,
-                commodityName: specificationSupplierGTINList[0].commodityName,
-                commodityId: specificationSupplierGTINList[0].commodityId,
-                isGTINSamePartner: true,
-              ),
-            ),
+
+          Map<String, dynamic> arguments = {
+            Consts.PARTNER_NAME: item.supplierName,
+            Consts.PARTNER_ID: item.supplierId,
+            Consts.CARRIER_NAME: carrierName,
+            Consts.CARRIER_ID: carrierID,
+            Consts.PO_NUMBER: poNumber,
+            Consts.COMMODITY_NAME: item.commodityName,
+            Consts.COMMODITY_ID: item.commodityId,
+            Consts.IS_GTIN_SAME_PARTNER: true,
+            Consts.CALLER_ACTIVITY: "GTINActivity",
+          };
+
+          final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+          Get.to(
+            () => PurchaseOrderDetailsScreen(tag: tag),
+            arguments: arguments,
           );
         } else {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text("Alert"),
-                content: Text("No Item/Sku found for this GTIN"),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: Text("OK"),
-                  ),
-                ],
-              );
+          AppAlertDialog.confirmationAlert(
+            Get.context!,
+            AppStrings.alert,
+            'No Item/Sku found for this GTIN',
+            onYesTap: () {
+              Get.back();
             },
           );
         }
       }
-    }*/
+    }
   }
 
   void navigateToScorecardScreen(PartnerItem partner) {

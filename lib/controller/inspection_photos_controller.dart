@@ -26,14 +26,14 @@ class InspectionPhotosController extends GetxController {
   bool? hasAttachmentIds = false;
 
   String partnerName = '';
-  String? partnerID;
+  int? partnerID;
   String carrierName = '';
-  String? carrierID;
+  int? carrierID;
   String? commodityName;
   int commodityID = 0;
   String? varietyName;
   String? varietySize;
-  String? varietyId;
+  int? varietyId;
   bool isViewOnlyMode = true;
   int inspectionId = -1;
   String callerActivity = '';
@@ -48,7 +48,7 @@ class InspectionPhotosController extends GetxController {
     }
 
     partnerName = args[Consts.PARTNER_NAME] ?? '';
-    partnerID = args[Consts.PARTNER_ID];
+    partnerID = args[Consts.PARTNER_ID] ?? 0;
     carrierName = args[Consts.CARRIER_NAME] ?? '';
     carrierID = args[Consts.CARRIER_ID];
     commodityName = args[Consts.COMMODITY_NAME];

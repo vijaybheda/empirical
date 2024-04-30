@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/overridden_result_item.dart';
@@ -11,6 +12,7 @@ import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/images.dart';
+import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
 
 class PurchaseOrderListViewItem extends StatefulWidget {
@@ -75,7 +77,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
   bool isPartialComplete = false;
   Icon inspectButtonImagePath = const Icon(
     Icons.play_circle_outline_outlined,
-    size: 30,
+    size: 40,
   );
   FocusNode qtyRejectedFocusNode = FocusNode();
 
@@ -105,11 +107,19 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
     lotNumberController.text = widget.goodsItem.lotNumber ?? '';
     inspectButtonImagePath = const Icon(
       Icons.play_circle_outline_outlined,
-      size: 30,
+      size: 40,
     );
     etQtyShippedEnabled = false;
     asyncTask();
     super.initState();
+  }
+
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      asyncTask();
+      super.setState(fn);
+    }
   }
 
   Future<void> getSpecifications() async {
@@ -140,19 +150,6 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
       child: Column(
         children: [
           _inspectionNameIdInfo(),
-          /*Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'PO No: ${getPoNumber(widget.position)}',
-                style: Get.textTheme.bodyLarge,
-              ),
-              Text(
-                'Pack Date: ${getPackDate(widget.position)}',
-                style: Get.textTheme.bodyLarge,
-              ),
-            ],
-          ),*/
           const SizedBox(height: 8),
           _inspectionStatusInfo(),
           const SizedBox(height: 8),
@@ -188,30 +185,32 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          flex: 6,
-          child: Text(
-            widget.goodsItem.description ?? '-',
-            style: Get.textTheme.bodyMedium,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                widget.goodsItem.description ?? '-',
+                style: Get.textTheme.bodyMedium?.copyWith(
+                  fontSize: 28.sp,
+                  color: AppColors.lightGrey,
+                ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                widget.goodsItem.sku ?? '-',
+                style: Get.textTheme.bodyMedium?.copyWith(
+                  fontSize: 28.sp,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
         ),
-        const Expanded(
-          flex: 1,
-          child: SizedBox(),
-        ),
-        Expanded(
-          flex: 3,
-          child: Text(
-            widget.goodsItem.sku ?? '-',
-            style: Get.textTheme.bodyMedium,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        const Spacer(),
         IconButton(
-          iconSize: 35,
+          iconSize: 40,
           icon: inspectButtonImagePath,
           onPressed: () {
             if (widget.inspectTap != null) {
@@ -240,8 +239,8 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           },
           icon: Image.asset(
             informationImagePath.assetName,
-            width: 30,
-            height: 30,
+            width: 40,
+            height: 40,
           ),
         ),
       ],
@@ -253,79 +252,90 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(
-          flex: 2,
-          child: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Lot No. ',
-                  style: Get.textTheme.bodyMedium,
-                ),
-                if (widget.goodsItem.lotNumber != null)
+        if (widget.goodsItem.lotNumber != null)
+          Expanded(
+            flex: 2,
+            child: RichText(
+              text: TextSpan(
+                children: [
                   TextSpan(
-                    text: widget.goodsItem.lotNumber.toString(),
-                    style: Get.textTheme.bodyMedium,
+                    text: 'Lot No. ',
+                    style: Get.textTheme.bodyMedium?.copyWith(
+                      fontSize: 28.sp,
+                    ),
                   ),
-              ],
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 4,
-          child: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Pack Date ',
-                  style: Get.textTheme.bodyMedium,
-                ),
-                if (widget.goodsItem.packDate != null)
-                  TextSpan(
-                    text: (widget.goodsItem.packDate!),
-                    style: Get.textTheme.bodyMedium,
-                  ),
-              ],
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 3,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              if (resultButton != null)
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 26, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: resultButtonColor,
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                  child: Text(
-                    resultButton ?? '',
-                    style: Get.textTheme.bodyMedium,
-                  ),
-                ),
-              const SizedBox(
-                width: 12,
+                  if (widget.goodsItem.lotNumber != null)
+                    TextSpan(
+                      text: widget.goodsItem.lotNumber.toString(),
+                      style: Get.textTheme.bodyMedium?.copyWith(
+                        fontSize: 28.sp,
+                      ),
+                    ),
+                ],
               ),
-              if (editPencilVisibility)
-                IconButton(
-                  onPressed: () {
-                    if (widget.onTapEdit != null) {
-                      widget.onTapEdit!(inspection, partnerItemSKU);
-                    }
-                  },
-                  icon: const Icon(
-                    Icons.edit_outlined,
-                    size: 24,
-                    color: Colors.white,
-                  ),
-                ),
-            ],
+            ),
           ),
-        ),
+        if (widget.goodsItem.packDate != null)
+          Expanded(
+            flex: 4,
+            child: RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Pack Date ',
+                    style: Get.textTheme.bodyMedium?.copyWith(
+                      fontSize: 28.sp,
+                    ),
+                  ),
+                  if (widget.goodsItem.packDate != null)
+                    TextSpan(
+                      text: (widget.goodsItem.packDate!),
+                      style: Get.textTheme.bodyMedium?.copyWith(
+                        fontSize: 28.sp,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        if (resultButton != null || editPencilVisibility)
+          Expanded(
+            flex: 3,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (resultButton != null)
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 26, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: resultButtonColor,
+                      borderRadius: BorderRadius.circular(32),
+                    ),
+                    child: Text(
+                      resultButton ?? '',
+                      style: Get.textTheme.bodyMedium?.copyWith(
+                        fontSize: 28.sp,
+                      ),
+                    ),
+                  ),
+                const SizedBox(width: 12),
+                if (editPencilVisibility)
+                  IconButton(
+                    onPressed: () {
+                      if (widget.onTapEdit != null) {
+                        widget.onTapEdit!(inspection, partnerItemSKU);
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.edit_outlined,
+                      size: 24,
+                      color: Colors.white,
+                    ),
+                  ),
+              ],
+            ),
+          ),
       ],
     );
   }
@@ -342,12 +352,16 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
               children: [
                 TextSpan(
                   text: 'Qty Shipped * ',
-                  style: Get.textTheme.bodyMedium,
+                  style: Get.textTheme.bodyMedium?.copyWith(
+                    fontSize: 28.sp,
+                  ),
                 ),
                 // if (widget.goodsItem.quantityShipped != null)
                 TextSpan(
                   text: lotNumberController.text,
-                  style: Get.textTheme.bodyMedium,
+                  style: Get.textTheme.bodyMedium?.copyWith(
+                    fontSize: 28.sp,
+                  ),
                 ),
               ],
             ),
@@ -360,12 +374,16 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
               children: [
                 TextSpan(
                   text: 'Qty Rejected * ',
-                  style: Get.textTheme.bodyMedium,
+                  style: Get.textTheme.bodyMedium?.copyWith(
+                    fontSize: 28.sp,
+                  ),
                 ),
                 if (widget.goodsItem.packDate != null)
                   TextSpan(
                     text: '200', // TODO: implement this
-                    style: Get.textTheme.bodyMedium,
+                    style: Get.textTheme.bodyMedium?.copyWith(
+                      fontSize: 28.sp,
+                    ),
                   ),
               ],
             ),
@@ -433,12 +451,12 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
       if (isComplete || (inspection != null && isC)) {
         inspectButtonImagePath = const Icon(
           Icons.check_circle_outlined,
-          size: 30,
+          size: 40,
         );
       } else if (isPartialComplete) {
         inspectButtonImagePath = const Icon(
           Icons.pause_circle_outline_outlined,
-          size: 30,
+          size: 40,
         );
       }
 

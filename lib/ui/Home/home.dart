@@ -10,7 +10,6 @@ import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
-import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
@@ -328,18 +327,32 @@ class Home extends GetView<HomeController> {
             ),
           ),
         ),
-        customButton(
-            AppColors.primary,
-            AppStrings.inspectNewProduct.toUpperCase(),
-            520.w,
-            125,
-            GoogleFonts.poppins(
-                fontSize: 38.sp,
-                fontWeight: FontWeight.w600,
-                textStyle: TextStyle(color: AppColors.white)),
-            onClickAction: () {
-          return Get.to(() => SelectCarrierScreen());
-        }),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () async {
+                await Get.to(() => SelectCarrierScreen());
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 25.w),
+                decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(45.r)),
+                child: Text(
+                  textAlign: TextAlign.center,
+                  AppStrings.inspectNewProduct.toUpperCase(),
+                  style: GoogleFonts.poppins(
+                      fontSize: 38.sp,
+                      fontWeight: FontWeight.w600,
+                      textStyle: TextStyle(color: AppColors.white)),
+                ),
+              ),
+            ),
+          ],
+        ),
         SizedBox(
           height: 35.h,
         ),

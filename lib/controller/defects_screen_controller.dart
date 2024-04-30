@@ -145,10 +145,10 @@ class DefectsScreenController extends GetxController {
     varietyId = extras[Consts.VARIETY_ID];
     completed = extras[Consts.COMPLETED] ?? false;
     inspectionResult = extras[Consts.INSPECTION_RESULT] ?? '';
-    selectedSpecification = extras[Consts.SPECIFICATION_NAME];
+    selectedSpecification = extras[Consts.SPECIFICATION_NAME] ?? '';
     poNumber = extras[Consts.PO_NUMBER] ?? '';
     sealNumber = extras[Consts.SEAL_NUMBER] ?? '';
-    gradeId = extras[Consts.GRADE_ID];
+    gradeId = extras[Consts.GRADE_ID] ?? 0;
     itemSku = extras[Consts.ITEM_SKU] ?? '';
     itemSkuId = extras[Consts.ITEM_SKU_ID] ?? 0;
     itemSkuName = extras[Consts.ITEM_SKU_NAME] ?? '';

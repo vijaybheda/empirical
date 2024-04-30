@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:pverify/controller/cache_download_controller.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/theme/colors.dart';
 
 class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
   const CacheDownloadScreen({super.key});
@@ -13,15 +14,15 @@ class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
         init: CacheDownloadController(),
         builder: (controller) {
           return Scaffold(
-            backgroundColor: Get.theme.colorScheme.background,
+            backgroundColor: AppColors.blue,
             appBar: AppBar(
               leading: const Offstage(),
               leadingWidth: 0,
               title: Text(AppStrings.cacheDownload,
                   style: Get.textTheme.titleMedium
                       ?.copyWith(color: Colors.white, fontSize: 30)),
-              backgroundColor: Get.theme.colorScheme.background,
-              foregroundColor: Get.theme.colorScheme.background,
+              backgroundColor: AppColors.blue,
+              foregroundColor: AppColors.blue,
             ),
             body: Center(
               child: Column(

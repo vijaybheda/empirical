@@ -83,7 +83,7 @@ class FooterContentView extends StatelessWidget {
                 ),
               ),
               Expanded(
-                flex: 6,
+                flex: 4,
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.center,

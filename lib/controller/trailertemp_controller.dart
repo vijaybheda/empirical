@@ -208,6 +208,7 @@ class TrailerTempController extends GetxController {
     if (temperatureDetails != null) {
       commentTextController.value.text = temperatureDetails.comments ?? '';
     }
+    update();
   }
 
   String setDataWithSymbol(String value) {

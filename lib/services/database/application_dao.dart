@@ -5,8 +5,8 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:csv/csv.dart';
-import 'package:flutter/material.dart';
-import 'package:pverify/models/commodity_item.dart';
+import 'package:pverify/models/commodity_data.dart';
+import 'package:pverify/models/commodity_keywords.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/models/inspection_defect.dart';
@@ -434,8 +434,7 @@ class ApplicationDao {
       DBTables.INSPECTION,
       {
         InspectionColumn.COMPLETE: complete ? 1 : 0,
-        'Complete_Date': DateTime.now().millisecondsSinceEpoch
-        // FIXME: Assuming 'Complete_Date' is the column name
+        InspectionColumn.COMPLETED_TIME: DateTime.now().millisecondsSinceEpoch
       },
       where: '${BaseColumns.ID} = ?',
       whereArgs: [inspectionID],
@@ -2342,10 +2341,10 @@ class ApplicationDao {
     return item;
   }
 
-  Future<List<CommodityItem>?> getCommodityByPartnerFromTable(int supplierId,
+  Future<List<Commodity>?> getCommodityByPartnerFromTable(int supplierId,
       int enterpriseId, int supplierIdParam, int headquarterId) async {
-    List<CommodityItem> itemSKUList = [];
-    CommodityItem item;
+    List<Commodity> itemSKUList = [];
+    Commodity item;
     final Database db = dbProvider.lazyDatabase;
     try {
       bool hqUser = (supplierIdParam == headquarterId);
@@ -2383,7 +2382,7 @@ class ApplicationDao {
       List<Map<String, dynamic>> cursor = await db.rawQuery(query1, args);
 
       for (Map<String, dynamic> row in cursor) {
-        item = CommodityItem.fromJson(row);
+        item = Commodity.fromJson(row as Map<String, dynamic>);
         itemSKUList.add(item);
       }
     } catch (e) {
@@ -2640,7 +2639,7 @@ class ApplicationDao {
       await db.transaction((txn) async {
         var values = <String, dynamic>{};
         if (complete != null) {
-          values["complete"] = complete;
+          values[PartnerItemSkuColumn.COMPLETE] = complete;
         }
 
         await txn.update(
@@ -2900,7 +2899,8 @@ class ApplicationDao {
       );
 
       if (result.isNotEmpty) {
-        packDate = result.first[QualityControlColumn.PACK_DATE];
+        String packDateString = result.first[QualityControlColumn.PACK_DATE];
+        packDate = int.tryParse(packDateString) ?? 0;
       }
     } catch (e) {
       log('Error occurred while finding quality control items: $e');
@@ -3462,5 +3462,49 @@ class ApplicationDao {
 
       rethrow;
     }
+  }
+
+  Future<List<CommodityKeywords>> getCommodityKeywordsFromTable(
+      int commodityId) async {
+    List<CommodityKeywords> itemSKUList = [];
+    CommodityKeywords? item;
+    Database db = await DatabaseHelper.instance.database;
+
+    try {
+      String query1 = "Select * from commodity_keywords where ID=$commodityId";
+      List<Map> result = await db.rawQuery(query1);
+
+      if (result.isNotEmpty) {
+        for (Map map in result) {
+          item =
+              CommodityKeywords(id: map['column1'], keywords: map['column2']);
+          itemSKUList.add(item);
+        }
+      }
+    } catch (e) {
+      print('Error has occurred while finding quality control items: $e');
+      return [];
+    }
+
+    return itemSKUList;
+  }
+
+  Future<String> getBrandedFlagFromItemSku(int itemSkuId) async {
+    String branded = "";
+    Database db = dbProvider.lazyDatabase;
+
+    try {
+      String query =
+          "SELECT Branded FROM ${DBTables.ITEM_SKU} WHERE Item_SKU.SKU_ID=$itemSkuId";
+      List<Map> result = await db.rawQuery(query);
+
+      if (result.isNotEmpty) {
+        branded = result.first[ItemSkuColumn.BRANDED];
+      }
+    } catch (e) {
+      print('Error has occurred while finding quality control items: $e');
+    }
+
+    return branded;
   }
 }

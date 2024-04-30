@@ -56,6 +56,38 @@ class FinishedGoodsItemSKU {
     this.dateType,
   });
 
+  // (int id, String sku, String name, int commodityID, String commodityName, int partnerId, String partnerName, String dateType, String gtin, String lotNo, String packDate)
+
+  FinishedGoodsItemSKU.fromGtinOffline({
+    required this.id,
+    required this.sku,
+    required this.name,
+    required this.commodityID,
+    required this.commodityName,
+    required this.partnerId,
+    required this.partnerName,
+    required this.dateType,
+    required this.gtin,
+    required this.lotNo,
+    required this.packDate,
+  });
+
+  // (int id, String sku, String name, int commodityID, String commodityName, String uniqueItemId, String lotNo, String packDate, int partnerId, String gtin, String partnerName, String dateType)
+  FinishedGoodsItemSKU.fromGtinStorage({
+    required this.id,
+    required this.sku,
+    required this.name,
+    required this.commodityID,
+    required this.commodityName,
+    required this.uniqueItemId,
+    required this.lotNo,
+    required this.packDate,
+    required this.partnerId,
+    required this.gtin,
+    required this.partnerName,
+    required this.dateType,
+  });
+
   FinishedGoodsItemSKU.fromJson(Map<String, dynamic> json) {
     printKeysAndValueTypes(json);
     uniqueItemId = json['uniqueItemId'];

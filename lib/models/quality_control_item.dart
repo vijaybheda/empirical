@@ -1,3 +1,5 @@
+import 'package:pverify/services/database/column_names.dart';
+
 class QualityControlItem {
   int? qcID;
   int? inspectionID;
@@ -7,8 +9,7 @@ class QualityControlItem {
   String? rpc;
   int? originID;
   String? lot;
-  int?
-      packDate; // Assuming UNIX timestamp (int). Consider converting to DateTime.
+  String? packDate;
   String? seal;
   String? claimFiledAgainst;
   int? qtyRejected;
@@ -22,18 +23,16 @@ class QualityControlItem {
   int? pulpTempMax;
   int? recorderTempMin;
   int? recorderTempMax;
-  bool? isComplete;
+  int? isComplete;
   String? specificationName;
   String? qcdOpen1;
   String? qcdOpen2;
   String? qcdOpen3;
   String? qcdOpen4;
-  int?
-      workDate; // Assuming UNIX timestamp (int). Consider converting to DateTime.
+  String? workDate;
   String? gtin;
   int? lotsize;
-  int?
-      shipDate; // Assuming UNIX timestamp (int). Consider converting to DateTime.
+  String? shipDate;
   String? dateType;
 
   QualityControlItem({
@@ -74,77 +73,77 @@ class QualityControlItem {
 
   factory QualityControlItem.fromJson(Map<String, dynamic> json) {
     return QualityControlItem(
-      qcID: json['qcID'],
-      inspectionID: json['inspectionID'],
-      brandID: json['brandID'],
-      qtyShipped: json['qtyShipped'],
-      uomQtyShippedID: json['uomQtyShippedID'],
-      rpc: json['rpc'],
-      originID: json['originID'],
-      lot: json['lot'],
-      packDate: json['packDate'],
-      seal: json['seal'],
-      claimFiledAgainst: json['claimFiledAgainst'],
-      qtyRejected: json['qtyRejected'],
-      uomQtyRejectedID: json['uomQtyRejectedID'],
-      reasonID: json['reasonID'],
-      qcComments: json['qcComments'],
-      poNumber: json['poNumber'],
-      qtyReceived: json['qtyReceived'],
-      uomQtyReceivedID: json['uomQtyReceivedID'],
-      pulpTempMin: json['pulpTempMin'],
-      pulpTempMax: json['pulpTempMax'],
-      recorderTempMin: json['recorderTempMin'],
-      recorderTempMax: json['recorderTempMax'],
-      isComplete: json['isComplete'],
-      specificationName: json['specificationName'],
-      qcdOpen1: json['qcdOpen1'],
-      qcdOpen2: json['qcdOpen2'],
-      qcdOpen3: json['qcdOpen3'],
-      qcdOpen4: json['qcdOpen4'],
-      workDate: json['workDate'],
-      gtin: json['gtin'],
-      lotsize: json['lotsize'],
-      shipDate: json['shipDate'],
-      dateType: json['dateType'],
+      qcID: json[QualityControlColumn.ID],
+      inspectionID: json[QualityControlColumn.INSPECTION_ID],
+      brandID: json[QualityControlColumn.BRAND_ID],
+      qtyShipped: json[QualityControlColumn.QTY_SHIPPED],
+      uomQtyShippedID: json[QualityControlColumn.UOM_QTY_SHIPPED_ID],
+      rpc: json[QualityControlColumn.RPC],
+      originID: json[QualityControlColumn.ORIGIN_ID],
+      lot: json[QualityControlColumn.LOT_NUMBER],
+      packDate: json[QualityControlColumn.PACK_DATE],
+      seal: json[QualityControlColumn.SEAL],
+      claimFiledAgainst: json[QualityControlColumn.CLAIM_FILED_AGAINST],
+      qtyRejected: json[QualityControlColumn.QTY_REJECTED],
+      uomQtyRejectedID: json[QualityControlColumn.UOM_QTY_REJECTED_ID],
+      reasonID: json[QualityControlColumn.REASON_ID],
+      qcComments: json[QualityControlColumn.QC_COMMENTS],
+      poNumber: json[QualityControlColumn.PO_NO],
+      qtyReceived: json[QualityControlColumn.QTY_RECEIVED],
+      uomQtyReceivedID: json[QualityControlColumn.UOM_QTY_RECEIVED],
+      pulpTempMin: json[QualityControlColumn.PULP_TEMP_MIN],
+      pulpTempMax: json[QualityControlColumn.PULP_TEMP_MAX],
+      recorderTempMin: json[QualityControlColumn.RECORDER_TEMP_MIN],
+      recorderTempMax: json[QualityControlColumn.RECORDER_TEMP_MAX],
+      isComplete: json[QualityControlColumn.IS_COMPLETE],
+      specificationName: json[QualityControlColumn.SPECIFICATION_NAME],
+      qcdOpen1: json[QualityControlColumn.QCDOPEN1],
+      qcdOpen2: json[QualityControlColumn.QCDOPEN2],
+      qcdOpen3: json[QualityControlColumn.QCDOPEN3],
+      qcdOpen4: json[QualityControlColumn.QCDOPEN4],
+      workDate: json[QualityControlColumn.QCDOPEN5],
+      gtin: json[QualityControlColumn.GTIN],
+      lotsize: json[QualityControlColumn.LOT_SIZE],
+      shipDate: json[QualityControlColumn.SHIP_DATE],
+      dateType: json[QualityControlColumn.DATE_TYPE],
     );
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['qcID'] = qcID;
-    data['inspectionID'] = inspectionID;
-    data['brandID'] = brandID;
-    data['qtyShipped'] = qtyShipped;
-    data['uomQtyShippedID'] = uomQtyShippedID;
-    data['rpc'] = rpc;
-    data['originID'] = originID;
-    data['lot'] = lot;
-    data['packDate'] = packDate;
-    data['seal'] = seal;
-    data['claimFiledAgainst'] = claimFiledAgainst;
-    data['qtyRejected'] = qtyRejected;
-    data['uomQtyRejectedID'] = uomQtyRejectedID;
-    data['reasonID'] = reasonID;
-    data['qcComments'] = qcComments;
-    data['poNumber'] = poNumber;
-    data['qtyReceived'] = qtyReceived;
-    data['uomQtyReceivedID'] = uomQtyReceivedID;
-    data['pulpTempMin'] = pulpTempMin;
-    data['pulpTempMax'] = pulpTempMax;
-    data['recorderTempMin'] = recorderTempMin;
-    data['recorderTempMax'] = recorderTempMax;
-    data['isComplete'] = isComplete;
-    data['specificationName'] = specificationName;
-    data['qcdOpen1'] = qcdOpen1;
-    data['qcdOpen2'] = qcdOpen2;
-    data['qcdOpen3'] = qcdOpen3;
-    data['qcdOpen4'] = qcdOpen4;
-    data['workDate'] = workDate;
-    data['gtin'] = gtin;
-    data['lotsize'] = lotsize;
-    data['shipDate'] = shipDate;
-    data['dateType'] = dateType;
+    data[QualityControlColumn.ID] = qcID;
+    data[QualityControlColumn.INSPECTION_ID] = inspectionID;
+    data[QualityControlColumn.BRAND_ID] = brandID;
+    data[QualityControlColumn.QTY_SHIPPED] = qtyShipped;
+    data[QualityControlColumn.UOM_QTY_SHIPPED_ID] = uomQtyShippedID;
+    data[QualityControlColumn.RPC] = rpc;
+    data[QualityControlColumn.ORIGIN_ID] = originID;
+    data[QualityControlColumn.LOT_NUMBER] = lot;
+    data[QualityControlColumn.PACK_DATE] = packDate;
+    data[QualityControlColumn.SEAL] = seal;
+    data[QualityControlColumn.CLAIM_FILED_AGAINST] = claimFiledAgainst;
+    data[QualityControlColumn.QTY_REJECTED] = qtyRejected;
+    data[QualityControlColumn.UOM_QTY_REJECTED_ID] = uomQtyRejectedID;
+    data[QualityControlColumn.REASON_ID] = reasonID;
+    data[QualityControlColumn.QC_COMMENTS] = qcComments;
+    data[QualityControlColumn.PO_NO] = poNumber;
+    data[QualityControlColumn.QTY_RECEIVED] = qtyReceived;
+    data[QualityControlColumn.UOM_QTY_RECEIVED] = uomQtyReceivedID;
+    data[QualityControlColumn.PULP_TEMP_MIN] = pulpTempMin;
+    data[QualityControlColumn.PULP_TEMP_MAX] = pulpTempMax;
+    data[QualityControlColumn.RECORDER_TEMP_MIN] = recorderTempMin;
+    data[QualityControlColumn.RECORDER_TEMP_MAX] = recorderTempMax;
+    data[QualityControlColumn.IS_COMPLETE] = isComplete;
+    data[QualityControlColumn.SPECIFICATION_NAME] = specificationName;
+    data[QualityControlColumn.QCDOPEN1] = qcdOpen1;
+    data[QualityControlColumn.QCDOPEN2] = qcdOpen2;
+    data[QualityControlColumn.QCDOPEN3] = qcdOpen3;
+    data[QualityControlColumn.QCDOPEN4] = qcdOpen4;
+    data[QualityControlColumn.QCDOPEN5] = workDate;
+    data[QualityControlColumn.GTIN] = gtin;
+    data[QualityControlColumn.LOT_SIZE] = lotsize;
+    data[QualityControlColumn.SHIP_DATE] = shipDate;
+    data[QualityControlColumn.DATE_TYPE] = dateType;
     return data;
   }
 }

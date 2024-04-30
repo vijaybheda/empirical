@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/commodity_id_screen_controller.dart';
-import 'package:pverify/models/commodity_item.dart';
+import 'package:pverify/models/commodity_data.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
@@ -179,8 +179,7 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
       controller: controller.scrollController,
       itemCount: controller.filteredCommodityList.length,
       itemBuilder: (context, index) {
-        CommodityItem partner =
-            controller.filteredCommodityList.elementAt(index);
+        Commodity partner = controller.filteredCommodityList.elementAt(index);
         return GestureDetector(
           onTap: () {
             controller.navigateToPurchaseOrderScreen(partner);
@@ -238,9 +237,9 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
     return index;
   }
 
-  Widget getAlphabetContent(List<CommodityItem> allCommodities, int index) {
+  Widget getAlphabetContent(List<Commodity> allCommodities, int index) {
     String alphabet = '';
-    CommodityItem itemData = allCommodities[index];
+    Commodity itemData = allCommodities[index];
 
     if (allCommodities.isNotEmpty && index == 0) {
       alphabet = allCommodities.first.name![0];

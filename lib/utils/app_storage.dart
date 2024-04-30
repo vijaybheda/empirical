@@ -181,14 +181,20 @@ class AppStorage extends GetxController {
     return commodityList;
   }
 
-  Future<void> saveMainCommodityList(List<CommodityItem> mainCommodityList) {
+  Future<void> saveMainCommodityList(List<Commodity> mainCommodityList) {
     // list to String
     List<Map<String, dynamic>> commodityListString =
         mainCommodityList.map((e) => e.toJson()).toList();
+    /*if (this.mainCommodityList == null) {
+      this.mainCommodityList = [];
+    }
+    for (var item in mainCommodityList) {
+      this.mainCommodityList?.add(Commodity(item.id, item.name, item.keywords));
+    }*/
     return write(StorageKey.kMainCommodityList, commodityListString);
   }
 
-  List<CommodityItem>? getMainCommodityList() {
+  List<Commodity>? getMainCommodityList() {
     // read String data and convert to List<CommodityItem> list
     var commodityListString = read(StorageKey.kMainCommodityList);
     if (commodityListString == null) {
@@ -196,10 +202,10 @@ class AppStorage extends GetxController {
     }
 
     List<dynamic> decodedData = commodityListString;
-    List<CommodityItem> commodityList = decodedData
-        .map((item) => CommodityItem.fromJson(item))
+    List<Commodity> commodityList = decodedData
+        .map((item) => Commodity.fromJson(item))
         .toList()
-        .cast<CommodityItem>();
+        .cast<Commodity>();
 
     return commodityList;
   }

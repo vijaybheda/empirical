@@ -198,7 +198,8 @@ class PurchaseOrderDetailsController extends GetxController {
             QCHeaderDetails? qcHeaderDetails =
                 await dao.findTempQCHeaderDetails(inspection.poNumber!);
 
-            if (qcHeaderDetails != null && qcHeaderDetails.truckTempOk == "N") {
+            if (qcHeaderDetails != null &&
+                qcHeaderDetails.truckTempOk == 'No') {
               result = "RJ";
 
               QualityControlItem? qualityControlItems = await dao
@@ -264,7 +265,7 @@ class PurchaseOrderDetailsController extends GetxController {
 
         appStorage.specificationGradeToleranceArrayList =
             specificationGradeToleranceArrayList;
-        calculateResult();
+        await calculateResult();
         update();
       } else {
         AppSnackBar.info(message: AppStrings.noItemsCompleted);
@@ -344,9 +345,9 @@ class PurchaseOrderDetailsController extends GetxController {
                 SpecificationAnalyticalRequest? dbobj =
                     await dao.findSpecAnalyticalObj(
                         inspection.inspectionId!, item.analyticalID);
-                if (dbobj != null && dbobj.comply == "N") {
+                if (dbobj != null && dbobj.comply == 'No') {
                   if (dbobj.inspectionResult != null &&
-                      dbobj.inspectionResult == "N") {
+                      dbobj.inspectionResult == 'No') {
                     // Do nothing
                   } else {
                     result = "RJ";

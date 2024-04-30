@@ -499,6 +499,7 @@ class QCDetailsShortFormScreen
                                         TextField(
                                           controller:
                                               controller.qtyShippedController,
+                                          keyboardType: TextInputType.number,
                                           decoration: InputDecoration(
                                             hintText: AppStrings.qcQtyShipped,
                                             hintStyle: Get.textTheme.bodyLarge!
@@ -582,8 +583,10 @@ class QCDetailsShortFormScreen
                                             return DropdownMenuItem<UOMItem>(
                                               value: value,
                                               child: Text(value.uomName ?? '-',
-                                                  style:
-                                                      Get.textTheme.bodyLarge!),
+                                                  style: Get
+                                                      .textTheme.bodyLarge!
+                                                      .copyWith(
+                                                          color: Colors.white)),
                                             );
                                           }).toList(),
                                           decoration: InputDecoration(
@@ -591,6 +594,7 @@ class QCDetailsShortFormScreen
                                             hintStyle: Get.textTheme.bodyLarge!
                                                 .copyWith(
                                               fontSize: 26.sp,
+                                              color: AppColors.grey,
                                             ),
                                             enabledBorder:
                                                 const UnderlineInputBorder(
@@ -607,8 +611,7 @@ class QCDetailsShortFormScreen
                                                 const EdgeInsets.symmetric(
                                                     vertical: 10),
                                           ),
-                                          dropdownColor:
-                                              AppColors.textFieldText_Color,
+                                          dropdownColor: AppColors.grey,
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 10, vertical: 0),
                                         ),
@@ -727,7 +730,9 @@ class QCDetailsShortFormScreen
                                     textStyle: TextStyle(
                                         color: AppColors.textFieldText_Color)),
                                 onClickAction: () async {
-                              await controller.saveContinue(context);
+                              // await controller.saveContinue(context);
+                              await controller
+                                  .saveAsDraftAndGotoMyInspectionScreen();
                             }),
                           ],
                         ),

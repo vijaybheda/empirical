@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:pverify/controller/qc_details_short_form_screen_controller.dart';
 import 'package:pverify/models/specification_analytical.dart';
 import 'package:pverify/models/specification_analytical_request_item.dart';
+import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -35,9 +36,9 @@ class SpecAnalyticalTable
             item: item,
             reqobj: reqobj,
             onCommentSave: (String comment) {
-              // reqobj.comment ??= '';
-              // reqobj.comment = comment;
-              // controller.update();
+              reqobj.comment ??= '';
+              reqobj.comment = comment;
+              controller.update();
             });
       },
     );
@@ -65,6 +66,9 @@ class _SpecificationAnalyticalWidgetState
   String comply = 'N/A';
   late TextEditingController textEditingController;
   late bool hasErrors;
+  bool isPictureRequired = false;
+
+  final ApplicationDao dao = ApplicationDao();
 
   @override
   void initState() {
@@ -72,10 +76,50 @@ class _SpecificationAnalyticalWidgetState
     super.initState();
     textEditingController = TextEditingController();
 
+    if (widget.item.specTargetTextDefault == "Yes") {
+      comply = "Yes";
+    } else if (widget.item.specTargetTextDefault == "No") {
+      comply = "Yes";
+    }
+    if (widget.item.specTypeofEntry == 1 || widget.item.specTypeofEntry == 3) {
+      if (widget.item.isPictureRequired ?? false) {
+        isPictureRequired = true;
+      }
+    }
+
+    if (widget.item.analyticalName?.contains("Quality Check") ?? false) {
+      // In Flutter, you can limit the length of the text in a TextField using the maxLength property
+      // and restrict the input using the inputFormatters property
+      TextEditingController editTextValue = TextEditingController();
+      editTextValue.text = '12345';
+    }
+
     if (widget.item.specTargetTextDefault == "Y") {
-      comply = "Yes";
+      String textViewComply = "Y";
+      int spinnerValue = 1;
     } else if (widget.item.specTargetTextDefault == "N") {
-      comply = "Yes";
+      String textViewComply = "Y";
+      int spinnerValue = 2;
+    } else if (widget.item.specTargetTextDefault == "") {
+      // TODO: handle this conditions
+      // operatorList.remove("N/A");
+      int spinnerValue = 0;
+    } else if (widget.item.specTargetTextDefault == "N/A") {
+      String textViewComply = "N/A";
+      int spinnerValue = 3;
+    }
+
+    if (widget.item.analyticalName?.contains("Branded") ?? false) {
+      // TODO: implement this method
+      /*dao.getBrandedFlagFromItemSku(item_sku_id).then((String? brandedFlag) {
+        String textViewComply = "Y";
+
+        if (brandedFlag == "1") {
+          int spinnerValue = 1;
+        } else {
+          int spinnerValue = 2;
+        }
+      });*/
     }
   }
 
@@ -83,7 +127,7 @@ class _SpecificationAnalyticalWidgetState
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
           child: Text(
@@ -91,69 +135,7 @@ class _SpecificationAnalyticalWidgetState
             style: Get.textTheme.bodyMedium,
           ),
         ),
-        if (widget.item.specTypeofEntry == 1 ||
-            widget.item.specTypeofEntry == 3)
-          Expanded(
-            child: TextFormField(
-              controller: textEditingController,
-              onChanged: (value) {
-                handleTextChanges(value);
-              },
-              decoration: InputDecoration(
-                labelText: 'Value',
-                errorText: hasErrors
-                    ? 'Please enter a valid value'
-                    : null, // Show error if necessary
-              ),
-            ),
-          ),
-        if (widget.item.specTypeofEntry == 2 ||
-            widget.item.specTypeofEntry == 3)
-          Expanded(
-            child: DropdownButtonFormField<String>(
-              value: comply,
-              items: <String>['N/A', 'Yes', 'No']
-                  .map((String value) => DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      ))
-                  .toList(),
-              onChanged: (value) {
-                comply = value!;
-                handleComplianceChange(value);
-              },
-              decoration: InputDecoration(
-                hintText: AppStrings.uom,
-                hintStyle: Get.textTheme.bodyLarge!.copyWith(
-                  fontSize: 26.sp,
-                ),
-                enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide.none,
-                ),
-                focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide.none,
-                ),
-                border: const UnderlineInputBorder(
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 10),
-              ),
-              dropdownColor: AppColors.textFieldText_Color,
-            ),
-          ),
-        const SizedBox(height: 20),
-        Expanded(
-          child: TextFormField(
-              onChanged: (value) {
-                // TODO: Your logic for handling text changes
-              },
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                focusedBorder: UnderlineInputBorder(),
-                disabledBorder: UnderlineInputBorder(),
-                enabledBorder: UnderlineInputBorder(),
-              )),
-        ),
+        Expanded(child: getContent()),
         Text(
           getComply(),
           style: Get.textTheme.bodyMedium?.copyWith(
@@ -372,7 +354,7 @@ class _SpecificationAnalyticalWidgetState
     comply = value;
 
     // Handle compliance changes
-    if (widget.item.specTypeofEntry == 3 && comply != "N") {
+    if (widget.item.specTypeofEntry == 3 && comply != "No") {
       // int userValue = int.tryParse(textEditingController.text) ?? 0;
 
       if (comply == "N/A") {
@@ -387,5 +369,77 @@ class _SpecificationAnalyticalWidgetState
   void dispose() {
     textEditingController.dispose();
     super.dispose();
+  }
+
+  Widget getContent() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (widget.item.specTypeofEntry == 1 ||
+            widget.item.specTypeofEntry == 3)
+          Flexible(
+            child: TextField(
+              controller: textEditingController,
+              onChanged: (value) {
+                handleTextChanges(value);
+              },
+              decoration: InputDecoration(
+                labelText: 'Value',
+                errorText: hasErrors
+                    ? 'Please enter a valid value'
+                    : null, // Show error if necessary
+              ),
+            ),
+          ),
+        if (widget.item.specTypeofEntry == 2 ||
+            widget.item.specTypeofEntry == 3)
+          Flexible(
+            child: DropdownButton<String>(
+              value: comply,
+              items: <String>['N/A', 'Yes', 'No']
+                  .map((String value) => DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      ))
+                  .toList(),
+              onChanged: (value) {
+                comply = value!;
+                handleComplianceChange(value);
+                setState(() {});
+              },
+              /*decoration: InputDecoration(
+                hintText: AppStrings.uom,
+                hintStyle: Get.textTheme.bodyLarge!.copyWith(
+                  fontSize: 26.sp,
+                ),
+                enabledBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide.none,
+                ),
+                border: const UnderlineInputBorder(
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              ),*/
+              dropdownColor: AppColors.grey,
+            ),
+          ),
+        const SizedBox(height: 20),
+        Flexible(
+          child: TextField(
+              onChanged: (value) {
+                // TODO: Your logic for handling text changes
+              },
+              decoration: const InputDecoration(
+                border: UnderlineInputBorder(),
+                focusedBorder: UnderlineInputBorder(),
+                disabledBorder: UnderlineInputBorder(),
+                enabledBorder: UnderlineInputBorder(),
+              )),
+        ),
+      ],
+    );
   }
 }

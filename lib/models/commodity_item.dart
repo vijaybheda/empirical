@@ -1,6 +1,7 @@
 import 'package:pverify/models/defect_item.dart';
 import 'package:pverify/models/document_item.dart';
 import 'package:pverify/models/severity_defect.dart';
+import 'package:pverify/services/database/column_names.dart';
 
 class CommodityItem {
   int? id;
@@ -53,7 +54,7 @@ class CommodityItem {
         'defectList': defectList?.map((item) => item.toJson()).toList(),
         'severityDefectList':
             severityDefectList.map((item) => item.toJson()).toList(),
-        'Keywords': keywords,
+        CommodityColumn.KEYWORDS: keywords,
         'documents': documents.map((item) => item.toJson()).toList(),
       };
 
@@ -75,7 +76,7 @@ class CommodityItem {
               .map<SeverityDefect>((item) => SeverityDefect.fromJson(item))
               .toList()
           : [],
-      keywords: json['keywords'],
+      keywords: json[CommodityColumn.KEYWORDS],
       documents: (json['documents'] != null)
           ? json['documents']
               .map<DocumentItem>((item) => DocumentItem.fromJson(item))

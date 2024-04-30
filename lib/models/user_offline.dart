@@ -1,3 +1,5 @@
+import 'package:pverify/services/database/column_names.dart';
+
 class UserOffline {
   int? id; // For SQLite row id
   String userId;
@@ -23,29 +25,30 @@ class UserOffline {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'User_ID': userId,
-      'Access': userHash,
-      'EnterpriseId': enterpriseId,
-      'Status': status,
-      'IsSubscriptionExpired': isSubscriptionExpired ? 1 : 0,
-      'Supplier_Id': supplierId,
-      'Headquater_Supplier_Id': headquarterSupplierId,
-      'GtinScanning': gtinScanning ? 1 : 0,
+      UserOfflineColumn.ID: id,
+      UserOfflineColumn.USER_ID: userId,
+      UserOfflineColumn.ACCESS: userHash,
+      UserOfflineColumn.ENTERPRISEID: enterpriseId,
+      UserOfflineColumn.STATUS: status,
+      UserOfflineColumn.IS_SUBSCRIPTION_EXPIRED: isSubscriptionExpired ? 1 : 0,
+      UserOfflineColumn.SUPPLIER_ID: supplierId,
+      UserOfflineColumn.HEADQUATER_SUPPLIER_ID: headquarterSupplierId,
+      UserOfflineColumn.GTIN_SCANNING: gtinScanning ? 1 : 0,
     };
   }
 
   factory UserOffline.fromMap(Map<String, dynamic> map) {
     return UserOffline(
-      id: map['id'],
-      userId: map['User_ID'],
-      userHash: map['Access'],
-      enterpriseId: map['EnterpriseId'],
-      status: map['Status'],
-      isSubscriptionExpired: map['IsSubscriptionExpired'] == 1,
-      supplierId: map['Supplier_Id'],
-      headquarterSupplierId: map['Headquater_Supplier_Id'],
-      gtinScanning: map['GtinScanning'] == 1,
+      id: map[UserOfflineColumn.ID],
+      userId: map[UserOfflineColumn.USER_ID],
+      userHash: map[UserOfflineColumn.ACCESS],
+      enterpriseId: map[UserOfflineColumn.ENTERPRISEID],
+      status: map[UserOfflineColumn.STATUS],
+      isSubscriptionExpired:
+          map[UserOfflineColumn.IS_SUBSCRIPTION_EXPIRED] == 1,
+      supplierId: map[UserOfflineColumn.SUPPLIER_ID],
+      headquarterSupplierId: map[UserOfflineColumn.HEADQUATER_SUPPLIER_ID],
+      gtinScanning: map[UserOfflineColumn.GTIN_SCANNING] == 1,
     );
   }
 

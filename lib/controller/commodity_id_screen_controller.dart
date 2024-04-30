@@ -3,7 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/dialog_progress_controller.dart';
 import 'package:pverify/controller/global_config_controller.dart';
-import 'package:pverify/models/commodity_item.dart';
+import 'package:pverify/models/commodity_data.dart';
+import 'package:pverify/models/commodity_keywords.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/models/user_data.dart';
@@ -45,8 +46,8 @@ class CommodityIDScreenController extends GetxController {
       Get.find<GlobalConfigController>();
   final ApplicationDao dao = ApplicationDao();
 
-  RxList<CommodityItem> filteredCommodityList = <CommodityItem>[].obs;
-  RxList<CommodityItem> commodityList = <CommodityItem>[].obs;
+  RxList<Commodity> filteredCommodityList = <Commodity>[].obs;
+  RxList<Commodity> commodityList = <Commodity>[].obs;
   RxBool listAssigned = false.obs;
 
   double get listHeight => 130.h;
@@ -78,9 +79,11 @@ class CommodityIDScreenController extends GetxController {
     int enterpriseId =
         await dao.getEnterpriseIdByUserId(currentUser.userName!.toLowerCase());
 
-    List<CommodityItem>? commoditiesList =
-        await dao.getCommodityByPartnerFromTable(partnerID, enterpriseId,
-            currentUser.supplierId!, currentUser.headquarterSupplierId!);
+    List<Commodity>? commoditiesList = await dao.getCommodityByPartnerFromTable(
+        partnerID,
+        enterpriseId,
+        currentUser.supplierId!,
+        currentUser.headquarterSupplierId!);
     appStorage.saveMainCommodityList(commoditiesList ?? []);
 
     if (commoditiesList == null) {
@@ -95,6 +98,24 @@ class CommodityIDScreenController extends GetxController {
       commodityList.addAll(commoditiesList);
 
       commodityList.sort((a, b) => a.name!.compareTo(b.name!));
+      List<Commodity> mainCommodityList = (appStorage.mainCommodityList ?? []);
+      for (int i = 0; i < mainCommodityList.length; i++) {
+        if (mainCommodityList[i].id != null) {
+          List<CommodityKeywords> keywords =
+              await dao.getCommodityKeywordsFromTable(mainCommodityList[i].id!);
+
+          List<String> list = [];
+          for (int j = 0; j < keywords.length; j++) {
+            if (keywords[j].keywords != null &&
+                keywords[j].keywords!.isNotEmpty) {
+              list.add(keywords[j].keywords!);
+            }
+          }
+          String result = list.join(", ");
+
+          mainCommodityList[i].keywords = result;
+        }
+      }
 
       filteredCommodityList.addAll(commoditiesList);
       filteredCommodityList.sort((a, b) => a.name!.compareTo(b.name!));
@@ -124,7 +145,7 @@ class CommodityIDScreenController extends GetxController {
   List<String> getListOfAlphabets() {
     Set<String> uniqueAlphabets = {};
 
-    for (CommodityItem supplier in commodityList) {
+    for (Commodity supplier in commodityList) {
       if (supplier.name!.isNotEmpty &&
           supplier.name![0].toUpperCase().contains(RegExp(r'[A-Z0-9]'))) {
         uniqueAlphabets.add(supplier.name![0].toUpperCase());
@@ -146,7 +167,7 @@ class CommodityIDScreenController extends GetxController {
     }
   }
 
-  void navigateToPurchaseOrderScreen(CommodityItem commodity) {
+  void navigateToPurchaseOrderScreen(Commodity commodity) {
     Map<String, dynamic> passingData = {
       Consts.PO_NUMBER: poNumber,
       Consts.SEAL_NUMBER: sealNumber,

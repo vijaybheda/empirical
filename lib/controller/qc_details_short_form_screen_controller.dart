@@ -22,6 +22,7 @@ import 'package:pverify/ui/inspection_exception/inspection_exception_screen.dart
 import 'package:pverify/ui/inspection_photos/inspection_photos_screen.dart';
 import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
+import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
 import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -497,10 +498,10 @@ class QCDetailsShortFormScreenController extends GetxController {
         dateTypeDesc = getDateTypeDesc(qualityControlItems!.dateType);
         packDateController.text = dateTypeDesc;
       }
-      if (qualityControlItems!.packDate != null &&
-          qualityControlItems!.packDate! > 0) {
-        packDateController.text =
-            getDateStingFromTime(qualityControlItems!.packDate ?? 0);
+      int _packDate =
+          int.tryParse(qualityControlItems!.packDate.toString()) ?? 0;
+      if (_packDate > 0) {
+        packDateController.text = getDateStingFromTime(_packDate);
       } else {
         packDateController.text = "";
       }
@@ -1032,7 +1033,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         Consts.ITEM_SKU_NAME: itemSkuName,
         Consts.ITEM_SKU_ID: itemSkuId,
         Consts.GTIN: gtin,
-        Consts.PACK_DATE: packDate,
+        Consts.PACK_DATE: packDate?.millisecondsSinceEpoch.toString(),
         Consts.QUALITY_COMPLETED: true,
         Consts.ITEM_UNIQUE_ID: itemUniqueId,
         Consts.LOT_SIZE: lotSize,
@@ -1080,7 +1081,7 @@ class QCDetailsShortFormScreenController extends GetxController {
                   arguments: passingData);
             } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
               Get.offAll(
-                () => NewPurchaseOrderDetailsScreen(
+                () => const NewPurchaseOrderDetailsScreen(
                     // partner: partner,
                     // qcHeaderDetails: qcHeaderDetails,
                     // carrier: carrier,
@@ -1193,7 +1194,7 @@ class QCDetailsShortFormScreenController extends GetxController {
       Consts.ITEM_SKU_ID: itemSkuId,
       Consts.Lot_No: lotNo,
       Consts.GTIN: gtin,
-      Consts.PACK_DATE: packDate,
+      Consts.PACK_DATE: packDate?.millisecondsSinceEpoch.toString(),
       Consts.PARTNER_NAME: partnerName,
       Consts.PARTNER_ID: partnerID,
       Consts.COMMODITY_NAME: commodityName,
@@ -1224,7 +1225,7 @@ class QCDetailsShortFormScreenController extends GetxController {
           arguments: bundle);
     } else if (callerActivity == 'NewPurchaseOrderDetailsActivity') {
       Get.to(
-          () => NewPurchaseOrderDetailsScreen(
+          () => const NewPurchaseOrderDetailsScreen(
               // partner: partner,
               // qcHeaderDetails: qcHeaderDetails,
               // carrier: carrier,
@@ -1233,7 +1234,7 @@ class QCDetailsShortFormScreenController extends GetxController {
           arguments: bundle);
     } else {
       final String tag = DateTime.now().millisecondsSinceEpoch.toString();
-      Get.to(
+      Get.offAll(
           () => PurchaseOrderDetailsScreen(
                 // partner: partner,
                 // carrier: carrier,
@@ -1244,7 +1245,7 @@ class QCDetailsShortFormScreenController extends GetxController {
           arguments: bundle);
     }
 
-    Get.back();
+    // Get.back();
   }
 
   Future<void> onCameraMenuTap() async {
@@ -1309,7 +1310,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         Consts.ITEM_UNIQUE_ID: itemUniqueId,
         Consts.Lot_No: lotNo,
         Consts.GTIN: gtin,
-        Consts.PACK_DATE: packDate,
+        Consts.PACK_DATE: packDate?.millisecondsSinceEpoch.toString(),
         Consts.LOT_SIZE: lotSize,
         Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
         Consts.PO_NUMBER: poNumber,
@@ -1322,7 +1323,7 @@ class QCDetailsShortFormScreenController extends GetxController {
       } else {
         if (callerActivity == "NewPurchaseOrderDetailsActivity") {
           Get.offAll(
-              () => NewPurchaseOrderDetailsScreen(
+              () => const NewPurchaseOrderDetailsScreen(
                   // partner: partner,
                   // qcHeaderDetails: qcHeaderDetails,
                   // carrier: carrier,
@@ -1374,7 +1375,7 @@ class QCDetailsShortFormScreenController extends GetxController {
             Consts.ITEM_UNIQUE_ID: itemUniqueId,
             Consts.Lot_No: lotNo,
             Consts.GTIN: gtin,
-            Consts.PACK_DATE: packDate,
+            Consts.PACK_DATE: packDate?.millisecondsSinceEpoch.toString(),
             Consts.LOT_SIZE: lotSize,
             Consts.PO_NUMBER: poNumber,
             Consts.PO_LINE_NO: poLineNo,
@@ -1385,17 +1386,17 @@ class QCDetailsShortFormScreenController extends GetxController {
           if (callerActivity == "GTINActivity") {
             passingData[Consts.CALLER_ACTIVITY] = 'GTINActivity';
             // TODO: Implement navigation to QualityControlScreen
-            // Get.to(() => QualityControlScreen(), arguments: passingData);
+            Get.to(() => QualityControlHeader(), arguments: passingData);
           } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
             passingData[Consts.CALLER_ACTIVITY] =
                 'NewPurchaseOrderDetailsActivity';
             // TODO: Implement navigation to QualityControlScreen
-            // Get.to(() => QualityControlScreen(), arguments: passingData);
+            Get.to(() => QualityControlHeader(), arguments: passingData);
           } else {
             passingData[Consts.CALLER_ACTIVITY] =
                 'PurchaseOrderDetailsActivity';
             // TODO: Implement navigation to QualityControlScreen
-            // Get.to(() => QualityControlScreen(), arguments: passingData);
+            Get.to(() => const QualityControlHeader(), arguments: passingData);
           }
         }
       }
@@ -1463,7 +1464,7 @@ class QCDetailsShortFormScreenController extends GetxController {
       Consts.ITEM_SKU_ID: itemSkuId,
       Consts.Lot_No: lotNo,
       Consts.GTIN: gtin,
-      Consts.PACK_DATE: packDate,
+      Consts.PACK_DATE: packDate?.millisecondsSinceEpoch.toString(),
       Consts.ITEM_UNIQUE_ID: itemUniqueId,
       Consts.LOT_SIZE: lotSize,
       Consts.ITEM_SKU_NAME: itemSkuName,
@@ -1485,6 +1486,6 @@ class QCDetailsShortFormScreenController extends GetxController {
 
     passingData[Consts.CALLER_ACTIVITY] = callerActivityValue;
 
-    Get.to(() => DefectsScreen(), arguments: passingData);
+    Get.to(() => const DefectsScreen(), arguments: passingData);
   }
 }
