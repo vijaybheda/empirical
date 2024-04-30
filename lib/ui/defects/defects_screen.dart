@@ -1092,17 +1092,16 @@ class DefectsTable extends StatelessWidget {
       [AppStrings.injury],
       [
         AppStrings.damage,
-        AppStrings.damage,
-        AppStrings.damage,
+      ],
+      [
+        AppStrings.seriousDamage,
+        AppStrings.seriousDamage,
       ],
       [
         AppStrings.verySeriousDamage,
       ],
       [
         AppStrings.decay,
-      ],
-      [
-        AppStrings.injury,
       ],
     ],
     qualityDefects: [2, 5, 15, 20, 25],
@@ -1111,15 +1110,15 @@ class DefectsTable extends StatelessWidget {
     conditionDefectsPercentage: [0, 0, 4, 8, 25],
     totalSeverity: [
       [0],
-      [5, 15, 12],
       [5],
+      [5, 15],
       [6],
       [18]
     ],
     totalSeverityPercentage: [
       [1],
-      [11, 12, 14],
       [11],
+      [11, 15],
       [12],
       [18]
     ],
