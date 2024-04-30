@@ -1,5 +1,3 @@
-// ignore_for_file: must_be_immutable, non_constant_identifier_names, avoid_types_as_parameter_names, prefer_const_constructors, unrelated_type_equality_checks, unused_local_variable
-
 import 'dart:math';
 
 import 'package:flutter/material.dart';

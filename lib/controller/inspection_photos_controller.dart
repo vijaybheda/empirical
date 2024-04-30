@@ -1,5 +1,3 @@
-// ignore_for_file: unused_local_variable, unused_field, prefer_const_constructors, depend_on_referenced_packages, unused_element, unnecessary_null_comparison, empty_catches, unnecessary_new, prefer_is_empty
-
 import 'dart:io';
 import 'dart:math';
 

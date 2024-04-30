@@ -20,11 +20,11 @@ import 'package:pverify/models/specification_by_item_sku.dart';
 import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
-import 'package:pverify/ui/defects/defects_screen.dart';
 import 'package:pverify/ui/inspection_exception/inspection_exception_screen.dart';
 import 'package:pverify/ui/inspection_photos/inspection_photos_screen.dart';
 import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
+import 'package:pverify/ui/defects/defects_screen.dart';
 import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -136,7 +136,7 @@ class QCDetailsShortFormScreenController extends GetxController {
     carrierName = args[Consts.CARRIER_NAME] ?? '';
     carrierID = args[Consts.CARRIER_ID] ?? 0;
     commodityName = args[Consts.COMMODITY_NAME] ?? '';
-    commodityID = args[Consts.COMMODITY_ID] ?? 0;
+    commodityID = commodity.id ?? 0;
     completed = args[Consts.COMPLETED] ?? false;
 
     specificationNumber = args[Consts.SPECIFICATION_NUMBER] ?? '';
@@ -1286,6 +1286,6 @@ class QCDetailsShortFormScreenController extends GetxController {
 
     passingData[Consts.CALLER_ACTIVITY] = callerActivityValue;
 
-    Get.to(() => DefectsScreen(), arguments: passingData);
+    Get.to(() => const DefectsScreen(), arguments: passingData);
   }
 }
