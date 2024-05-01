@@ -659,7 +659,7 @@ Widget sampleSetsUI(BuildContext context, int index, String sampleValue,
           ? Column(
               children: [
                 SizedBox(height: 50.h),
-                defectCategoryTagRow(),
+                defectCategoryTagRow(controller),
                 SizedBox(height: 50.h),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 50.w),
@@ -782,130 +782,140 @@ Widget defectRow({
               ),
             ),
             SizedBox(width: 20.w),
-            Flexible(
-              flex: 1,
-              child: BoxTextField1(
-                textalign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                controller: defectItem?.injuryTextEditingController,
-                onTap: () {
-                  defectItem?.injuryTextEditingController?.text = '';
-                },
-                errorText: '',
-                onEditingCompleted: () {
-                  FocusScope.of(context).unfocus();
-                },
-                onChanged: (v) {
-                  controller.onTextChange(
-                    value: v,
-                    setIndex: setIndex,
-                    rowIndex: defectItemIndex,
-                    fieldName: AppStrings.injury,
-                    context: context,
-                  );
-                },
-              ),
-            ),
+            controller.hasSeverityInjury
+                ? Flexible(
+                    flex: 1,
+                    child: BoxTextField1(
+                      textalign: TextAlign.center,
+                      keyboardType: TextInputType.number,
+                      controller: defectItem?.injuryTextEditingController,
+                      onTap: () {
+                        defectItem?.injuryTextEditingController?.text = '';
+                      },
+                      errorText: '',
+                      onEditingCompleted: () {
+                        FocusScope.of(context).unfocus();
+                      },
+                      onChanged: (v) {
+                        controller.onTextChange(
+                          value: v,
+                          setIndex: setIndex,
+                          rowIndex: defectItemIndex,
+                          fieldName: AppStrings.injury,
+                          context: context,
+                        );
+                      },
+                    ),
+                  )
+                : Flexible(flex: 1, child: SizedBox()),
             SizedBox(width: 20.w),
-            Flexible(
-              flex: 1,
-              child: BoxTextField1(
-                textalign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                controller: defectItem?.damageTextEditingController,
-                onTap: () {
-                  defectItem?.damageTextEditingController?.text = '';
-                },
-                errorText: '',
-                onEditingCompleted: () {
-                  FocusScope.of(context).unfocus();
-                },
-                onChanged: (v) {
-                  controller.onTextChange(
-                    value: v,
-                    setIndex: setIndex,
-                    rowIndex: defectItemIndex,
-                    fieldName: AppStrings.damage,
-                    context: context,
-                  );
-                },
-              ),
-            ),
+            controller.hasSeverityDamage
+                ? Flexible(
+                    flex: 1,
+                    child: BoxTextField1(
+                      textalign: TextAlign.center,
+                      keyboardType: TextInputType.number,
+                      controller: defectItem?.damageTextEditingController,
+                      onTap: () {
+                        defectItem?.damageTextEditingController?.text = '';
+                      },
+                      errorText: '',
+                      onEditingCompleted: () {
+                        FocusScope.of(context).unfocus();
+                      },
+                      onChanged: (v) {
+                        controller.onTextChange(
+                          value: v,
+                          setIndex: setIndex,
+                          rowIndex: defectItemIndex,
+                          fieldName: AppStrings.damage,
+                          context: context,
+                        );
+                      },
+                    ),
+                  )
+                : Flexible(flex: 1, child: SizedBox()),
             SizedBox(width: 20.w),
-            Flexible(
-              flex: 1,
-              child: BoxTextField1(
-                textalign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                controller: defectItem?.sDamageTextEditingController,
-                onTap: () {
-                  defectItem?.sDamageTextEditingController?.text = '';
-                },
-                errorText: '',
-                onEditingCompleted: () {
-                  FocusScope.of(context).unfocus();
-                },
-                onChanged: (v) {
-                  controller.onTextChange(
-                    value: v,
-                    setIndex: setIndex,
-                    rowIndex: defectItemIndex,
-                    fieldName: AppStrings.seriousDamage,
-                    context: context,
-                  );
-                },
-              ),
-            ),
+            controller.hasSeveritySeriousDamage
+                ? Flexible(
+                    flex: 1,
+                    child: BoxTextField1(
+                      textalign: TextAlign.center,
+                      keyboardType: TextInputType.number,
+                      controller: defectItem?.sDamageTextEditingController,
+                      onTap: () {
+                        defectItem?.sDamageTextEditingController?.text = '';
+                      },
+                      errorText: '',
+                      onEditingCompleted: () {
+                        FocusScope.of(context).unfocus();
+                      },
+                      onChanged: (v) {
+                        controller.onTextChange(
+                          value: v,
+                          setIndex: setIndex,
+                          rowIndex: defectItemIndex,
+                          fieldName: AppStrings.seriousDamage,
+                          context: context,
+                        );
+                      },
+                    ),
+                  )
+                : Flexible(flex: 1, child: SizedBox()),
             SizedBox(width: 20.w),
-            Flexible(
-              flex: 1,
-              child: BoxTextField1(
-                textalign: TextAlign.center,
-                controller: defectItem?.vsDamageTextEditingController,
-                keyboardType: TextInputType.number,
-                onTap: () {
-                  defectItem?.vsDamageTextEditingController?.text = '';
-                },
-                errorText: '',
-                onEditingCompleted: () {
-                  FocusScope.of(context).unfocus();
-                },
-                onChanged: (v) {
-                  controller.onTextChange(
-                    value: v,
-                    setIndex: setIndex,
-                    rowIndex: defectItemIndex,
-                    fieldName: AppStrings.verySeriousDamage,
-                    context: context,
-                  );
-                },
-              ),
-            ),
-            SizedBox(width: 20.w),
-            Flexible(
-              flex: 1,
-              child: BoxTextField1(
-                textalign: TextAlign.center,
-                controller: defectItem?.decayTextEditingController,
-                keyboardType: TextInputType.number,
-                onTap: () {
-                  defectItem?.decayTextEditingController?.text = '';
-                },
-                errorText: '',
-                onEditingCompleted: () {
-                  FocusScope.of(context).unfocus();
-                },
-                onChanged: (v) {
-                  controller.onTextChange(
-                    value: v,
-                    setIndex: setIndex,
-                    rowIndex: defectItemIndex,
-                    fieldName: AppStrings.decay,
-                    context: context,
-                  );
-                },
-              ),
-            ),
+            controller.hasSeverityVerySeriousDamage
+                ? Flexible(
+                    flex: 1,
+                    child: BoxTextField1(
+                      textalign: TextAlign.center,
+                      controller: defectItem?.vsDamageTextEditingController,
+                      keyboardType: TextInputType.number,
+                      onTap: () {
+                        defectItem?.vsDamageTextEditingController?.text = '';
+                      },
+                      errorText: '',
+                      onEditingCompleted: () {
+                        FocusScope.of(context).unfocus();
+                      },
+                      onChanged: (v) {
+                        controller.onTextChange(
+                          value: v,
+                          setIndex: setIndex,
+                          rowIndex: defectItemIndex,
+                          fieldName: AppStrings.verySeriousDamage,
+                          context: context,
+                        );
+                      },
+                    ),
+                  )
+                : Flexible(flex: 1, child: SizedBox()),
+            SizedBox(width: controller.hasSeveritySeriousDamage ? 0 : 20.w),
+            controller.hasSeverityDecay
+                ? Flexible(
+                    flex: 1,
+                    child: BoxTextField1(
+                      textalign: TextAlign.center,
+                      controller: defectItem?.decayTextEditingController,
+                      keyboardType: TextInputType.number,
+                      onTap: () {
+                        defectItem?.decayTextEditingController?.text = '';
+                      },
+                      errorText: '',
+                      onEditingCompleted: () {
+                        FocusScope.of(context).unfocus();
+                      },
+                      onChanged: (v) {
+                        controller.onTextChange(
+                          value: v,
+                          setIndex: setIndex,
+                          rowIndex: defectItemIndex,
+                          fieldName: AppStrings.decay,
+                          context: context,
+                        );
+                      },
+                    ),
+                  )
+                : Flexible(flex: 1, child: SizedBox()),
             SizedBox(width: 10.w),
             Flexible(
               flex: 1,
@@ -978,7 +988,7 @@ Widget defectRow({
   );
 }
 
-Widget defectCategoryTagRow() {
+Widget defectCategoryTagRow(DefectsScreenController defectsScreenController) {
   TextStyle textStyle = TextStyle(
     color: Colors.white,
     fontSize: 32.sp,
@@ -990,46 +1000,58 @@ Widget defectCategoryTagRow() {
         Flexible(flex: 1, child: Container()),
         const SizedBox(width: 15),
         Flexible(flex: 2, child: Container()),
+        SizedBox(
+            width: defectsScreenController.hasSeveritySeriousDamage ? 0 : 15),
+        defectsScreenController.hasSeverityInjury
+            ? Flexible(
+                flex: 1,
+                child: defectCategoryTag(
+                  tag: AppStrings.injuryIcon,
+                  textStyle: textStyle,
+                ),
+              )
+            : Flexible(flex: 1, child: SizedBox()),
         const SizedBox(width: 15),
-        Flexible(
-          flex: 1,
-          child: defectCategoryTag(
-            tag: AppStrings.injuryIcon,
-            textStyle: textStyle,
-          ),
-        ),
+        defectsScreenController.hasSeverityDamage
+            ? Flexible(
+                flex: 1,
+                child: defectCategoryTag(
+                  tag: AppStrings.damageIcon,
+                  textStyle: textStyle,
+                ),
+              )
+            : Flexible(flex: 1, child: SizedBox()),
         const SizedBox(width: 15),
-        Flexible(
-          flex: 1,
-          child: defectCategoryTag(
-            tag: AppStrings.damageIcon,
-            textStyle: textStyle,
-          ),
-        ),
+        defectsScreenController.hasSeriousDamage
+            ? Flexible(
+                flex: 1,
+                child: defectCategoryTag(
+                  tag: AppStrings.seriousDamageIcon,
+                  textStyle: textStyle,
+                ),
+              )
+            : Flexible(flex: 1, child: SizedBox()),
+        SizedBox(
+            width: defectsScreenController.hasSeveritySeriousDamage ? 0 : 15),
+        defectsScreenController.hasSeveritySeriousDamage
+            ? Flexible(
+                flex: 1,
+                child: defectCategoryTag(
+                  tag: AppStrings.verySeriousDamageIcon,
+                  textStyle: textStyle,
+                ),
+              )
+            : Flexible(flex: 1, child: SizedBox()),
         const SizedBox(width: 15),
-        Flexible(
-          flex: 1,
-          child: defectCategoryTag(
-            tag: AppStrings.seriousDamageIcon,
-            textStyle: textStyle,
-          ),
-        ),
-        const SizedBox(width: 15),
-        Flexible(
-          flex: 1,
-          child: defectCategoryTag(
-            tag: AppStrings.verySeriousDamageIcon,
-            textStyle: textStyle,
-          ),
-        ),
-        const SizedBox(width: 15),
-        Flexible(
-          flex: 1,
-          child: defectCategoryTag(
-            tag: AppStrings.decayIcon,
-            textStyle: textStyle,
-          ),
-        ),
+        defectsScreenController.hasSeverityDecay
+            ? Flexible(
+                flex: 1,
+                child: defectCategoryTag(
+                  tag: AppStrings.decayIcon,
+                  textStyle: textStyle,
+                ),
+              )
+            : Flexible(flex: 1, child: SizedBox()),
         const SizedBox(width: 20),
         Flexible(child: Container()),
         const SizedBox(width: 10),
