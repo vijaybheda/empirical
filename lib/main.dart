@@ -32,14 +32,14 @@ class MyApp extends StatelessWidget {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: ScreenUtilInit(
-        designSize: Size(1200, 2670),
+        designSize: const Size(1200, 2670),
         builder: (context, child) => GetMaterialApp(
           theme: AppThemeData.mThemeData(context, isDark: false),
           darkTheme: AppThemeData.mThemeData(context, isDark: true),
           themeMode: ThemeMode.dark,
           debugShowCheckedModeBanner: false,
           enableLog: true,
-          locale: Get.deviceLocale ?? Locale('en', 'US'),
+          locale: Get.deviceLocale ?? const Locale('en', 'US'),
           initialRoute: '/',
           useInheritedMediaQuery: true,
           title: AppStrings.appName,
@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
           defaultGlobalState: true,
           home: const LoginScreen(),
         ),
-        child: LoginScreen(),
+        child: const LoginScreen(),
       ),
     );
   }

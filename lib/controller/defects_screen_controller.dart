@@ -1,5 +1,6 @@
 // ignore_for_file: curly_braces_in_flow_control_structures, non_constant_identifier_names, prefer_const_constructors, unnecessary_null_comparison, unrelated_type_equality_checks, unused_local_variable, unused_element, collection_methods_unrelated_type
 
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,6 +12,7 @@ import 'package:pverify/models/defect_item.dart';
 import 'package:pverify/models/defects_data.dart';
 import 'package:pverify/models/inspection_defect.dart';
 import 'package:pverify/models/sample_data.dart';
+import 'package:pverify/models/severity.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
 import 'package:pverify/ui/defects/special_instructions.dart';
@@ -262,6 +264,28 @@ class DefectsScreenController extends GetxController {
     tempSampleObj.sampleId = id.toString();
     sampleSetObs.insert(0, tempSampleObj);
     sizeOfNewSetTextController.value.text = "";
+
+    populateSeverityList();
+
+    if (appStorage.severityList != null) {
+      for (Severity severity in appStorage.severityList!) {
+        if (severity.name == "Injury" || severity.name == "Lesión") {
+          hasSeverityInjury = true;
+        } else if (severity.name == "Damage" || severity.name == "Daño") {
+          hasSeverityDamage = true;
+        } else if (severity.name == "Serious Damage" ||
+            severity.name == "Daño Serio") {
+          hasSeveritySeriousDamage = true;
+        } else if (severity.name == "Very Serious Damage" ||
+            severity.name == "Daño Muy Serio") {
+          hasSeverityVerySeriousDamage = true;
+        } else if (severity.name == "Decay" || severity.name == "Pudrición") {
+          hasSeverityDecay = true;
+        }
+      }
+    }
+
+    sampleSetObs.refresh();
   }
 
   void addDefectRow({required int setIndex}) {
@@ -517,6 +541,49 @@ class DefectsScreenController extends GetxController {
       }
       // defectSpinnerIds.insert(0, 0);
       // defectSpinnerNames.insert(0, 'Select');
+    }
+  }
+
+  void populateSeverityList() {
+    int commodityId;
+
+    if (serverInspectionID > -1)
+      commodityId = commodityID ?? 0;
+    else if (appStorage.currentInspection != null)
+      commodityId = appStorage.currentInspection!.commodityId ?? 0;
+    else
+      commodityId = commodityID ?? 0;
+
+    CommodityItem? item;
+
+    if (appStorage.getCommodityList() != null &&
+        appStorage.getCommodityList()!.isNotEmpty) {
+      item = appStorage.getCommodityList()?.firstWhere(
+            (commodity) => commodity.id == commodityId,
+          );
+    } else {
+      // Populate with default list if commodity list is empty
+      // populateWithDefaultList();
+    }
+
+    if (item != null &&
+        item.severityDefectList != null &&
+        item.severityDefectList.isNotEmpty) {
+      List<Severity> list = [];
+
+      for (var severityDefect in item.severityDefectList) {
+        Severity listItem = Severity(
+          severityDefect.id ?? 0,
+          severityDefect.name ?? '',
+          '',
+          '',
+          0,
+        );
+        list.add(listItem);
+      }
+
+      appStorage.severityList = list;
+      log("Here Is Severity List $list");
     }
   }
 
