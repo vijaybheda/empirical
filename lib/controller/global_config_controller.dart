@@ -13,8 +13,6 @@ import 'package:pverify/utils/app_storage.dart';
 
 class GlobalConfigController extends GetxController {
   final AppStorage appStorage = AppStorage.instance;
-  // late StreamSubscription _streamSubscription;
-  // static const stream = EventChannel(AppStrings.platformEventIOS);
   RxBool hasStableInternet = false.obs;
   RxInt wifiLevel = 0.obs;
   final Connectivity _networkConnectivity = Connectivity();
@@ -37,19 +35,13 @@ class GlobalConfigController extends GetxController {
     log('GlobalConfigController onInit');
     fetchAppVersion();
     checkInternet();
-    // if (Platform.isIOS) {
-    //   _eventChannelStartListener();
-    // }
+
     super.onInit();
     Future.delayed(const Duration(milliseconds: 200)).then((value) {
       wifiLevelStream.listen((wifiLevel) {
         debugPrint('_wifiLevel $wifiLevel');
       });
     });
-    // _streamSubscription = Stream.periodic(const Duration(seconds: 5), (x) => x)
-    //     .listen((event) async {
-    //   await checkInternet();
-    // });
   }
 
   Future<int> networkChecker() async {

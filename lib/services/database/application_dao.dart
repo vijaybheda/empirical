@@ -814,6 +814,42 @@ class ApplicationDao {
     );
   }
 
+  Future<void> updateDefectAttachment(
+    int attachmentId,
+    int? sampleId,
+    int? defectId,
+  ) async {
+    final Database database = dbProvider.lazyDatabase;
+    try {
+      await database.transaction((txn) async {
+        var values = <String, dynamic>{};
+        if (sampleId != null) {
+          values[InspectionDefectAttachmentColumn.INSPECTION_SAMPLE_ID] =
+              sampleId;
+        }
+        if (defectId != null) {
+          values[InspectionDefectAttachmentColumn.INSPECTION_DEFECT_ID] =
+              defectId;
+        }
+
+        if (sampleId != null && defectId != null) {
+          values[InspectionDefectAttachmentColumn.DEFECT_SAVED] = 'Y';
+        }
+
+        await txn.update(
+          DBTables.INSPECTION_DEFECT_ATTACHMENT,
+          values,
+          where: '${InspectionDefectAttachmentColumn.ATTACHMENT_ID}=?',
+          whereArgs: [attachmentId.toString()],
+        );
+      });
+    } catch (e) {
+      debugPrint(
+          'Error has occurred while updating an inspection defect attachment: $e');
+      rethrow;
+    }
+  }
+
   Future<void> deleteInspectionDefectBySampleId(int sampleId) async {
     final Database db = dbProvider.lazyDatabase;
     await db.delete(

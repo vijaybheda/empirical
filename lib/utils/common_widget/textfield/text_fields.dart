@@ -115,26 +115,27 @@ class BoxTextField1 extends StatelessWidget {
   final String hintText;
   final bool isPasswordField;
   final String? intialValue;
+  final TextAlign? textalign;
 
-  const BoxTextField1({
-    super.key,
-    this.textColor = Colors.white,
-    this.hintColor = Colors.grey,
-    this.controller,
-    this.keyboardType = TextInputType.text,
-    this.obsecure = false,
-    required this.onTap,
-    this.isMulti = false,
-    this.readOnly = false,
-    this.hintText = "",
-    this.autofocus = false,
-    required this.errorText,
-    this.enabled = true,
-    this.isPasswordField = false,
-    required this.onEditingCompleted,
-    required this.onChanged,
-    this.intialValue,
-  });
+  const BoxTextField1(
+      {super.key,
+      this.textColor = Colors.white,
+      this.hintColor = Colors.grey,
+      this.controller,
+      this.keyboardType = TextInputType.text,
+      this.obsecure = false,
+      required this.onTap,
+      this.isMulti = false,
+      this.readOnly = false,
+      this.hintText = "",
+      this.autofocus = false,
+      required this.errorText,
+      this.enabled = true,
+      this.isPasswordField = false,
+      required this.onEditingCompleted,
+      required this.onChanged,
+      this.intialValue,
+      this.textalign});
 
   @override
   Widget build(BuildContext context) {
@@ -142,6 +143,7 @@ class BoxTextField1 extends StatelessWidget {
       alignment: Alignment.center,
       height: 105.h,
       child: TextFormField(
+        textAlign: textalign ?? TextAlign.left,
         initialValue: intialValue,
         textAlignVertical: TextAlignVertical.center,
         onChanged: onChanged,
