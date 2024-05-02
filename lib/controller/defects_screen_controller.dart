@@ -33,8 +33,8 @@ class DefectsScreenController extends GetxController {
 
   RxInt activeTabIndex = 1.obs;
 
-  var sampleSetObs = <SampleSetObject>[].obs;
-  SampleSetObject tempSampleObj = SampleSetObject();
+  var sampleSetObs = <SampleSetsObject>[].obs;
+  SampleSetsObject tempSampleObj = SampleSetsObject();
   final ApplicationDao dao = ApplicationDao();
 
   int serverInspectionID = -1;
@@ -247,27 +247,21 @@ class DefectsScreenController extends GetxController {
   }
 
   addSampleSets(String setsValue) {
+    final int index;
+
+    // debugPrint("sampleSetObs.last ${sampleSetObs.reversed.last.sampleId}");
+
     int id = sampleSetObs.isNotEmpty
         ? (int.tryParse(sampleSetObs.reversed.last.sampleId ?? "1") ?? 1) + 1
         : 1;
-    tempSampleObj = SampleSetObject();
-
-    String? index = sampleSetObs.isNotEmpty
-        ? ((int.tryParse(sampleSetObs.reversed.last.sampleId ?? "1") ?? 1) + 1)
-            .toString()
-        : "1";
-    final String name = "Set #$index";
-
-    tempSampleObj.sampleSize = int.tryParse(setsValue);
+    /*  if (sampleSetObs.length >= 1) {
+      index = sampleSetObs.elementAt(sampleSetObs.length - 1).setNumber! + 1;
+    } else {
+      index = sampleSetObs.length + 1;
+    }*/
+    tempSampleObj = SampleSetsObject();
+    tempSampleObj.sampleValue = setsValue;
     tempSampleObj.sampleId = id.toString();
-    tempSampleObj.name = name;
-    tempSampleObj.setNumber = sampleSetObs.length + 1;
-    tempSampleObj.timeCreated =
-        DateTime.now().millisecondsSinceEpoch.toDouble();
-    tempSampleObj.lotNumber = 0;
-    tempSampleObj.packDate = "";
-    tempSampleObj.complete = false;
-
     sampleSetObs.insert(0, tempSampleObj);
     sizeOfNewSetTextController.value.text = "";
 
@@ -754,7 +748,7 @@ class DefectsScreenController extends GetxController {
 
   bool isValidDefects() {
     bool isValidValue = true;
-    for (SampleSetObject element in sampleSetObs) {
+    for (SampleSetsObject element in sampleSetObs) {
       bool isAnyErrorInDefect = false;
       for (DefectItem defectItem in element.defectItem ?? []) {
         bool isError = false;
@@ -797,7 +791,7 @@ class DefectsScreenController extends GetxController {
   }
 
   bool validateSameDefects() {
-    for (SampleSetObject element in sampleSetObs) {
+    for (SampleSetsObject element in sampleSetObs) {
       List<String> defectNames = [];
       for (DefectItem defectItem in element.defectItem ?? []) {
         if (defectNames.contains(defectItem.name)) {
@@ -809,12 +803,13 @@ class DefectsScreenController extends GetxController {
     return true;
   }
 
-  Future<void> saveSamplesToDB() async {
+  /*
+    Future<void> saveSamplesToDB() async {
     hasDamage = false;
     hasSeriousDamage = false;
 
     // Save all the samples
-    for (SampleSetObject sample in sampleSetObs) {
+    for (SampleSetsObject sample in sampleSetObs) {
       var sampleId = sample.sampleId;
       var sampleSize = ''; //sample.sampleSize;
       var sampleName = sample.name;
@@ -849,12 +844,11 @@ class DefectsScreenController extends GetxController {
     }
 
     // Save all the defects
+    for (var entry in defectDataMap.entries) {
+      var sampleSize = getSampleSize(entry.key);
+      var sampleId = getSampleID(entry.key);
 
-    for (SampleSetObject element in sampleSetObs) {
-      var sampleSize = getSampleSize(element.sampleValue);
-      var sampleId = getSampleID(element.sampleValue);
-
-      for (DefectItem defect in element.defectItem ?? []) {
+      for (var defect in entry.value) {
         var inspectionDefectId = defect.inspectionId;
         var defectId = defect.defectId;
         var injuryCnt = defect.injuryCnt;
@@ -872,22 +866,9 @@ class DefectsScreenController extends GetxController {
         var severityVerySeriousDamageId = defect.severityVerySeriousDamageId;
         var severityDecayId = defect.severityDecayId;
 
-        String defectCategory = "";
-
-        if (defectCategoriesMap != null &&
-            defectCategoriesMap!.containsKey(defectId)) {
-          String? category = defectCategoriesMap![defectId];
-
-          if (category == "Condition") {
-            defectCategory = "condition";
-          } else if (category == "Quality") {
-            defectCategory = "quality";
-          } else if (category == "Size") {
-            defectCategory = "size";
-          } else if (category == "Color") {
-            defectCategory = "color";
-          }
-        }
+        var defectCategory = DefectCategoriesHashMap != null
+            ? DefectCategoriesHashMap[defectId]
+            : '';
 
         if (defectId != 0) {
           if (inspectionDefectId == null) {
@@ -895,26 +876,22 @@ class DefectsScreenController extends GetxController {
             try {
               inspectionDefectId = (await dao.createInspectionDefect(
                   inspectionId: inspectionId ?? 0,
-                  sampleId: sampleId ?? 0,
+                  sampleId: sampleId,
                   defectId: int.parse(defectId.toString()),
-                  defectName: defectName ?? '',
-                  injuryCnt: injuryCnt ?? 0,
-                  damageCnt:
-                      int.parse(defect.damageTextEditingController?.text ?? ''),
-                  seriousDamageCnt: int.parse(
-                      defect.sDamageTextEditingController?.text ?? ''),
+                  defectName: defectName,
+                  injuryCnt: injuryCnt,
+                  damageCnt: damageCnt,
+                  seriousDamageCnt: seriousDamageCnt,
                   comments: defectComment,
-                  timestamp: timestamp ?? 0,
-                  verySeriousDamageCnt: int.parse(
-                      defect.vsDamageTextEditingController?.text ?? ''),
-                  decayCnt:
-                      int.parse(defect.decayTextEditingController?.text ?? ''),
-                  severityInjuryId: severityInjuryId ?? 0,
-                  severityDamageId: severityDamageId ?? 0,
-                  severitySeriousDamageId: severityVerySeriousDamageId ?? 0,
-                  severityVerySeriousDamageId: severityVerySeriousDamageId ?? 0,
-                  severityDecayId: severityDecayId ?? 0,
-                  defectCategory: defectCategory)) as int?;
+                  timestamp: timestamp,
+                  verySeriousDamageCnt: veryseriousDamageCnt,
+                  decayCnt: decayCnt,
+                  severityInjuryId: severityInjuryId,
+                  severityDamageId: severityDamageId,
+                  severitySeriousDamageId: severityVerySeriousDamageId,
+                  severityVerySeriousDamageId: severityVerySeriousDamageId,
+                  severityDecayId: severityDecayId,
+                  defectCategory: defectCategory)) as String?;
               defect.inspectionDefectId = inspectionDefectId;
               defect.sampleId = sampleId;
             } catch (e) {
@@ -926,22 +903,18 @@ class DefectsScreenController extends GetxController {
               await dao.updateInspectionDefect(
                   inspectionDefectId: inspectionId ?? 0,
                   defectId: int.parse(defectId.toString()),
-                  defectName: defectName ?? '',
-                  injuryCnt: injuryCnt ?? 0,
-                  damageCnt:
-                      int.parse(defect.damageTextEditingController?.text ?? ''),
-                  seriousDamageCnt: int.parse(
-                      defect.sDamageTextEditingController?.text ?? ''),
-                  comments: defectComment ?? '',
-                  verySeriousDamageCnt: int.parse(
-                      defect.vsDamageTextEditingController?.text ?? ''),
-                  decayCnt:
-                      int.parse(defect.decayTextEditingController?.text ?? ''),
-                  severityInjuryId: severityInjuryId ?? 0,
-                  severityDamageId: severityDamageId ?? 0,
-                  severitySeriousDamageId: severitySeriousDamageId ?? 0,
-                  severityVerySeriousDamageId: severityVerySeriousDamageId ?? 0,
-                  severityDecayId: severityDecayId ?? 0,
+                  defectName: defectName,
+                  injuryCnt: injuryCnt,
+                  damageCnt: damageCnt,
+                  seriousDamageCnt: seriousDamageCnt,
+                  comments: defectComment,
+                  verySeriousDamageCnt: veryseriousDamageCnt,
+                  decayCnt: decayCnt,
+                  severityInjuryId: severityInjuryId,
+                  severityDamageId: severityDamageId,
+                  severitySeriousDamageId: severitySeriousDamageId,
+                  severityVerySeriousDamageId: severityVerySeriousDamageId,
+                  severityDecayId: severityDecayId,
                   defectCategory: defectCategory);
               defect.inspectionDefectId = inspectionDefectId;
             } catch (e) {
@@ -960,10 +933,10 @@ class DefectsScreenController extends GetxController {
             );
           }
         }
-        if ((damageCnt ?? 0) > 2) {
+        if (damageCnt > 2) {
           hasDamage = true;
         }
-        if ((seriousDamageCnt ?? 0) > 0) {
+        if (seriousDamageCnt > 0) {
           hasSeriousDamage = true;
         }
       }
@@ -971,22 +944,5 @@ class DefectsScreenController extends GetxController {
     dataEntered = false;
     dataSaved = true;
   }
-
-  int? getSampleSize(String? name) {
-    for (var sample in sampleSetObs) {
-      if (name == sample.name) {
-        return sample.sampleSize;
-      }
-    }
-    return null;
-  }
-
-  int? getSampleID(String? name) {
-    for (var sample in sampleSetObs) {
-      if (name == sample.name) {
-        return int.tryParse(sample.sampleId ?? '');
-      }
-    }
-    return null;
-  }
+  */
 }

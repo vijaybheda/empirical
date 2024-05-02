@@ -3,13 +3,13 @@ import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'defect_item.dart';
 
 class DefectsClass {
-  RxList<SampleSetObject>? sampleSet;
+  RxList<SampleSetsObject>? sampleSet;
   DefectsClass({
     this.sampleSet,
   });
 }
 
-class SampleSetObject {
+class SampleSetsObject {
   String? sampleValue;
   String? sampleId = '';
   String? name = '';
@@ -18,16 +18,9 @@ class SampleSetObject {
   int? lotNumber = 0;
   String? packDate = '';
   bool? complete = false;
-  int? sampleSize;
-  int? iCnt = 0;
-  int? dCnt = 0;
-  int? sdCnt = 0;
-  int? vsdCnt = 0;
-  int? dcCnt = 0;
-  String? sampleNameUser;
   List<DefectItem>? defectItem;
 
-  SampleSetObject({
+  SampleSetsObject({
     this.sampleValue,
     this.sampleId,
     this.name,
@@ -36,12 +29,6 @@ class SampleSetObject {
     this.lotNumber,
     this.packDate,
     this.complete,
-    this.sampleSize,
-    this.iCnt,
-    this.dCnt,
-    this.sdCnt,
-    this.vsdCnt,
-    this.dcCnt,
     this.defectItem,
   });
 }

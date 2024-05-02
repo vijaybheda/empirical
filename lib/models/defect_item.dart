@@ -11,25 +11,7 @@ class DefectItem {
   TextEditingController? vsDamageTextEditingController;
   TextEditingController? decayTextEditingController;
   List<DefectInstructionAttachment>? attachments;
-  int? inspectionId;
-  int? defectId;
-  int? injuryCnt;
-  int? damageCnt;
-  int? seriousDamageCnt;
-  int? verySeriousDamageCnt;
-  int? decayCnt;
-  int? severityInjuryId;
-  int? severityDamageId;
-  int? severitySeriousDamageId;
-  int? severityVerySeriousDamageId;
-  int? severityDecayId;
-  String? spinnerSelection;
-  String? comment;
-  int? createdTime;
-  List<int>? attachmentIds;
-  int? inspectionDefectId;
-  int? sampleId;
- 
+
   DefectItem({
     this.id,
     this.name,
@@ -40,24 +22,6 @@ class DefectItem {
     this.sDamageTextEditingController,
     this.vsDamageTextEditingController,
     this.decayTextEditingController,
-    this.inspectionId,
-    this.defectId,
-    this.injuryCnt,
-    this.damageCnt,
-    this.seriousDamageCnt,
-    this.verySeriousDamageCnt,
-    this.decayCnt,
-    this.severityInjuryId,
-    this.severityDamageId,
-    this.severitySeriousDamageId,
-    this.severityVerySeriousDamageId,
-    this.severityDecayId,
-    this.spinnerSelection,
-    this.comment,
-    this.createdTime,
-    this.attachmentIds,
-    this.inspectionDefectId,
-    this.sampleId
   });
 
   // toJson
