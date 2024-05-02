@@ -844,8 +844,7 @@ class ApplicationDao {
         );
       });
     } catch (e) {
-      debugPrint(
-          'Error has occurred while updating an inspection defect attachment: $e');
+      log('Error has occurred while updating an inspection defect attachment: $e');
       rethrow;
     }
   }
