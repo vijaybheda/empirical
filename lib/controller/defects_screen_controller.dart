@@ -393,7 +393,9 @@ class DefectsScreenController extends GetxController {
         }
 
       case AppStrings.decay:
-        sampleSetObs[setIndex]
+
+        // not in current requirement
+        /* sampleSetObs[setIndex]
             .defectItem?[rowIndex]
             .injuryTextEditingController
             ?.text = isError ? '0' : value;
@@ -408,7 +410,9 @@ class DefectsScreenController extends GetxController {
         sampleSetObs[setIndex]
             .defectItem?[rowIndex]
             .vsDamageTextEditingController
-            ?.text = isError ? '0' : value;
+            ?.text = isError ? '0' : value; */
+
+        // do nothing
         if (isError) {
           sampleSetObs[setIndex]
               .defectItem?[rowIndex]
