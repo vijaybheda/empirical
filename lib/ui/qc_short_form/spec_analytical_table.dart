@@ -33,6 +33,7 @@ class SpecAnalyticalTable
         );
 
         return SpecificationAnalyticalWidget(
+            controller: controller,
             item: item,
             reqobj: reqobj,
             onCommentSave: (String comment) {
@@ -49,11 +50,13 @@ class SpecificationAnalyticalWidget extends StatefulWidget {
   final SpecificationAnalytical item;
   final SpecificationAnalyticalRequest reqobj;
   final Function(String comment)? onCommentSave;
+  final QCDetailsShortFormScreenController controller;
   const SpecificationAnalyticalWidget({
     super.key,
     required this.item,
     required this.reqobj,
     this.onCommentSave,
+    required this.controller,
   });
 
   @override
@@ -67,14 +70,25 @@ class _SpecificationAnalyticalWidgetState
   late TextEditingController textEditingController;
   late bool hasErrors;
   bool isPictureRequired = false;
-
+  List<String> operatorList = [];
   final ApplicationDao dao = ApplicationDao();
 
   @override
   void initState() {
     hasErrors = false;
-    super.initState();
     textEditingController = TextEditingController();
+    comply = "N/A";
+    operatorList = ['Select', 'Yes', 'No', 'N/A'];
+
+    if (widget.item.specTargetTextDefault == 'Yes') {
+      comply = 'Yes';
+    } else if (widget.item.specTargetTextDefault == 'No') {
+      comply = 'No';
+    }
+    super.initState();
+
+    // Additional initial setup based on the item's properties
+    updateComplianceInitial();
 
     if (widget.item.specTargetTextDefault == "Yes") {
       comply = "Yes";
@@ -94,11 +108,11 @@ class _SpecificationAnalyticalWidgetState
       editTextValue.text = '12345';
     }
 
-    if (widget.item.specTargetTextDefault == "Y") {
-      String textViewComply = "Y";
+    if (widget.item.specTargetTextDefault == "Yes") {
+      String textViewComply = "Yes";
       int spinnerValue = 1;
-    } else if (widget.item.specTargetTextDefault == "N") {
-      String textViewComply = "Y";
+    } else if (widget.item.specTargetTextDefault == "No") {
+      String textViewComply = "Yes";
       int spinnerValue = 2;
     } else if (widget.item.specTargetTextDefault == "") {
       // TODO: handle this conditions
@@ -111,7 +125,9 @@ class _SpecificationAnalyticalWidgetState
 
     if (widget.item.analyticalName?.contains("Branded") ?? false) {
       // TODO: implement this method
-      /*dao.getBrandedFlagFromItemSku(item_sku_id).then((String? brandedFlag) {
+      dao
+          .getBrandedFlagFromItemSku(widget.controller.itemSkuId!)
+          .then((String? brandedFlag) {
         String textViewComply = "Y";
 
         if (brandedFlag == "1") {
@@ -119,7 +135,7 @@ class _SpecificationAnalyticalWidgetState
         } else {
           int spinnerValue = 2;
         }
-      });*/
+      });
     }
   }
 
@@ -175,14 +191,22 @@ class _SpecificationAnalyticalWidgetState
     );
   }
 
+  void updateComplianceInitial() {
+    if (widget.item.specTypeofEntry == 1 &&
+        (widget.item.isPictureRequired ?? false)) {
+      // Example specific logic based on type of entry and picture requirement
+    }
+    // Other initial setups based on the item's properties
+  }
+
   String getComply() {
     String _comply = comply;
     if (_comply == 'N/A') {
       return 'N/A';
     } else if (_comply == 'Yes') {
-      return 'Y';
+      return 'Yes';
     } else if (_comply == 'No') {
-      return 'N';
+      return 'No';
     } else {
       return 'N/A';
     }
@@ -257,8 +281,8 @@ class _SpecificationAnalyticalWidgetState
           ),
           content: TextField(
             autofocus: false,
-            maxLines: 3,
-            minLines: 1,
+            maxLines: null,
+            keyboardType: TextInputType.multiline,
             controller: commentController,
             decoration: const InputDecoration(
               border: UnderlineInputBorder(),
@@ -365,6 +389,21 @@ class _SpecificationAnalyticalWidgetState
     }
   }
 
+  void updateCompliance(String value) {
+    if (validInput()) {
+      comply = "Yes";
+    } else {
+      comply = "No";
+    }
+  }
+
+  bool validInput() {
+    double? value = double.tryParse(textEditingController.text);
+    return value != null &&
+        value >= widget.item.specMin! &&
+        value <= widget.item.specMax!;
+  }
+
   @override
   void dispose() {
     textEditingController.dispose();
@@ -377,26 +416,26 @@ class _SpecificationAnalyticalWidgetState
       children: [
         if (widget.item.specTypeofEntry == 1 ||
             widget.item.specTypeofEntry == 3)
-          Flexible(
+          Expanded(
             child: TextField(
               controller: textEditingController,
-              onChanged: (value) {
-                handleTextChanges(value);
-              },
               decoration: InputDecoration(
-                labelText: 'Value',
-                errorText: hasErrors
-                    ? 'Please enter a valid value'
-                    : null, // Show error if necessary
+                labelText: 'Enter Value',
+                // errorText: validInput() ? null : 'Invalid!',
+                border: UnderlineInputBorder(),
+                focusedBorder: UnderlineInputBorder(),
+                disabledBorder: UnderlineInputBorder(),
+                enabledBorder: UnderlineInputBorder(),
               ),
+              onChanged: (value) => setState(() => updateCompliance(value)),
             ),
           ),
         if (widget.item.specTypeofEntry == 2 ||
             widget.item.specTypeofEntry == 3)
-          Flexible(
+          Expanded(
             child: DropdownButton<String>(
               value: comply,
-              items: <String>['N/A', 'Yes', 'No']
+              items: operatorList
                   .map((String value) => DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
@@ -424,6 +463,7 @@ class _SpecificationAnalyticalWidgetState
                 contentPadding: const EdgeInsets.symmetric(vertical: 10),
               ),*/
               dropdownColor: AppColors.grey,
+              alignment: Alignment.centerRight,
             ),
           ),
         const SizedBox(height: 20),

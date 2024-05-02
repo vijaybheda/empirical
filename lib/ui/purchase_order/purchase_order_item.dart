@@ -84,7 +84,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
   Inspection? inspection;
   bool informationIconEnabled = true;
   String? resultButton;
-  Color resultButtonColor = Colors.white;
+  Color resultButtonColor = AppColors.white;
   AssetImage informationImagePath =
       const AssetImage(AppImages.ic_informationDisabled);
 
@@ -260,16 +260,14 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
                 children: [
                   TextSpan(
                     text: 'Lot No. ',
-                    style: Get.textTheme.bodyMedium?.copyWith(
-                      fontSize: 28.sp,
-                    ),
+                    style: Get.textTheme.bodyMedium
+                        ?.copyWith(fontSize: 28.sp, color: AppColors.white),
                   ),
                   if (widget.goodsItem.lotNumber != null)
                     TextSpan(
                       text: widget.goodsItem.lotNumber.toString(),
-                      style: Get.textTheme.bodyMedium?.copyWith(
-                        fontSize: 28.sp,
-                      ),
+                      style: Get.textTheme.bodyMedium
+                          ?.copyWith(fontSize: 28.sp, color: AppColors.white),
                     ),
                 ],
               ),
@@ -327,10 +325,10 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
                         widget.onTapEdit!(inspection, partnerItemSKU);
                       }
                     },
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.edit_outlined,
                       size: 24,
-                      color: Colors.white,
+                      color: AppColors.white,
                     ),
                   ),
               ],
@@ -359,36 +357,35 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
                 // if (widget.goodsItem.quantityShipped != null)
                 TextSpan(
                   text: lotNumberController.text,
-                  style: Get.textTheme.bodyMedium?.copyWith(
-                    fontSize: 28.sp,
-                  ),
+                  style: Get.textTheme.bodyMedium
+                      ?.copyWith(fontSize: 28.sp, color: AppColors.white),
                 ),
               ],
             ),
           ),
         ),
-        Expanded(
-          flex: 1,
-          child: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Qty Rejected * ',
-                  style: Get.textTheme.bodyMedium?.copyWith(
-                    fontSize: 28.sp,
-                  ),
-                ),
-                if (widget.goodsItem.packDate != null)
+        if (widget.goodsItem.packDate != null)
+          Expanded(
+            flex: 1,
+            child: RichText(
+              text: TextSpan(
+                children: [
                   TextSpan(
-                    text: '200', // TODO: implement this
+                    text: 'Qty Rejected * ',
                     style: Get.textTheme.bodyMedium?.copyWith(
                       fontSize: 28.sp,
                     ),
                   ),
-              ],
+                  if (widget.goodsItem.packDate != null)
+                    TextSpan(
+                      text: '200', // TODO: implement this
+                      style: Get.textTheme.bodyMedium
+                          ?.copyWith(fontSize: 28.sp, color: AppColors.white),
+                    ),
+                ],
+              ),
             ),
           ),
-        ),
       ],
     );
   }

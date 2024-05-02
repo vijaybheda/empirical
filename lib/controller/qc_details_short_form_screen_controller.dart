@@ -106,6 +106,8 @@ class QCDetailsShortFormScreenController extends GetxController {
 
   bool hasErrors2 = false;
 
+  List<String> operatorList = [];
+
   QCDetailsShortFormScreenController();
 
   /*QCDetailsShortFormScreenController({
@@ -447,15 +449,9 @@ class QCDetailsShortFormScreenController extends GetxController {
 
     listSpecAnalyticals.sort((a, b) => a.order!.compareTo(b.order!));
 
-    int row_no = 1;
-    for (SpecificationAnalytical item in listSpecAnalyticals) {
+    for (final item in listSpecAnalyticals) {
       final SpecificationAnalyticalRequest reqobj =
-          SpecificationAnalyticalRequest();
-
-      // final SpecificationAnalyticalRequest? dbobj =
-      //     await dao.findSpecAnalyticalObj(inspectionId, item.analyticalID!);
-
-      reqobj.copyWith(
+          SpecificationAnalyticalRequest(
         analyticalID: item.analyticalID,
         analyticalName: item.description,
         specTypeofEntry: item.specTypeofEntry,
@@ -466,8 +462,49 @@ class QCDetailsShortFormScreenController extends GetxController {
         inspectionResult: item.inspectionResult,
       );
 
-      row_no++;
+      final SpecificationAnalyticalRequest? dbobj =
+          await dao.findSpecAnalyticalObj(inspectionId, item.analyticalID!);
+
+      /*reqobj.copyWith(
+        analyticalID: item.analyticalID,
+        analyticalName: item.description,
+        specTypeofEntry: item.specTypeofEntry,
+        isPictureRequired: item.isPictureRequired,
+        specMin: item.specMin,
+        specMax: item.specMax,
+        description: item.description,
+        inspectionResult: item.inspectionResult,
+      );*/
+
+      if (dbobj != null) {
+        if (dbobj.comment != null && dbobj.comment != "") {
+          reqobj.comment = dbobj.comment;
+          // TODO: change comment icon
+          // comment.setImageDrawable(getDrawable(R.drawable.spec_comment_added));
+        }
+        reqobj.copyWith(comply: dbobj.comply);
+        // textViewComply.setText(dbobj.getComply());
+
+        if (item.specTypeofEntry == 1) {
+          if (dbobj != null) {
+            reqobj.copyWith(sampleNumValue: dbobj.sampleNumValue);
+          }
+        } else if (item.specTypeofEntry == 2) {
+          for (int i = 0; i < operatorList.length; i++) {
+            /*if (dbobj.sampleTextValue.equals(operatorList.get(i))) {
+                // spinner_value.setSelection(i);
+                reqobj.sampleTextValue(operatorList.get(i));
+                // textViewComply.setText(dbobj.getComply());
+              }*/
+          }
+        }
+      } else {
+        reqobj.copyWith(comply: "N/A");
+        // textViewComply.setText("N/A");
+      }
+      listSpecAnalyticalsRequest.add(reqobj);
     }
+
     update();
   }
 
@@ -509,6 +546,7 @@ class QCDetailsShortFormScreenController extends GetxController {
       lotNoController.text = qualityControlItems!.lot ?? '';
       gtinController.text = qualityControlItems!.gtin ?? '';
     }
+    update();
   }
 
   Future<void> saveAsDraftAndGotoMyInspectionScreen() async {

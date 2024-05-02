@@ -229,8 +229,12 @@ class ApplicationDao {
 
   Future<int> createInspection(Inspection inspection) async {
     final Database db = dbProvider.lazyDatabase;
-    var res = await db.insert(DBTables.INSPECTION, inspection.toJson());
-    return res;
+    try {
+      return await db.insert(DBTables.INSPECTION, inspection.toJson());
+    } catch (e) {
+      log('Error has occurred while creating an inspection: $e');
+      return -1;
+    }
   }
 
   Future<int> createInspectionAttachment(InspectionAttachment attachment,
@@ -1761,26 +1765,16 @@ class ApplicationDao {
 
     try {
       List<Map<String, dynamic>> results = await _db.rawQuery('''
-        SELECT poh.PO_Number, poh.PO_Deliver_To_Id, poh.PO_Deliver_To_Name, poh.PO_Partner_Id,
-        poh.PO_Partner_Name,
-        pod.PO_Line_Number, pod.PO_Item_Sku_Id, pod.PO_Item_Sku_Code, pod.PO_Item_Sku_Name,
-        pod.PO_Quantity, pod.PO_Qty_UOM_Id, pod.PO_Qty_UOM_Name,
-        pod.PO_Number_Spec, pod.PO_Version_Spec, pod.PO_Commodity_Id, pod.PO_Commodity_Name
-        FROM ${DBTables.PO_DETAIL} pod
-        INNER JOIN PO_Header poh ON pod.PO_Header_ID=poh.PO_Header_ID
-        WHERE poh.PO_Number='$poNumber' AND poh.PO_Deliver_To_Id=$inspectorSupplierId
-      ''');
+      SELECT poh.PO_Number, poh.PO_Deliver_To_Id, poh.PO_Deliver_To_Name, poh.PO_Partner_Id,
+      poh.PO_Partner_Name,
+      pod.PO_Line_Number, pod.PO_Item_Sku_Id, pod.PO_Item_Sku_Code, pod.PO_Item_Sku_Name,
+      pod.PO_Quantity, pod.PO_Qty_UOM_Id, pod.PO_Qty_UOM_Name,
+      pod.PO_Number_Spec, pod.PO_Version_Spec, pod.PO_Commodity_Id, pod.PO_Commodity_Name
+      FROM ${DBTables.PO_DETAIL} pod
+      INNER JOIN ${DBTables.PO_HEADER} poh ON pod.PO_Header_ID=poh.PO_Header_ID
+      WHERE poh.PO_Number='$poNumber' AND poh.PO_Deliver_To_Id=$inspectorSupplierId
+    ''');
 
-      // List<Map<String, dynamic>> results = await _db.rawQuery(
-      //   "SELECT ${POHeaderColumn.PO_NUMBER}, ${POHeaderColumn.PO_DELIVER_TO_ID}, ${POHeaderColumn.PO_DELIVER_TO_NAME}, ${POHeaderColumn.PO_PARTNER_ID}, "
-      //   "${POHeaderColumn.PO_PARTNER_NAME}, "
-      //   "${PODetailColumn.PO_LINE_NUMBER}, ${PODetailColumn.PO_ITEM_SKU_ID}, ${PODetailColumn.PO_ITEM_SKU_CODE}, ${PODetailColumn.PO_ITEM_SKU_NAME}, "
-      //   "${PODetailColumn.PO_QUANTITY}, ${PODetailColumn.PO_QTY_UOM_ID}, ${PODetailColumn.PO_QTY_UOM_NAME}, "
-      //   "${PODetailColumn.PO_NUMBER_SPEC}, ${PODetailColumn.PO_VERSION_SPEC}, ${PODetailColumn.PO_COMMODITY_ID}, ${PODetailColumn.PO_COMMODITY_NAME} "
-      //   "FROM ${DBTables.PO_DETAIL} pod "
-      //   "INNER JOIN PO_Header poh ON ${PODetailColumn.PO_HEADER_ID}=${POHeaderColumn.PO_HEADER_ID} "
-      //   "WHERE ${POHeaderColumn.PO_NUMBER}='$poNumber' AND ${POHeaderColumn.PO_DELIVER_TO_ID}=$inspectorSupplierId",
-      // );
       for (var result in results) {
         purchaseOrderDetailsList.add(PurchaseOrderDetails.fromMap(result));
       }
@@ -2413,7 +2407,7 @@ class ApplicationDao {
 
   Future<bool> isInspectionComplete(
       int partnerId, String itemSKU, String? lotNo) async {
-    List<dynamic> args = [true, partnerId.toString(), itemSKU, lotNo];
+    List<dynamic> args = ['true', partnerId.toString(), itemSKU, lotNo];
 
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -2487,9 +2481,9 @@ class ApplicationDao {
       int? inspectionId, int analyticalID) async {
     try {
       List<dynamic> args = [inspectionId.toString(), analyticalID.toString()];
-      String query = "Select * from ${DBTables.SPECIFICATION_ATTRIBUTES} where "
-              "${SpecificationAttributesColumn.INSPECTION_ID}=?" +
-          " and ${SpecificationAttributesColumn.ANALYTICAL_ID}=?";
+      String query = "SELECT * FROM ${DBTables.SPECIFICATION_ATTRIBUTES} WHERE "
+          "${SpecificationAttributesColumn.INSPECTION_ID}=? AND "
+          "${SpecificationAttributesColumn.ANALYTICAL_ID}=?";
       final Database db = dbProvider.lazyDatabase;
       var cursor = await db.rawQuery(query, args);
 
@@ -2670,9 +2664,9 @@ class ApplicationDao {
           "SELECT Number_Specification, Version_Specification, Analytical_ID, Analytical_name, Spec_Min, Spec_Max, "
           "Target_Num_Value, Target_Text_Value, UOM_Name, Type_Entry, Description, OrderNo, Picture_Required, "
           "Target_Text_Default, Inspection_Result FROM ${DBTables.SPECIFICATION_ANALYTICAL} "
-          "WHERE Number_Specification='$number' AND Version_Specification='$version'";
-
-      List<Map<String, dynamic>> cursor = await db.rawQuery(query);
+          "WHERE Number_Specification=? AND Version_Specification=?";
+      List<Map<String, dynamic>> cursor =
+          await db.rawQuery(query, [number, version]);
 
       for (Map<String, dynamic> row in cursor.toList()) {
         SpecificationAnalytical item = SpecificationAnalytical.fromMap(row);
@@ -2774,24 +2768,24 @@ class ApplicationDao {
     final Database db = dbProvider.lazyDatabase;
 
     try {
-      String query3 = "Select Distinct(SP.Name), SP.Number, SP.Version, SpecType.Name," +
-          " agency.ID, agency.Name, grade.ID, grade.Name," +
-          " commodity.ID, commodity.Name, commodity.Sample_Size_By_Count," +
-          " itemGroup1.Group1_ID, itemgroup1.Name" +
-          " from Specification_Supplier SS" +
-          " inner join Specification SP on SS.Number_Specification=SP.Number and SS.Version_Specification=SP.Version" +
-          " inner join Material_Specification MS on SP.Number=MS.Number_Specification and SP.Version=MS.Version_Specification" +
-          " inner join Specification_Type SpecType on SP.Specification_Type_Id=SpecType.Specification_Type_ID" +
-          " left join ItemGroup1 itemGroup1 on SP.Item_Group1_ID=itemGroup1.Group1_ID" +
-          " left join Commodity commodity on SP.Commodity_ID=commodity.ID" +
-          " left join Grade grade ON MS.Grade_ID=grade.ID" +
-          " left join Agency agency ON grade.Agency_ID=agency.ID" +
-          " inner join Item_SKU itemSku on SS.Item_SKU_ID=itemSku.SKU_ID" +
-          " where SS.Supplier_ID = $supplierId" +
+      String query3 = "SELECT Distinct(SP.Name) AS Name, SP.Number, SP.Version, SpecType.Name AS SpecTypeName," +
+          " agency.ID AS AgencyID, agency.Name AS AgencyName, grade.ID AS GradeID, grade.Name AS GradeName," +
+          " commodity.ID AS CommodityID, commodity.Name AS CommodityName, commodity.Sample_Size_By_Count AS SampleSizeByCount," +
+          " itemGroup1.Group1_ID AS Group1ID, itemgroup1.Name AS Group1Name" +
+          " FROM Specification_Supplier SS" +
+          " INNER JOIN Specification SP ON SS.Number_Specification=SP.Number AND SS.Version_Specification=SP.Version" +
+          " INNER JOIN Material_Specification MS ON SP.Number=MS.Number_Specification AND SP.Version=MS.Version_Specification" +
+          " INNER JOIN Specification_Type SpecType ON SP.Specification_Type_Id=SpecType.Specification_Type_ID" +
+          " LEFT JOIN ItemGroup1 itemGroup1 ON SP.Item_Group1_ID=itemGroup1.Group1_ID" +
+          " LEFT JOIN Commodity commodity ON SP.Commodity_ID=commodity.ID" +
+          " LEFT JOIN Grade grade ON MS.Grade_ID=grade.ID" +
+          " LEFT JOIN Agency agency ON grade.Agency_ID=agency.ID" +
+          " INNER JOIN Item_SKU itemSku ON SS.Item_SKU_ID=itemSku.SKU_ID" +
+          " WHERE SS.Supplier_ID = $supplierId" +
           " AND SS.status = 'A'" +
           " AND MS.Status = 'A'" +
-          " AND (itemSku.Name = '$itemSkuName' or itemSku.Code='$itemSkuCode')" +
-          " order by SP.Name";
+          " AND (itemSku.Name = '$itemSkuName' OR itemSku.Code='$itemSkuCode')" +
+          " ORDER BY SP.Name";
 
       List<Map<dynamic, dynamic>> results = await db.rawQuery(query3);
 
@@ -2800,16 +2794,16 @@ class ApplicationDao {
           specificationName: row['Name'],
           specificationNumber: row['Number'],
           specificationVersion: row['Version'],
-          specificationTypeName: row['Name'],
-          agencyId: row['ID'],
-          agencyName: row['Name'],
-          gradeId: row['ID'],
-          gradeName: row['Name'],
-          commodityId: row['ID'],
-          commodityName: row['Name'],
-          sampleSizeByCount: row['Sample_Size_By_Count'],
-          itemGroup1Id: row['Group1_ID'],
-          itemGroup1Name: row['Name'],
+          specificationTypeName: row['SpecTypeName'],
+          agencyId: row['AgencyID'],
+          agencyName: row['AgencyName'],
+          gradeId: row['GradeID'],
+          gradeName: row['GradeName'],
+          commodityId: row['CommodityID'],
+          commodityName: row['CommodityName'],
+          sampleSizeByCount: row['SampleSizeByCount'],
+          itemGroup1Id: row['Group1ID'],
+          itemGroup1Name: row['Group1Name'],
         );
         specificationList.add(item);
       }
@@ -3476,8 +3470,9 @@ class ApplicationDao {
 
       if (result.isNotEmpty) {
         for (Map map in result) {
-          item =
-              CommodityKeywords(id: map['column1'], keywords: map['column2']);
+          item = CommodityKeywords(
+              id: map[CommodityKeywordsColumn.ID],
+              keywords: map[CommodityKeywordsColumn.KEYWORDS]);
           itemSKUList.add(item);
         }
       }

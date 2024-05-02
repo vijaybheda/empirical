@@ -185,12 +185,11 @@ class AppStorage extends GetxController {
     // list to String
     List<Map<String, dynamic>> commodityListString =
         mainCommodityList.map((e) => e.toJson()).toList();
-    /*if (this.mainCommodityList == null) {
+    if (this.mainCommodityList == null) {
       this.mainCommodityList = [];
     }
-    for (var item in mainCommodityList) {
-      this.mainCommodityList?.add(Commodity(item.id, item.name, item.keywords));
-    }*/
+    this.mainCommodityList!.clear();
+    this.mainCommodityList!.addAll(mainCommodityList);
     return write(StorageKey.kMainCommodityList, commodityListString);
   }
 

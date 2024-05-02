@@ -153,7 +153,7 @@ class PurchaseOrderDetailsController extends GetxController {
   List<PurchaseOrderItem> getPurchaseOrderData() {
     List<PurchaseOrderItem> list = [];
 
-    for (FinishedGoodsItemSKU item in (appStorage.selectedItemSKUList)) {
+    for (FinishedGoodsItemSKU item in (selectedItemSKUList)) {
       list.add(PurchaseOrderItem.newData(
           item.name,
           item.sku,
@@ -175,19 +175,16 @@ class PurchaseOrderDetailsController extends GetxController {
 
     List<SpecificationGradeToleranceArray>
         specificationGradeToleranceArrayList = [];
-
-    for (int i = 0; i < appStorage.selectedItemSKUList.length; i++) {
-      bool isComplete = await dao.isInspectionComplete(
-          partnerID!,
-          appStorage.selectedItemSKUList[i].sku!,
-          appStorage.selectedItemSKUList[i].uniqueItemId);
+    for (int i = 0; i < selectedItemSKUList.length; i++) {
+      bool isComplete = await dao.isInspectionComplete(partnerID!,
+          selectedItemSKUList[i].sku!, selectedItemSKUList[i].uniqueItemId);
 
       if (isComplete) {
         PartnerItemSKUInspections? partnerItemSKU =
             await dao.findPartnerItemSKU(
                 partnerID!,
-                appStorage.selectedItemSKUList[i].sku!,
-                appStorage.selectedItemSKUList[i].uniqueItemId);
+                selectedItemSKUList[i].sku!,
+                selectedItemSKUList[i].uniqueItemId);
         if (partnerItemSKU != null) {
           Inspection? inspection =
               await dao.findInspectionByID(partnerItemSKU.inspectionId!);
@@ -277,8 +274,6 @@ class PurchaseOrderDetailsController extends GetxController {
     // int totalQualityDefectId = 0;
     // int totalConditionDefectId = 0;
 
-    List<FinishedGoodsItemSKU> selectedItemSKUList =
-        appStorage.selectedItemSKUList;
     for (int i = 0; i < selectedItemSKUList.length; i++) {
       FinishedGoodsItemSKU itemSKU = selectedItemSKUList.elementAt(i);
       bool isComplete = await dao.isInspectionComplete(
@@ -443,8 +438,7 @@ class PurchaseOrderDetailsController extends GetxController {
   }
 
   Future<void> onItemTap(PurchaseOrderItem goodsItem, int index) async {
-    FinishedGoodsItemSKU? finishedGoodsItemSKU =
-        appStorage.selectedItemSKUList[index];
+    FinishedGoodsItemSKU? finishedGoodsItemSKU = selectedItemSKUList[index];
     bool isComplete = await dao.isInspectionComplete(
         partnerID!, goodsItem.sku!, finishedGoodsItemSKU.id.toString());
     bool ispartialComplete = await dao.isInspectionPartialComplete(
@@ -752,9 +746,8 @@ class PurchaseOrderDetailsController extends GetxController {
     bool isValid = true;
 
     if (isComplete) {
-      for (int i = 0; i < appStorage.selectedItemSKUList.length; i++) {
-        FinishedGoodsItemSKU finishedGoodsItemSKU =
-            appStorage.selectedItemSKUList[i];
+      for (int i = 0; i < selectedItemSKUList.length; i++) {
+        FinishedGoodsItemSKU finishedGoodsItemSKU = selectedItemSKUList[i];
         bool isComplete = await dao.isInspectionComplete(partnerID!,
             finishedGoodsItemSKU.sku!, finishedGoodsItemSKU.uniqueItemId);
 
@@ -891,19 +884,16 @@ class PurchaseOrderDetailsController extends GetxController {
 
   Future<void> onHomeMenuTap() async {
     bool isValid = true;
-
-    for (int i = 0; i < appStorage.selectedItemSKUList.length; i++) {
-      bool isComplete = await dao.isInspectionComplete(
-          partnerID!,
-          appStorage.selectedItemSKUList[i].sku!,
-          appStorage.selectedItemSKUList[i].uniqueItemId);
+    for (int i = 0; i < selectedItemSKUList.length; i++) {
+      bool isComplete = await dao.isInspectionComplete(partnerID!,
+          selectedItemSKUList[i].sku!, selectedItemSKUList[i].uniqueItemId);
 
       if (isComplete) {
         PartnerItemSKUInspections? partnerItemSKU =
             await dao.findPartnerItemSKU(
                 partnerID!,
-                appStorage.selectedItemSKUList[i].sku!,
-                appStorage.selectedItemSKUList[i].uniqueItemId);
+                selectedItemSKUList[i].sku!,
+                selectedItemSKUList[i].uniqueItemId);
 
         if (partnerItemSKU != null) {
           Inspection? inspection =
@@ -932,6 +922,9 @@ class PurchaseOrderDetailsController extends GetxController {
       Get.offAll(() => const Home());
     }
   }
+
+  List<FinishedGoodsItemSKU> get selectedItemSKUList =>
+      appStorage.selectedItemSKUList;
 
   void onTailerTempMenuTap() {
     Get.to(
@@ -1030,7 +1023,7 @@ class PurchaseOrderDetailsController extends GetxController {
   void initAsyncActions() {
     if (callerActivity.isNotEmpty) {
       if (callerActivity == "GTINActivity") {
-        if (appStorage.selectedItemSKUList.isNotEmpty) {
+        if (selectedItemSKUList.isNotEmpty) {
           if (!isGTINSamePartner) {
             Future.delayed(const Duration(milliseconds: 500), () {
               AppAlertDialog.validateAlerts(

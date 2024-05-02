@@ -730,9 +730,9 @@ class QCDetailsShortFormScreen
                                     textStyle: TextStyle(
                                         color: AppColors.textFieldText_Color)),
                                 onClickAction: () async {
-                              // await controller.saveContinue(context);
-                              await controller
-                                  .saveAsDraftAndGotoMyInspectionScreen();
+                              await controller.saveContinue(context);
+                              // await controller
+                              //     .saveAsDraftAndGotoMyInspectionScreen();
                             }),
                           ],
                         ),

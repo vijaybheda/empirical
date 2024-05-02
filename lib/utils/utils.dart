@@ -755,7 +755,7 @@ int? parseIntOrReturnNull(dynamic value) {
   return null;
 }
 
-double? parseDoubleOrReturnNull(dynamic value) {
+double? parseDoubleOrReturnNull(value) {
   if (value == null) {
     return null;
   }
