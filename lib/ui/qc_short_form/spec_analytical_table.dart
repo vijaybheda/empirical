@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -21,24 +23,19 @@ class SpecAnalyticalTable
       itemCount: controller.listSpecAnalyticals.length,
       itemBuilder: (context, index) {
         SpecificationAnalytical item = controller.listSpecAnalyticals[index];
-        SpecificationAnalyticalRequest reqobj = SpecificationAnalyticalRequest(
-          analyticalID: item.analyticalID,
-          analyticalName: item.description,
-          specTypeofEntry: item.specTypeofEntry,
-          isPictureRequired: item.isPictureRequired,
-          specMin: item.specMin,
-          specMax: item.specMax,
-          description: item.description,
-          inspectionResult: item.inspectionResult,
-        );
+        SpecificationAnalyticalRequest reqobj =
+            controller.listSpecAnalyticalsRequest[index];
+        SpecificationAnalyticalRequest? dbobj = controller.dbobjList[index];
 
         return SpecificationAnalyticalWidget(
             controller: controller,
             item: item,
             reqobj: reqobj,
+            dbobj: dbobj,
             onCommentSave: (String comment) {
               reqobj.comment ??= '';
               reqobj.comment = comment;
+              reqobj.copyWith(comment: comment);
               controller.update();
             });
       },
@@ -51,12 +48,15 @@ class SpecificationAnalyticalWidget extends StatefulWidget {
   final SpecificationAnalyticalRequest reqobj;
   final Function(String comment)? onCommentSave;
   final QCDetailsShortFormScreenController controller;
+  final SpecificationAnalyticalRequest? dbobj;
+
   const SpecificationAnalyticalWidget({
     super.key,
     required this.item,
     required this.reqobj,
     this.onCommentSave,
     required this.controller,
+    this.dbobj,
   });
 
   @override
@@ -72,28 +72,42 @@ class _SpecificationAnalyticalWidgetState
   bool isPictureRequired = false;
   List<String> operatorList = [];
   final ApplicationDao dao = ApplicationDao();
+  String spinner_value = 'N/A';
+
+  TextEditingController? editTextValue;
+
+  bool hasErrors2 = false;
+  late SpecificationAnalyticalRequest reqobj;
+  SpecificationAnalyticalRequest? dbobj;
 
   @override
   void initState() {
+    reqobj = widget.reqobj.copyWith();
+    if (widget.dbobj != null) {
+      dbobj = widget.dbobj!.copyWith();
+    }
     hasErrors = false;
     textEditingController = TextEditingController();
     comply = "N/A";
+    spinner_value = comply;
     operatorList = ['Select', 'Yes', 'No', 'N/A'];
 
     if (widget.item.specTargetTextDefault == 'Yes') {
       comply = 'Yes';
+      spinner_value = comply;
     } else if (widget.item.specTargetTextDefault == 'No') {
       comply = 'No';
+      spinner_value = comply;
     }
+    spinner_value = operatorList.first;
     super.initState();
-
-    // Additional initial setup based on the item's properties
-    updateComplianceInitial();
 
     if (widget.item.specTargetTextDefault == "Yes") {
       comply = "Yes";
+      spinner_value = operatorList[1];
     } else if (widget.item.specTargetTextDefault == "No") {
       comply = "Yes";
+      spinner_value = operatorList[2];
     }
     if (widget.item.specTypeofEntry == 1 || widget.item.specTypeofEntry == 3) {
       if (widget.item.isPictureRequired ?? false) {
@@ -102,40 +116,132 @@ class _SpecificationAnalyticalWidgetState
     }
 
     if (widget.item.analyticalName?.contains("Quality Check") ?? false) {
-      // In Flutter, you can limit the length of the text in a TextField using the maxLength property
-      // and restrict the input using the inputFormatters property
-      TextEditingController editTextValue = TextEditingController();
-      editTextValue.text = '12345';
+      editTextValue = TextEditingController();
+
+      editTextValue?.addListener(() {
+        String comply = "N/A";
+        spinner_value = comply;
+        if (editTextValue!.text.isEmpty) {
+          editTextValue!.text = "0";
+        }
+        int userValue = int.tryParse(editTextValue!.text.trim()) ?? 0;
+        if (userValue >= (widget.item.specMin ?? 0) &&
+            userValue <= (widget.item.specMax ?? 0)) {
+          comply = "Yes";
+          spinner_value = comply;
+        } else {
+          comply = "No";
+          spinner_value = comply;
+        }
+
+        if (editTextValue!.text.isEmpty) {
+          comply = "N/A";
+          hasErrors2 = true;
+          spinner_value = comply;
+        } else {
+          hasErrors2 = false;
+        }
+        if (widget.item.specTypeofEntry == 3 && comply != "No") {
+          if (comply == "N/A") {
+            if (spinner_value == "No") {
+              comply = "No";
+              spinner_value = comply;
+            } else if (spinner_value == "Yes") {
+              comply = "Yes";
+              spinner_value = comply;
+            }
+          } else if (spinner_value == "No") {
+            comply = "No";
+            spinner_value = comply;
+          }
+        }
+
+        if (widget.item.inspectionResult == "No") {
+          comply = "Yes";
+          spinner_value = comply;
+        }
+
+        reqobj.copyWith(
+          sampleNumValue: userValue,
+          comply: comply,
+        );
+      });
     }
 
     if (widget.item.specTargetTextDefault == "Yes") {
       String textViewComply = "Yes";
-      int spinnerValue = 1;
+      spinner_value = operatorList[1];
     } else if (widget.item.specTargetTextDefault == "No") {
       String textViewComply = "Yes";
-      int spinnerValue = 2;
+      spinner_value = operatorList[2];
     } else if (widget.item.specTargetTextDefault == "") {
-      // TODO: handle this conditions
-      // operatorList.remove("N/A");
-      int spinnerValue = 0;
+      operatorList.removeWhere((element) => ("N/A" == element));
+      spinner_value = operatorList[0];
     } else if (widget.item.specTargetTextDefault == "N/A") {
       String textViewComply = "N/A";
-      int spinnerValue = 3;
+      spinner_value = operatorList[3];
     }
 
+    unawaited(() async {
+      await initSetup();
+      setState(() {});
+    }());
+  }
+
+  Future<void> initSetup() async {
     if (widget.item.analyticalName?.contains("Branded") ?? false) {
       // TODO: implement this method
-      dao
-          .getBrandedFlagFromItemSku(widget.controller.itemSkuId!)
-          .then((String? brandedFlag) {
-        String textViewComply = "Y";
+      String? brandedFlag =
+          await dao.getBrandedFlagFromItemSku(widget.controller.itemSkuId!);
 
-        if (brandedFlag == "1") {
-          int spinnerValue = 1;
-        } else {
-          int spinnerValue = 2;
+      String textViewComply = "Yes";
+      spinner_value = textViewComply;
+      if (brandedFlag == "1") {
+        spinner_value = operatorList[1];
+      } else {
+        spinner_value = operatorList[2];
+      }
+    }
+
+    if (widget.item.specTypeofEntry == 1) {
+      if (dbobj != null) {
+        reqobj.copyWith(sampleNumValue: dbobj?.sampleNumValue);
+        if (editTextValue != null) {
+          editTextValue!.text = ((dbobj?.sampleNumValue ?? 0) ?? '').toString();
         }
-      });
+      }
+    } else if (widget.item.specTypeofEntry == 2) {
+      if (dbobj != null) {
+        for (int i = 0; i < operatorList.length; i++) {
+          if (dbobj?.sampleTextValue == operatorList[i]) {
+            spinner_value = operatorList.elementAt(i);
+            reqobj.copyWith(sampleTextValue: operatorList[i]);
+          }
+        }
+      }
+    } else if (widget.item.specTypeofEntry == 3) {
+      if (dbobj != null) {
+        reqobj.copyWith(
+          sampleNumValue: dbobj?.sampleNumValue,
+        );
+        if (dbobj?.sampleNumValue != null) {
+          editTextValue!.text = dbobj!.sampleNumValue.toString();
+        }
+
+        for (int i = 0; i < operatorList.length; i++) {
+          if (dbobj?.sampleTextValue == operatorList[i]) {
+            spinner_value = operatorList.elementAt(i);
+            reqobj.copyWith(sampleTextValue: operatorList[i]);
+          }
+        }
+      }
+    }
+
+    if (widget.item.specTypeofEntry == 1 || widget.item.specTypeofEntry == 3) {
+      String editfield = editTextValue!.text;
+      if (editfield.isEmpty) {
+        hasErrors2 = true;
+      }
     }
   }
 
@@ -143,60 +249,74 @@ class _SpecificationAnalyticalWidgetState
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
-      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
+          flex: 10,
           child: Text(
             widget.item.description ?? '-',
-            style: Get.textTheme.bodyMedium,
+            style:
+                Get.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w300),
           ),
         ),
-        Expanded(child: getContent()),
-        Text(
-          getComply(),
-          style: Get.textTheme.bodyMedium?.copyWith(
-              // color: AppColors.textFieldText_Color,
-              ),
-        ),
-        IconButton(
-          icon: Image.asset(
-            (widget.reqobj.comment != null && widget.reqobj.comment!.isNotEmpty)
-                ? AppImages.commentAddedImage
-                : AppImages.commentImage,
-            height: 50.w,
-            width: 50.w,
+        Expanded(
+          flex: 3,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: getContent(),
           ),
-          onPressed: () async {
-            await showCommentInputDialog(context,
-                onCommentSave: (String comment) async {
-              setState(() {
-                widget.reqobj.comment ??= '';
-                widget.reqobj.comment = comment;
+        ),
+        Expanded(
+          flex: 1,
+          child: Text(
+            getComply(),
+            style:
+                Get.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w300),
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: IconButton(
+            icon: Image.asset(
+              (dbobj?.comment != null && (dbobj?.comment ?? '').isNotEmpty)
+                  ? AppImages.commentAddedImage
+                  : AppImages.commentImage,
+              height: 50.w,
+              width: 50.w,
+            ),
+            onPressed: () async {
+              await showCommentInputDialog(context, comment: dbobj?.comment,
+                  onCommentSave: (String comment) async {
+                if (widget.onCommentSave != null) {
+                  widget.onCommentSave?.call(comment);
+                }
+
+                setState(() {
+                  reqobj.comment ??= '';
+                  reqobj.copyWith(comment: comment);
+
+                  dbobj?.comment ??= '';
+                  dbobj?.copyWith(comment: comment);
+                });
               });
-            });
-          },
-        ),
-        IconButton(
-          icon: Image.asset(
-            (widget.item.specTypeofEntry == 1 ||
-                    widget.item.specTypeofEntry == 3)
-                ? AppImages.infoAddedImage
-                : AppImages.infoImage,
-            height: 50.w,
-            width: 50.w,
+            },
           ),
-          onPressed: () => infoButtonTap(),
+        ),
+        Expanded(
+          flex: 1,
+          child: IconButton(
+            icon: Image.asset(
+              (widget.item.specTypeofEntry == 1 ||
+                      widget.item.specTypeofEntry == 3)
+                  ? AppImages.infoAddedImage
+                  : AppImages.infoImage,
+              height: 50.w,
+              width: 50.w,
+            ),
+            onPressed: () => infoButtonTap(),
+          ),
         ),
       ],
     );
-  }
-
-  void updateComplianceInitial() {
-    if (widget.item.specTypeofEntry == 1 &&
-        (widget.item.isPictureRequired ?? false)) {
-      // Example specific logic based on type of entry and picture requirement
-    }
-    // Other initial setups based on the item's properties
   }
 
   String getComply() {
@@ -222,7 +342,11 @@ class _SpecificationAnalyticalWidgetState
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
           ),
-          title: const Text("Min/Max"),
+          title: Text(
+            "Min/Max",
+            style:
+                Get.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w300),
+          ),
           content: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,7 +357,8 @@ class _SpecificationAnalyticalWidgetState
                       : (widget.item.specTypeofEntry == 1
                           ? "Min: ${widget.item.specMin}\nMax: ${widget.item.specMax}\n${AppStrings.target}: ${widget.item.specTargetNumValue}"
                           : "${AppStrings.target}: ${widget.item.specTargetTextValue}"),
-                  style: Get.textTheme.bodyMedium,
+                  style: Get.textTheme.bodyMedium
+                      ?.copyWith(fontWeight: FontWeight.w300),
                 ),
               ],
             ),
@@ -243,8 +368,10 @@ class _SpecificationAnalyticalWidgetState
               onPressed: () {
                 Get.back();
               },
-              child: const Text(
+              child: Text(
                 AppStrings.ok,
+                style: Get.textTheme.bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.w300),
               ),
             ),
           ],
@@ -258,15 +385,16 @@ class _SpecificationAnalyticalWidgetState
   Future showCommentInputDialog(
     BuildContext context, {
     Function(String comment)? onCommentSave,
+    String? comment,
   }) {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
-        String comment = widget.reqobj.comment ?? '';
+        String commentData = comment ?? '';
         TextEditingController commentController =
-            TextEditingController(text: comment);
+            TextEditingController(text: commentData);
         commentController.selection = TextSelection.fromPosition(
-          TextPosition(offset: comment.length),
+          TextPosition(offset: commentData.length),
         );
         return AlertDialog(
           contentPadding:
@@ -321,7 +449,7 @@ class _SpecificationAnalyticalWidgetState
               onPressed: () {
                 if (onCommentSave != null) {
                   String comment = commentController.text.trim();
-                  if (widget.reqobj.comment != comment) {
+                  if (reqobj.comment != comment) {
                     onCommentSave(comment);
                   }
                 }
@@ -362,12 +490,15 @@ class _SpecificationAnalyticalWidgetState
 
     if (userValue >= specMin && userValue <= specMax) {
       comply = "Yes";
+      spinner_value = comply;
     } else {
       comply = "No";
+      spinner_value = comply;
     }
 
     if (value.isEmpty) {
       comply = "N/A";
+      spinner_value = comply;
       hasErrors = true;
     } else {
       hasErrors = false;
@@ -376,15 +507,17 @@ class _SpecificationAnalyticalWidgetState
 
   void handleComplianceChange(String value) {
     comply = value;
-
+    spinner_value = comply;
     // Handle compliance changes
     if (widget.item.specTypeofEntry == 3 && comply != "No") {
       // int userValue = int.tryParse(textEditingController.text) ?? 0;
 
       if (comply == "N/A") {
         comply = "No";
+        spinner_value = comply;
       } else if (comply == "No") {
         comply = "No";
+        spinner_value = comply;
       }
     }
   }
@@ -392,8 +525,10 @@ class _SpecificationAnalyticalWidgetState
   void updateCompliance(String value) {
     if (validInput()) {
       comply = "Yes";
+      spinner_value = comply;
     } else {
       comply = "No";
+      spinner_value = comply;
     }
   }
 
@@ -416,35 +551,45 @@ class _SpecificationAnalyticalWidgetState
       children: [
         if (widget.item.specTypeofEntry == 1 ||
             widget.item.specTypeofEntry == 3)
-          Expanded(
+          Flexible(
             child: TextField(
               controller: textEditingController,
               decoration: InputDecoration(
                 labelText: 'Enter Value',
                 // errorText: validInput() ? null : 'Invalid!',
+                // isDense: true,
                 border: UnderlineInputBorder(),
                 focusedBorder: UnderlineInputBorder(),
                 disabledBorder: UnderlineInputBorder(),
                 enabledBorder: UnderlineInputBorder(),
+                hintStyle: Get.textTheme.bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.w300),
               ),
-              onChanged: (value) => setState(() => updateCompliance(value)),
+              onChanged: (value) => updateCompliance(value),
+              style: Get.textTheme.bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w300),
             ),
           ),
         if (widget.item.specTypeofEntry == 2 ||
             widget.item.specTypeofEntry == 3)
-          Expanded(
+          Flexible(
             child: DropdownButton<String>(
-              value: comply,
-              items: operatorList
-                  .map((String value) => DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      ))
-                  .toList(),
+              value: spinner_value,
+              items: operatorList.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value,
+                    style: Get.textTheme.bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.w300),
+                  ),
+                );
+              }).toList(),
               onChanged: (value) {
                 comply = value!;
-                handleComplianceChange(value);
+                spinner_value = value;
                 setState(() {});
+                onDropdownChanged(value);
               },
               /*decoration: InputDecoration(
                 hintText: AppStrings.uom,
@@ -467,19 +612,96 @@ class _SpecificationAnalyticalWidgetState
             ),
           ),
         const SizedBox(height: 20),
-        Flexible(
-          child: TextField(
-              onChanged: (value) {
-                // TODO: Your logic for handling text changes
-              },
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                focusedBorder: UnderlineInputBorder(),
-                disabledBorder: UnderlineInputBorder(),
-                enabledBorder: UnderlineInputBorder(),
-              )),
-        ),
       ],
     );
+  }
+
+  Future<void> onDropdownChanged(String value) async {
+    String comply = "N/A";
+    String userValue = spinner_value;
+    spinner_value = comply;
+    if ((widget.item.analyticalName?.contains("Accept") ?? false) ||
+        (widget.item.analyticalName?.contains("Protection") ?? false)) {
+      if (userValue == "Yes") {
+        comply = "No";
+        spinner_value = comply;
+      } else if (userValue == "No") {
+        comply = "Yes";
+        spinner_value = comply;
+      }
+    } else if (widget.item.analyticalName?.contains("Branded") ?? false) {
+      String brandedFlag =
+          await dao.getBrandedFlagFromItemSku(widget.controller.itemSkuId!);
+
+      if (brandedFlag == "1" && userValue == "No") {
+        comply = "No";
+        spinner_value = comply;
+      } else if (brandedFlag == "0" && userValue == "Yes") {
+        comply = "No";
+        spinner_value = comply;
+      } else if (brandedFlag == "1" && userValue == "Yes") {
+        comply = "Yes";
+        spinner_value = comply;
+      } else if (brandedFlag == "0" && userValue == "No") {
+        comply = "Yes";
+        spinner_value = comply;
+      }
+    } else {
+      if (widget.item.specTargetTextDefault == "Yes" && userValue == "No") {
+        comply = "No";
+        spinner_value = comply;
+      }
+
+      if (widget.item.specTargetTextDefault == "No" && userValue == "Yes") {
+        comply = "No";
+        spinner_value = comply;
+      }
+
+      if (widget.item.specTargetTextDefault == "Yes" && userValue == "Yes") {
+        comply = "Yes";
+        spinner_value = comply;
+      }
+
+      if (widget.item.specTargetTextDefault == "No" && userValue == "No") {
+        comply = "Yes";
+        spinner_value = comply;
+      }
+    }
+
+    if (widget.item.specTypeofEntry == 3 && comply != "No") {
+      if (editTextValue!.text.isNotEmpty) {
+        double userValue2 = double.tryParse(editTextValue!.text.trim()) ?? 0.0;
+        if (comply == "N/A") {
+          if (userValue2 != 0.0) {
+            if (userValue2 >= (widget.item.specMin ?? 0) &&
+                userValue2 <= (widget.item.specMax ?? 0)) {
+              comply = "Yes";
+              spinner_value = comply;
+            } else {
+              comply = "No";
+              spinner_value = comply;
+            }
+          }
+        }
+        if (userValue2 != 0.0 &&
+            (userValue2 < (widget.item.specMin ?? 0) ||
+                userValue2 > (widget.item.specMax ?? 0))) {
+          comply = "No";
+          spinner_value = comply;
+        }
+      }
+    }
+
+    if (widget.item.inspectionResult == "No") {
+      comply = "Yes";
+      spinner_value = comply;
+    }
+
+    reqobj.copyWith(
+      sampleTextValue: userValue,
+      comply: comply,
+    );
+    spinner_value = comply;
+    setState(() {});
   }
 }

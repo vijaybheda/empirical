@@ -71,7 +71,7 @@ class QCDetailsShortFormScreen
           ),
           drawer: SideDrawer(
             onDefectSaveAndCompleteTap: () async {
-              await controller.saveAsDraftAndGotoMyInspectionScreen();
+              await controller.saveContinue(context);
             },
             onDiscardTap: () async {
               await controller.deleteInspectionAndGotoMyInspectionScreen();
@@ -270,7 +270,8 @@ class QCDetailsShortFormScreen
                                             ),
                                             contentPadding:
                                                 const EdgeInsets.symmetric(
-                                                    vertical: 10),
+                                                    vertical: 10,
+                                                    horizontal: 10),
                                           ),
                                         ),
                                         Divider(
@@ -437,7 +438,8 @@ class QCDetailsShortFormScreen
                                             ),
                                             contentPadding:
                                                 const EdgeInsets.symmetric(
-                                                    vertical: 10),
+                                                    vertical: 10,
+                                                    horizontal: 10),
                                           ),
                                         ),
                                         Divider(
@@ -624,7 +626,9 @@ class QCDetailsShortFormScreen
                                   ),
                                 ],
                               ),
-                              const SpecAnalyticalTable(),
+                              const Padding(
+                                  padding: EdgeInsets.only(top: 20, bottom: 10),
+                                  child: SpecAnalyticalTable()),
                             ],
                           ),
                         ),

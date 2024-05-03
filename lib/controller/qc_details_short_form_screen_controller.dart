@@ -29,7 +29,6 @@ import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/dialogs/custom_listview_dialog.dart';
-import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
 import 'package:simple_barcode_scanner/enum.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
@@ -107,6 +106,8 @@ class QCDetailsShortFormScreenController extends GetxController {
   bool hasErrors2 = false;
 
   List<String> operatorList = [];
+
+  List<SpecificationAnalyticalRequest?> dbobjList = [];
 
   QCDetailsShortFormScreenController();
 
@@ -247,11 +248,11 @@ class QCDetailsShortFormScreenController extends GetxController {
       if (inspectionId != null) {
         await loadFieldsFromDB();
       }
-      hasInitialised.value = true;
       _appStorage.specificationAnalyticalList =
           await dao.getSpecificationAnalyticalFromTable(
               specificationNumber!, specificationVersion!);
       await setSpecAnalyticalTable();
+      hasInitialised.value = true;
     });
   }
 
@@ -305,21 +306,22 @@ class QCDetailsShortFormScreenController extends GetxController {
     return;
   }
 
-  Future<String?> scanBarcode(
-      {required Function(String scanResult)? onScanResult}) async {
+  Future<String?> scanBarcode({
+    required Function(String scanResult)? onScanResult,
+  }) async {
     // TODO: Implement scanBarcode
     String? res = await Get.to(() => SimpleBarcodeScannerPage(
           scanType: ScanType.barcode,
           centerTitle: true,
-          appBarTitle: 'Scan a Barcode',
-          cancelButtonText: 'Cancel',
-          isShowFlashIcon: true,
-          lineColor: AppColors.primaryColor.value.toString(),
+          // appBarTitle: 'Scan a Barcode',
+          // cancelButtonText: 'Cancel',
+          // isShowFlashIcon: true,
+          // lineColor: AppColors.primaryColor.value.toString(),
         ));
     if (res != null) {
-      // if (onBarcodeScanned != null) {
-      //   onBarcodeScanned!(res);
-      // }
+      if (onScanResult != null) {
+        onScanResult(res);
+      }
       return res;
     } else {
       return null;
@@ -446,6 +448,13 @@ class QCDetailsShortFormScreenController extends GetxController {
       return;
     }
     listSpecAnalyticals.value = _appStorage.specificationAnalyticalList ?? [];
+    for (var specAnalytical in listSpecAnalyticals) {
+      if (specAnalytical.specTargetTextDefault == "Y") {
+        specAnalytical.specTargetTextDefault = "Yes";
+      } else if (specAnalytical.specTargetTextDefault == "N") {
+        specAnalytical.specTargetTextDefault = "No";
+      }
+    }
 
     listSpecAnalyticals.sort((a, b) => a.order!.compareTo(b.order!));
 
@@ -465,47 +474,38 @@ class QCDetailsShortFormScreenController extends GetxController {
       final SpecificationAnalyticalRequest? dbobj =
           await dao.findSpecAnalyticalObj(inspectionId, item.analyticalID!);
 
-      /*reqobj.copyWith(
-        analyticalID: item.analyticalID,
-        analyticalName: item.description,
-        specTypeofEntry: item.specTypeofEntry,
-        isPictureRequired: item.isPictureRequired,
-        specMin: item.specMin,
-        specMax: item.specMax,
-        description: item.description,
-        inspectionResult: item.inspectionResult,
-      );*/
-
       if (dbobj != null) {
-        if (dbobj.comment != null && dbobj.comment != "") {
-          reqobj.comment = dbobj.comment;
-          // TODO: change comment icon
-          // comment.setImageDrawable(getDrawable(R.drawable.spec_comment_added));
+        if (dbobj.comment != null && dbobj.comment!.isNotEmpty) {
+          reqobj.copyWith(comment: dbobj.comment);
         }
         reqobj.copyWith(comply: dbobj.comply);
-        // textViewComply.setText(dbobj.getComply());
 
         if (item.specTypeofEntry == 1) {
-          if (dbobj != null) {
-            reqobj.copyWith(sampleNumValue: dbobj.sampleNumValue);
-          }
+          reqobj.copyWith(sampleNumValue: dbobj.sampleNumValue);
         } else if (item.specTypeofEntry == 2) {
           for (int i = 0; i < operatorList.length; i++) {
-            /*if (dbobj.sampleTextValue.equals(operatorList.get(i))) {
-                // spinner_value.setSelection(i);
-                reqobj.sampleTextValue(operatorList.get(i));
-                // textViewComply.setText(dbobj.getComply());
-              }*/
+            if (dbobj.sampleTextValue == operatorList[i]) {
+              reqobj.copyWith(sampleTextValue: operatorList[i]);
+            }
+          }
+        } else if (item.specTypeofEntry == 3) {
+          reqobj.copyWith(sampleNumValue: dbobj.sampleNumValue);
+          for (int i = 0; i < operatorList.length; i++) {
+            if (dbobj.sampleTextValue == operatorList[i]) {
+              reqobj.copyWith(sampleTextValue: operatorList[i]);
+            }
           }
         }
       } else {
         reqobj.copyWith(comply: "N/A");
-        // textViewComply.setText("N/A");
       }
       listSpecAnalyticalsRequest.add(reqobj);
+      dbobjList.add(dbobj);
     }
 
-    update();
+    Future.delayed(const Duration(milliseconds: 100)).then((value) {
+      update();
+    });
   }
 
   Future<void> loadFieldsFromDB() async {
@@ -851,13 +851,13 @@ class QCDetailsShortFormScreenController extends GetxController {
                 await dao.createSpecificationAttributes(
                   inspectionId!,
                   item2.analyticalID!,
-                  item2.sampleTextValue!,
-                  item2.sampleNumValue!,
-                  item2.comply!,
-                  item2.comment!,
-                  item2.analyticalName!,
-                  item2.isPictureRequired!,
-                  item2.inspectionResult!,
+                  item2.sampleTextValue ?? '',
+                  item2.sampleNumValue ?? 0,
+                  item2.comply ?? '',
+                  item2.comment ?? '',
+                  item2.analyticalName ?? '',
+                  item2.isPictureRequired ?? false,
+                  item2.inspectionResult ?? '',
                 );
               }
             } else if (item2.specTypeofEntry == 3) {
