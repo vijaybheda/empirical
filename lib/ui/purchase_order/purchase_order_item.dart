@@ -304,8 +304,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
               children: [
                 if (resultButton != null)
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 26, vertical: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
                       color: resultButtonColor,
                       borderRadius: BorderRadius.circular(32),
@@ -327,7 +326,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
                     },
                     icon: Icon(
                       Icons.edit_outlined,
-                      size: 24,
+                      size: 30,
                       color: AppColors.white,
                     ),
                   ),

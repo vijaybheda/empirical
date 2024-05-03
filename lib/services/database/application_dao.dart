@@ -3156,7 +3156,7 @@ class ApplicationDao {
         };
 
         ttId = await txn.insert(DBTables.SPECIFICATION_ATTRIBUTES, values);
-        log('Inspection id - $inspectionId create spec - $sampleValue');
+        log('insert into ${DBTables.SPECIFICATION_ATTRIBUTES} - withValueOf ${json.encode(values)}');
       });
     } catch (e) {
       log('Error has occurred while creating a specification attributes: $e');

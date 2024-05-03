@@ -6,7 +6,7 @@ class SpecificationAnalyticalRequest {
   final int? analyticalID;
   final String? sampleTextValue;
   final int? sampleNumValue;
-  final String? comply;
+  String? comply;
   String? comment;
   final String? analyticalName;
   final int? specTypeofEntry;

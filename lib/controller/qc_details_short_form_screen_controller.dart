@@ -459,8 +459,7 @@ class QCDetailsShortFormScreenController extends GetxController {
     listSpecAnalyticals.sort((a, b) => a.order!.compareTo(b.order!));
 
     for (final item in listSpecAnalyticals) {
-      final SpecificationAnalyticalRequest reqobj =
-          SpecificationAnalyticalRequest(
+      SpecificationAnalyticalRequest reqobj = SpecificationAnalyticalRequest(
         analyticalID: item.analyticalID,
         analyticalName: item.description,
         specTypeofEntry: item.specTypeofEntry,
@@ -476,28 +475,28 @@ class QCDetailsShortFormScreenController extends GetxController {
 
       if (dbobj != null) {
         if (dbobj.comment != null && dbobj.comment!.isNotEmpty) {
-          reqobj.copyWith(comment: dbobj.comment);
+          reqobj = reqobj.copyWith(comment: dbobj.comment);
         }
-        reqobj.copyWith(comply: dbobj.comply);
+        reqobj = reqobj.copyWith(comply: dbobj.comply);
 
         if (item.specTypeofEntry == 1) {
-          reqobj.copyWith(sampleNumValue: dbobj.sampleNumValue);
+          reqobj = reqobj.copyWith(sampleNumValue: dbobj.sampleNumValue);
         } else if (item.specTypeofEntry == 2) {
           for (int i = 0; i < operatorList.length; i++) {
             if (dbobj.sampleTextValue == operatorList[i]) {
-              reqobj.copyWith(sampleTextValue: operatorList[i]);
+              reqobj = reqobj.copyWith(sampleTextValue: operatorList[i]);
             }
           }
         } else if (item.specTypeofEntry == 3) {
-          reqobj.copyWith(sampleNumValue: dbobj.sampleNumValue);
+          reqobj = reqobj.copyWith(sampleNumValue: dbobj.sampleNumValue);
           for (int i = 0; i < operatorList.length; i++) {
             if (dbobj.sampleTextValue == operatorList[i]) {
-              reqobj.copyWith(sampleTextValue: operatorList[i]);
+              reqobj = reqobj.copyWith(sampleTextValue: operatorList[i]);
             }
           }
         }
       } else {
-        reqobj.copyWith(comply: "N/A");
+        reqobj = reqobj.copyWith(comply: "N/A");
       }
       listSpecAnalyticalsRequest.add(reqobj);
       dbobjList.add(dbobj);
