@@ -159,56 +159,56 @@ class _SpecificationAnalyticalWidgetState
 
     if (widget.item.analyticalName?.contains("Quality Check") ?? false) {
       editTextValue = TextEditingController();
+    }
 
-      editTextValue?.addListener(() {
-        String comply = "N/A";
+    editTextValue?.addListener(() {
+      String comply = "N/A";
+      saveComply(comply);
+      if (editTextValue!.text.isEmpty) {
+        editTextValue!.text = "";
+      }
+      int userValue = int.tryParse(editTextValue!.text.trim()) ?? 0;
+      if (userValue >= (widget.item.specMin ?? 0) &&
+          userValue <= (widget.item.specMax ?? 0)) {
+        comply = "Yes";
         saveComply(comply);
-        if (editTextValue!.text.isEmpty) {
-          editTextValue!.text = "0";
-        }
-        int userValue = int.tryParse(editTextValue!.text.trim()) ?? 0;
-        if (userValue >= (widget.item.specMin ?? 0) &&
-            userValue <= (widget.item.specMax ?? 0)) {
-          comply = "Yes";
-          saveComply(comply);
-        } else {
+      } else {
+        comply = "No";
+        saveComply(comply);
+      }
+
+      if (editTextValue!.text.isEmpty) {
+        comply = "N/A";
+        saveComply(comply);
+        hasErrors2 = true;
+      } else {
+        hasErrors2 = false;
+      }
+      if (widget.item.specTypeofEntry == 3 && comply != "No") {
+        if (comply == "N/A") {
+          if (spinner_value == "No") {
+            comply = "No";
+            saveComply(comply);
+          } else if (spinner_value == "Yes") {
+            comply = "Yes";
+            saveComply(comply);
+          }
+        } else if (spinner_value == "No") {
           comply = "No";
           saveComply(comply);
         }
+      }
 
-        if (editTextValue!.text.isEmpty) {
-          comply = "N/A";
-          saveComply(comply);
-          hasErrors2 = true;
-        } else {
-          hasErrors2 = false;
-        }
-        if (widget.item.specTypeofEntry == 3 && comply != "No") {
-          if (comply == "N/A") {
-            if (spinner_value == "No") {
-              comply = "No";
-              saveComply(comply);
-            } else if (spinner_value == "Yes") {
-              comply = "Yes";
-              saveComply(comply);
-            }
-          } else if (spinner_value == "No") {
-            comply = "No";
-            saveComply(comply);
-          }
-        }
+      if (widget.item.inspectionResult == "No") {
+        comply = "Yes";
+        saveComply(comply);
+      }
 
-        if (widget.item.inspectionResult == "No") {
-          comply = "Yes";
-          saveComply(comply);
-        }
-
-        reqobj = reqobj.copyWith(
-          sampleNumValue: userValue,
-          comply: comply,
-        );
-      });
-    }
+      reqobj = reqobj.copyWith(
+        sampleNumValue: userValue,
+        comply: comply,
+      );
+    });
 
     if (widget.item.specTargetTextDefault == "Yes") {
       String textViewComply = "Yes";
@@ -253,8 +253,8 @@ class _SpecificationAnalyticalWidgetState
     if (widget.item.specTypeofEntry == 1) {
       if (dbobj != null) {
         reqobj = reqobj.copyWith(sampleNumValue: dbobj?.sampleNumValue);
-        if (editTextValue != null) {
-          editTextValue!.text = ((dbobj?.sampleNumValue ?? 0) ?? '').toString();
+        if (editTextValue != null && dbobj?.sampleNumValue != null) {
+          editTextValue!.text = (dbobj!.sampleNumValue!).toString();
         }
         if (dbobj?.comply != null) {
           comply = dbobj!.comply!;
@@ -593,6 +593,17 @@ class _SpecificationAnalyticalWidgetState
   }
 
   void updateCompliance(String value) {
+    String newValue = value;
+    if (!newValue.contains(RegExp(r'[12345]'))) {
+      newValue = '';
+    }
+    if (newValue != value) {
+      editTextValue!.value = TextEditingValue(
+        text: newValue,
+        selection: TextSelection.collapsed(offset: newValue.length),
+      );
+    }
+
     if (validInput()) {
       comply = "Yes";
       saveComply(comply);
@@ -622,19 +633,31 @@ class _SpecificationAnalyticalWidgetState
       children: [
         if (widget.item.specTypeofEntry == 1 ||
             widget.item.specTypeofEntry == 3)
-          Flexible(
+          Expanded(
             child: TextField(
               controller: editTextValue,
               decoration: InputDecoration(
-                labelText: 'Enter Value',
-                // errorText: validInput() ? null : 'Invalid!',
-                // isDense: true,
-                border: UnderlineInputBorder(),
-                focusedBorder: UnderlineInputBorder(),
-                disabledBorder: UnderlineInputBorder(),
-                enabledBorder: UnderlineInputBorder(),
+                hintText: 'Enter Value',
+                errorText: validInput() ? null : 'Invalid!',
+                isDense: true,
+                border: const UnderlineInputBorder(),
+                focusedErrorBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                errorBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                disabledBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                enabledBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
                 hintStyle: Get.textTheme.bodyMedium
-                    ?.copyWith(fontWeight: FontWeight.w300),
+                    ?.copyWith(fontWeight: FontWeight.w300, fontSize: 12),
               ),
               onChanged: (value) => updateCompliance(value),
               style: Get.textTheme.bodyMedium
@@ -643,43 +666,33 @@ class _SpecificationAnalyticalWidgetState
           ),
         if (widget.item.specTypeofEntry == 2 ||
             widget.item.specTypeofEntry == 3)
-          Flexible(
-            child: DropdownButton<String>(
-              value: spinner_value,
-              items: operatorList.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(
-                    value,
-                    style: Get.textTheme.bodyMedium
-                        ?.copyWith(fontWeight: FontWeight.w300),
-                  ),
-                );
-              }).toList(),
-              onChanged: (value) {
-                comply = value!;
-                saveComply(comply);
-                setState(() {});
-                onDropdownChanged(value);
-              },
-              /*decoration: InputDecoration(
-                hintText: AppStrings.uom,
-                hintStyle: Get.textTheme.bodyLarge!.copyWith(
-                  fontSize: 26.sp,
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                DropdownButton<String>(
+                  value: spinner_value,
+                  items: operatorList.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      alignment: Alignment.center,
+                      child: Text(
+                        value,
+                        style: Get.textTheme.bodyMedium
+                            ?.copyWith(fontWeight: FontWeight.w300),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    comply = value!;
+                    saveComply(comply);
+                    setState(() {});
+                    onDropdownChanged(value);
+                  },
+                  dropdownColor: AppColors.grey,
+                  alignment: Alignment.centerRight,
                 ),
-                enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide.none,
-                ),
-                focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide.none,
-                ),
-                border: const UnderlineInputBorder(
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 10),
-              ),*/
-              dropdownColor: AppColors.grey,
-              alignment: Alignment.centerRight,
+              ],
             ),
           ),
         const SizedBox(height: 20),
