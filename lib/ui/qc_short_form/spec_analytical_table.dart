@@ -35,7 +35,7 @@ class SpecAnalyticalTable
             onCommentSave: (String comment) {
               reqobj.comment ??= '';
               reqobj.comment = comment;
-              reqobj.copyWith(comment: comment);
+              reqobj = reqobj.copyWith(comment: comment);
               controller.update();
             });
       },
@@ -161,7 +161,7 @@ class _SpecificationAnalyticalWidgetState
           spinner_value = comply;
         }
 
-        reqobj.copyWith(
+        reqobj = reqobj.copyWith(
           sampleNumValue: userValue,
           comply: comply,
         );
@@ -205,7 +205,7 @@ class _SpecificationAnalyticalWidgetState
 
     if (widget.item.specTypeofEntry == 1) {
       if (dbobj != null) {
-        reqobj.copyWith(sampleNumValue: dbobj?.sampleNumValue);
+        reqobj = reqobj.copyWith(sampleNumValue: dbobj?.sampleNumValue);
         if (editTextValue != null) {
           editTextValue!.text = ((dbobj?.sampleNumValue ?? 0) ?? '').toString();
         }
@@ -215,13 +215,13 @@ class _SpecificationAnalyticalWidgetState
         for (int i = 0; i < operatorList.length; i++) {
           if (dbobj?.sampleTextValue == operatorList[i]) {
             spinner_value = operatorList.elementAt(i);
-            reqobj.copyWith(sampleTextValue: operatorList[i]);
+            reqobj = reqobj.copyWith(sampleTextValue: operatorList[i]);
           }
         }
       }
     } else if (widget.item.specTypeofEntry == 3) {
       if (dbobj != null) {
-        reqobj.copyWith(
+        reqobj = reqobj.copyWith(
           sampleNumValue: dbobj?.sampleNumValue,
         );
         if (dbobj?.sampleNumValue != null) {
@@ -231,7 +231,7 @@ class _SpecificationAnalyticalWidgetState
         for (int i = 0; i < operatorList.length; i++) {
           if (dbobj?.sampleTextValue == operatorList[i]) {
             spinner_value = operatorList.elementAt(i);
-            reqobj.copyWith(sampleTextValue: operatorList[i]);
+            reqobj = reqobj.copyWith(sampleTextValue: operatorList[i]);
           }
         }
       }
@@ -277,14 +277,14 @@ class _SpecificationAnalyticalWidgetState
           flex: 1,
           child: IconButton(
             icon: Image.asset(
-              (dbobj?.comment != null && (dbobj?.comment ?? '').isNotEmpty)
+              (reqobj.comment != null && (reqobj.comment ?? '').isNotEmpty)
                   ? AppImages.commentAddedImage
                   : AppImages.commentImage,
               height: 50.w,
               width: 50.w,
             ),
             onPressed: () async {
-              await showCommentInputDialog(context, comment: dbobj?.comment,
+              await showCommentInputDialog(context, comment: reqobj.comment,
                   onCommentSave: (String comment) async {
                 if (widget.onCommentSave != null) {
                   widget.onCommentSave?.call(comment);
@@ -292,10 +292,10 @@ class _SpecificationAnalyticalWidgetState
 
                 setState(() {
                   reqobj.comment ??= '';
-                  reqobj.copyWith(comment: comment);
+                  reqobj = reqobj.copyWith(comment: comment);
 
                   dbobj?.comment ??= '';
-                  dbobj?.copyWith(comment: comment);
+                  dbobj = dbobj?.copyWith(comment: comment);
                 });
               });
             },
@@ -697,7 +697,7 @@ class _SpecificationAnalyticalWidgetState
       spinner_value = comply;
     }
 
-    reqobj.copyWith(
+    reqobj = reqobj.copyWith(
       sampleTextValue: userValue,
       comply: comply,
     );
