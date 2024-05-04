@@ -14,6 +14,7 @@ import 'package:pverify/utils/theme/colors.dart';
 
 class SetupScreen extends GetView<SetupController> {
   SetupScreen({super.key});
+
   SetupController setupController = SetupController();
 
   @override
@@ -67,11 +68,11 @@ class SetupScreen extends GetView<SetupController> {
                     height: 70.h,
                   ),
                   customButton(
-                      AppColors.primary,
-                      AppStrings.save.toUpperCase(),
-                      double.infinity,
-                      90,
-                      GoogleFonts.poppins(
+                      backgroundColor: AppColors.primary,
+                      title: AppStrings.save.toUpperCase(),
+                      width: double.infinity,
+                      height: 90,
+                      fontStyle: GoogleFonts.poppins(
                           fontSize: 25.sp,
                           fontWeight: FontWeight.w500,
                           textStyle: TextStyle(color: AppColors.white)),
@@ -83,11 +84,11 @@ class SetupScreen extends GetView<SetupController> {
                     height: 40.h,
                   ),
                   customButton(
-                      AppColors.primary,
-                      AppStrings.checkForUpdate.toUpperCase(),
-                      double.infinity,
-                      90,
-                      GoogleFonts.poppins(
+                      backgroundColor: AppColors.primary,
+                      title: AppStrings.checkForUpdate.toUpperCase(),
+                      width: double.infinity,
+                      height: 90,
+                      fontStyle: GoogleFonts.poppins(
                           fontSize: 25.sp,
                           fontWeight: FontWeight.w500,
                           textStyle: TextStyle(color: AppColors.white)),
@@ -96,11 +97,11 @@ class SetupScreen extends GetView<SetupController> {
                     height: 40.h,
                   ),
                   customButton(
-                      AppColors.graniteGray,
-                      AppStrings.cacheForOfflineUse.toUpperCase(),
-                      double.infinity,
-                      90,
-                      GoogleFonts.poppins(
+                      backgroundColor: AppColors.graniteGray,
+                      title: AppStrings.cacheForOfflineUse.toUpperCase(),
+                      width: double.infinity,
+                      height: 90,
+                      fontStyle: GoogleFonts.poppins(
                           fontSize: 25.sp,
                           fontWeight: FontWeight.w500,
                           textStyle: TextStyle(color: AppColors.white)),

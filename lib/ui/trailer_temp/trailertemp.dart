@@ -65,11 +65,11 @@ class TrailerTemp extends GetView<TrailerTempController> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               customButton(
-                  AppColors.white,
-                  AppStrings.skip,
-                  (MediaQuery.of(context).size.width / 2.3),
-                  115,
-                  GoogleFonts.poppins(
+                  backgroundColor: AppColors.white,
+                  title: AppStrings.skip,
+                  width: (MediaQuery.of(context).size.width / 2.3),
+                  height: 115,
+                  fontStyle: GoogleFonts.poppins(
                       fontSize: 35.sp,
                       fontWeight: FontWeight.w600,
                       textStyle:
@@ -93,29 +93,38 @@ class TrailerTemp extends GetView<TrailerTempController> {
                 width: 38.w,
               ),
               customButton(
-                  AppColors.white,
-                  AppStrings.saveReadingsButton,
-                  (MediaQuery.of(context).size.width / 2.3),
-                  115,
-                  GoogleFonts.poppins(
+                  backgroundColor: AppColors.white,
+                  title: AppStrings.saveReadingsButton,
+                  width: (MediaQuery.of(context).size.width / 2.3),
+                  height: 115,
+                  fontStyle: GoogleFonts.poppins(
                       fontSize: 35.sp,
                       fontWeight: FontWeight.w600,
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
                   onClickAction: () {
-                if (controller.allDataBlank()) {
-                  AppAlertDialog.validateAlerts(context, AppStrings.error,
-                      AppStrings.trailer_temperature_no_entries_alert);
-                } else {
-                  controller.saveTemperatureData('N', controller.orderNumber1!,
-                      controller.carrierId, controller.tailerTempData);
-                  controller.saveTemperatureData('M', controller.orderNumber1!,
-                      controller.carrierId, controller.tailerTempData);
-                  controller.saveTemperatureData('B', controller.orderNumber1!,
-                      controller.carrierId, controller.tailerTempData);
-                  Get.back();
-                }
-              }),
+                    if (controller.allDataBlank()) {
+                      AppAlertDialog.validateAlerts(context, AppStrings.error,
+                          AppStrings.trailer_temperature_no_entries_alert);
+                    } else {
+                      controller.saveTemperatureData(
+                          'N',
+                          controller.orderNumber1!,
+                          controller.carrierId,
+                          controller.tailerTempData);
+                      controller.saveTemperatureData(
+                          'M',
+                          controller.orderNumber1!,
+                          controller.carrierId,
+                          controller.tailerTempData);
+                      controller.saveTemperatureData(
+                          'B',
+                          controller.orderNumber1!,
+                          controller.carrierId,
+                          controller.tailerTempData);
+                      Get.back();
+                    }
+                  }),
             ],
           ),
         ),

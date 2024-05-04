@@ -121,18 +121,18 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                         ),
                         SizedBox(height: 40.h),
                         customButton(
-                            AppColors.white,
-                            AppStrings.ok,
-                            300.w,
-                            100,
-                            GoogleFonts.poppins(
+                            backgroundColor: AppColors.white,
+                            title: AppStrings.ok,
+                            width: 300.w,
+                            height: 100,
+                            fontStyle: GoogleFonts.poppins(
                                 fontSize: 35.sp,
                                 fontWeight: FontWeight.w600,
                                 textStyle: TextStyle(
                                     color: AppColors.textFieldText_Color)),
                             onClickAction: () async {
-                          controller.hidePopup();
-                        }),
+                              controller.hidePopup();
+                            }),
                       ],
                     ),
                   ),
@@ -471,27 +471,28 @@ class DefectsScreen extends GetView<DefectsScreenController> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               customButton(
-                  AppColors.white,
-                  AppStrings.defectDiscard,
-                  (MediaQuery.of(context).size.width / 2.3),
-                  115,
-                  GoogleFonts.poppins(
+                  backgroundColor: AppColors.white,
+                  title: AppStrings.defectDiscard,
+                  width: (MediaQuery.of(context).size.width / 2.3),
+                  height: 115,
+                  fontStyle: GoogleFonts.poppins(
                       fontSize: 35.sp,
                       fontWeight: FontWeight.w600,
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
                   onClickAction: () {
-                controller.deleteInspectionAndGotoMyInspectionScreen(context);
-              }),
+                    controller
+                        .deleteInspectionAndGotoMyInspectionScreen(context);
+                  }),
               SizedBox(
                 width: 38.w,
               ),
               customButton(
-                  AppColors.white,
-                  AppStrings.saveInspectionButton,
-                  (MediaQuery.of(context).size.width / 2.3),
-                  115,
-                  GoogleFonts.poppins(
+                  backgroundColor: AppColors.white,
+                  title: AppStrings.saveInspectionButton,
+                  width: (MediaQuery.of(context).size.width / 2.3),
+                  height: 115,
+                  fontStyle: GoogleFonts.poppins(
                       fontSize: 35.sp,
                       fontWeight: FontWeight.w600,
                       textStyle:
@@ -526,11 +527,11 @@ class DefectsScreen extends GetView<DefectsScreenController> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               customButton(
-                AppColors.white,
-                AppStrings.specException,
-                (MediaQuery.of(context).size.width / 4.5),
-                320.h,
-                GoogleFonts.poppins(
+                backgroundColor: AppColors.white,
+                title: AppStrings.specException,
+                width: (MediaQuery.of(context).size.width / 4.5),
+                height: 320.h,
+                fontStyle: GoogleFonts.poppins(
                     fontSize: 28.sp,
                     fontWeight: FontWeight.w500,
                     textStyle: TextStyle(color: AppColors.textFieldText_Color)),
@@ -542,11 +543,11 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                 width: 20.w,
               ),
               customButton(
-                AppColors.white,
-                AppStrings.specification,
-                (MediaQuery.of(context).size.width / 4.5),
-                320.h,
-                GoogleFonts.poppins(
+                backgroundColor: AppColors.white,
+                title: AppStrings.specification,
+                width: (MediaQuery.of(context).size.width / 4.5),
+                height: 320.h,
+                fontStyle: GoogleFonts.poppins(
                     fontSize: 28.sp,
                     fontWeight: FontWeight.w500,
                     textStyle: TextStyle(color: AppColors.textFieldText_Color)),
@@ -558,35 +559,36 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                 width: 20.w,
               ),
               customButton(
-                  AppColors.white,
-                  AppStrings.grade,
-                  (MediaQuery.of(context).size.width / 4.5),
-                  320.h,
-                  GoogleFonts.poppins(
+                  backgroundColor: AppColors.white,
+                  title: AppStrings.grade,
+                  width: (MediaQuery.of(context).size.width / 4.5),
+                  height: 320.h,
+                  fontStyle: GoogleFonts.poppins(
                     fontSize: 28.sp,
                     fontWeight: FontWeight.w500,
                     textStyle: TextStyle(
                       color: AppColors.textFieldText_Color,
                     ),
-                  ), onClickAction: () {
-                controller.openPDFFile(context, "Grade");
-              }),
+                  ),
+                  onClickAction: () {
+                    controller.openPDFFile(context, "Grade");
+                  }),
               SizedBox(
                 width: 20.w,
               ),
               customButton(
-                  AppColors.white,
-                  AppStrings.specInstrunction,
-                  (MediaQuery.of(context).size.width / 4.5),
-                  320.h,
-                  GoogleFonts.poppins(
+                  backgroundColor: AppColors.white,
+                  title: AppStrings.specInstrunction,
+                  width: (MediaQuery.of(context).size.width / 4.5),
+                  height: 320.h,
+                  fontStyle: GoogleFonts.poppins(
                       fontSize: 28.sp,
                       fontWeight: FontWeight.w500,
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
                   onClickAction: () {
-                controller.openPDFFile(context, "Inspection Instructions");
-              })
+                    controller.openPDFFile(context, "Inspection Instructions");
+                  })
             ],
           ),
         ),

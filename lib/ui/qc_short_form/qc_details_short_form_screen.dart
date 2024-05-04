@@ -130,523 +130,22 @@ class QCDetailsShortFormScreen
                               const SizedBox(height: 20),
                               Row(
                                 children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 5),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Expanded(
-                                                    child: Text(
-                                                      AppStrings.gtin,
-                                                      style: Get
-                                                          .textTheme.bodyLarge!
-                                                          .copyWith(
-                                                        fontSize: 26.sp,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  gtinSuffix(controller),
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(width: 5),
-                                            Divider(
-                                              color: AppColors.darkSkyBlue,
-                                              height: 1,
-                                            ),
-                                          ],
-                                        ),
-                                        TextField(
-                                          controller: controller.gtinController,
-                                          decoration: InputDecoration(
-                                            hintText: AppStrings.gtin,
-                                            hintStyle: Get.textTheme.bodyLarge!
-                                                .copyWith(
-                                                    fontSize: 26.sp,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    color: Colors.grey),
-                                            enabledBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            focusedBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            border: const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            contentPadding:
-                                                const EdgeInsets.all(10),
-                                          ),
-                                        ),
-                                        Divider(
-                                          color: AppColors.lightGrey,
-                                          height: 1,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 5),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Expanded(
-                                                    child: Text(
-                                                      AppStrings.gln,
-                                                      style: Get
-                                                          .textTheme.bodyLarge!
-                                                          .copyWith(
-                                                        fontSize: 26.sp,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  glnSuffix(controller),
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(width: 5),
-                                            Divider(
-                                              color: AppColors.darkSkyBlue,
-                                              height: 1,
-                                            ),
-                                          ],
-                                        ),
-                                        TextField(
-                                          controller: controller.glnController,
-                                          decoration: InputDecoration(
-                                            hintText: AppStrings.gln,
-                                            hintStyle: Get.textTheme.bodyLarge!
-                                                .copyWith(
-                                                    fontSize: 26.sp,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    color: Colors.grey),
-                                            enabledBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            focusedBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            border: const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                    vertical: 10,
-                                                    horizontal: 10),
-                                          ),
-                                        ),
-                                        Divider(
-                                          color: AppColors.lightGrey,
-                                          height: 1,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  gtinWidget(controller),
+                                  glnWidget(controller),
                                 ],
                               ),
                               const SizedBox(height: 10),
                               Row(
                                 children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 5),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Expanded(
-                                                    child: Text(
-                                                      AppStrings.lotnumber,
-                                                      style: Get
-                                                          .textTheme.bodyLarge!
-                                                          .copyWith(
-                                                        fontSize: 26.sp,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(width: 5),
-                                            Divider(
-                                              color: AppColors.darkSkyBlue,
-                                              height: 1,
-                                            ),
-                                          ],
-                                        ),
-                                        TextField(
-                                          controller:
-                                              controller.lotNoController,
-                                          decoration: InputDecoration(
-                                            hintText: AppStrings.lotnumber,
-                                            hintStyle: Get.textTheme.bodyLarge!
-                                                .copyWith(
-                                                    fontSize: 26.sp,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    color: Colors.grey),
-                                            enabledBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            focusedBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            border: const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            contentPadding:
-                                                const EdgeInsets.all(10),
-                                          ),
-                                        ),
-                                        Divider(
-                                          color: AppColors.lightGrey,
-                                          height: 1,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 5),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Expanded(
-                                                    child: Text(
-                                                      AppStrings.packdate,
-                                                      style: Get
-                                                          .textTheme.bodyLarge!
-                                                          .copyWith(
-                                                        fontSize: 26.sp,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(width: 5),
-                                            Divider(
-                                              color: AppColors.darkSkyBlue,
-                                              height: 1,
-                                            ),
-                                          ],
-                                        ),
-                                        TextField(
-                                          controller:
-                                              controller.packDateController,
-                                          readOnly: true,
-                                          autofocus: false,
-                                          focusNode:
-                                              controller.packDateFocusNode,
-                                          decoration: InputDecoration(
-                                            hintText: AppStrings.packdate,
-                                            hintStyle: Get.textTheme.bodyLarge!
-                                                .copyWith(
-                                                    fontSize: 26.sp,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    color: Colors.grey),
-                                            suffixIcon: GestureDetector(
-                                                onTap: () async {
-                                                  await selectPackDate(
-                                                      context, controller);
-                                                },
-                                                child: const Icon(Icons
-                                                    .calendar_month_outlined)),
-                                            enabledBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            focusedBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            border: const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                    vertical: 10,
-                                                    horizontal: 10),
-                                          ),
-                                        ),
-                                        Divider(
-                                          color: AppColors.lightGrey,
-                                          height: 1,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  lotNumberWidget(controller),
+                                  packDateWidget(controller, context),
                                 ],
                               ),
                               const SizedBox(height: 10),
                               Row(
                                 children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 5),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Expanded(
-                                                    child: Text(
-                                                      AppStrings.qcQtyShipped,
-                                                      style: Get
-                                                          .textTheme.bodyLarge!
-                                                          .copyWith(
-                                                        fontSize: 26.sp,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(width: 5),
-                                            Divider(
-                                              color: AppColors.darkSkyBlue,
-                                              height: 1,
-                                            ),
-                                          ],
-                                        ),
-                                        TextField(
-                                          controller:
-                                              controller.qtyShippedController,
-                                          keyboardType: TextInputType.number,
-                                          decoration: InputDecoration(
-                                            hintText: AppStrings.qcQtyShipped,
-                                            hintStyle: Get.textTheme.bodyLarge!
-                                                .copyWith(
-                                                    fontSize: 26.sp,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    color: Colors.grey),
-                                            enabledBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            focusedBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            border: const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            disabledBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            errorBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            focusedErrorBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            contentPadding:
-                                                const EdgeInsets.all(10),
-                                          ),
-                                        ),
-                                        Divider(
-                                          color: AppColors.lightGrey,
-                                          height: 1,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 5),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Expanded(
-                                                    child: Text(
-                                                      AppStrings.uom,
-                                                      style: Get
-                                                          .textTheme.bodyLarge!
-                                                          .copyWith(
-                                                        fontSize: 26.sp,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(width: 5),
-                                            Divider(
-                                              color: AppColors.darkSkyBlue,
-                                              height: 1,
-                                            ),
-                                          ],
-                                        ),
-                                        DropdownButtonFormField<UOMItem>(
-                                          value: controller.selectedUOM,
-                                          onChanged: (UOMItem? value) {
-                                            controller.selectedUOM = value;
-                                            controller.update();
-                                          },
-                                          items: controller.uomList
-                                              .map((UOMItem value) {
-                                            return DropdownMenuItem<UOMItem>(
-                                              value: value,
-                                              child: Text(value.uomName ?? '-',
-                                                  style: Get
-                                                      .textTheme.bodyLarge!
-                                                      .copyWith(
-                                                          color: Colors.white)),
-                                            );
-                                          }).toList(),
-                                          decoration: InputDecoration(
-                                            hintText: AppStrings.uom,
-                                            hintStyle: Get.textTheme.bodyLarge!
-                                                .copyWith(
-                                              fontSize: 26.sp,
-                                              color: AppColors.grey,
-                                            ),
-                                            enabledBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            focusedBorder:
-                                                const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            border: const UnderlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                    vertical: 10),
-                                          ),
-                                          dropdownColor: AppColors.grey,
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 0),
-                                        ),
-                                        Divider(
-                                          color: AppColors.lightGrey,
-                                          height: 1,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  qcQtyShippedWidget(controller),
+                                  uomWidget(controller),
                                 ],
                               ),
                               const Padding(
@@ -668,40 +167,11 @@ class QCDetailsShortFormScreen
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            customButton(
-                                (controller.specificationTypeName !=
-                                            "Finished Goods Produce" &&
-                                        controller.specificationTypeName !=
-                                            "Raw Produce")
-                                    ? AppColors.grey2
-                                    : AppColors.white,
-                                AppStrings.inspectionWorksheet,
-                                (MediaQuery.of(context).size.width / 2.5),
-                                115,
-                                GoogleFonts.poppins(
-                                    fontSize: 35.sp,
-                                    fontWeight: FontWeight.w600,
-                                    textStyle: TextStyle(
-                                        color: AppColors.textFieldText_Color)),
-                                onClickAction: () async {
-                              await controller.onInspectionWorksheetClick();
-                            }),
+                            worksheetWidget(controller, context),
                             SizedBox(
                               width: 38.w,
                             ),
-                            customButton(
-                                AppColors.white,
-                                AppStrings.detailedForm,
-                                (MediaQuery.of(context).size.width / 2.5),
-                                115,
-                                GoogleFonts.poppins(
-                                    fontSize: 35.sp,
-                                    fontWeight: FontWeight.w600,
-                                    textStyle: TextStyle(
-                                        color: AppColors.textFieldText_Color)),
-                                onClickAction: () async {
-                              await controller.onLongFormClick();
-                            }),
+                            detailedFormWidget(context, controller),
                             SizedBox(
                               width: 20.w,
                             ),
@@ -729,38 +199,11 @@ class QCDetailsShortFormScreen
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            customButton(
-                                AppColors.white,
-                                AppStrings.defectDiscard,
-                                (MediaQuery.of(context).size.width / 2.3),
-                                115,
-                                GoogleFonts.poppins(
-                                    fontSize: 35.sp,
-                                    fontWeight: FontWeight.w600,
-                                    textStyle: TextStyle(
-                                        color: AppColors.textFieldText_Color)),
-                                onClickAction: () async {
-                              await controller
-                                  .deleteInspectionAndGotoMyInspectionScreen();
-                            }),
+                            defectDiscardWidget(context, controller),
                             SizedBox(
                               width: 38.w,
                             ),
-                            customButton(
-                                AppColors.white,
-                                AppStrings.saveAndContinue,
-                                (MediaQuery.of(context).size.width / 2.3),
-                                115,
-                                GoogleFonts.poppins(
-                                    fontSize: 35.sp,
-                                    fontWeight: FontWeight.w600,
-                                    textStyle: TextStyle(
-                                        color: AppColors.textFieldText_Color)),
-                                onClickAction: () async {
-                              await controller.saveContinue(context);
-                              // await controller
-                              //     .saveAsDraftAndGotoMyInspectionScreen();
-                            }),
+                            saveAndContinueWidget(context, controller),
                           ],
                         ),
                       ),
@@ -773,6 +216,489 @@ class QCDetailsShortFormScreen
           ),
         );
       },
+    );
+  }
+
+  Widget saveAndContinueWidget(
+      BuildContext context, QCDetailsShortFormScreenController controller) {
+    return customButton(
+        backgroundColor: AppColors.white,
+        title: AppStrings.saveAndContinue,
+        width: (MediaQuery.of(context).size.width / 2.3),
+        height: 115,
+        fontStyle: GoogleFonts.poppins(
+            fontSize: 35.sp,
+            fontWeight: FontWeight.w600,
+            textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+        onClickAction: () async {
+          await controller.saveContinue(context);
+        });
+  }
+
+  Widget defectDiscardWidget(
+      BuildContext context, QCDetailsShortFormScreenController controller) {
+    return customButton(
+        backgroundColor: AppColors.white,
+        title: AppStrings.defectDiscard,
+        width: (MediaQuery.of(context).size.width / 2.3),
+        height: 115,
+        fontStyle: GoogleFonts.poppins(
+            fontSize: 35.sp,
+            fontWeight: FontWeight.w600,
+            textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+        onClickAction: () async {
+          await controller.deleteInspectionAndGotoMyInspectionScreen();
+        });
+  }
+
+  Widget detailedFormWidget(
+      BuildContext context, QCDetailsShortFormScreenController controller) {
+    return customButton(
+        backgroundColor: AppColors.white,
+        title: AppStrings.detailedForm,
+        width: (MediaQuery.of(context).size.width / 2.5),
+        height: 115,
+        fontStyle: GoogleFonts.poppins(
+            fontSize: 35.sp,
+            fontWeight: FontWeight.w600,
+            textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+        onClickAction: () async {
+          await controller.onLongFormClick();
+        });
+  }
+
+  Widget worksheetWidget(
+      QCDetailsShortFormScreenController controller, BuildContext context) {
+    return customButton(
+        backgroundColor:
+            (controller.specificationTypeName != "Finished Goods Produce" &&
+                    controller.specificationTypeName != "Raw Produce")
+                ? AppColors.grey2
+                : AppColors.white,
+        title: AppStrings.inspectionWorksheet,
+        width: (MediaQuery.of(context).size.width / 2.5),
+        height: 115,
+        fontStyle: GoogleFonts.poppins(
+            fontSize: 35.sp,
+            fontWeight: FontWeight.w600,
+            textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+        onClickAction: () async {
+          await controller.onInspectionWorksheetClick();
+        });
+  }
+
+  Expanded uomWidget(QCDetailsShortFormScreenController controller) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        AppStrings.uom,
+                        style: Get.textTheme.bodyLarge!.copyWith(
+                          fontSize: 26.sp,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 5),
+              Divider(
+                color: AppColors.darkSkyBlue,
+                height: 1,
+              ),
+            ],
+          ),
+          DropdownButtonFormField<UOMItem>(
+            value: controller.selectedUOM,
+            onChanged: (UOMItem? value) {
+              controller.selectedUOM = value;
+              controller.update();
+            },
+            items: controller.uomList.map((UOMItem value) {
+              return DropdownMenuItem<UOMItem>(
+                value: value,
+                child: Text(value.uomName ?? '-',
+                    style:
+                        Get.textTheme.bodyLarge!.copyWith(color: Colors.white)),
+              );
+            }).toList(),
+            decoration: InputDecoration(
+              hintText: AppStrings.uom,
+              hintStyle: Get.textTheme.bodyLarge!.copyWith(
+                fontSize: 26.sp,
+                color: AppColors.grey,
+              ),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              border: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            ),
+            dropdownColor: AppColors.grey,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+          ),
+          Divider(
+            color: AppColors.lightGrey,
+            height: 1,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Expanded qcQtyShippedWidget(QCDetailsShortFormScreenController controller) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        AppStrings.qcQtyShipped,
+                        style: Get.textTheme.bodyLarge!.copyWith(
+                          fontSize: 26.sp,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 5),
+              Divider(
+                color: AppColors.darkSkyBlue,
+                height: 1,
+              ),
+            ],
+          ),
+          TextField(
+            controller: controller.qtyShippedController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              hintText: AppStrings.qcQtyShipped,
+              hintStyle: Get.textTheme.bodyLarge!.copyWith(
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.grey),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              border: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              disabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              errorBorder: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              focusedErrorBorder: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.all(10),
+            ),
+          ),
+          Divider(
+            color: AppColors.lightGrey,
+            height: 1,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Expanded packDateWidget(
+      QCDetailsShortFormScreenController controller, BuildContext context) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        AppStrings.packdate,
+                        style: Get.textTheme.bodyLarge!.copyWith(
+                          fontSize: 26.sp,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 5),
+              Divider(
+                color: AppColors.darkSkyBlue,
+                height: 1,
+              ),
+            ],
+          ),
+          TextField(
+            controller: controller.packDateController,
+            readOnly: true,
+            autofocus: false,
+            focusNode: controller.packDateFocusNode,
+            decoration: InputDecoration(
+              hintText: AppStrings.packdate,
+              hintStyle: Get.textTheme.bodyLarge!.copyWith(
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.grey),
+              suffixIcon: GestureDetector(
+                  onTap: () async {
+                    await selectPackDate(context, controller);
+                  },
+                  child: const Icon(Icons.calendar_month_outlined)),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              border: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            ),
+          ),
+          Divider(
+            color: AppColors.lightGrey,
+            height: 1,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Expanded lotNumberWidget(QCDetailsShortFormScreenController controller) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        AppStrings.lotnumber,
+                        style: Get.textTheme.bodyLarge!.copyWith(
+                          fontSize: 26.sp,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 5),
+              Divider(
+                color: AppColors.darkSkyBlue,
+                height: 1,
+              ),
+            ],
+          ),
+          TextField(
+            controller: controller.lotNoController,
+            decoration: InputDecoration(
+              hintText: AppStrings.lotnumber,
+              hintStyle: Get.textTheme.bodyLarge!.copyWith(
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.grey),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              border: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.all(10),
+            ),
+          ),
+          Divider(
+            color: AppColors.lightGrey,
+            height: 1,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Expanded glnWidget(QCDetailsShortFormScreenController controller) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        AppStrings.gln,
+                        style: Get.textTheme.bodyLarge!.copyWith(
+                          fontSize: 26.sp,
+                        ),
+                      ),
+                    ),
+                    glnSuffix(controller),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 5),
+              Divider(
+                color: AppColors.darkSkyBlue,
+                height: 1,
+              ),
+            ],
+          ),
+          TextField(
+            controller: controller.glnController,
+            decoration: InputDecoration(
+              hintText: AppStrings.gln,
+              hintStyle: Get.textTheme.bodyLarge!.copyWith(
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.grey),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              border: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            ),
+          ),
+          Divider(
+            color: AppColors.lightGrey,
+            height: 1,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Expanded gtinWidget(QCDetailsShortFormScreenController controller) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        AppStrings.gtin,
+                        style: Get.textTheme.bodyLarge!.copyWith(
+                          fontSize: 26.sp,
+                        ),
+                      ),
+                    ),
+                    gtinSuffix(controller),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 5),
+              Divider(
+                color: AppColors.darkSkyBlue,
+                height: 1,
+              ),
+            ],
+          ),
+          TextField(
+            controller: controller.gtinController,
+            decoration: InputDecoration(
+              hintText: AppStrings.gtin,
+              hintStyle: Get.textTheme.bodyLarge!.copyWith(
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.grey),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              border: const UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.all(10),
+            ),
+          ),
+          Divider(
+            color: AppColors.lightGrey,
+            height: 1,
+          ),
+        ],
+      ),
     );
   }
 

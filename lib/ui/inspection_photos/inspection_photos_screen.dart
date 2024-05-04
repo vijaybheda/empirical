@@ -26,6 +26,7 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
   final bool? isViewOnlyMode;
   final int? inspectionId;
   final String? callerActivity;
+
   const InspectionPhotos(
       {super.key,
       this.partnerName,
@@ -100,50 +101,50 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               customButton(
-                  AppColors.white,
-                  AppStrings.savePhotosButton,
-                  (MediaQuery.of(context).size.width / 3.5),
-                  115,
-                  GoogleFonts.poppins(
+                  backgroundColor: AppColors.white,
+                  title: AppStrings.savePhotosButton,
+                  width: (MediaQuery.of(context).size.width / 3.5),
+                  height: 115,
+                  fontStyle: GoogleFonts.poppins(
                       fontSize: 35.sp,
                       fontWeight: FontWeight.w600,
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
                   onClickAction: () {
-                controller.saveAction();
-              }),
+                    controller.saveAction();
+                  }),
               SizedBox(
                 width: 38.w,
               ),
               customButton(
-                  AppColors.white,
-                  AppStrings.openPhotosButton,
-                  (MediaQuery.of(context).size.width / 3.5),
-                  115,
-                  GoogleFonts.poppins(
+                  backgroundColor: AppColors.white,
+                  title: AppStrings.openPhotosButton,
+                  width: (MediaQuery.of(context).size.width / 3.5),
+                  height: 115,
+                  fontStyle: GoogleFonts.poppins(
                       fontSize: 35.sp,
                       fontWeight: FontWeight.w600,
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
                   onClickAction: () async {
-                await controller.getImageFromGallery();
-              }),
+                    await controller.getImageFromGallery();
+                  }),
               SizedBox(
                 width: 38.w,
               ),
               customButton(
-                  AppColors.white,
-                  AppStrings.takePhotoButton,
-                  (MediaQuery.of(context).size.width / 3.5),
-                  115,
-                  GoogleFonts.poppins(
+                  backgroundColor: AppColors.white,
+                  title: AppStrings.takePhotoButton,
+                  width: (MediaQuery.of(context).size.width / 3.5),
+                  height: 115,
+                  fontStyle: GoogleFonts.poppins(
                       fontSize: 35.sp,
                       fontWeight: FontWeight.w600,
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
                   onClickAction: () async {
-                await controller.getImageFromCamera();
-              }),
+                    await controller.getImageFromCamera();
+                  }),
             ],
           ),
         ),

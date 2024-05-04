@@ -28,6 +28,7 @@ class QualityControlHeader extends StatefulWidget {
 
 class _QualityControlHeaderState extends State<QualityControlHeader> {
   late QualityControlController controller;
+
   @override
   void initState() {
     String tag = Random().nextInt(1000).toString();
@@ -65,45 +66,46 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               customButton(
-                  AppColors.white,
-                  AppStrings.trailerTemp,
-                  (MediaQuery.of(context).size.width / 2.3),
-                  115,
-                  GoogleFonts.poppins(
+                  backgroundColor: AppColors.white,
+                  title: AppStrings.trailerTemp,
+                  width: (MediaQuery.of(context).size.width / 2.3),
+                  height: 115,
+                  fontStyle: GoogleFonts.poppins(
                       fontSize: 35.sp,
                       fontWeight: FontWeight.w600,
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
                   onClickAction: () {
-                if (controller.isQualityControlFields_Validate(context)) {
-                  Get.to(
-                      () => TrailerTemp(
-                          // carrier: carrier,
-                          // orderNumber: controller
-                          //     .orderNoTextController.value.text
-                          //     .trim(),
-                          ),
-                      arguments: {
-                        Consts.ORDERNUMBER:
-                            controller.orderNoTextController.value.text.trim(),
-                        Consts.CARRIER_ID: controller.carrierID,
-                        Consts.CARRIER_NAME: controller.carrierName,
-                        // Consts.CARRIER: carrier,
-                      });
-                }
-              }),
+                    if (controller.isQualityControlFields_Validate(context)) {
+                      Get.to(
+                          () => TrailerTemp(
+                              // carrier: carrier,
+                              // orderNumber: controller
+                              //     .orderNoTextController.value.text
+                              //     .trim(),
+                              ),
+                          arguments: {
+                            Consts.ORDERNUMBER: controller
+                                .orderNoTextController.value.text
+                                .trim(),
+                            Consts.CARRIER_ID: controller.carrierID,
+                            Consts.CARRIER_NAME: controller.carrierName,
+                            // Consts.CARRIER: carrier,
+                          });
+                    }
+                  }),
               SizedBox(
                 width: 38.w,
               ),
               Obx(
                 () => customButton(
-                    AppColors.white,
-                    controller.isShortForm == true
+                    backgroundColor: AppColors.white,
+                    title: controller.isShortForm == true
                         ? AppStrings.shortForm
                         : AppStrings.detailedForm,
-                    (MediaQuery.of(context).size.width / 2.3),
-                    115,
-                    GoogleFonts.poppins(
+                    width: (MediaQuery.of(context).size.width / 2.3),
+                    height: 115,
+                    fontStyle: GoogleFonts.poppins(
                         fontSize: 35.sp,
                         fontWeight: FontWeight.w600,
                         textStyle:
@@ -124,19 +126,19 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
         Padding(
           padding: EdgeInsets.only(left: 50.w, right: 50.w),
           child: customButton(
-              AppColors.white,
-              AppStrings.save,
-              (MediaQuery.of(context).size.width),
-              115,
-              GoogleFonts.poppins(
+              backgroundColor: AppColors.white,
+              title: AppStrings.save,
+              width: (MediaQuery.of(context).size.width),
+              height: 115,
+              fontStyle: GoogleFonts.poppins(
                   fontSize: 35.sp,
                   fontWeight: FontWeight.w600,
                   textStyle: TextStyle(color: AppColors.textFieldText_Color)),
               onClickAction: () async {
-            if (controller.isQualityControlFields_Validate(context)) {
-              await controller.saveAction();
-            }
-          }),
+                if (controller.isQualityControlFields_Validate(context)) {
+                  await controller.saveAction();
+                }
+              }),
         ),
         SizedBox(
           height: 25.h,
