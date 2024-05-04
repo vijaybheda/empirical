@@ -4,8 +4,8 @@ class SpecificationAnalyticalRequest {
   final int? id;
   final int? inspectionID;
   final int? analyticalID;
-  final String? sampleTextValue;
-  final int? sampleNumValue;
+  String? sampleTextValue;
+  int? sampleNumValue;
   String? comply;
   String? comment;
   final String? analyticalName;

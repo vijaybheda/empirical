@@ -20,6 +20,7 @@ class InspectionPhotosController extends GetxController {
   var imagesListBackup = <PictureData>[];
   final ApplicationDao dao = ApplicationDao();
   List<int> attachmentIds = [];
+
   get title => null;
   bool? hasAttachmentIds = false;
 
@@ -45,6 +46,7 @@ class InspectionPhotosController extends GetxController {
       throw Exception('Arguments not allowed');
     }
 
+    inspectionId = args[Consts.INSPECTION_ID];
     partnerName = args[Consts.PARTNER_NAME] ?? '';
     partnerID = args[Consts.PARTNER_ID] ?? 0;
     carrierName = args[Consts.CARRIER_NAME] ?? '';
@@ -82,38 +84,52 @@ class InspectionPhotosController extends GetxController {
     for (var element in image) {
       File file = File(element.path);
 
-      imagesList.add(PictureData(
+      PictureData pictureData = PictureData(
           image: file,
           Attachment_Title: '',
           createdTime: DateTime.now().millisecondsSinceEpoch,
-          pathToPhoto: await saveImageToInternalStorage(file)));
+          pathToPhoto: await saveImageToInternalStorage(file));
 
-      imagesListBackup.add(PictureData(
-          image: file,
-          Attachment_Title: '',
-          createdTime: DateTime.now().millisecondsSinceEpoch,
-          pathToPhoto: await saveImageToInternalStorage(file)));
+      imagesList.add(pictureData);
+      imagesListBackup.add(pictureData);
     }
   }
 
-  Future getImageFromCamera() async {
+  Future<File?> getImageFromCamera() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.camera);
-    File file = File(image?.path ?? '');
-    imagesList.add(PictureData(
-        image: file,
-        Attachment_Title: '',
-        createdTime: DateTime.now().millisecondsSinceEpoch,
-        pathToPhoto: await saveImageToInternalStorage(file)));
+    if (image != null) {
+      File imagePath = File(image.path);
+      PictureData pictureData = PictureData(
+          image: imagePath,
+          Attachment_Title: '',
+          createdTime: DateTime.now().millisecondsSinceEpoch,
+          pathToPhoto: await saveImageToInternalStorage(imagePath));
 
-    imagesListBackup.add(PictureData(
-        image: file,
-        Attachment_Title: '',
-        createdTime: DateTime.now().millisecondsSinceEpoch,
-        pathToPhoto: await saveImageToInternalStorage(file)));
+      imagesList.add(pictureData);
+      imagesListBackup.add(pictureData);
+      return imagePath;
+    }
+    return null;
   }
 
   Future<void> cropImage(File imageFile, int index) async {
-    final croppedImage = await ImageCropper().cropImage(
+    final croppedImage = await getCroppedImageFile(imageFile);
+
+    if (croppedImage != null) {
+      imagesList.removeAt(index);
+      PictureData pictureData = PictureData(
+          image: croppedImage,
+          Attachment_Title: '',
+          createdTime: DateTime.now().millisecondsSinceEpoch,
+          pathToPhoto: await saveImageToInternalStorage(croppedImage));
+
+      imagesList.insert(index, pictureData);
+      imagesListBackup.insert(index, pictureData);
+    }
+  }
+
+  Future<File?> getCroppedImageFile(File imageFile) async {
+    return await ImageCropper().cropImage(
         sourcePath: imageFile.path,
         aspectRatioPresets: Platform.isAndroid
             ? [
@@ -133,35 +149,16 @@ class InspectionPhotosController extends GetxController {
                 CropAspectRatioPreset.ratio7x5,
                 CropAspectRatioPreset.ratio16x9
               ],
-        androidUiSettings: AndroidUiSettings(
+        androidUiSettings: const AndroidUiSettings(
             toolbarTitle: 'Cropper',
             toolbarColor: Colors.deepOrange,
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false),
-        iosUiSettings: IOSUiSettings(
+        iosUiSettings: const IOSUiSettings(
           title: 'Cropper',
           minimumAspectRatio: 1.0,
         ));
-
-    if (croppedImage != null) {
-      imagesList.removeAt(index);
-      imagesList.insert(
-          index,
-          PictureData(
-              image: croppedImage,
-              Attachment_Title: '',
-              createdTime: DateTime.now().millisecondsSinceEpoch,
-              pathToPhoto: await saveImageToInternalStorage(croppedImage)));
-
-      imagesListBackup.insert(
-          index,
-          PictureData(
-              image: croppedImage,
-              Attachment_Title: '',
-              createdTime: DateTime.now().millisecondsSinceEpoch,
-              pathToPhoto: await saveImageToInternalStorage(croppedImage)));
-    }
   }
 
   removeImage(int index) {
@@ -172,17 +169,14 @@ class InspectionPhotosController extends GetxController {
   updateContent(int index, String title) {
     var data = imagesList[index];
     imagesList.removeAt(index);
-    imagesList.add(PictureData(
+    PictureData pictureData = PictureData(
         image: data.image,
         Attachment_Title: title,
         createdTime: data.createdTime,
-        pathToPhoto: data.pathToPhoto));
+        pathToPhoto: data.pathToPhoto);
 
-    imagesListBackup.add(PictureData(
-        image: data.image,
-        Attachment_Title: title,
-        createdTime: data.createdTime,
-        pathToPhoto: data.pathToPhoto));
+    imagesList.add(pictureData);
+    imagesListBackup.add(pictureData);
   }
 
   @override
@@ -244,7 +238,7 @@ class InspectionPhotosController extends GetxController {
   }
 
   void backAction(BuildContext context) {
-    if (imagesListBackup.length == 0) {
+    if (imagesListBackup.isEmpty) {
       Get.back();
     } else {
       if (imagesListBackup.length == 1) {
@@ -293,7 +287,7 @@ class InspectionPhotosController extends GetxController {
           }
         }
       } else {
-        if (inspectionId != null) {
+        if (inspectionId > 0) {
           await dao
               .findInspectionAttachmentsByInspectionId((inspectionId ?? 0))
               .then((value) {
@@ -307,11 +301,11 @@ class InspectionPhotosController extends GetxController {
       debugPrint(e.toString()); // Print any exceptions
     }
 
-    if (picsFromDB != null && picsFromDB.isNotEmpty) {
+    if (picsFromDB.isNotEmpty) {
       for (int i = 0; i < picsFromDB.length; i++) {
         PictureData temp = PictureData();
         temp.setData(picsFromDB[i].Attachment_ID, picsFromDB[i].FILE_LOCATION,
-            true, new File(picsFromDB[i].FILE_LOCATION.toString()));
+            true, File(picsFromDB[i].FILE_LOCATION.toString()));
         imagesList.add(temp);
       }
     }

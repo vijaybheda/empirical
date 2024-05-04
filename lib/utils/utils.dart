@@ -572,7 +572,6 @@ class Utils {
   Future<String?> loadFileToStringFromExternalStorage(
       String filename, String directory) async {
     String externalStoragePath = await Utils().getExternalStoragePath();
-    log('path: $externalStoragePath');
 
     String path = '$externalStoragePath/$directory/$filename';
     File file = File(path);

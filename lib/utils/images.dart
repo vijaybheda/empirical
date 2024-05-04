@@ -47,4 +47,5 @@ class AppImages {
   static const String ic_special_instruction =
       'assets/images/ic_special_instruction.png';
   static const String ic_dropdownArrow = 'assets/images/SpinnerIc.png';
+  static const String scanner = 'assets/images/barcode_large.png';
 }

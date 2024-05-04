@@ -32,6 +32,7 @@ class SpecAnalyticalTable
         return SpecificationAnalyticalWidget(
             controller: controller,
             item: item,
+            index: index,
             reqobj: reqobj,
             dbobj: dbobj,
             onCommentSave: (String comment) {
@@ -72,6 +73,7 @@ class SpecificationAnalyticalWidget extends StatefulWidget {
   final Function(String comply)? onComplySave;
   final QCDetailsShortFormScreenController controller;
   final SpecificationAnalyticalRequest? dbobj;
+  final int index;
 
   const SpecificationAnalyticalWidget({
     super.key,
@@ -81,6 +83,7 @@ class SpecificationAnalyticalWidget extends StatefulWidget {
     this.onComplySave,
     required this.controller,
     this.dbobj,
+    required this.index,
   });
 
   @override
@@ -307,72 +310,101 @@ class _SpecificationAnalyticalWidgetState
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          flex: 10,
-          child: Text(
-            widget.item.description ?? '-',
-            style:
-                Get.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w300),
-          ),
-        ),
-        Expanded(
-          flex: 3,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: getContent(),
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: Text(
-            getComply(),
-            style:
-                Get.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w300),
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: IconButton(
-            icon: Image.asset(
-              (reqobj.comment != null && (reqobj.comment ?? '').isNotEmpty)
-                  ? AppImages.commentAddedImage
-                  : AppImages.commentImage,
-              height: 50.w,
-              width: 50.w,
-            ),
-            onPressed: () async {
-              await showCommentInputDialog(context, comment: reqobj.comment,
-                  onCommentSave: (String comment) async {
-                saveComment(comment);
+    _itemHeight = 150.h;
+    bool hasTextField =
+        (widget.item.specTypeofEntry == 1 || widget.item.specTypeofEntry == 3);
+    bool hasDropDown =
+        (widget.item.specTypeofEntry == 2 || widget.item.specTypeofEntry == 3);
+    if (hasTextField && hasDropDown) {
+      _itemHeight = _itemHeight + 100.h;
+    }
 
-                reqobj.comment ??= '';
-                reqobj = reqobj.copyWith(comment: comment);
-
-                dbobj?.comment ??= '';
-                dbobj = dbobj?.copyWith(comment: comment);
-                setState(() {});
-              });
-            },
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: IconButton(
-            icon: Image.asset(
-              (widget.item.specTypeofEntry == 1 ||
-                      widget.item.specTypeofEntry == 3)
-                  ? AppImages.infoAddedImage
-                  : AppImages.infoImage,
-              height: 50.w,
-              width: 50.w,
+    return SizedBox(
+      height: itemHeight,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            flex: 10,
+            child: Text(
+              widget.item.description ?? '-',
+              style: Get.textTheme.bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w300),
             ),
-            onPressed: () => infoButtonTap(),
           ),
-        ),
-      ],
+          _divider(),
+          Expanded(
+            flex: 3,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: getContent(hasTextField, hasDropDown),
+            ),
+          ),
+          _divider(),
+          Expanded(
+            flex: 1,
+            child: Text(
+              getComply(),
+              textAlign: TextAlign.center,
+              style: Get.textTheme.bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w300),
+            ),
+          ),
+          _divider(),
+          Expanded(
+            flex: 1,
+            child: IconButton(
+              icon: Image.asset(
+                (reqobj.comment != null && (reqobj.comment ?? '').isNotEmpty)
+                    ? AppImages.commentAddedImage
+                    : AppImages.commentImage,
+                height: 50.w,
+                width: 50.w,
+              ),
+              onPressed: () async {
+                await showCommentInputDialog(context, comment: reqobj.comment,
+                    onCommentSave: (String comment) async {
+                  saveComment(comment);
+
+                  reqobj.comment ??= '';
+                  reqobj = reqobj.copyWith(comment: comment);
+
+                  dbobj?.comment ??= '';
+                  dbobj = dbobj?.copyWith(comment: comment);
+                  setState(() {});
+                });
+              },
+            ),
+          ),
+          _divider(),
+          Expanded(
+            flex: 1,
+            child: IconButton(
+              icon: Image.asset(
+                (widget.item.specTypeofEntry == 1 ||
+                        widget.item.specTypeofEntry == 3)
+                    ? AppImages.infoAddedImage
+                    : AppImages.infoImage,
+                height: 50.w,
+                width: 50.w,
+              ),
+              onPressed: () => infoButtonTap(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  double _itemHeight = 150.h;
+  double get itemHeight => _itemHeight;
+
+  Container _divider() {
+    return Container(
+      color: Colors.grey,
+      width: 1,
+      height: itemHeight,
+      margin: const EdgeInsets.symmetric(horizontal: 5),
     );
   }
 
@@ -387,6 +419,8 @@ class _SpecificationAnalyticalWidgetState
     if (widget.onComplySave != null) {
       widget.onComplySave?.call(comply);
     }
+    widget.controller.listSpecAnalyticalsRequest[widget.index].sampleTextValue =
+        comply;
   }
 
   String getComply() {
@@ -394,9 +428,9 @@ class _SpecificationAnalyticalWidgetState
     if (_comply == 'N/A') {
       return 'N/A';
     } else if (_comply == 'Yes') {
-      return 'Yes';
+      return 'Y';
     } else if (_comply == 'No') {
-      return 'No';
+      return 'N';
     } else {
       return 'N/A';
     }
@@ -611,6 +645,9 @@ class _SpecificationAnalyticalWidgetState
       comply = "No";
       saveComply(comply);
     }
+    widget.controller.listSpecAnalyticalsRequest[widget.index].sampleNumValue =
+        int.tryParse(newValue);
+    setState(() {});
   }
 
   bool validInput() {
@@ -627,15 +664,15 @@ class _SpecificationAnalyticalWidgetState
     super.dispose();
   }
 
-  Widget getContent() {
-    return Row(
+  Widget getContent(bool hasTextField, bool hasDropDown) {
+    return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (widget.item.specTypeofEntry == 1 ||
-            widget.item.specTypeofEntry == 3)
+        if (hasTextField)
           Expanded(
             child: TextField(
               controller: editTextValue,
+              // keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 hintText: 'Enter Value',
                 errorText: validInput() ? null : 'Invalid!',
@@ -664,8 +701,7 @@ class _SpecificationAnalyticalWidgetState
                   ?.copyWith(fontWeight: FontWeight.w300),
             ),
           ),
-        if (widget.item.specTypeofEntry == 2 ||
-            widget.item.specTypeofEntry == 3)
+        if (hasDropDown)
           Expanded(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -695,7 +731,6 @@ class _SpecificationAnalyticalWidgetState
               ],
             ),
           ),
-        const SizedBox(height: 20),
       ],
     );
   }

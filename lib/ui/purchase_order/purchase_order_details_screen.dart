@@ -78,12 +78,14 @@ class PurchaseOrderDetailsScreen
                   ),
                 ),
                 _SearchOrderItemsWidget(tag),
-                Expanded(flex: 10, child: _purchaseOrderItemSection(context)),
+                Expanded(
+                    flex: 10, child: _purchaseOrderItemSection(context, tag)),
                 BottomCustomButtonView(
                   title: AppStrings.inspectionCalculateResultButton,
                   backgroundColor: AppColors.orange,
                   onPressed: () async {
                     await controller.calculateButtonClick(context);
+                    controller.update();
                   },
                 ),
                 _footerMenuView(controller),
@@ -95,9 +97,9 @@ class PurchaseOrderDetailsScreen
   }
 
   GetBuilder<PurchaseOrderDetailsController> _purchaseOrderItemSection(
-      BuildContext context) {
+      BuildContext context, String tag) {
     return GetBuilder<PurchaseOrderDetailsController>(
-      id: 'inspectionItems',
+      // id: 'inspectionItems',
       tag: tag,
       builder: (controller) {
         return Container(
@@ -145,77 +147,83 @@ class PurchaseOrderDetailsScreen
       itemBuilder: (context, index) {
         PurchaseOrderItem goodsItem =
             controller.filteredInspectionsList.elementAt(index);
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          child: PurchaseOrderListViewItem(
-            goodsItem: goodsItem,
-            inspectTap: (
-              Inspection? inspection,
-              PartnerItemSKUInspections? partnerItemSKU,
-              String lotNo,
-              String packDate,
-              bool isComplete,
-              bool isPartialComplete,
-              int? inspectionId,
-              String poNumber,
-              String sealNumber,
-            ) async {
-              FinishedGoodsItemSKU? finishedGoodsItemSKU = controller
-                  .appStorage.selectedItemSKUList
-                  .elementAtOrNull(index);
-              if (finishedGoodsItemSKU == null) {
-                return;
-              }
+        return GetBuilder<PurchaseOrderDetailsController>(
+            tag: tag,
+            builder: (controller) {
+              return Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: PurchaseOrderListViewItem(
+                  goodsItem: goodsItem,
+                  inspectTap: (
+                    Inspection? inspection,
+                    PartnerItemSKUInspections? partnerItemSKU,
+                    String lotNo,
+                    String packDate,
+                    bool isComplete,
+                    bool isPartialComplete,
+                    int? inspectionId,
+                    String poNumber,
+                    String sealNumber,
+                  ) async {
+                    FinishedGoodsItemSKU? finishedGoodsItemSKU = controller
+                        .appStorage.selectedItemSKUList
+                        .elementAtOrNull(index);
+                    if (finishedGoodsItemSKU == null) {
+                      return;
+                    }
 
-              await controller.onInspectTap(
-                goodsItem,
-                finishedGoodsItemSKU,
-                inspection,
-                partnerItemSKU,
-                lotNo,
-                packDate,
-                isComplete,
-                isPartialComplete,
-                inspectionId,
-                poNumber,
-                sealNumber,
-                (data) {
-                  // TODO: implement below
-                  // current_lot_number = data[Consts.Lot_No];
-                  // current_Item_SKU = data[Consts.ITEM_SKU];
-                  // current_pack_Date = data[Consts.PACK_DATE];
-                  // current_Item_SKU_ID = data[Consts.ITEM_SKU_ID];
-                  // current_lot_size = data[Consts.LOT_SIZE];
-                  // current_unique_id = data[Consts.ITEM_UNIQUE_ID];
-                  // item_SKU_Name = data[Consts.ITEM_SKU_NAME];
-                  // commodityID = data[Consts.COMMODITY_ID];
-                  // commodityName = data[Consts.COMMODITY_NAME];
-                  // gtin = data[Consts.GTIN];
-                },
+                    await controller.onInspectTap(
+                      goodsItem,
+                      finishedGoodsItemSKU,
+                      inspection,
+                      partnerItemSKU,
+                      lotNo,
+                      packDate,
+                      isComplete,
+                      isPartialComplete,
+                      inspectionId,
+                      poNumber,
+                      sealNumber,
+                      index,
+                      (data) {
+                        // TODO: implement below
+                        // current_lot_number = data[Consts.Lot_No];
+                        // current_Item_SKU = data[Consts.ITEM_SKU];
+                        // current_pack_Date = data[Consts.PACK_DATE];
+                        // current_Item_SKU_ID = data[Consts.ITEM_SKU_ID];
+                        // current_lot_size = data[Consts.LOT_SIZE];
+                        // current_unique_id = data[Consts.ITEM_UNIQUE_ID];
+                        // item_SKU_Name = data[Consts.ITEM_SKU_NAME];
+                        // commodityID = data[Consts.COMMODITY_ID];
+                        // commodityName = data[Consts.COMMODITY_NAME];
+                        // gtin = data[Consts.GTIN];
+                      },
+                    );
+                  },
+                  onTapEdit: (Inspection? inspection,
+                      PartnerItemSKUInspections? partnerItemSKU) async {
+                    FinishedGoodsItemSKU? finishedGoodsItemSKU = controller
+                        .appStorage.selectedItemSKUList
+                        .elementAtOrNull(index);
+                    if (finishedGoodsItemSKU == null || inspection == null) {
+                      return;
+                    }
+                    await controller.onEditIconTap(goodsItem,
+                        finishedGoodsItemSKU, inspection, partnerItemSKU);
+                  },
+                  infoTap: (Inspection? inspection,
+                      PartnerItemSKUInspections? partnerItemSKU) async {
+                    await controller.onInformationIconTap(goodsItem);
+                  },
+                  partnerID: controller.partnerID!,
+                  position: index,
+                  productTransfer: controller.productTransfer ?? '',
+                  poNumber: controller.poNumber!,
+                  sealNumber: controller.sealNumber!,
+                ),
               );
-            },
-            onTapEdit: (Inspection? inspection,
-                PartnerItemSKUInspections? partnerItemSKU) async {
-              FinishedGoodsItemSKU? finishedGoodsItemSKU = controller
-                  .appStorage.selectedItemSKUList
-                  .elementAtOrNull(index);
-              if (finishedGoodsItemSKU == null || inspection == null) {
-                return;
-              }
-              await controller.onEditIconTap(
-                  goodsItem, finishedGoodsItemSKU, inspection, partnerItemSKU);
-            },
-            infoTap: (Inspection? inspection,
-                PartnerItemSKUInspections? partnerItemSKU) async {
-              await controller.onInformationIconTap(goodsItem);
-            },
-            partnerID: controller.partnerID!,
-            position: index,
-            productTransfer: controller.productTransfer ?? '',
-            poNumber: controller.poNumber!,
-            sealNumber: controller.sealNumber!,
-          ),
-        );
+            });
       },
       separatorBuilder: (BuildContext context, int index) {
         return Divider(

@@ -46,7 +46,7 @@ class Consts {
   static const String SPECIFICATION_TYPE_NAME = "SPECIFICATION_TYPE_NAME";
   static const String GRADE_COMMODITY_DETAIL_ID = "GRADE_COMMODITY_DETAIL_ID";
   static const String INSPECTION_RESULT = "INSPECTION_RESULT";
-  static const String Lot_No = "LOT_NO";
+  static const String LOT_NO = "LOT_NO";
   static const String ITEM_SKU = "ITEM_SKU";
   static const String PACK_DATE = "PACK_DATE";
   static const String SEAL_NUMBER = "SEAL_NUMBER";

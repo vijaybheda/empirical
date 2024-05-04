@@ -10,7 +10,6 @@ import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
-import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
@@ -47,8 +46,6 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
     return GetBuilder<InspectionPhotosController>(
         init: InspectionPhotosController(),
         builder: (controller) {
-          Map<String, dynamic>? passingData = Get.arguments;
-          controller.inspectionId = passingData?[Consts.INSPECTION_ID];
           return WillPopScope(
             onWillPop: () async {
               controller.backAction(context);
@@ -61,7 +58,8 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
                 automaticallyImplyLeading: false,
                 toolbarHeight: 150.h,
                 backgroundColor: AppColors.primary,
-                title: HeaderContentView(title: AppStrings.trailerTempRange),
+                title: HeaderContentView(
+                    title: controller.partnerName.toUpperCase()),
               ),
               body: Container(
                 color: Theme.of(context).colorScheme.background,
@@ -80,10 +78,9 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
         Container(
           padding: EdgeInsets.only(left: 40.w),
           color: AppColors.orange,
-          height: 70.h,
           width: ResponsiveHelper.getDeviceWidth(context),
           child: Text(
-            controller.partnerName ?? '',
+            controller.carrierName ?? '',
             style: GoogleFonts.poppins(
                 fontSize: 35.sp,
                 fontWeight: FontWeight.w600,
@@ -128,7 +125,9 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
                       fontWeight: FontWeight.w600,
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
-                  onClickAction: () => {controller.getImageFromGallery()}),
+                  onClickAction: () async {
+                await controller.getImageFromGallery();
+              }),
               SizedBox(
                 width: 38.w,
               ),
@@ -142,7 +141,9 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
                       fontWeight: FontWeight.w600,
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
-                  onClickAction: () => {controller.getImageFromCamera()}),
+                  onClickAction: () async {
+                await controller.getImageFromCamera();
+              }),
             ],
           ),
         ),
@@ -200,8 +201,8 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
                           style: TextStyle(color: AppColors.textBlue),
                         )),
                     TextButton(
-                        onPressed: () {
-                          controller.cropImage(
+                        onPressed: () async {
+                          await controller.cropImage(
                               File(
                                   controller.imagesList[rowIndex].image?.path ??
                                       ''),

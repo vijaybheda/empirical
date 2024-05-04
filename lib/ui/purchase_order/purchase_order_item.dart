@@ -122,6 +122,12 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
     }
   }
 
+  @override
+  void didChangeDependencies() {
+    asyncTask();
+    super.didChangeDependencies();
+  }
+
   Future<void> getSpecifications() async {
     if (widget.productTransfer == "Transfer") {
       appStorage.specificationByItemSKUList =
@@ -254,7 +260,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
       children: [
         if (widget.goodsItem.lotNumber != null)
           Expanded(
-            flex: 2,
+            flex: 4,
             child: RichText(
               text: TextSpan(
                 children: [
@@ -339,52 +345,77 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
 
   Widget _inspectionQuantity() {
     return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(
-          flex: 1,
-          child: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Qty Shipped * ',
-                  style: Get.textTheme.bodyMedium?.copyWith(
-                    fontSize: 28.sp,
-                  ),
-                ),
-                // if (widget.goodsItem.quantityShipped != null)
-                TextSpan(
-                  text: lotNumberController.text,
-                  style: Get.textTheme.bodyMedium
-                      ?.copyWith(fontSize: 28.sp, color: AppColors.white),
-                ),
-              ],
-            ),
+        Text(
+          'Qty Shipped * ',
+          style: Get.textTheme.bodyMedium?.copyWith(
+            fontSize: 28.sp,
           ),
         ),
-        if (widget.goodsItem.packDate != null)
-          Expanded(
-            flex: 1,
-            child: RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Qty Rejected * ',
-                    style: Get.textTheme.bodyMedium?.copyWith(
-                      fontSize: 28.sp,
-                    ),
-                  ),
-                  if (widget.goodsItem.packDate != null)
-                    TextSpan(
-                      text: '200', // TODO: implement this
-                      style: Get.textTheme.bodyMedium
-                          ?.copyWith(fontSize: 28.sp, color: AppColors.white),
-                    ),
-                ],
+        // if (widget.goodsItem.quantityShipped != null)
+        Expanded(
+          child: TextField(
+            controller: qtyShippedController,
+            style: Get.textTheme.bodyMedium
+                ?.copyWith(fontSize: 28.sp, color: AppColors.white),
+            decoration: InputDecoration(
+              enabled: etQtyShippedEnabled,
+              isDense: true,
+              border: const UnderlineInputBorder(),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              disabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              errorBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedErrorBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
               ),
             ),
           ),
+        ),
+        const SizedBox(width: 10),
+        if (widget.goodsItem.packDate != null)
+          Text(
+            'Qty Rejected * ',
+            style: Get.textTheme.bodyMedium?.copyWith(
+              fontSize: 28.sp,
+            ),
+          ),
+        // if (qtyRejectedController.text.isNotEmpty)
+        Expanded(
+          child: TextField(
+            controller: qtyRejectedController,
+            style: Get.textTheme.bodyMedium
+                ?.copyWith(fontSize: 28.sp, color: AppColors.white),
+            decoration: InputDecoration(
+              enabled: etQtyShippedEnabled,
+              isDense: true,
+              border: const UnderlineInputBorder(),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              disabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              errorBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedErrorBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -617,5 +648,3 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
     return packDateController.text;
   }
 }
-
-// TODO: implement above UI based on existing app logic

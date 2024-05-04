@@ -12,6 +12,7 @@ import 'package:pverify/ui/qc_short_form/spec_analytical_table.dart';
 import 'package:pverify/ui/side_drawer.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
+import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
 
@@ -180,8 +181,10 @@ class QCDetailsShortFormScreen
                                             hintText: AppStrings.gtin,
                                             hintStyle: Get.textTheme.bodyLarge!
                                                 .copyWith(
-                                              fontSize: 26.sp,
-                                            ),
+                                                    fontSize: 26.sp,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    color: Colors.grey),
                                             enabledBorder:
                                                 const UnderlineInputBorder(
                                               borderSide: BorderSide.none,
@@ -255,8 +258,10 @@ class QCDetailsShortFormScreen
                                             hintText: AppStrings.gln,
                                             hintStyle: Get.textTheme.bodyLarge!
                                                 .copyWith(
-                                              fontSize: 26.sp,
-                                            ),
+                                                    fontSize: 26.sp,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    color: Colors.grey),
                                             enabledBorder:
                                                 const UnderlineInputBorder(
                                               borderSide: BorderSide.none,
@@ -337,8 +342,10 @@ class QCDetailsShortFormScreen
                                             hintText: AppStrings.lotnumber,
                                             hintStyle: Get.textTheme.bodyLarge!
                                                 .copyWith(
-                                              fontSize: 26.sp,
-                                            ),
+                                                    fontSize: 26.sp,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    color: Colors.grey),
                                             enabledBorder:
                                                 const UnderlineInputBorder(
                                               borderSide: BorderSide.none,
@@ -416,8 +423,10 @@ class QCDetailsShortFormScreen
                                             hintText: AppStrings.packdate,
                                             hintStyle: Get.textTheme.bodyLarge!
                                                 .copyWith(
-                                              fontSize: 26.sp,
-                                            ),
+                                                    fontSize: 26.sp,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    color: Colors.grey),
                                             suffixIcon: GestureDetector(
                                                 onTap: () async {
                                                   await selectPackDate(
@@ -506,8 +515,10 @@ class QCDetailsShortFormScreen
                                             hintText: AppStrings.qcQtyShipped,
                                             hintStyle: Get.textTheme.bodyLarge!
                                                 .copyWith(
-                                              fontSize: 26.sp,
-                                            ),
+                                                    fontSize: 26.sp,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    color: Colors.grey),
                                             enabledBorder:
                                                 const UnderlineInputBorder(
                                               borderSide: BorderSide.none,
@@ -517,6 +528,18 @@ class QCDetailsShortFormScreen
                                               borderSide: BorderSide.none,
                                             ),
                                             border: const UnderlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                            ),
+                                            disabledBorder:
+                                                const UnderlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                            ),
+                                            errorBorder:
+                                                const UnderlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                            ),
+                                            focusedErrorBorder:
+                                                const UnderlineInputBorder(
                                               borderSide: BorderSide.none,
                                             ),
                                             contentPadding:
@@ -773,9 +796,10 @@ class QCDetailsShortFormScreen
           controller.update();
         });
       },
-      child: const Icon(
-        Icons.barcode_reader,
-        size: 30,
+      child: Image.asset(
+        AppImages.scanner,
+        height: 30,
+        width: 30,
       ),
     );
   }
@@ -788,9 +812,10 @@ class QCDetailsShortFormScreen
           controller.update();
         });
       },
-      child: const Icon(
-        Icons.barcode_reader,
-        size: 30,
+      child: Image.asset(
+        AppImages.scanner,
+        height: 30,
+        width: 30,
       ),
     );
   }

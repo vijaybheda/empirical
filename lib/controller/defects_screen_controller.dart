@@ -189,9 +189,12 @@ class DefectsScreenController extends GetxController {
     isMyInspectionScreen = args[Consts.IS_MY_INSPECTION_SCREEN] ?? false;
     itemSku = args[Consts.ITEM_SKU] ?? '';
     itemSkuId = args[Consts.ITEM_SKU_ID] ?? 0;
-    lotNo = args[Consts.Lot_No] ?? '';
+    lotNo = args[Consts.LOT_NO] ?? '';
     gtin = args[Consts.GTIN] ?? '';
-    packDate = args[Consts.PACK_DATE];
+    String packDateString = args[Consts.PACK_DATE] ?? '';
+    if (packDateString.isNotEmpty) {
+      packDate = Utils().dateFormat.parse(packDateString);
+    }
     itemUniqueId = args[Consts.ITEM_UNIQUE_ID] ?? '';
     lotSize = args[Consts.LOT_SIZE] ?? '';
     itemSkuName = args[Consts.ITEM_SKU_NAME] ?? '';
@@ -223,15 +226,14 @@ class DefectsScreenController extends GetxController {
     specificationVersion = args[Consts.SPECIFICATION_VERSION] ?? '';
     specificationTypeName = args[Consts.SPECIFICATION_TYPE_NAME] ?? '';
     isMyInspectionScreen = args[Consts.IS_MY_INSPECTION_SCREEN] ?? false;
-    lotNo = args[Consts.Lot_No] ?? '';
+    lotNo = args[Consts.LOT_NO] ?? '';
     gtin = args[Consts.GTIN] ?? '';
-    packDate = args[Consts.PACK_DATE] ?? '';
     itemUniqueId = args[Consts.ITEM_UNIQUE_ID] ?? '';
     lotSize = args[Consts.LOT_SIZE] ?? '';
     poLineNo = args[Consts.PO_LINE_NO] ?? 0;
     productTransfer = args[Consts.PRODUCT_TRANSFER] ?? '';
     callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
-    // appStorage.getCommodityList();
+    appStorage.getCommodityList();
     populateDefectSpinnerList();
     super.onInit();
   }
@@ -693,7 +695,7 @@ class DefectsScreenController extends GetxController {
         Consts.ITEM_SKU_NAME: itemSkuName,
         Consts.ITEM_SKU_ID: itemSkuId,
         Consts.ITEM_UNIQUE_ID: itemUniqueId,
-        Consts.Lot_No: lotNo,
+        Consts.LOT_NO: lotNo,
         Consts.GTIN: gtin,
         Consts.PACK_DATE: packDate,
         Consts.LOT_SIZE: lotSize,
