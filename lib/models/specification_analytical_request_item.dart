@@ -44,7 +44,7 @@ class SpecificationAnalyticalRequest {
       comment: json[SpecificationAttributesColumn.COMMENT],
       analyticalName: json[SpecificationAttributesColumn.ANALYTICAL_NAME],
       isPictureRequired:
-          json[SpecificationAttributesColumn.PICTURE_REQUIRED] == 1
+          json[SpecificationAttributesColumn.PICTURE_REQUIRED] == 1.toString()
               ? true
               : false,
       inspectionResult: json[SpecificationAttributesColumn.INSPECTION_RESULT],

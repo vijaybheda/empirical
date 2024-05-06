@@ -61,7 +61,7 @@ class SpecificationAnalytical {
       description: map[SpecificationAnalyticalColumn.DESCRIPTION],
       order: parseIntOrReturnNull(map[SpecificationAnalyticalColumn.ORDER_NO]),
       isPictureRequired:
-          map[SpecificationAnalyticalColumn.PICTURE_REQUIRED] == 1,
+          map[SpecificationAnalyticalColumn.PICTURE_REQUIRED] == 1.toString(),
       specTargetTextDefault:
           map[SpecificationAnalyticalColumn.TARGET_TEXT_DEFAULT],
       inspectionResult: map[SpecificationAnalyticalColumn.INSPECTION_RESULT],

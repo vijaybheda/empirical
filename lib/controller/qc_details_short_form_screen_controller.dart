@@ -838,6 +838,7 @@ class QCDetailsShortFormScreenController extends GetxController {
                     onYesTap: () {
                   hasErrors2 = false;
                 });
+                break;
               } else {
                 hasErrors2 = false;
                 if ((item2.isPictureRequired ?? false) &&
@@ -869,6 +870,7 @@ class QCDetailsShortFormScreenController extends GetxController {
                     onYesTap: () {
                   hasErrors2 = false;
                 });
+                break;
               } else if (item2.sampleNumValue == 0) {
                 hasErrors2 = true;
               } else {

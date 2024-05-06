@@ -324,7 +324,7 @@ class AppStrings {
   static const String qcUomQtyRejected = 'UOM of QTY Rejected';
   static const String qcQtyReceived = 'Quantity Approved';
   static const String qcUomQtyReceived = 'UOM of QTY Received';
-  static const String errorEnterValidValue = 'Enter a value';
+  static const String errorEnterValidValue = 'Enter a valid value!';
   static const String defectEntryAlert =
       'All columns on a defect cannot be 0, add a value to at least 1 column.';
   static const String overriddenComments = 'Please enter comments.';

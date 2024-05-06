@@ -245,6 +245,7 @@ class _SpecificationAnalyticalWidgetState
       await initSetup();
       // setState(() {});
     }());
+    onDropdownChanged(spinner_value);
   }
 
   Future<void> initSetup() async {
@@ -643,14 +644,16 @@ class _SpecificationAnalyticalWidgetState
 
   void updateCompliance(String value) {
     String newValue = value;
-    if (!newValue.contains(RegExp(r'[12345]'))) {
-      newValue = '';
-    }
-    if (newValue != value) {
-      editTextValue!.value = TextEditingValue(
-        text: newValue,
-        selection: TextSelection.collapsed(offset: newValue.length),
-      );
+    if (widget.item.analyticalName?.contains("Quality Check") ?? false) {
+      if (!newValue.contains(RegExp(r'[12345]'))) {
+        newValue = '';
+      }
+      if (newValue != value) {
+        editTextValue!.value = TextEditingValue(
+          text: newValue,
+          selection: TextSelection.collapsed(offset: newValue.length),
+        );
+      }
     }
 
     if (validInput()) {
@@ -676,9 +679,10 @@ class _SpecificationAnalyticalWidgetState
 
   bool validInput() {
     double? value = double.tryParse(editTextValue?.text ?? '');
-    return value != null &&
-        value >= widget.item.specMin! &&
-        value <= widget.item.specMax!;
+    if (value == null) {
+      return false;
+    }
+    return value >= widget.item.specMin! && value <= widget.item.specMax!;
   }
 
   @override
@@ -701,6 +705,10 @@ class _SpecificationAnalyticalWidgetState
               decoration: InputDecoration(
                 hintText: 'Enter Value',
                 errorText: validInput() ? null : 'Invalid!',
+                errorStyle: Get.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w300,
+                    color: Colors.red,
+                    fontSize: 11),
                 isDense: true,
                 border: const UnderlineInputBorder(),
                 focusedErrorBorder: const UnderlineInputBorder(
@@ -729,29 +737,31 @@ class _SpecificationAnalyticalWidgetState
         if (hasDropDown)
           Expanded(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                DropdownButton<String>(
-                  value: spinner_value,
-                  items: operatorList.map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      alignment: Alignment.center,
-                      child: Text(
-                        value,
-                        style: Get.textTheme.bodyMedium
-                            ?.copyWith(fontWeight: FontWeight.w300),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    comply = value!;
-                    saveComply(comply);
-                    setState(() {});
-                    onDropdownChanged(value);
-                  },
-                  dropdownColor: AppColors.grey,
-                  alignment: Alignment.centerRight,
+                Expanded(
+                  child: DropdownButton<String>(
+                    value: spinner_value,
+                    items: operatorList.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        alignment: Alignment.center,
+                        child: Text(
+                          value,
+                          style: Get.textTheme.bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.w300),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      comply = value!;
+                      saveComply(comply);
+                      setState(() {});
+                      onDropdownChanged(value, hasChanged: true);
+                    },
+                    dropdownColor: AppColors.grey,
+                    alignment: Alignment.centerRight,
+                  ),
                 ),
               ],
             ),
@@ -760,7 +770,8 @@ class _SpecificationAnalyticalWidgetState
     );
   }
 
-  Future<void> onDropdownChanged(String value) async {
+  Future<void> onDropdownChanged(String value,
+      {bool hasChanged = false}) async {
     String comply = "N/A";
     String userValue = value;
 
@@ -789,7 +800,7 @@ class _SpecificationAnalyticalWidgetState
           comply = "Yes";
         }
 
-        if (comply != "N") {
+        if (comply != "No") {
           if (editTextValue?.text.isNotEmpty ?? false) {
             double userValue2 =
                 double.tryParse(editTextValue!.text.trim()) ?? 0.0;
@@ -846,7 +857,9 @@ class _SpecificationAnalyticalWidgetState
 
     widget.controller.listSpecAnalyticalsRequest[widget.index] = reqobj;
 
-    saveComply(comply);
-    setState(() {});
+    if (hasChanged) {
+      saveComply(comply);
+      setState(() {});
+    }
   }
 }
