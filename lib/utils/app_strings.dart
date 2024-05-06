@@ -592,7 +592,13 @@ class AppStrings {
   static const List<String> stowage = ['Internal Managed', 'X-Dock'];
 
   static const List<String> array_name = ['Yes', 'No', 'N/A'];
-
+  static const String originalResult = "Original Result:";
+  static const String qtyRejected = "Qty Rejected*";
+  static const String rejectionDetails = "Rejection Details:";
+  static const String overrideComments = "Override Comments:";
+  static const String pleaseEnterComments = 'Please enter comments';
+  static const String pleaseEnterValidQtyRejected =
+      'Please enter a valid Quantity Rejected';
   static const List<String> yesNoArray = ['Y', 'N'];
   static const List<String> dateFormats = [
     'mm-dd-yyyy',
@@ -603,6 +609,13 @@ class AppStrings {
   static const List<String> truckTempOk = [
     'Yes',
     'No',
+  ];
+
+  static const List<String> newResultList = [
+    'Accept',
+    'A-',
+    'Accept w/Protection',
+    'Reject',
   ];
 
   static const List<String> types = [
