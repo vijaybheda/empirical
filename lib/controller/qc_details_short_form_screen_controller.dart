@@ -99,7 +99,7 @@ class QCDetailsShortFormScreenController extends GetxController {
 
   bool hasErrors2 = false;
 
-  List<String> operatorList = [];
+  List<String> operatorList = ['Select', 'Yes', 'No', 'N/A'];
 
   List<SpecificationAnalyticalRequest?> dbobjList = [];
 
@@ -756,6 +756,7 @@ class QCDetailsShortFormScreenController extends GetxController {
           resultComply = 'Yes';
           for (SpecificationAnalyticalRequest item2
               in listSpecAnalyticalsRequest) {
+            /// item2.specTypeofEntry == 1
             if (item2.specTypeofEntry == 1) {
               if (item2.sampleNumValue == null) {
                 hasErrors2 = true;
@@ -825,7 +826,10 @@ class QCDetailsShortFormScreenController extends GetxController {
                   }
                 }
               }
-            } else if (item2.specTypeofEntry == 2) {
+            }
+
+            /// item2.specTypeofEntry == 2
+            else if (item2.specTypeofEntry == 2) {
               if (item2.sampleTextValue == "Select") {
                 hasErrors2 = true;
 
@@ -853,7 +857,10 @@ class QCDetailsShortFormScreenController extends GetxController {
                   item2.inspectionResult ?? '',
                 );
               }
-            } else if (item2.specTypeofEntry == 3) {
+            }
+
+            /// item2.specTypeofEntry == 3
+            else if (item2.specTypeofEntry == 3) {
               if (item2.sampleTextValue == "Select") {
                 hasErrors2 = true;
 
@@ -922,7 +929,10 @@ class QCDetailsShortFormScreenController extends GetxController {
                   }
                 }
               }
-            } else {
+            }
+
+            /// item2.specTypeofEntry ?
+            else {
               if ((item2.isPictureRequired ?? false) && item2.comply == 'No') {
                 resultComply = 'No';
               }
