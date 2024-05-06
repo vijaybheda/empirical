@@ -229,8 +229,11 @@ class ApplicationDao {
 
   Future<int> createInspection(Inspection inspection) async {
     final Database db = dbProvider.lazyDatabase;
+    print('DBRequest createInspection');
     try {
       int newInspId = await db.insert(DBTables.INSPECTION, inspection.toJson());
+      print(
+          'DBResponse createInspection newInspId $newInspId ${inspection.toJson()}');
       return newInspId;
     } catch (e) {
       log('Error has occurred while creating an inspection: $e');
@@ -282,6 +285,7 @@ class ApplicationDao {
 
   Future<List<InspectionAttachment>> findInspectionAttachmentsByInspectionId(
       int inspectionId) async {
+    print('DBRequest findInspectionAttachmentsByInspectionId');
     final Database db = dbProvider.lazyDatabase;
     List<Map> maps = await db.query(DBTables.INSPECTION_ATTACHMENT,
         where: '${InspectionDefectAttachmentColumn.INSPECTION_ID} = ?',
@@ -293,6 +297,8 @@ class ApplicationDao {
             .add(InspectionAttachment.fromMap(map as Map<String, dynamic>));
       }
     }
+    print(
+        'DBResponse findInspectionAttachmentsByInspectionId attachments ${attachments.length}');
     return attachments;
   }
 
@@ -340,6 +346,7 @@ class ApplicationDao {
 
   // updateInspectionResult
   Future<int> updateInspectionResult(int inspectionId, String result) async {
+    print('DBRequest updateInspectionResult');
     final Database db = dbProvider.lazyDatabase;
 
     int updatedInspId = await db.update(
@@ -369,6 +376,7 @@ class ApplicationDao {
       int inspectionID, String? number, String? version, String? name) async {
     int? inspectionId;
     final Database db = dbProvider.lazyDatabase;
+    print('DBRequest createOrUpdateInspectionSpecification');
     try {
       try {
         String query =
@@ -421,6 +429,7 @@ class ApplicationDao {
 
   Future<void> updateInspectionRating(int inspectionID, int rating) async {
     final Database db = dbProvider.lazyDatabase;
+    print('DBRequest updateInspectionRating');
     await db.update(
       DBTables.INSPECTION,
       {InspectionColumn.RATING: rating},
@@ -437,6 +446,7 @@ class ApplicationDao {
 
   Future<int> updateInspectionComplete(int inspectionID, bool complete) async {
     final Database db = dbProvider.lazyDatabase;
+    print('DBRequest updateInspectionComplete');
     return await db.update(
       DBTables.INSPECTION,
       {
@@ -500,6 +510,7 @@ class ApplicationDao {
     String itemSkuName,
   ) async {
     final Database db = dbProvider.lazyDatabase;
+    print('DBRequest updateInspection');
     try {
       return await db.transaction((txn) async {
         return await txn.update(
@@ -534,6 +545,7 @@ class ApplicationDao {
 
   Future<Inspection?> findInspectionByID(int inspectionID) async {
     final Database db = dbProvider.lazyDatabase;
+    print('DBRequest findInspectionByID');
     List<Map> maps = await db.query(
       DBTables.INSPECTION,
       where: '${BaseColumns.ID} = ?',
@@ -633,6 +645,7 @@ class ApplicationDao {
 
       // Here you would call the methods to delete related entries from other tables, if necessary.
       // For example: await deleteTrailerTemperatureEntriesByInspectionId(inspectionId);
+      print('DBRequest deleteInspection');
       await db.delete(
         DBTables.INSPECTION,
         where: '${BaseColumns.ID} = ?',
@@ -1799,6 +1812,7 @@ class ApplicationDao {
     List<PurchaseOrderDetails> purchaseOrderDetailsList = [];
 
     final _db = DatabaseHelper.instance.lazyDatabase;
+    print('DBRequest getPODetailsFromTable');
     try {
       List<Map<String, dynamic>> results = await _db.rawQuery('''
       SELECT poh.PO_Number, poh.PO_Deliver_To_Id, poh.PO_Deliver_To_Name, poh.PO_Partner_Id,
@@ -2287,6 +2301,7 @@ class ApplicationDao {
   Future<QualityControlItem?> findQualityControlDetails(
       int inspectionId) async {
     try {
+      print('DBRequest findQualityControlDetails');
       final Database db = dbProvider.lazyDatabase;
       List<Map> results = await db.query(
         DBTables.QUALITY_CONTROL,
@@ -2353,6 +2368,7 @@ class ApplicationDao {
 
   Future<OverriddenResult?> getOverriddenResult(int inspectionId) async {
     final Database db = dbProvider.lazyDatabase;
+    print('DBRequest getOverriddenResult');
     OverriddenResult? item;
     try {
       List<Map> results = await db.rawQuery(
@@ -2444,6 +2460,7 @@ class ApplicationDao {
   Future<bool> isInspectionComplete(
       int partnerId, String itemSKU, String? lotNo) async {
     List<dynamic> args = ['true', partnerId.toString(), itemSKU, lotNo];
+    print('DBRequest isInspectionComplete');
     try {
       final Database db = dbProvider.lazyDatabase;
       String query =
@@ -2467,6 +2484,7 @@ class ApplicationDao {
       int partnerId, String itemSKU, String? uniqueId) async {
     List<dynamic> args = [partnerId.toString(), itemSKU, uniqueId];
     try {
+      print('DBRequest findPartnerItemSKU');
       String query =
           "Select * from ${DBTables.PARTNER_ITEMSKU} where ${PartnerItemSkuColumn.PARTNER_ID}=?" +
               " and ${PartnerItemSkuColumn.ITEM_SKU}=?" +
@@ -2537,6 +2555,7 @@ class ApplicationDao {
   Future<int> createOrUpdateResultReasonDetails(int inspectionID, String result,
       String resultReason, String comment) async {
     int? inspectionId;
+    print('DBRequest createOrUpdateResultReasonDetails');
     final Database db = dbProvider.lazyDatabase;
     try {
       try {
@@ -2636,6 +2655,7 @@ class ApplicationDao {
   Future<bool> updateQuantityRejected(
       int inspectionID, int qtyRejected, int qtyReceived) async {
     try {
+      print('DBRequest updateQuantityRejected');
       final Database db = dbProvider.lazyDatabase;
       await db.transaction((txn) async {
         var values = <String, dynamic>{
@@ -2663,6 +2683,7 @@ class ApplicationDao {
     int inspectionID,
     String? complete,
   ) async {
+    print('DBRequest updateItemSKUInspectionComplete');
     try {
       final Database db = dbProvider.lazyDatabase;
       await db.transaction((txn) async {
@@ -2692,6 +2713,7 @@ class ApplicationDao {
     String version,
   ) async {
     List<SpecificationAnalytical> list = [];
+    print('DBRequest getSpecificationAnalyticalFromTable');
     try {
       final Database db = dbProvider.lazyDatabase;
       String query =
@@ -2717,6 +2739,7 @@ class ApplicationDao {
   Future<bool> isInspectionPartialComplete(
       int partnerId, String itemSKU, String lotNo) async {
     final Database db = dbProvider.lazyDatabase;
+    print('DBRequest isInspectionPartialComplete');
     try {
       List<dynamic> args = ["false", partnerId.toString(), itemSKU, lotNo];
 
@@ -2744,6 +2767,7 @@ class ApplicationDao {
     String itemSkuName,
     String itemSkuCode,
   ) async {
+    print('DBRequest getSpecificationByItemSKUFromTableForTransfer');
     List<SpecificationByItemSKU> specificationList = [];
     SpecificationByItemSKU? item;
     final Database db = dbProvider.lazyDatabase;
@@ -2800,6 +2824,7 @@ class ApplicationDao {
     List<SpecificationByItemSKU> specificationList = [];
     SpecificationByItemSKU? item;
     final Database db = dbProvider.lazyDatabase;
+    print('DBRequest getSpecificationByItemSKUFromTable');
     try {
       String query3 = "SELECT Distinct(SP.Name) AS Name, SP.Number, SP.Version, SpecType.Name AS SpecTypeName," +
           " agency.ID AS AgencyID, agency.Name AS AgencyName, grade.ID AS GradeID, grade.Name AS GradeName," +
@@ -2850,6 +2875,7 @@ class ApplicationDao {
   Future<String?> getLotNoFromQCDetails(int inspectionId) async {
     List<int> args = [inspectionId];
     String? lot_no;
+    print('DBRequest getLotNoFromQCDetails');
     try {
       final Database db = dbProvider.lazyDatabase;
       String query = "Select * from " +
@@ -2871,6 +2897,7 @@ class ApplicationDao {
 
   Future<void> updateLotNoPartnerItemSKU(int inspectionId, String lotNo) async {
     final Database db = dbProvider.lazyDatabase;
+    print('DBRequest updateLotNoPartnerItemSKU');
     try {
       await db.transaction((txn) async {
         Map<String, dynamic> values = {
@@ -2893,6 +2920,7 @@ class ApplicationDao {
   Future<String?> getDateTypeFromQCDetails(int inspectionId) async {
     final Database db = dbProvider.lazyDatabase;
     String? dateType;
+    print('DBRequest getDateTypeFromQCDetails');
     try {
       List<Map> result = await db.query(
         DBTables.QUALITY_CONTROL,
@@ -2914,6 +2942,7 @@ class ApplicationDao {
   Future<int> getPackDateFromQCDetails(int inspectionId) async {
     final Database db = dbProvider.lazyDatabase;
     int packDate = 0;
+    print('DBRequest getPackDateFromQCDetails');
     try {
       List<Map> result = await db.query(
         DBTables.QUALITY_CONTROL,
@@ -2936,6 +2965,7 @@ class ApplicationDao {
   Future<void> updatePackdatePartnerItemSKU(
       int inspectionId, String packdate) async {
     final Database db = dbProvider.lazyDatabase;
+    print('DBRequest updatePackdatePartnerItemSKU');
     try {
       await db.transaction((txn) async {
         Map<String, dynamic> values = {
@@ -3006,6 +3036,7 @@ class ApplicationDao {
   }) async {
     int? qc_id;
     final Database db = dbProvider.lazyDatabase;
+    print('DBRequest createQualityControl');
     try {
       await db.transaction((txn) async {
         Map<String, dynamic> values = {
@@ -3069,6 +3100,7 @@ class ApplicationDao {
     required String dateType,
   }) async {
     final Database db = dbProvider.lazyDatabase;
+    print('DBRequest updateQualityControlShortForm');
     try {
       await db.transaction((txn) async {
         Map<String, dynamic> values = {
@@ -3104,6 +3136,7 @@ class ApplicationDao {
     final Database db = dbProvider.lazyDatabase;
 
     try {
+      print('DBRequest deleteSpecAttributesByInspectionId');
       await db.transaction((txn) async {
         String query =
             'DELETE FROM ${DBTables.SPECIFICATION_ATTRIBUTES} WHERE ${SpecificationAttributesColumn.INSPECTION_ID} = ?';
@@ -3130,6 +3163,7 @@ class ApplicationDao {
   ) async {
     final Database db = dbProvider.lazyDatabase;
     int? ttId;
+    print('DBRequest createSpecificationAttributes');
     try {
       await db.transaction((txn) async {
         Map<String, dynamic> values = {
@@ -3169,6 +3203,7 @@ class ApplicationDao {
   ) async {
     final Database db = dbProvider.lazyDatabase;
     int? ttId;
+    print('DBRequest createPartnerItemSKU');
     try {
       await db.transaction((txn) async {
         Map<String, dynamic> values = {
@@ -3200,7 +3235,8 @@ class ApplicationDao {
     String poNumber,
   ) async {
     final Database db = dbProvider.lazyDatabase;
-
+    print(
+        'DBRequest copyTempTrailerTemperaturesToInspectionTrailerTemperatureTableByPartnerID');
     try {
       await db.transaction((txn) async {
         List<Map> result = await txn.rawQuery(
@@ -3242,7 +3278,8 @@ class ApplicationDao {
     String poNumber,
   ) async {
     final Database db = dbProvider.lazyDatabase;
-
+    print(
+        'DBRequest copyTempTrailerTemperaturesDetailsToInspectionTrailerTemperatureDetailsTableByPartnerID');
     try {
       await db.transaction((txn) async {
         List<Map> result = await txn.rawQuery(
@@ -3285,6 +3322,7 @@ class ApplicationDao {
     bool isComplete,
     bool partialComplete,
   ) async {
+    print('DBRequest updateSelectedItemSKU');
     final Database db = dbProvider.lazyDatabase;
 
     try {
@@ -3314,6 +3352,7 @@ class ApplicationDao {
   Future<List<SpecificationGradeTolerance>> getSpecificationGradeTolerance(
       String number, String version) async {
     List<SpecificationGradeTolerance> list = [];
+    print('DBRequest getSpecificationGradeTolerance');
     try {
       final Database db = dbProvider.lazyDatabase;
       String query =
@@ -3510,6 +3549,7 @@ class ApplicationDao {
   Future<String> getBrandedFlagFromItemSku(int itemSkuId) async {
     String branded = "";
     Database db = dbProvider.lazyDatabase;
+    print('DBRequest getBrandedFlagFromItemSku');
     try {
       String query =
           "SELECT Branded FROM ${DBTables.ITEM_SKU} WHERE Item_SKU.SKU_ID=$itemSkuId";

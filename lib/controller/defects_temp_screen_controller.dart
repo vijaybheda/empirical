@@ -129,7 +129,7 @@ class DefectsScreenController extends GetxController {
     Map<String, dynamic>? extras = Get.arguments;
     if (extras == null) {
       Get.back();
-      throw Exception('Arguments not allowed');
+      throw Exception('Arguments required!');
     }
 
     serverInspectionID = extras[Consts.SERVER_INSPECTION_ID] ?? -1;

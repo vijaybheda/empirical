@@ -19,29 +19,13 @@ import 'package:pverify/utils/theme/colors.dart';
 // Main class
 class PurchaseOrderDetailsScreen
     extends GetView<PurchaseOrderDetailsController> {
-  // final PartnerItem partner;
-  // final CarrierItem carrier;
-  // final CommodityItem commodity;
-  // final QCHeaderDetails? qcHeaderDetails;
   final String tag;
-  const PurchaseOrderDetailsScreen({
-    super.key,
-    required this.tag,
-    // required this.partner,
-    // required this.carrier,
-    // required this.commodity,
-    // required this.qcHeaderDetails,
-  });
+  const PurchaseOrderDetailsScreen({super.key, required this.tag});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<PurchaseOrderDetailsController>(
-        init: PurchaseOrderDetailsController(
-            // partner: partner,
-            // carrier: carrier,
-            // commodity: commodity,
-            // qcHeaderDetails: qcHeaderDetails,
-            ),
+        init: PurchaseOrderDetailsController(),
         tag: tag,
         builder: (controller) {
           return Scaffold(

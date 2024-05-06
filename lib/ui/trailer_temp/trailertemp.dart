@@ -74,21 +74,20 @@ class TrailerTemp extends GetView<TrailerTempController> {
                       fontWeight: FontWeight.w600,
                       textStyle:
                           TextStyle(color: AppColors.textFieldText_Color)),
-                  onClickAction: () => {
-                        if (controller.allDataBlank())
-                          {controller.showPurchaseOrder()}
-                        else
-                          {
-                            AppAlertDialog.confirmationAlert(
-                              context,
-                              AppStrings.alert,
-                              AppStrings.trailerTemperatureSkipAlert,
-                              onYesTap: () {
-                                Get.back();
-                              },
-                            )
-                          }
-                      }),
+                  onClickAction: () {
+                    if (controller.allDataBlank()) {
+                      controller.showPurchaseOrder();
+                    } else {
+                      AppAlertDialog.confirmationAlert(
+                        context,
+                        AppStrings.alert,
+                        AppStrings.trailerTemperatureSkipAlert,
+                        onYesTap: () {
+                          Get.back();
+                        },
+                      );
+                    }
+                  }),
               SizedBox(
                 width: 38.w,
               ),

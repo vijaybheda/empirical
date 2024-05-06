@@ -20,22 +20,25 @@ class _SpecialInstructionsState extends State<SpecialInstructions> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: AppColors.blue,
-        title: Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Image.asset(
-              AppImages.appLogo,
-              width: 90.w,
-              height: 90.h,
-            ),
-            Text(
-              "Special Instructions",
-              style: GoogleFonts.poppins(
-                  fontSize: 38.sp,
-                  fontWeight: FontWeight.w600,
-                  textStyle: TextStyle(color: AppColors.white)),
-            ),
-          ],
+        title: Container(
+          color: AppColors.orange,
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Image.asset(
+                AppImages.appLogo,
+                width: 90.w,
+                height: 90.h,
+              ),
+              Text(
+                "Special Instructions",
+                style: GoogleFonts.poppins(
+                    fontSize: 38.sp,
+                    fontWeight: FontWeight.w600,
+                    textStyle: TextStyle(color: AppColors.white)),
+              ),
+            ],
+          ),
         ),
       ),
       body: bodyWidget(context, widget.exceptionCollection),

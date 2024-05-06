@@ -16,7 +16,6 @@ import 'package:pverify/models/sample_data.dart';
 import 'package:pverify/models/severity.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
-import 'package:pverify/ui/defects/special_instructions.dart';
 import 'package:pverify/ui/defects/table_dialog.dart';
 import 'package:pverify/ui/inspection_photos/inspection_photos_screen.dart';
 import 'package:pverify/utils/app_snackbar.dart';
@@ -24,6 +23,7 @@ import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
+import 'package:pverify/utils/dialogs/custom_listview_dialog.dart';
 import 'package:pverify/utils/utils.dart';
 
 class DefectsScreenController extends GetxController {
@@ -168,7 +168,7 @@ class DefectsScreenController extends GetxController {
   void onInit() {
     Map<String, dynamic>? args = Get.arguments;
     if (args == null) {
-      throw Exception('Arguments not allowed');
+      throw Exception('Arguments required!');
     }
     serverInspectionID = args[Consts.SERVER_INSPECTION_ID] ?? 0;
     completed = args[Consts.COMPLETED] ?? false;
@@ -632,13 +632,13 @@ class DefectsScreenController extends GetxController {
   }
 
   Future onSpecialInstrMenuTap() async {
-    List<Map<String, String>> exceptionCollection = [];
+    /*List<Map<String, String>> exceptionCollection = [];
     Map<String, String> map;
     if (AppStorage.instance.commodityVarietyData?.exceptions != null) {
       for (var item in AppStorage.instance.commodityVarietyData!.exceptions) {
         map = {
-          'KEY_TITLE': item.shortDescription.toString(),
-          'KEY_DETAIL': item.longDescription.toString(),
+          Consts.TITLE: item.shortDescription.toString(),
+          Consts.DETAIL: item.longDescription.toString(),
         };
         exceptionCollection.add(map);
       }
@@ -647,7 +647,15 @@ class DefectsScreenController extends GetxController {
         () => SpecialInstructions(
               exceptionCollection: exceptionCollection,
             ),
-        transition: Transition.downToUp);
+        fullscreenDialog: true,
+        transition: Transition.downToUp);*/
+
+    CustomListViewDialog customDialog = CustomListViewDialog(
+      Get.context!,
+      (selectedValue) {},
+    );
+    customDialog.setCanceledOnTouchOutside(false);
+    customDialog.show();
   }
 
   Future onSpecificationTap(BuildContext context) async {

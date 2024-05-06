@@ -18,29 +18,14 @@ import 'package:pverify/utils/utils.dart';
 
 class QCDetailsShortFormScreen
     extends GetWidget<QCDetailsShortFormScreenController> {
-  // final PartnerItem partner;
-  // final CarrierItem carrier;
-  // final CommodityItem commodity;
-  // final QCHeaderDetails? qcHeaderDetails;
-  // final PurchaseOrderItem purchaseOrderItem;
-  const QCDetailsShortFormScreen({
-    super.key,
-    // required this.partner,
-    // required this.carrier,
-    // required this.commodity,
-    // this.qcHeaderDetails,
-    // required this.purchaseOrderItem,
-  });
+  final String tag;
+  const QCDetailsShortFormScreen({super.key, required this.tag});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<QCDetailsShortFormScreenController>(
-      init: QCDetailsShortFormScreenController(
-          // partner: partner,
-          // carrier: carrier,
-          // commodity: commodity,
-          // qcHeaderDetails: qcHeaderDetails,
-          ),
+      init: QCDetailsShortFormScreenController(),
+      tag: tag,
       builder: (controller) {
         if (!controller.hasInitialised.value) {
           return Scaffold(
@@ -148,9 +133,10 @@ class QCDetailsShortFormScreen
                                   uomWidget(controller),
                                 ],
                               ),
-                              const Padding(
-                                  padding: EdgeInsets.only(top: 20, bottom: 10),
-                                  child: SpecAnalyticalTable()),
+                              Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 20, bottom: 10),
+                                  child: SpecAnalyticalTable(tag: tag)),
                             ],
                           ),
                         ),

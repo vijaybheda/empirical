@@ -13,12 +13,16 @@ import 'package:pverify/utils/theme/colors.dart';
 
 class SpecAnalyticalTable
     extends GetWidget<QCDetailsShortFormScreenController> {
-  const SpecAnalyticalTable({super.key});
+  final String tag;
+  const SpecAnalyticalTable({
+    super.key,
+    required this.tag,
+  });
 
   @override
   Widget build(BuildContext context) {
     QCDetailsShortFormScreenController controller =
-        Get.find<QCDetailsShortFormScreenController>();
+        Get.find<QCDetailsShortFormScreenController>(tag: tag);
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -93,13 +97,13 @@ class SpecificationAnalyticalWidget extends StatefulWidget {
 
 class _SpecificationAnalyticalWidgetState
     extends State<SpecificationAnalyticalWidget> {
-  String comply = 'N/A';
+  String comply = 'Yes';
   // late TextEditingController textEditingController;
   late bool hasErrors;
   bool isPictureRequired = false;
   List<String> operatorList = [];
   final ApplicationDao dao = ApplicationDao();
-  String spinner_value = 'N/A';
+  String spinner_value = 'Yes';
 
   TextEditingController? editTextValue;
 
@@ -116,7 +120,7 @@ class _SpecificationAnalyticalWidgetState
     hasErrors = false;
     // textEditingController = TextEditingController();
     editTextValue = TextEditingController();
-    comply = "N/A";
+    comply = "Yes";
     spinner_value = comply;
     // saveComply(comply);
     operatorList = ['Select', 'Yes', 'No', 'N/A'];
@@ -133,7 +137,7 @@ class _SpecificationAnalyticalWidgetState
 
     if (dbobj != null) {
       reqobj = reqobj.copyWith(comply: dbobj?.comply);
-      comply = dbobj?.comply ?? 'N/A';
+      comply = dbobj?.comply ?? 'Yes';
       spinner_value = comply;
       // saveComply(comply);
     } else {
@@ -165,7 +169,7 @@ class _SpecificationAnalyticalWidgetState
     }
 
     editTextValue?.addListener(() {
-      String comply = "N/A";
+      String comply = "Yes";
       saveComply(comply);
       if (editTextValue!.text.isEmpty) {
         editTextValue!.text = "";
@@ -239,7 +243,6 @@ class _SpecificationAnalyticalWidgetState
 
   Future<void> initSetup() async {
     if (widget.item.analyticalName?.contains("Branded") ?? false) {
-      // TODO: implement this method
       String? brandedFlag =
           await dao.getBrandedFlagFromItemSku(widget.controller.itemSkuId!);
 
@@ -645,8 +648,12 @@ class _SpecificationAnalyticalWidgetState
       comply = "No";
       saveComply(comply);
     }
+    int? p = int.tryParse(newValue);
     widget.controller.listSpecAnalyticalsRequest[widget.index].sampleNumValue =
-        int.tryParse(newValue);
+        p;
+    if (p != null) {
+      hasErrors2 = false;
+    }
     setState(() {});
   }
 
@@ -736,7 +743,7 @@ class _SpecificationAnalyticalWidgetState
   }
 
   Future<void> onDropdownChanged(String value) async {
-    String comply = "N/A";
+    String comply = "Yes";
     String userValue = spinner_value;
     spinner_value = comply;
     if ((widget.item.analyticalName?.contains("Accept") ?? false) ||

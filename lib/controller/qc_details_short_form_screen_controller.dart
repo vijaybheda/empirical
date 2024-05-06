@@ -18,7 +18,6 @@ import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
 import 'package:pverify/ui/defects/defects_screen.dart';
-import 'package:pverify/ui/inspection_exception/inspection_exception_screen.dart';
 import 'package:pverify/ui/inspection_photos/inspection_photos_screen.dart';
 import 'package:pverify/ui/long_form_quality_control_screen.dart';
 import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
@@ -34,11 +33,6 @@ import 'package:simple_barcode_scanner/enum.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
 class QCDetailsShortFormScreenController extends GetxController {
-  // final PartnerItem partner;
-  // final CarrierItem carrier;
-  // final CommodityItem commodity;
-  // final QCHeaderDetails? qcHeaderDetails;
-
   int serverInspectionID = 0;
   bool? completed;
   bool? partialCompleted;
@@ -111,13 +105,6 @@ class QCDetailsShortFormScreenController extends GetxController {
 
   QCDetailsShortFormScreenController();
 
-  /*QCDetailsShortFormScreenController({
-    required this.partner,
-    required this.carrier,
-    required this.commodity,
-    required this.qcHeaderDetails,
-  });*/
-
   final GlobalConfigController globalConfigController =
       Get.find<GlobalConfigController>();
 
@@ -130,7 +117,7 @@ class QCDetailsShortFormScreenController extends GetxController {
     Map<String, dynamic>? args = Get.arguments;
     if (args == null) {
       Get.back();
-      throw Exception('Arguments not allowed');
+      throw Exception('Arguments required!');
     }
 
     serverInspectionID = args[Consts.SERVER_INSPECTION_ID] ?? -1;
@@ -318,7 +305,7 @@ class QCDetailsShortFormScreenController extends GetxController {
           // isShowFlashIcon: true,
           // lineColor: AppColors.primaryColor.value.toString(),
         ));
-    if (res != null) {
+    if (res != null && res.isNotEmpty && res != '-1') {
       if (onScanResult != null) {
         onScanResult(res);
       }
@@ -1114,36 +1101,18 @@ class QCDetailsShortFormScreenController extends GetxController {
             if (callerActivity == "GTINActivity") {
               final String tag =
                   DateTime.now().millisecondsSinceEpoch.toString();
-              Get.to(
-                  () => PurchaseOrderDetailsScreen(
-                        // commodity: commodity,
-                        // partner: partner,
-                        // carrier: carrier,
-                        // qcHeaderDetails: qcHeaderDetails,
-                        tag: tag,
-                      ),
+              Get.to(() => PurchaseOrderDetailsScreen(tag: tag),
                   arguments: passingData);
             } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
               Get.offAll(
-                () => const NewPurchaseOrderDetailsScreen(
-                    // partner: partner,
-                    // qcHeaderDetails: qcHeaderDetails,
-                    // carrier: carrier,
-                    // commodity: commodity,
-                    ),
+                () => const NewPurchaseOrderDetailsScreen(),
                 arguments: passingData,
               );
             } else {
               final String tag =
                   DateTime.now().millisecondsSinceEpoch.toString();
               Get.to(
-                () => PurchaseOrderDetailsScreen(
-                  // qcHeaderDetails: qcHeaderDetails,
-                  // commodity: commodity,
-                  // partner: partner,
-                  // carrier: carrier,
-                  tag: tag,
-                ),
+                () => PurchaseOrderDetailsScreen(tag: tag),
                 arguments: passingData,
               );
             }
@@ -1258,34 +1227,14 @@ class QCDetailsShortFormScreenController extends GetxController {
 
     if (callerActivity == 'GTINActivity') {
       final String tag = DateTime.now().millisecondsSinceEpoch.toString();
-      var res = await Get.to(
-          () => PurchaseOrderDetailsScreen(
-                // partner: partner,
-                // carrier: carrier,
-                // commodity: commodity,
-                // qcHeaderDetails: qcHeaderDetails,
-                tag: tag,
-              ),
+      var res = await Get.to(() => PurchaseOrderDetailsScreen(tag: tag),
           arguments: bundle);
     } else if (callerActivity == 'NewPurchaseOrderDetailsActivity') {
-      var res = await Get.to(
-          () => const NewPurchaseOrderDetailsScreen(
-              // partner: partner,
-              // qcHeaderDetails: qcHeaderDetails,
-              // carrier: carrier,
-              // commodity: commodity,
-              ),
+      var res = await Get.to(() => const NewPurchaseOrderDetailsScreen(),
           arguments: bundle);
     } else {
       final String tag = DateTime.now().millisecondsSinceEpoch.toString();
-      var res = await Get.to(
-          () => PurchaseOrderDetailsScreen(
-                // partner: partner,
-                // carrier: carrier,
-                // commodity: commodity,
-                // qcHeaderDetails: qcHeaderDetails,
-                tag: tag,
-              ),
+      var res = await Get.to(() => PurchaseOrderDetailsScreen(tag: tag),
           arguments: bundle);
     }
 
@@ -1311,7 +1260,12 @@ class QCDetailsShortFormScreenController extends GetxController {
   Future onSpecialInstrMenuTap() async {
     if (_appStorage.commodityVarietyData != null &&
         (_appStorage.commodityVarietyData?.exceptions ?? []).isNotEmpty) {
-      Get.to(() => const InspectionExceptionScreen());
+      CustomListViewDialog customDialog = CustomListViewDialog(
+        Get.context!,
+        (selectedValue) {},
+      );
+      customDialog.setCanceledOnTouchOutside(false);
+      customDialog.show();
     } else {
       AppSnackBar.info(message: AppStrings.noSpecificationInstructions);
     }
@@ -1366,24 +1320,11 @@ class QCDetailsShortFormScreenController extends GetxController {
         Get.offAll(() => const Home(), arguments: passingData);
       } else {
         if (callerActivity == "NewPurchaseOrderDetailsActivity") {
-          Get.offAll(
-              () => const NewPurchaseOrderDetailsScreen(
-                  // partner: partner,
-                  // qcHeaderDetails: qcHeaderDetails,
-                  // carrier: carrier,
-                  // commodity: commodity,
-                  ),
+          Get.offAll(() => const NewPurchaseOrderDetailsScreen(),
               arguments: passingData);
         } else {
           final String tag = DateTime.now().millisecondsSinceEpoch.toString();
-          var res = await Get.to(
-              () => PurchaseOrderDetailsScreen(
-                    // partner: partner,
-                    // carrier: carrier,
-                    // commodity: commodity,
-                    // qcHeaderDetails: qcHeaderDetails,
-                    tag: tag,
-                  ),
+          var res = await Get.to(() => PurchaseOrderDetailsScreen(tag: tag),
               arguments: passingData);
         }
       }

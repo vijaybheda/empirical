@@ -34,11 +34,6 @@ import 'package:pverify/utils/utils.dart';
 import '../ui/trailer_temp/trailertemp.dart';
 
 class PurchaseOrderDetailsController extends GetxController {
-  // final PartnerItem partner;
-  // final CarrierItem carrier;
-  // final CommodityItem commodity;
-  // final QCHeaderDetails? qcHeaderDetails;
-
   final TextEditingController searchController = TextEditingController();
 
   int? serverInspectionID;
@@ -68,19 +63,12 @@ class PurchaseOrderDetailsController extends GetxController {
 
   PurchaseOrderDetailsController();
 
-  /*PurchaseOrderDetailsController({
-    required this.partner,
-    required this.carrier,
-    required this.commodity,
-    required this.qcHeaderDetails,
-  });*/
-
   @override
   void onInit() {
     Map<String, dynamic>? args = Get.arguments;
     if (args == null) {
       Get.back();
-      throw Exception('Arguments not allowed');
+      throw Exception('Arguments required!');
     }
 
     serverInspectionID = args[Consts.SERVER_INSPECTION_ID] ?? -1;
@@ -262,7 +250,11 @@ class PurchaseOrderDetailsController extends GetxController {
 
         appStorage.specificationGradeToleranceArrayList =
             specificationGradeToleranceArrayList;
+        listAssigned.value = false;
+        update();
         await calculateResult();
+
+        listAssigned.value = true;
         update();
       } else {
         AppSnackBar.info(message: AppStrings.noItemsCompleted);
@@ -430,7 +422,6 @@ class PurchaseOrderDetailsController extends GetxController {
         }
       }
     }
-    update();
   }
 
   void clearSearch() {
@@ -497,81 +488,10 @@ class PurchaseOrderDetailsController extends GetxController {
     passingData[Consts.GTIN] = currentGtin;
     passingData[Consts.PRODUCT_TRANSFER] = productTransfer;
     passingData[Consts.DATETYPE] = dateType;
-
-    await Get.to(
-        () => const QCDetailsShortFormScreen(
-            // partner: partner,
-            // carrier: carrier,
-            // commodity: commodity,
-            // qcHeaderDetails: qcHeaderDetails,
-            // purchaseOrderItem: goodsItem,
-            ),
+    final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+    await Get.to(() => QCDetailsShortFormScreen(tag: tag),
         arguments: passingData);
   }
-
-  /*Future<void> onEditTap(PurchaseOrderItem goodsItem, int index) async {
-    PartnerItemSKUInspections? partnerItemSKU = await dao.findPartnerItemSKU(
-        partnerID,
-        dataList.get(position).getSku(),
-        appStorage.selectedItemSKUList.get(position).getUniqueItemId());
-
-    Inspection? inspection =
-        await dao.findInspectionByID(partnerItemSKU.getInspectionId());
-
-    Map<String, dynamic> passingData = {
-      Consts.SERVER_INSPECTION_ID: inspection.inspection_id,
-      Consts.PARTNER_NAME: partnerName,
-      Consts.PARTNER_ID: partnerID,
-      Consts.CARRIER_NAME: carrierName,
-      Consts.CARRIER_ID: carrierID,
-      Consts.COMMODITY_NAME:
-          appStorage.selectedItemSKUList[position].commodityName,
-      Consts.COMMODITY_ID: appStorage.selectedItemSKUList[position].commodityID,
-      Consts.INSPECTION_RESULT: finalInspectionResult,
-      Consts.ITEM_SKU: goodsItem.sku,
-      Consts.PO_NUMBER: po_number,
-    };
-
-    if (productTransfer == "Transfer") {
-      appStorage.specificationByItemSKUList =
-          await dao.getSpecificationByItemSKUFromTableForTransfer(
-              partnerID, goodsItem.sku, goodsItem.sku);
-    } else {
-      appStorage.specificationByItemSKUList =
-          await dao.getSpecificationByItemSKUFromTable(
-              partnerID, goodsItem.sku, goodsItem.sku);
-    }
-
-    if (appStorage.specificationByItemSKUList != null &&
-        appStorage.specificationByItemSKUList!.isNotEmpty) {
-      specificationNumber =
-          appStorage.specificationByItemSKUList!.first.specificationNumber;
-      specificationVersion =
-          appStorage.specificationByItemSKUList!.first.specificationVersion;
-      specificationName =
-          appStorage.specificationByItemSKUList!.first.specificationName;
-      specificationTypeName =
-          appStorage.specificationByItemSKUList!.first.specificationTypeName;
-    }
-
-    passingData.addAll({
-      Consts.SPECIFICATION_NUMBER: specificationNumber,
-      Consts.SPECIFICATION_VERSION: specificationVersion,
-      Consts.SPECIFICATION_NAME: specificationName,
-      Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
-      Consts.PRODUCT_TRANSFER: productTransfer,
-    });
-
-    await Get.to(
-        () => QCDetailsShortFormScreen(
-              partner: partner,
-              carrier: carrier,
-              commodity: commodity,
-              qcHeaderDetails: qcHeaderDetails,
-              purchaseOrderItem: goodsItem,
-            ),
-        arguments: passingData);
-  }*/
 
   Future onInformationIconTap(PurchaseOrderItem goodsItem) async {
     if (productTransfer == "Transfer") {
@@ -873,17 +793,18 @@ class PurchaseOrderDetailsController extends GetxController {
           passigData[Consts.GTIN] = currentGtin;
           passigData[Consts.PRODUCT_TRANSFER] = productTransfer;
           passigData[Consts.DATETYPE] = dateType;
-
-          Get.to(
-            () => QCDetailsShortFormScreen(
-                // partner: partner,
-                // carrier: carrier,
-                // commodity: commodity,
-                // qcHeaderDetails: qcHeaderDetails,
-                // purchaseOrderItem: goodsItem,
-                ),
+          passigData[Consts.CALLER_ACTIVITY] = "PurchaseOrderDetailsActivity";
+          passigData[Consts.IS1STTIMEACTIVITY] = "PurchaseOrderDetailsActivity";
+          final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+          await Get.to(
+            () => QCDetailsShortFormScreen(tag: tag),
             arguments: passigData,
           );
+          AppAlertDialog.confirmationAlert(
+              Get.context!, AppStrings.alert, 'Calculate results?',
+              onYesTap: () {
+            calculateButtonClick(Get.context!);
+          });
         } else {
           AppAlertDialog.validateAlerts(Get.context!, AppStrings.alert,
               'No specification alert for $currentItemSKU');
@@ -1087,11 +1008,7 @@ class PurchaseOrderDetailsController extends GetxController {
       Get.to(() => const CommodityTransferScreen(), arguments: passingData);
     } else {
       Get.to(
-        () => const CommodityIDScreen(
-            // partner: partner,
-            // carrier: carrier,
-            // qcHeaderDetails: qcHeaderDetails,
-            ),
+        () => const CommodityIDScreen(),
         arguments: passingData,
       );
     }
@@ -1117,10 +1034,6 @@ class PurchaseOrderDetailsController extends GetxController {
     } else {
       Get.to(
         () => PurchaseOrderScreen(
-          // carrier: carrier,
-          // qcHeaderDetails: qcHeaderDetails,
-          // commodity: commodity,
-          // partner: partner,
           tag: commodityID.toString(),
         ),
         arguments: passingData,

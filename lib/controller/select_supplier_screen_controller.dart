@@ -63,7 +63,7 @@ class SelectSupplierScreenController extends GetxController {
     Map<String, dynamic>? args = Get.arguments;
     if (args == null) {
       Get.back();
-      throw Exception('Arguments not allowed');
+      throw Exception('Arguments required!');
     }
     callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
     sealNumber = args[Consts.SEAL_NUMBER] ?? '';
@@ -568,21 +568,15 @@ class SelectSupplierScreenController extends GetxController {
       }
     } else {
       clearSearch();
-      Get.to(
-          () => CommodityIDScreen(
-              // partner: partner,
-              // qcHeaderDetails: qcHeaderDetails,
-              // carrier: carrier,
-              ),
-          arguments: {
-            Consts.PARTNER_ID: partner.id,
-            Consts.PARTNER_NAME: partner.name,
-            Consts.SEAL_NUMBER: sealNumber,
-            Consts.PO_NUMBER: poNumber,
-            Consts.CARRIER_NAME: carrierName,
-            Consts.CARRIER_ID: carrierID,
-            Consts.CTEType: cteType,
-          });
+      Get.to(() => CommodityIDScreen(), arguments: {
+        Consts.PARTNER_ID: partner.id,
+        Consts.PARTNER_NAME: partner.name,
+        Consts.SEAL_NUMBER: sealNumber,
+        Consts.PO_NUMBER: poNumber,
+        Consts.CARRIER_NAME: carrierName,
+        Consts.CARRIER_ID: carrierID,
+        Consts.CTEType: cteType,
+      });
     }
   }
 
@@ -662,7 +656,7 @@ class SelectSupplierScreenController extends GetxController {
           // isShowFlashIcon: true,
           // lineColor: AppColors.primaryColor.value.toString(),
         ));
-    if (res != null) {
+    if (res != null && res.isNotEmpty && res != '-1') {
       // if (onBarcodeScanned != null) {
       //   onBarcodeScanned!(res);
       // }

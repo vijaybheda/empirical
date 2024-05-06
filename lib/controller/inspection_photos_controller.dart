@@ -43,7 +43,7 @@ class InspectionPhotosController extends GetxController {
     Map<String, dynamic>? args = Get.arguments;
     if (args == null) {
       Get.back();
-      throw Exception('Arguments not allowed');
+      throw Exception('Arguments required!');
     }
 
     inspectionId = args[Consts.INSPECTION_ID];

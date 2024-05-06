@@ -2,10 +2,6 @@ import 'package:get/get.dart';
 import 'package:pverify/utils/const.dart';
 
 class NewPurchaseOrderDetailsController extends GetxController {
-  // final PartnerItem partner;
-  // final CarrierItem carrier;
-  // final CommodityItem commodity;
-
   late final int serverInspectionID;
   late final String partnerName;
   late final int partnerID;
@@ -18,18 +14,12 @@ class NewPurchaseOrderDetailsController extends GetxController {
 
   NewPurchaseOrderDetailsController();
 
-  /*NewPurchaseOrderDetailsController({
-    required this.partner,
-    required this.carrier,
-    required this.commodity,
-  });*/
-
   @override
   void onInit() {
     Map<String, dynamic>? args = Get.arguments;
     if (args == null) {
       Get.back();
-      throw Exception('Arguments not allowed');
+      throw Exception('Arguments required!');
     }
     serverInspectionID = args[Consts.SERVER_INSPECTION_ID] ?? -1;
     partnerName = args[Consts.PARTNER_NAME] ?? '';

@@ -13,29 +13,13 @@ import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
 
 class PurchaseOrderScreen extends StatelessWidget {
-  // final PartnerItem partner;
-  // final CarrierItem carrier;
-  // final CommodityItem commodity;
-  // final QCHeaderDetails? qcHeaderDetails;
   final String tag;
-  const PurchaseOrderScreen({
-    super.key,
-    required this.tag,
-    // required this.partner,
-    // required this.carrier,
-    // required this.commodity,
-    // required this.qcHeaderDetails,
-  });
+  const PurchaseOrderScreen({super.key, required this.tag});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<PurchaseOrderScreenController>(
-        init: PurchaseOrderScreenController(
-            // carrier: carrier,
-            // partner: partner,
-            // commodity: commodity,
-            // qcHeaderDetails: qcHeaderDetails,
-            ),
+        init: PurchaseOrderScreenController(),
         tag: tag,
         builder: (controller) {
           return Scaffold(
