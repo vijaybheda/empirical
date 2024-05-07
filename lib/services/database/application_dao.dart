@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:csv/csv.dart';
+import 'package:flutter/material.dart';
 import 'package:pverify/models/commodity_data.dart';
 import 'package:pverify/models/commodity_keywords.dart';
 import 'package:pverify/models/inspection.dart';
@@ -20,6 +21,7 @@ import 'package:pverify/models/partner_item_sku_inspections.dart';
 import 'package:pverify/models/purchase_order_details.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/models/quality_control_item.dart';
+import 'package:pverify/models/result_rejection_details.dart';
 import 'package:pverify/models/specification.dart';
 import 'package:pverify/models/specification_analytical.dart';
 import 'package:pverify/models/specification_analytical_request_item.dart';
@@ -2578,6 +2580,34 @@ class ApplicationDao {
       return -1;
     }
     return inspectionId;
+  }
+
+  Future<ResultRejectionDetail?> getResultRejectionDetails(
+    int inspectionId,
+  ) async {
+    ResultRejectionDetail? details;
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      String query = 'SELECT Result, Result_Reason, Defect_Comments '
+          'FROM Result_Rejection_Details '
+          'WHERE Inspection_ID = ?';
+
+      List<Map<String, dynamic>> result =
+          await db.rawQuery(query, [inspectionId]);
+      if (result.isNotEmpty) {
+        details = ResultRejectionDetail(
+            result: result.first['Result'],
+            resultReason: result.first['Result_Reason'],
+            defectComments: result.first['Defect_Comments']);
+      } else {
+        debugPrint(" 🔴 getResultRejectionDetails is empty 🔴 ");
+      }
+    } catch (e) {
+      rethrow;
+    }
+
+    return details;
   }
 
   Future<int> createIsPictureReqSpecAttribute(
