@@ -48,7 +48,17 @@ class OverriddenResultScreen
                   }
                 },
               ),
-              FooterContentView()
+              FooterContentView(
+                onBackTap: () {
+                  Get.back();
+                  controller.backClickDialog(
+                    context,
+                    () {
+                      Get.back();
+                    },
+                  );
+                },
+              )
             ],
           ),
         );
@@ -132,28 +142,63 @@ class OverriddenResultScreen
                       ? 50.h
                       : 0,
                 ),
-                Row(
-                  children: [
-                    Text(
-                      AppStrings.rejectionDetails,
-                      style: Get.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.white,
-                        fontSize: 65.h,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    SizedBox(width: 195.w),
-                    Text(
-                      controller.finalInspectionResult?.value ?? '',
-                      style: Get.textTheme.bodyMedium?.copyWith(
-                        color: controller.finalInspectionResultColor,
-                        fontSize: 65.h,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 50.h),
+                controller.rejectionDetailsVisibility.isTrue
+                    ? Row(
+                        children: [
+                          Text(
+                            AppStrings.rejectionDetails,
+                            style: Get.textTheme.bodyMedium?.copyWith(
+                              color: AppColors.white,
+                              fontSize: 65.h,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          SizedBox(width: 195.w),
+                          Flexible(
+                            child: Text(
+                              controller.txtRejectionDetails?.value ?? '',
+                              style: Get.textTheme.bodyMedium?.copyWith(
+                                color: AppColors.white,
+                                fontSize: 50.h,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : Container(),
+                SizedBox(
+                    height: controller.rejectionDetailsVisibility.isTrue
+                        ? 50.h
+                        : 0),
+                controller.defectCommentsVisibility.isTrue
+                    ? Row(
+                        children: [
+                          Text(
+                            AppStrings.defectComments,
+                            style: Get.textTheme.bodyMedium?.copyWith(
+                              color: AppColors.white,
+                              fontSize: 65.h,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          SizedBox(width: 195.w),
+                          Flexible(
+                            child: Text(
+                              controller.txtDefectComment?.value ?? '',
+                              style: Get.textTheme.bodyMedium?.copyWith(
+                                color: AppColors.white,
+                                fontSize: 50.h,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : Container(),
+                SizedBox(
+                    height:
+                        controller.defectCommentsVisibility.isTrue ? 50.h : 0),
                 _commonRowTextFieldView(
                   context,
                   AppStrings.overrideComments,

@@ -2,9 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
 import 'package:pverify/models/quality_control_item.dart';
+import 'package:pverify/models/result_rejection_details.dart';
 import 'package:pverify/services/database/application_dao.dart';
+
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
@@ -13,6 +14,7 @@ import 'package:pverify/utils/theme/colors.dart';
 class OverriddenResultScreenController extends GetxController {
   final ApplicationDao dao = ApplicationDao();
 
+  ResultRejectionDetail? resultRejectionDetail;
   List newResultList = AppStrings.newResultList;
 
   final ovverRiddenCommentTextController = TextEditingController().obs;
@@ -28,12 +30,16 @@ class OverriddenResultScreenController extends GetxController {
   RxString newResultProtection = 'Accept w/Protection'.obs;
   RxString newResultReject = 'Reject'.obs;
   RxString? finalInspectionResult = ''.obs;
+  RxString? txtRejectionDetails = ''.obs;
+  RxString? txtDefectComment = ''.obs;
 
   RxInt qtyShipped = 0.obs;
   RxInt qtyRejected = 0.obs;
   int? serverInspectionID;
 
   RxBool layoutQtyRejectedVisibility = false.obs;
+  RxBool rejectionDetailsVisibility = false.obs;
+  RxBool defectCommentsVisibility = false.obs;
 
   Color finalInspectionResultColor = AppColors.white;
 
@@ -76,6 +82,20 @@ class OverriddenResultScreenController extends GetxController {
       finalInspectionResult?.value = AppStrings.acceptCondition;
       layoutQtyRejectedVisibility.value = false;
     }
+    resultRejectionDetail =
+        await dao.getResultRejectionDetails(serverInspectionID!);
+
+    if (resultRejectionDetail != null) {
+      rejectionDetailsVisibility.value = true;
+      txtRejectionDetails?.value = resultRejectionDetail?.resultReason ?? "";
+      if (resultRejectionDetail?.defectComments != null &&
+          resultRejectionDetail?.defectComments != "") {
+        defectCommentsVisibility.value = true;
+        txtDefectComment?.value = resultRejectionDetail?.defectComments ?? "";
+      }
+    } else {
+      debugPrint(" 🔴 Reject Rejection Database is null 🔴 ");
+    }
   }
 
   void setSelected(String value, String inspectionResult) {
@@ -109,15 +129,27 @@ class OverriddenResultScreenController extends GetxController {
         AppStrings.pleaseEnterComments,
       );
       return false;
-    } else if (gtyRejectController.value.text.trim().isEmpty) {
-      AppAlertDialog.validateAlerts(
-        context,
-        AppStrings.error,
-        AppStrings.pleaseEnterComments,
-      );
-      return false;
+    }
+    if (layoutQtyRejectedVisibility.isTrue) {
+      if (gtyRejectController.value.text.trim().isEmpty) {
+        AppAlertDialog.validateAlerts(
+          context,
+          AppStrings.error,
+          AppStrings.pleaseEnterValidQtyRejected,
+        );
+        return false;
+      }
     }
     return true;
+  }
+
+  backClickDialog(BuildContext context, dynamic Function()? onYesTap) {
+    AppAlertDialog.confirmationAlert(
+      onYesTap: onYesTap,
+      context,
+      AppStrings.alert,
+      AppStrings.calculateResult,
+    );
   }
 
   Future<void> saveAndContinue(BuildContext context) async {

@@ -597,6 +597,8 @@ class AppStrings {
   static const String rejectionDetails = "Rejection Details:";
   static const String overrideComments = "Override Comments:";
   static const String pleaseEnterComments = 'Please enter comments';
+  static const String calculateResult = "Calculate Result?";
+  static const String defectComments = "Defect Comments:";
   static const String pleaseEnterValidQtyRejected =
       'Please enter a valid Quantity Rejected';
   static const List<String> yesNoArray = ['Y', 'N'];
