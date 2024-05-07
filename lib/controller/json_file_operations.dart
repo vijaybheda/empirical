@@ -8,6 +8,7 @@ import 'package:path/path.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/commodity_variety_data.dart';
+import 'package:pverify/models/defect_categories.dart';
 import 'package:pverify/models/defect_instruction_attachment.dart';
 import 'package:pverify/models/defect_item.dart';
 import 'package:pverify/models/document_item.dart';
@@ -15,6 +16,7 @@ import 'package:pverify/models/document_item_data.dart';
 import 'package:pverify/models/exception_item.dart';
 import 'package:pverify/models/offline_commodity.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/severity.dart';
 import 'package:pverify/models/severity_defect.dart';
 import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/utils/app_snackbar.dart';
@@ -119,6 +121,64 @@ class JsonFileOperations {
         (parseSeverityDefectList != null &&
             parseSeverityDefectList.isNotEmpty) &&
         (offlineCommodityIDList != null && offlineCommodityIDList.isNotEmpty);
+  }
+
+  Future<bool> offlineLoadSeverities(String commodityId) async {
+    String filename = 'SEV_$commodityId.json';
+    var storagePath = await Utils().getExternalStoragePath();
+    final Directory directory =
+        Directory("$storagePath${FileManString.jsonFilesCache}/");
+
+    File file = File(join(
+      directory.path,
+      filename,
+    ));
+    if (!(await file.exists())) {
+      return false;
+    }
+
+    String content = await getJsonFileContent(directory, fileName: filename);
+    _appStorage.severityList = parseSeverityJson(content);
+    return true;
+  }
+
+  List<Severity> parseSeverityJson(String response) {
+    List<Severity> list = [];
+    var jsonResponse = jsonDecode(response);
+    for (var item in jsonResponse) {
+      Severity severity = Severity.fromJson(item);
+      list.add(severity);
+    }
+    return list;
+  }
+
+  Future<bool> offlineLoadDefectCategories() async {
+    String filename = 'defectcategories.json';
+    var storagePath = await Utils().getExternalStoragePath();
+    final Directory directory =
+        Directory("$storagePath${FileManString.jsonFilesCache}/");
+
+    File file = File(join(
+      directory.path,
+      filename,
+    ));
+    if (!(await file.exists())) {
+      return false;
+    }
+
+    String content = await getJsonFileContent(directory, fileName: filename);
+    _appStorage.defectCategoriesList = parseDefectCategoriesJson(content);
+    return true;
+  }
+
+  List<DefectCategories> parseDefectCategoriesJson(String response) {
+    List<DefectCategories> list = [];
+    var jsonResponse = jsonDecode(response);
+    for (var item in jsonResponse) {
+      DefectCategories defectCategory = DefectCategories.fromJson(item);
+      list.add(defectCategory);
+    }
+    return list;
   }
 
   static Future<String> getJsonFileContent(

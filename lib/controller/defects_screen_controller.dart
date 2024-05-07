@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pverify/controller/json_file_operations.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/defect_instruction_attachment.dart';
 import 'package:pverify/models/defect_item.dart';
@@ -28,15 +29,16 @@ import 'package:pverify/utils/utils.dart';
 
 class DefectsScreenController extends GetxController {
   final AppStorage appStorage = AppStorage.instance;
+  final ApplicationDao dao = ApplicationDao();
+  final JsonFileOperations jsonFileOperations = JsonFileOperations.instance;
   final sizeOfNewSetTextController = TextEditingController().obs;
   var isFirstTime = true;
+
   var isDefectEntry = true;
 
   RxInt activeTabIndex = 1.obs;
-
   var sampleSetObs = <SampleSetsObject>[].obs;
   SampleSetsObject tempSampleObj = SampleSetsObject();
-  final ApplicationDao dao = ApplicationDao();
 
   int serverInspectionID = -1;
   String partnerName = "";
@@ -236,6 +238,21 @@ class DefectsScreenController extends GetxController {
     appStorage.getCommodityList();
     populateDefectSpinnerList();
     super.onInit();
+
+    setInit();
+  }
+
+  Future<void> setInit() async {
+    await jsonFileOperations.offlineLoadSeverities(commodityID.toString());
+    jsonFileOperations.offlineLoadDefectCategories();
+    appStorage.specificationGradeToleranceList =
+        await dao.getSpecificationGradeTolerance(
+            specificationNumber!, specificationVersion!);
+    getDefectCategories();
+
+    // TODO: implement onInit
+    // loadSamplesAndDefectsFromDB();
+    // setInitialTabs();
   }
 
   // LOGIN SCREEN VALIDATION'S
@@ -812,6 +829,49 @@ class DefectsScreenController extends GetxController {
       }
     }
     return true;
+  }
+
+  void getDefectCategories() {
+    Map<int, String> defectCategoriesHashMap = {};
+
+    // TODO: implement getDefectCategories
+    /*if (appStorage.defectCategoriesList != null) {
+      for (var i = 0; i < AppInfo.defectCategoriesList.length; i++) {
+        if (AppInfo.defectCategoriesList[i].name == "Condition") {
+          List<DefectItem> defectItemList = AppInfo.defectCategoriesList[i].defectList;
+
+          for (var defectItem in defectItemList) {
+            if (defectItem.name.contains("Total Condition")) {
+              totalConditionDefectId = defectItem.id;
+            } else {
+              defectCategoriesHashMap[defectItem.id] = "Condition";
+            }
+          }
+        } else if (AppInfo.defectCategoriesList[i].name == "Quality") {
+          List<DefectItem> defectItemList = AppInfo.defectCategoriesList[i].defectList;
+
+          for (var defectItem in defectItemList) {
+            if (defectItem.name.contains("Total Quality")) {
+              totalQualityDefectId = defectItem.id;
+            } else {
+              defectCategoriesHashMap[defectItem.id] = "Quality";
+            }
+          }
+        } else if (AppInfo.defectCategoriesList[i].name == "Size") {
+          List<DefectItem> defectItemList = AppInfo.defectCategoriesList[i].defectList;
+
+          for (var defectItem in defectItemList) {
+            defectCategoriesHashMap[defectItem.id] = "Size";
+          }
+        } else if (AppInfo.defectCategoriesList[i].name == "Color") {
+          List<DefectItem> defectItemList = AppInfo.defectCategoriesList[i].defectList;
+
+          for (var defectItem in defectItemList) {
+            defectCategoriesHashMap[defectItem.id] = "Color";
+          }
+        }
+      }
+    }*/
   }
 
   /*

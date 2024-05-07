@@ -622,7 +622,6 @@ class FileManString {
   static const String specificationBannerDataJson =
       'specificationBannerData.json';
 
-  static const String JSONFILESCACHE = "jsoncache";
   static const String COMMODITYDOCS = "commoditydocs";
   static const String CSVFILESCACHE = "csvcache";
   static const String SUPPLIERS_JSON_FILENAME = "suppliers.json";

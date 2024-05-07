@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/controller/json_file_operations.dart';
 import 'package:pverify/models/inspection.dart';
@@ -15,6 +16,7 @@ import 'package:pverify/models/specification_analytical.dart';
 import 'package:pverify/models/specification_analytical_request_item.dart';
 import 'package:pverify/models/specification_by_item_sku.dart';
 import 'package:pverify/models/uom_item.dart';
+import 'package:pverify/services/barcode_scanner.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
 import 'package:pverify/ui/defects/defects_screen.dart';
@@ -29,8 +31,6 @@ import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/dialogs/custom_listview_dialog.dart';
 import 'package:pverify/utils/utils.dart';
-import 'package:simple_barcode_scanner/enum.dart';
-import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
 class QCDetailsShortFormScreenController extends GetxController {
   int serverInspectionID = 0;
@@ -102,6 +102,8 @@ class QCDetailsShortFormScreenController extends GetxController {
   List<String> operatorList = ['Select', 'Yes', 'No', 'N/A'];
 
   List<SpecificationAnalyticalRequest?> dbobjList = [];
+
+  String? glnAINumber, glnAINumberDesc;
 
   QCDetailsShortFormScreenController();
 
@@ -301,14 +303,15 @@ class QCDetailsShortFormScreenController extends GetxController {
     required Function(String scanResult)? onScanResult,
   }) async {
     // TODO: Implement scanBarcode
-    String? res = await Get.to(() => const SimpleBarcodeScannerPage(
+    String? res = await Get.to(() => const BarcodeScannerScreen());
+    /*String? res = await Get.to(() => const SimpleBarcodeScannerPage(
           scanType: ScanType.barcode,
           centerTitle: true,
           // appBarTitle: 'Scan a Barcode',
           // cancelButtonText: 'Cancel',
           // isShowFlashIcon: true,
           // lineColor: AppColors.primaryColor.value.toString(),
-        ));
+        ));*/
     if (res != null && res.isNotEmpty && res != '-1') {
       if (onScanResult != null) {
         onScanResult(res);
@@ -429,7 +432,7 @@ class QCDetailsShortFormScreenController extends GetxController {
       _appStorage.currentInspection?.inspectionId = inspectionId;
       serverInspectionID = inspectionId!;
     } catch (e) {
-      debugPrint(e.toString());
+      log(e.toString());
       return;
     }
   }
@@ -1495,5 +1498,170 @@ class QCDetailsShortFormScreenController extends GetxController {
     passingData[Consts.CALLER_ACTIVITY] = callerActivityValue;
 
     Get.to(() => const DefectsScreen(), arguments: passingData);
+  }
+
+  String? scanGTINResultContents(String scanResult) {
+    String barcodeResult = scanResult;
+    String packDate2 = "";
+
+    if (barcodeResult.length > 18) {
+      String check01;
+      if (barcodeResult.startsWith("(")) {
+        check01 = barcodeResult.substring(1, 3);
+        if (check01 == "01") {
+          gtinController.text = barcodeResult.substring(4, 18);
+          log("gtin = ${gtinController.text}");
+
+          if (barcodeResult.length >= 28) {
+            String check02 = barcodeResult.substring(19, 21);
+            log("gtin 1 = $check02");
+
+            if (["11", "12", "13", "15", "16", "17"].contains(check02)) {
+              packDate2 = barcodeResult.substring(22, 28);
+              log("gtin 2 = $packDate2");
+
+              dateTypeDesc = getDateTypeDesc(check02);
+
+              try {
+                packDate = DateFormat('yyMMdd').parse(packDate2);
+              } catch (e) {
+                return null;
+              }
+
+              packDateController.text = Utils().dateFormat.format(packDate!);
+
+              if (barcodeResult.length >= 32) {
+                String check03 = barcodeResult.substring(29, 31);
+                log("gtin 3 = $check03");
+                if (check03 == "10") {
+                  lotNoController.text = barcodeResult.substring(32);
+                  log("gtin 3 = ${lotNoController.text}");
+                } else {
+                  AppAlertDialog.validateAlerts(Get.context!, AppStrings.alert,
+                      "Invalid check digit for lot number");
+                  return null;
+                }
+              } else {
+                AppAlertDialog.validateAlerts(Get.context!, AppStrings.alert,
+                    "Insufficient length for lot number");
+                return null;
+              }
+            } else if (check02 == "10") {
+              lotNoController.text = barcodeResult.substring(22);
+              log("gtin 3 = ${lotNoController.text}");
+            }
+          }
+        } else {
+          AppAlertDialog.validateAlerts(
+              Get.context!, AppStrings.alert, "Invalid check digit for GTIN");
+          return null;
+        }
+      } else {
+        check01 = barcodeResult.substring(0, 2);
+        if (check01 == "01") {
+          gtinController.text = barcodeResult.substring(2, 16);
+          log("gtin = ${gtinController.text}");
+
+          if (barcodeResult.length > 24) {
+            String check02 = barcodeResult.substring(16, 18);
+            log("gtin 1 = $check02");
+
+            if (["11", "12", "13", "15", "16", "17"].contains(check02)) {
+              packDate2 = barcodeResult.substring(18, 24);
+              log("gtin 2 = $packDate2");
+
+              dateTypeDesc = getDateTypeDesc(check02);
+
+              try {
+                packDate = DateFormat('yyMMdd').parse(packDate2);
+              } catch (e) {
+                log("Error parsing pack date");
+                return null;
+              }
+
+              packDateController.text = Utils().dateFormat.format(packDate!);
+
+              if (barcodeResult.length > 27) {
+                String check03 = barcodeResult.substring(24, 26);
+                log("gtin 3 = $check03");
+                if (check03 == "10") {
+                  lotNoController.text = barcodeResult.substring(26);
+                  log("gtin 3 = ${lotNoController.text}");
+                }
+              }
+            } else if (check02 == "10") {
+              lotNoController.text = barcodeResult.substring(22);
+              log("gtin 3 = ${lotNoController.text}");
+            }
+          }
+        } else {
+          AppAlertDialog.validateAlerts(
+              Get.context!, AppStrings.alert, "Invalid check digit for GTIN");
+          return null;
+        }
+      }
+    } else {
+      AppAlertDialog.validateAlerts(
+          Get.context!, AppStrings.alert, "Insufficient length for barcode");
+      return null;
+    }
+    return gtinController.text;
+  }
+
+  String? scanGLNResultContents(String contents) {
+    String barcodeResult = contents;
+
+    if (barcodeResult.length > 10) {
+      String check01;
+      if (barcodeResult.startsWith("(")) {
+        check01 = barcodeResult.substring(1, 4);
+        if (["410", "411", "412", "413", "414", "415", "416", "417"]
+            .contains(check01)) {
+          glnController.text = barcodeResult.substring(5);
+
+          print("gln = ${glnController.text}");
+
+          glnAINumber = check01;
+          switch (check01) {
+            case "410":
+              glnAINumberDesc = "Ship To/ Deliver To";
+              break;
+            case "411":
+              glnAINumberDesc = "Bill To";
+              break;
+            case "412":
+              glnAINumberDesc = "Purchased From";
+              break;
+            case "413":
+              glnAINumberDesc = "Ship for / Deliver for";
+              break;
+            case "414":
+              glnAINumberDesc = "Identification of physical location";
+              break;
+            case "415":
+              glnAINumberDesc = "GLN of invoicing party";
+              break;
+            case "416":
+              glnAINumberDesc = "GLN of production or service location";
+              break;
+            case "417":
+              glnAINumberDesc = "Party global location number";
+              break;
+            default:
+              glnAINumberDesc = "";
+          }
+        } else {
+          Utils.showErrorAlertDialog("Error reading GLN Barcode");
+          return null;
+        }
+      } else {
+        Utils.showErrorAlertDialog("Error reading GLN Barcode");
+        return null;
+      }
+    } else {
+      Utils.showErrorAlertDialog("Error reading GLN Barcode");
+      return null;
+    }
+    return glnController.text;
   }
 }
