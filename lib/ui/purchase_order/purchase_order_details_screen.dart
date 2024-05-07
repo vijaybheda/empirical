@@ -28,53 +28,60 @@ class PurchaseOrderDetailsScreen
         init: PurchaseOrderDetailsController(),
         tag: tag,
         builder: (controller) {
-          return Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.background,
-            resizeToAvoidBottomInset: false,
-            appBar: AppBar(
-              toolbarHeight: 150.h,
-              leading: const Offstage(),
-              leadingWidth: 0,
-              centerTitle: false,
-              backgroundColor: Theme.of(context).primaryColor,
-              title: HeaderContentView(
-                title: AppStrings.beginInspection,
-                message: 'PO# ${controller.poNumber ?? '-'}',
+          return WillPopScope(
+            onWillPop: () {
+              return Future.value(false);
+            },
+            child: Scaffold(
+              backgroundColor: Theme.of(context).colorScheme.background,
+              resizeToAvoidBottomInset: false,
+              appBar: AppBar(
+                toolbarHeight: 150.h,
+                leading: const Offstage(),
+                leadingWidth: 0,
+                centerTitle: false,
+                backgroundColor: Theme.of(context).primaryColor,
+                title: HeaderContentView(
+                  title: AppStrings.beginInspection,
+                  message: 'PO# ${controller.poNumber ?? '-'}',
+                ),
               ),
-            ),
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  color: AppColors.textFieldText_Color,
-                  width: double.infinity,
-                  child: Text(
-                    controller.partnerName ?? '-',
-                    textAlign: TextAlign.start,
-                    maxLines: 3,
-                    style: GoogleFonts.poppins(
-                        fontSize: 38.sp,
-                        fontWeight: FontWeight.w600,
-                        textStyle: TextStyle(color: AppColors.white)),
+              body: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    color: AppColors.textFieldText_Color,
+                    width: double.infinity,
+                    child: Text(
+                      controller.partnerName ?? '-',
+                      textAlign: TextAlign.start,
+                      maxLines: 3,
+                      style: GoogleFonts.poppins(
+                          fontSize: 38.sp,
+                          fontWeight: FontWeight.w600,
+                          textStyle: TextStyle(color: AppColors.white)),
+                    ),
                   ),
-                ),
-                _SearchOrderItemsWidget(tag),
-                Expanded(
-                    flex: 10, child: _purchaseOrderItemSection(context, tag)),
-                BottomCustomButtonView(
-                  title: AppStrings.inspectionCalculateResultButton,
-                  backgroundColor: AppColors.orange,
-                  onPressed: () async {
-                    await controller.calculateButtonClick(context);
-                    controller.update();
-                  },
-                ),
-                _footerMenuView(controller),
-                FooterContentView()
-              ],
+                  _SearchOrderItemsWidget(tag),
+                  Expanded(
+                      flex: 10, child: _purchaseOrderItemSection(context, tag)),
+                  BottomCustomButtonView(
+                    title: AppStrings.inspectionCalculateResultButton,
+                    backgroundColor: AppColors.orange,
+                    onPressed: () async {
+                      await controller.calculateButtonClick(context);
+                      controller.update();
+                    },
+                  ),
+                  _footerMenuView(controller),
+                  FooterContentView(
+                    hasLeftButton: false,
+                  )
+                ],
+              ),
             ),
           );
         });
@@ -171,17 +178,7 @@ class PurchaseOrderDetailsScreen
                       sealNumber,
                       index,
                       (data) {
-                        // TODO: implement below
-                        // current_lot_number = data[Consts.Lot_No];
-                        // current_Item_SKU = data[Consts.ITEM_SKU];
-                        // current_pack_Date = data[Consts.PACK_DATE];
-                        // current_Item_SKU_ID = data[Consts.ITEM_SKU_ID];
-                        // current_lot_size = data[Consts.LOT_SIZE];
-                        // current_unique_id = data[Consts.ITEM_UNIQUE_ID];
-                        // item_SKU_Name = data[Consts.ITEM_SKU_NAME];
-                        // commodityID = data[Consts.COMMODITY_ID];
-                        // commodityName = data[Consts.COMMODITY_NAME];
-                        // gtin = data[Consts.GTIN];
+                        // controller.appStorage.selectedItemSKUList[index] = data;
                       },
                     );
                   },

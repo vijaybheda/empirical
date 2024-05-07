@@ -135,7 +135,7 @@ class QCDetailsShortFormScreen
                               ),
                               Padding(
                                   padding: const EdgeInsets.only(
-                                      top: 20, bottom: 10),
+                                      top: 40, bottom: 10),
                                   child: SpecAnalyticalTable(tag: tag)),
                             ],
                           ),
@@ -302,7 +302,7 @@ class QCDetailsShortFormScreen
               ),
               const SizedBox(width: 5),
               Divider(
-                color: AppColors.darkSkyBlue,
+                color: AppColors.orange,
                 height: 1,
               ),
             ],
@@ -703,9 +703,12 @@ class QCDetailsShortFormScreen
   GestureDetector gtinSuffix(QCDetailsShortFormScreenController controller) {
     return GestureDetector(
       onTap: () async {
-        await controller.scanBarcode(onScanResult: (scanResult) {
-          controller.gtinController.text = scanResult;
-          controller.update();
+        await controller.scanBarcode(onScanResult: (scanResult) async {
+          String? scannedCode = scanGTINResultContents(scanResult, controller);
+          if (scannedCode != null) {
+            controller.gtinController.text = scannedCode;
+            controller.update();
+          }
         });
       },
       child: Image.asset(
@@ -756,5 +759,102 @@ class QCDetailsShortFormScreen
         ),
       ],
     );
+  }
+
+  String? scanGTINResultContents(
+      String scanResult, QCDetailsShortFormScreenController controller) {
+    String barcoderesult = scanResult;
+
+    String? gtin = '';
+    String packdate2 = "";
+
+    // TODO: implement this
+    /*if (barcoderesult.length > 18) {
+      String check01;
+      if (barcoderesult.startsWith("(")) {
+        check01 = barcoderesult.substring(1, 3);
+        if (check01 == "01") {
+          gtin = barcoderesult.substring(4, 18);
+          print("gtin = $gtin");
+
+          if (barcoderesult.length >= 28) {
+            String check02 = barcoderesult.substring(19, 21);
+            print("gtin 1 = $check02");
+
+            if (check02 == "11" ||
+                check02 == "12" ||
+                check02 == "13" ||
+                check02 == "15" ||
+                check02 == "16" ||
+                check02 == "17") {
+              packdate2 = barcoderesult.substring(22, 28);
+              print("gtin 2 = $packdate2");
+
+              dateType = check02;
+              if (check02 == "11") {
+                dateTypeDesc = "Production Date";
+              } else if (check02 == "12") {
+                dateTypeDesc = "Due Date";
+              } else if (check02 == "13") {
+                dateTypeDesc = "Pack Date";
+              } else if (check02 == "15") {
+                dateTypeDesc = "Best Before Date";
+              } else if (check02 == "16") {
+                dateTypeDesc = "Sell By Date";
+              } else if (check02 == "17") {
+                dateTypeDesc = "Expiration Date";
+              }
+
+              DateFormat fromUser = DateFormat("yyMMdd");
+              DateFormat myFormat = DateFormat("MM-dd-yyyy");
+
+              try {
+                pack_Date = myFormat.format(fromUser.parse(packdate2));
+              } catch (e) {
+                print(e);
+              }
+
+              edit_packDate.text = pack_Date;
+
+              if (barcoderesult.length >= 32) {
+                String check03 = barcoderesult.substring(29, 31);
+                print("gtin 3 = $check03");
+                if (check03 == "10") {
+                  lot_No = barcoderesult.substring(32, barcoderesult.length);
+                  print("gtin 3 = $lot_No");
+                  edit_LotNo.text = lot_No;
+                } else {
+                  Fluttertoast.showToast(
+                      msg: "Error reading GTIN Barcode",
+                      toastLength: Toast.LENGTH_LONG);
+                }
+              } else {
+                Fluttertoast.showToast(
+                    msg: "Error reading GTIN Barcode",
+                    toastLength: Toast.LENGTH_LONG);
+              }
+            } else if (check02 == "10") {
+              lot_No = barcoderesult.substring(22, barcoderesult.length);
+              print("gtin 3 = $lot_No");
+              edit_LotNo.text = lot_No;
+            } else {
+              Fluttertoast.showToast(
+                  msg: "Error reading GTIN Barcode",
+                  toastLength: Toast.LENGTH_LONG);
+            }
+          } else {
+            Fluttertoast.showToast(
+                msg: "Error reading GTIN Barcode",
+                toastLength: Toast.LENGTH_LONG);
+          }
+        } else {
+          Fluttertoast.showToast(
+              msg: "Error reading GTIN Barcode",
+              toastLength: Toast.LENGTH_LONG);
+        }
+      }
+    }*/
+
+    return gtin;
   }
 }

@@ -704,7 +704,7 @@ class _SpecificationAnalyticalWidgetState
               textAlign: TextAlign.center,
               decoration: InputDecoration(
                 hintText: 'Enter Value',
-                errorText: validInput() ? null : 'Invalid!',
+                // errorText: validInput() ? null : 'Invalid!',
                 errorStyle: Get.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w300,
                     color: Colors.red,

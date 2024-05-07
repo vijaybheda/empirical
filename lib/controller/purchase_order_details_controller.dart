@@ -142,7 +142,7 @@ class PurchaseOrderDetailsController extends GetxController {
     List<PurchaseOrderItem> list = [];
 
     for (FinishedGoodsItemSKU item in (selectedItemSKUList)) {
-      list.add(PurchaseOrderItem.newData(
+      PurchaseOrderItem newData = PurchaseOrderItem.newData(
           item.name,
           item.sku,
           item.poNo,
@@ -152,7 +152,8 @@ class PurchaseOrderDetailsController extends GetxController {
           item.commodityName,
           item.packDate,
           item.FTLflag,
-          item.Branded));
+          item.Branded);
+      list.add(newData);
     }
     return list;
   }
@@ -813,104 +814,6 @@ class PurchaseOrderDetailsController extends GetxController {
     }
   }
 
-  /*{
-    bool checkItemSKUAndLot =
-        await dao.checkItemSKUAndLotNo(goodsItem.sku!, lotNo);
-    checkItemSKUAndLot = false;
-    bool isValid = true;
-
-    if (isComplete || isPartialComplete || !checkItemSKUAndLot) {
-      String? currentLotNumber = itemSkuList[position].lotNumber;
-      String currentItemSKU = itemSkuList[position].sku!;
-      String currentItemSKUName = itemSkuList[position].description!;
-      String? currentPackDate = itemSkuList[position].packDate;
-      int currentItemSKUId = selectedItemSKUList[position].id!;
-      String? currentUniqueId = selectedItemSKUList[position].uniqueItemId;
-      int? currentCommodityId = selectedItemSKUList[position].commodityID;
-      String currentCommodityName =
-          selectedItemSKUList[position].commodityName!;
-      String currentGtin = selectedItemSKUList[position].gtin!;
-      String? dateType = selectedItemSKUList[position].dateType;
-
-      if (poInterface != null) {
-        Map<String, dynamic> bundle = {
-          Consts.LOT_NO: currentLotNumber,
-          Consts.ITEM_SKU: currentItemSKU,
-          Consts.ITEM_SKU_NAME: currentItemSKUName,
-          Consts.PACK_DATE: currentPackDate,
-          Consts.ITEM_SKU_ID: currentItemSKUId,
-          Consts.ITEM_UNIQUE_ID: currentUniqueId,
-          Consts.GTIN: currentGtin,
-          Consts.DATETYPE: dateType,
-          Consts.COMMODITY_ID: currentCommodityId,
-          Consts.COMMODITY_NAME: currentCommodityName,
-        };
-        poInterface(bundle);
-      }
-
-      if (!isComplete && !isPartialComplete) {
-        selectedItemSKUList[position].lotNo = currentLotNumber;
-        selectedItemSKUList[position].poNo = itemSkuList[position].poNumber;
-      }
-
-      if (productTransfer == "Transfer") {
-        appStorage.specificationByItemSKUList =
-            await dao.getSpecificationByItemSKUFromTableForTransfer(partnerID!,
-                itemSkuList[position].sku!, itemSkuList[position].sku!);
-      } else {
-        appStorage.specificationByItemSKUList =
-            await dao.getSpecificationByItemSKUFromTable(partnerID!,
-                itemSkuList[position].sku!, itemSkuList[position].sku!);
-      }
-
-      if (appStorage.specificationByItemSKUList != null &&
-          appStorage.specificationByItemSKUList!.isNotEmpty) {
-        bool isComplete = await dao.isInspectionComplete(
-            partnerID!, currentItemSKU, currentUniqueId);
-        bool ispartialComplete = await dao.isInspectionPartialComplete(
-            partnerID!, currentItemSKU, currentUniqueId!);
-
-        Map<String, dynamic> args = {};
-        if (!isComplete && !ispartialComplete) {
-          args[Consts.SERVER_INSPECTION_ID] = -1;
-        } else {
-          args[Consts.SERVER_INSPECTION_ID] = inspectionId;
-          args[Consts.SPECIFICATION_NUMBER] = specificationNumber;
-          args[Consts.SPECIFICATION_VERSION] = specificationVersion;
-          args[Consts.SPECIFICATION_NAME] = specificationName;
-          args[Consts.SPECIFICATION_TYPE_NAME] = specificationTypeName;
-        }
-        args[Consts.PO_NUMBER] = poNumber;
-        args[Consts.SEAL_NUMBER] = sealNumber;
-        args[Consts.PARTNER_NAME] = partnerName;
-        args[Consts.PARTNER_ID] = partnerID;
-        args[Consts.CARRIER_NAME] = carrierName;
-        args[Consts.CARRIER_ID] = carrierID;
-        args[Consts.LOT_NO] = currentLotNumber;
-        args[Consts.ITEM_SKU] = currentItemSKU;
-        args[Consts.ITEM_SKU_NAME] = currentItemSKUName;
-        args[Consts.ITEM_SKU_ID] = currentItemSKUId;
-        args[Consts.PACK_DATE] = currentPackDate;
-        args[Consts.COMPLETED] = isComplete;
-        args[Consts.PARTIAL_COMPLETED] = ispartialComplete;
-        args[Consts.COMMODITY_ID] = currentCommodityId;
-        args[Consts.COMMODITY_NAME] = currentCommodityName;
-        args[Consts.ITEM_UNIQUE_ID] = currentUniqueId;
-        args[Consts.GTIN] = currentGtin;
-        args[Consts.PRODUCT_TRANSFER] = productTransfer;
-        args[Consts.DATETYPE] = dateType;
-
-        Get.to(() => const QCDetailsShortFormScreen(), arguments: args);
-      } else {
-        AppAlertDialog.validateAlerts(Get.context!, AppStrings.alert,
-            'No specification alert for $currentItemSKU');
-      }
-    } else {
-      AppAlertDialog.validateAlerts(
-          Get.context!, AppStrings.alert, 'Please enter different Lot Number.');
-    }
-  }*/
-
   Future<void> onHomeMenuTap() async {
     bool isValid = true;
     for (int i = 0; i < selectedItemSKUList.length; i++) {
@@ -1032,16 +935,17 @@ class PurchaseOrderDetailsController extends GetxController {
         arguments: passingData,
       );
     } else {
+      final String tag = DateTime.now().millisecondsSinceEpoch.toString();
       Get.to(
         () => PurchaseOrderScreen(
-          tag: commodityID.toString(),
+          tag: tag /*commodityID.toString()*/,
         ),
         arguments: passingData,
       );
     }
   }
 
-  void initAsyncActions() {
+  Future<void> initAsyncActions() async {
     if (callerActivity.isNotEmpty) {
       if (callerActivity == "GTINActivity") {
         if (selectedItemSKUList.isNotEmpty) {
@@ -1053,6 +957,40 @@ class PurchaseOrderDetailsController extends GetxController {
                   "GTIN has to be for the same supplier: $partnerName\nFinish & upload pfg for $partnerName\n\n"
                   "For a new supplier go to the Home page and select Inspect New Product");
             });
+          }
+        }
+      }
+    }
+
+    if (callerActivity.isNotEmpty) {
+      if (callerActivity == "QualityControlHeaderActivity" ||
+          callerActivity == "PurchaseOrderDetailsActivity") {
+        for (int i = 0; i < selectedItemSKUList.length; i++) {
+          bool isComplete = await dao.isInspectionComplete(partnerID!,
+              selectedItemSKUList[i].sku!, selectedItemSKUList[i].uniqueItemId);
+
+          if (isComplete) {
+            PartnerItemSKUInspections? partnerItemSKU =
+                await dao.findPartnerItemSKU(
+                    partnerID!,
+                    selectedItemSKUList[i].sku!,
+                    selectedItemSKUList[i].uniqueItemId);
+
+            if (partnerItemSKU != null) {
+              Inspection? inspection2 =
+                  await dao.findInspectionByID(partnerItemSKU.inspectionId!);
+              if (inspection2 != null && inspection2.result != null) {
+                callerActivity = "PurchaseOrderDetailsActivity";
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  AppAlertDialog.confirmationAlert(
+                      Get.context!, AppStrings.alert, "Calculate results?",
+                      onYesTap: () {
+                    calculateButtonClick(Get.context!);
+                  });
+                });
+                break;
+              }
+            }
           }
         }
       }

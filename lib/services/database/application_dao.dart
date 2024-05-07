@@ -2986,7 +2986,7 @@ class ApplicationDao {
   }
 
   Future<bool> checkItemSKUAndLotNo(String itemSKU, String lotNo) async {
-    Database db = await DatabaseHelper.instance.database;
+    final Database db = dbProvider.lazyDatabase;
     List<Map> result = await db.query(
       DBTables.PARTNER_ITEMSKU,
       where:
@@ -3378,7 +3378,7 @@ class ApplicationDao {
   Future<List<FinishedGoodsItemSKU>> getSelectedItemSKUList() async {
     List<FinishedGoodsItemSKU> list = [];
     try {
-      final Database db = await DatabaseHelper.instance.database;
+      final Database db = dbProvider.lazyDatabase;
       String query = "SELECT * FROM ${DBTables.SELECTED_ITEM_SKU_LIST}";
       List<Map> result = await db.rawQuery(query);
       for (Map<dynamic, dynamic> item in result) {
@@ -3466,7 +3466,7 @@ class ApplicationDao {
     required int? itemId,
     required String? itemCode,
   }) async {
-    final Database db = await DatabaseHelper.instance.database;
+    final Database db = dbProvider.lazyDatabase;
     try {
       await db.transaction((txn) async {
         String query = '''
@@ -3524,7 +3524,7 @@ class ApplicationDao {
       int commodityId) async {
     List<CommodityKeywords> itemSKUList = [];
     CommodityKeywords? item;
-    Database db = await DatabaseHelper.instance.database;
+    final Database db = dbProvider.lazyDatabase;
 
     try {
       String query1 = "Select * from commodity_keywords where ID=$commodityId";

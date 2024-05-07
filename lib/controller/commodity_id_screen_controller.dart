@@ -170,7 +170,8 @@ class CommodityIDScreenController extends GetxController {
       Consts.COMMODITY_NAME: commodity.name,
       // Consts.PRODUCT_TRANSFER: qcHeaderDetails?.productTransfer ?? '',
     };
-    Get.to(() => PurchaseOrderScreen(tag: commodity.id.toString()),
+    final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+    Get.to(() => PurchaseOrderScreen(tag: tag /*commodity.id.toString()*/),
         arguments: passingData);
   }
 

@@ -196,14 +196,14 @@ class QCDetailsShortFormScreenController extends GetxController {
           await createNewInspection(
               itemSKU,
               itemSkuId,
-              lotNo,
+              lotNoString,
               packDate,
               specificationNumber!,
               specificationVersion!,
               specificationName ?? '',
               specificationTypeName ?? '',
               sampleSizeByCount,
-              gtin,
+              gtinString,
               poNumber,
               poLineNo,
               itemSkuName);
@@ -242,6 +242,10 @@ class QCDetailsShortFormScreenController extends GetxController {
       hasInitialised.value = true;
     });
   }
+
+  String get lotNoString => lotNoController.text.trim();
+  String get gtinString => gtinController.text.trim();
+  String get glnString => glnController.text.trim();
 
   Future<void> specificationSelection() async {
     // bool isOnline = globalConfigController.hasStableInternet.value;
@@ -992,7 +996,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         await dao.createPartnerItemSKU(
             partnerID!,
             itemSKU!,
-            lotNo!,
+            lotNoString,
             packDateController.text,
             inspectionId!,
             lotSize!,
@@ -1071,11 +1075,11 @@ class QCDetailsShortFormScreenController extends GetxController {
         Consts.SPECIFICATION_VERSION: specificationVersion,
         Consts.SPECIFICATION_NAME: selectedSpecification,
         Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
-        Consts.LOT_NO: lotNo,
+        Consts.LOT_NO: lotNoString,
         Consts.ITEM_SKU: itemSKU,
         Consts.ITEM_SKU_NAME: itemSkuName,
         Consts.ITEM_SKU_ID: itemSkuId,
-        Consts.GTIN: gtin,
+        Consts.GTIN: gtinString,
         Consts.PACK_DATE: packDate?.millisecondsSinceEpoch.toString(),
         Consts.QUALITY_COMPLETED: true,
         Consts.ITEM_UNIQUE_ID: itemUniqueId,
@@ -1176,18 +1180,18 @@ class QCDetailsShortFormScreenController extends GetxController {
     commodityID = commodityID;
     commodityName = commodityName;
     packDate = packDate;
-    gtin = gtin;
+    gtin = gtinString;
 
     for (int j = 0; j < _appStorage.selectedItemSKUList.length; j++) {
       if (_appStorage.selectedItemSKUList[j].uniqueItemId == itemUniqueId) {
-        _appStorage.selectedItemSKUList[j].lotNo = lotNo;
+        _appStorage.selectedItemSKUList[j].lotNo = lotNoString;
         _appStorage.selectedItemSKUList[j].sku = itemSKU;
         _appStorage.selectedItemSKUList[j].id = itemSkuId;
         _appStorage.selectedItemSKUList[j].name = itemSkuName;
         _appStorage.selectedItemSKUList[j].commodityID = commodityID;
         _appStorage.selectedItemSKUList[j].commodityName = commodityName;
         _appStorage.selectedItemSKUList[j].packDate = packDateController.text;
-        _appStorage.selectedItemSKUList[j].gtin = gtin;
+        _appStorage.selectedItemSKUList[j].gtin = gtinString;
         break;
       }
     }
@@ -1217,8 +1221,8 @@ class QCDetailsShortFormScreenController extends GetxController {
       Consts.ITEM_SKU: itemSKU,
       Consts.ITEM_SKU_NAME: itemSkuName,
       Consts.ITEM_SKU_ID: itemSkuId,
-      Consts.LOT_NO: lotNo,
-      Consts.GTIN: gtin,
+      Consts.LOT_NO: lotNoString,
+      Consts.GTIN: gtinString,
       Consts.PACK_DATE: packDate?.millisecondsSinceEpoch.toString(),
       Consts.PARTNER_NAME: partnerName,
       Consts.PARTNER_ID: partnerID,
@@ -1318,8 +1322,8 @@ class QCDetailsShortFormScreenController extends GetxController {
         Consts.ITEM_SKU_NAME: itemSkuName,
         Consts.ITEM_SKU_ID: itemSkuId,
         Consts.ITEM_UNIQUE_ID: itemUniqueId,
-        Consts.LOT_NO: lotNo,
-        Consts.GTIN: gtin,
+        Consts.LOT_NO: lotNoString,
+        Consts.GTIN: gtinString,
         Consts.PACK_DATE: packDate?.millisecondsSinceEpoch.toString(),
         Consts.LOT_SIZE: lotSize,
         Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
@@ -1370,8 +1374,8 @@ class QCDetailsShortFormScreenController extends GetxController {
             Consts.ITEM_SKU_NAME: itemSkuName,
             Consts.ITEM_SKU_ID: itemSkuId,
             Consts.ITEM_UNIQUE_ID: itemUniqueId,
-            Consts.LOT_NO: lotNo,
-            Consts.GTIN: gtin,
+            Consts.LOT_NO: lotNoString,
+            Consts.GTIN: gtinString,
             Consts.PACK_DATE: packDate?.millisecondsSinceEpoch.toString(),
             Consts.LOT_SIZE: lotSize,
             Consts.PO_NUMBER: poNumber,
@@ -1466,8 +1470,8 @@ class QCDetailsShortFormScreenController extends GetxController {
       Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
       Consts.ITEM_SKU: itemSKU,
       Consts.ITEM_SKU_ID: itemSkuId,
-      Consts.LOT_NO: lotNo,
-      Consts.GTIN: gtin,
+      Consts.LOT_NO: lotNoString,
+      Consts.GTIN: gtinString,
       Consts.PACK_DATE: packDate?.millisecondsSinceEpoch.toString(),
       Consts.ITEM_UNIQUE_ID: itemUniqueId,
       Consts.LOT_SIZE: lotSize,

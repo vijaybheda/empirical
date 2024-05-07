@@ -155,18 +155,77 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
       child: Obx(() {
         if (!valueAssigned.value) {
           return buildShimmer();
         }
-        return Column(
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _inspectionNameIdInfo(),
-            const SizedBox(height: 2),
-            _inspectionStatusInfo(),
-            const SizedBox(height: 2),
-            if (layoutQtyRejectedVisibility) _inspectionQuantity(),
+            Expanded(
+              flex: 5,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _inspectionNameIdInfo(),
+                  const SizedBox(height: 2),
+                  _inspectionStatusInfo(),
+                  const SizedBox(height: 2),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        iconSize: 40,
+                        icon: inspectButtonImagePath,
+                        onPressed: () {
+                          if (widget.inspectTap != null) {
+                            widget.inspectTap!(
+                              inspection,
+                              partnerItemSKU,
+                              lotNumberController.text,
+                              packDateController.text,
+                              isComplete,
+                              isPartialComplete,
+                              inspectionId,
+                              widget.poNumber,
+                              widget.sealNumber,
+                            );
+                          }
+                        },
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          if (!informationIconEnabled) {
+                            return;
+                          }
+                          if (widget.infoTap != null) {
+                            widget.infoTap!(inspection, partnerItemSKU);
+                          }
+                        },
+                        icon: Image.asset(
+                          informationImagePath.assetName,
+                          width: 40,
+                          height: 40,
+                        ),
+                      ),
+                    ],
+                  ),
+                  orderStatusWidget(),
+                ],
+              ),
+            ),
           ],
         );
       }),
@@ -178,7 +237,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
       children: [
         Row(
           mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
@@ -216,7 +275,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
         ),
         Row(
           mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
               width: 100.w,
@@ -289,69 +348,26 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
   }
 
   Widget _inspectionNameIdInfo() {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                widget.goodsItem.description ?? '-',
-                style: Get.textTheme.bodyMedium?.copyWith(
-                  fontSize: 28.sp,
-                  color: AppColors.lightGrey,
-                ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                widget.goodsItem.sku ?? '-',
-                style: Get.textTheme.bodyMedium?.copyWith(
-                  fontSize: 28.sp,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+        Text(
+          widget.goodsItem.description ?? '-',
+          style: Get.textTheme.bodyMedium?.copyWith(
+            fontSize: 28.sp,
+            color: AppColors.lightGrey,
           ),
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
         ),
-        IconButton(
-          iconSize: 40,
-          icon: inspectButtonImagePath,
-          onPressed: () {
-            if (widget.inspectTap != null) {
-              widget.inspectTap!(
-                inspection,
-                partnerItemSKU,
-                lotNumberController.text,
-                packDateController.text,
-                isComplete,
-                isPartialComplete,
-                inspectionId,
-                widget.poNumber,
-                widget.sealNumber,
-              );
-            }
-          },
-        ),
-        IconButton(
-          onPressed: () {
-            if (!informationIconEnabled) {
-              return;
-            }
-            if (widget.infoTap != null) {
-              widget.infoTap!(inspection, partnerItemSKU);
-            }
-          },
-          icon: Image.asset(
-            informationImagePath.assetName,
-            width: 40,
-            height: 40,
+        Text(
+          widget.goodsItem.sku ?? '-',
+          style: Get.textTheme.bodyMedium?.copyWith(
+            fontSize: 28.sp,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );
@@ -360,13 +376,16 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
   Widget _inspectionStatusInfo() {
     return Row(
       mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // if (widget.goodsItem.lotNumber != null)
         Expanded(
-          flex: 4,
+          flex: 3,
           child: Row(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Lot No. ',
@@ -384,67 +403,67 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
         ),
         // if (widget.goodsItem.packDate != null)
         Expanded(
-            flex: 4,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Pack Date ',
-                  style: Get.textTheme.bodyMedium
-                      ?.copyWith(fontSize: 22.sp, color: AppColors.white),
-                ),
-                // if (widget.goodsItem.packDate != null)
-                Text(
-                  (widget.goodsItem.packDate ?? ''),
-                  style: Get.textTheme.bodyMedium
-                      ?.copyWith(fontSize: 22.sp, color: AppColors.white),
-                ),
-              ],
-            )),
-        orderStatusWidget()
+          flex: 3,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Pack Date ',
+                style: Get.textTheme.bodyMedium
+                    ?.copyWith(fontSize: 22.sp, color: AppColors.white),
+              ),
+              // if (widget.goodsItem.packDate != null)
+              Text(
+                (widget.goodsItem.packDate ?? ''),
+                style: Get.textTheme.bodyMedium
+                    ?.copyWith(fontSize: 22.sp, color: AppColors.white),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
 
-  Expanded orderStatusWidget() {
+  Widget orderStatusWidget() {
     if (resultButton != null || editPencilVisibility) {
-      return Expanded(
-          flex: 3,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              if (resultButton != null)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: resultButtonColor,
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                  child: Text(
-                    resultButton ?? '',
-                    style: Get.textTheme.bodyMedium?.copyWith(
-                      fontSize: 28.sp,
-                    ),
-                  ),
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (resultButton != null)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: resultButtonColor,
+                borderRadius: BorderRadius.circular(32),
+              ),
+              child: Text(
+                resultButton ?? '',
+                style: Get.textTheme.bodyMedium?.copyWith(
+                  fontSize: 28.sp,
                 ),
-              const SizedBox(width: 12),
-              if (editPencilVisibility)
-                IconButton(
-                  onPressed: () {
-                    if (widget.onTapEdit != null) {
-                      widget.onTapEdit!(inspection, partnerItemSKU);
-                    }
-                  },
-                  icon: Icon(
-                    Icons.edit_outlined,
-                    size: 30,
-                    color: AppColors.white,
-                  ),
-                ),
-            ],
-          ));
+              ),
+            ),
+          const SizedBox(width: 12),
+          if (editPencilVisibility)
+            IconButton(
+              onPressed: () {
+                if (widget.onTapEdit != null) {
+                  widget.onTapEdit!(inspection, partnerItemSKU);
+                }
+              },
+              icon: Icon(
+                Icons.edit_outlined,
+                size: 30,
+                color: AppColors.white,
+              ),
+            ),
+        ],
+      );
     } else {
-      return const Expanded(flex: 3, child: SizedBox());
+      return SizedBox();
     }
   }
 
@@ -455,11 +474,16 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
             style: Get.textTheme.bodyMedium
                 ?.copyWith(fontSize: 22.sp, color: AppColors.white)),
         // if (widget.goodsItem.quantityShipped != null)
-        Expanded(
+        SizedBox(
+          width: 80,
           child: TextField(
             controller: qtyShippedController,
-            style: Get.textTheme.bodyMedium
-                ?.copyWith(fontSize: 22.sp, color: AppColors.white),
+            textAlign: TextAlign.center,
+            style: Get.textTheme.bodyMedium?.copyWith(
+              fontSize: 22.sp,
+              color: AppColors.white,
+              fontWeight: FontWeight.normal,
+            ),
             decoration: InputDecoration(
               enabled: etQtyShippedEnabled,
               isDense: true,
@@ -483,38 +507,44 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           ),
         ),
         const SizedBox(width: 10),
+        // const Spacer(),
         if (widget.goodsItem.packDate != null)
           Text('Qty Rejected * ',
               style: Get.textTheme.bodyMedium
                   ?.copyWith(fontSize: 22.sp, color: AppColors.white)),
         // if (qtyRejectedController.text.isNotEmpty)
-        Expanded(
+        SizedBox(
+          width: 80,
           child: TextField(
             controller: qtyRejectedController,
-            style: Get.textTheme.bodyMedium
-                ?.copyWith(fontSize: 22.sp, color: AppColors.white),
-            decoration: InputDecoration(
-              enabled: etQtyShippedEnabled,
+            textAlign: TextAlign.center,
+            style: Get.textTheme.bodyMedium?.copyWith(
+              fontSize: 22.sp,
+              color: AppColors.white,
+              fontWeight: FontWeight.normal,
+            ),
+            decoration: const InputDecoration(
               isDense: true,
-              border: const UnderlineInputBorder(),
-              focusedBorder: const UnderlineInputBorder(
+              border: UnderlineInputBorder(),
+              focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey),
               ),
-              disabledBorder: const UnderlineInputBorder(
+              disabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey),
               ),
-              enabledBorder: const UnderlineInputBorder(
+              enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey),
               ),
-              errorBorder: const UnderlineInputBorder(
+              errorBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey),
               ),
-              focusedErrorBorder: const UnderlineInputBorder(
+              focusedErrorBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey),
               ),
             ),
           ),
         ),
+        const Spacer(),
       ],
     );
   }

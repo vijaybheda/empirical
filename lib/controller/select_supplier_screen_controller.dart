@@ -580,26 +580,25 @@ class SelectSupplierScreenController extends GetxController {
     }
   }
 
-  void navigateToScanBarcodeScreen() {
+  Future<void> navigateToScanBarcodeScreen(
+      {Function(String scannedCode)? onBarcodeScanned}) async {
     // TODO: uncomment this code to enable barcode scanning
 
-    /*String? res = await Get.to(() => SimpleBarcodeScannerPage(
-                      scanType: ScanType.barcode,
-                      centerTitle: true,
-                      appBarTitle: 'Scan a Barcode',
-                      cancelButtonText: 'Cancel',
-                      isShowFlashIcon: true,
-                      lineColor: AppColors.primaryColor.value.toString(),
-                    ));
-                if (res != null) {
-                  if (onBarcodeScanned != null) {
-                    onBarcodeScanned!(res);
-                  }
-                  'Scanned: $res'
-                } else {
-                'Cancelled'
-
-                }*/
+    String? res = await Get.to(() => SimpleBarcodeScannerPage(
+          scanType: ScanType.barcode,
+          centerTitle: true,
+          // appBarTitle: 'Scan a Barcode',
+          // cancelButtonText: 'Cancel',
+          // isShowFlashIcon: true,
+          // lineColor: AppColors.primaryColor.value.toString(),
+        ));
+    if (res != null && res.length > 10) {
+      if (onBarcodeScanned != null) {
+        onBarcodeScanned(res);
+      }
+    } else {
+      return;
+    }
 
     // if (onBarcodeScanned != null) {
     // onBarcodeScanned!('(01)1233455566778(13)090818(10)912');

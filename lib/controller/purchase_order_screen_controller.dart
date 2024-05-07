@@ -65,7 +65,6 @@ class PurchaseOrderScreenController extends GetxController {
       if (filteredItemSkuList.isEmpty) {
         int enterpriseId =
             await dao.getEnterpriseIdByUserId(userData.userName!.toLowerCase());
-        // TODO:
         List<FinishedGoodsItemSKU>? finishedGoodItems =
             await dao.getFinishedGoodItemSkuFromTable(
           partnerID,
@@ -82,8 +81,6 @@ class PurchaseOrderScreenController extends GetxController {
         listAssigned.value = true;
         update();
       } else {
-        // TODO:
-        // filteredItemSkuList = asd;
         listAssigned.value = true;
         update();
       }
@@ -95,7 +92,8 @@ class PurchaseOrderScreenController extends GetxController {
 
     // remove if exist in appStorage.selectedItemSKUList
     appStorage.selectedItemSKUList.removeWhere((element) {
-      return element.id == partner.id;
+      return element.id == partner.id &&
+          element.uniqueItemId == partner.uniqueItemId;
     });
     if (partner.isSelected ?? false) {
       appStorage.selectedItemSKUList.add(partner);
@@ -114,8 +112,10 @@ class PurchaseOrderScreenController extends GetxController {
       if (filteredIndex != -1) {
         itemSkuList[filteredIndex] = partner;
       }
-      update(['itemSkuList']);
+    } else {
+      filteredItemSkuList.add(partner);
     }
+    update(['itemSkuList']);
   }
 
   Future<void> navigateToPurchaseOrderDetails(
@@ -134,7 +134,7 @@ class PurchaseOrderScreenController extends GetxController {
 
     if (appStorage.selectedItemSKUList.isNotEmpty) {
       if (userId == 4180) {
-        Get.to(() => NewPurchaseOrderDetailsScreen(), arguments: {
+        Get.to(() => const NewPurchaseOrderDetailsScreen(), arguments: {
           Consts.PARTNER_NAME: partnerName,
           Consts.PARTNER_ID: partnerID,
           Consts.CARRIER_NAME: carrierName,
