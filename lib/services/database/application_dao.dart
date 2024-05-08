@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:csv/csv.dart';
+import 'package:flutter/material.dart';
 import 'package:pverify/models/commodity_data.dart';
 import 'package:pverify/models/commodity_keywords.dart';
 import 'package:pverify/models/inspection.dart';
@@ -20,6 +21,7 @@ import 'package:pverify/models/partner_item_sku_inspections.dart';
 import 'package:pverify/models/purchase_order_details.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/models/quality_control_item.dart';
+import 'package:pverify/models/result_rejection_details.dart';
 import 'package:pverify/models/specification.dart';
 import 'package:pverify/models/specification_analytical.dart';
 import 'package:pverify/models/specification_analytical_request_item.dart';
@@ -2599,6 +2601,34 @@ class ApplicationDao {
     return inspectionId;
   }
 
+  Future<ResultRejectionDetail?> getResultRejectionDetails(
+    int inspectionId,
+  ) async {
+    ResultRejectionDetail? details;
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      String query = 'SELECT Result, Result_Reason, Defect_Comments '
+          'FROM Result_Rejection_Details '
+          'WHERE Inspection_ID = ?';
+
+      List<Map<String, dynamic>> result =
+          await db.rawQuery(query, [inspectionId]);
+      if (result.isNotEmpty) {
+        details = ResultRejectionDetail(
+            result: result.first['Result'],
+            resultReason: result.first['Result_Reason'],
+            defectComments: result.first['Defect_Comments']);
+      } else {
+        debugPrint(" 🔴 getResultRejectionDetails is empty 🔴 ");
+      }
+    } catch (e) {
+      rethrow;
+    }
+
+    return details;
+  }
+
   Future<int> createIsPictureReqSpecAttribute(
     int inspectionID,
     String result,
@@ -3563,5 +3593,70 @@ class ApplicationDao {
     }
 
     return branded;
+  }
+
+  Future<int?> createOrUpdateOverriddenResult(
+    int inspectionID,
+    int overriddenBy,
+    String overriddenResult,
+    String overriddenComments,
+    int overriddenTimestamp,
+    String inspectionOldResult,
+    int originalQtyShipped,
+    int originalQtyRejected,
+    int qtyShipped,
+    int qtyRejected,
+  ) async {
+    int? inspectionId;
+    Database database = dbProvider.lazyDatabase;
+
+    try {
+      String query =
+          'SELECT Inspection_ID FROM Overridden_Result WHERE Inspection_ID = ?';
+      List<Map<String, dynamic>> result =
+          await database.rawQuery(query, [inspectionID]);
+
+      if (result.isNotEmpty) {
+        inspectionId = result.first['Inspection_ID'];
+      }
+
+      if (inspectionId == null) {
+        await database.transaction((txn) async {
+          var values = {
+            'Inspection_ID': inspectionID,
+            'Overridden_By': overriddenBy,
+            'Overridden_Result': overriddenResult,
+            'Overridden_Timestamp': overriddenTimestamp,
+            'Overridden_Comments': overriddenComments,
+            'Old_Result': inspectionOldResult,
+            'Original_Qty_Shipped': originalQtyShipped,
+            'Original_Qty_Rejected': originalQtyRejected,
+            'New_Qty_Shipped': qtyShipped,
+            'New_Qty_Rejected': qtyRejected,
+          };
+          inspectionId = await txn.insert('Overridden_Result', values);
+        });
+      } else {
+        await database.transaction((txn) async {
+          var values = {
+            'Overridden_By': overriddenBy,
+            'Overridden_Result': overriddenResult,
+            'Overridden_Timestamp': overriddenTimestamp,
+            'Overridden_Comments': overriddenComments,
+            'Old_Result': inspectionOldResult,
+            'Original_Qty_Shipped': originalQtyShipped,
+            'Original_Qty_Rejected': originalQtyRejected,
+            'New_Qty_Shipped': qtyShipped,
+            'New_Qty_Rejected': qtyRejected,
+          };
+          await txn.update('Overridden_Result', values,
+              where: 'Inspection_ID = ?', whereArgs: [inspectionID]);
+        });
+      }
+    } catch (e) {
+      throw Exception(
+          'Error occurred while creating or updating inspection: $e');
+    }
+    return inspectionId;
   }
 }
