@@ -96,6 +96,8 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
   String? specificationVersion;
   String? specificationName;
   String? specificationTypeName;
+  RxBool valueAssigned = false.obs;
+  bool fromSetState = false;
 
   @override
   void initState() {
@@ -117,9 +119,15 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
   @override
   void setState(VoidCallback fn) {
     if (mounted) {
-      asyncTask();
+      asyncTask(true);
       super.setState(fn);
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    asyncTask();
+    super.didChangeDependencies();
   }
 
   Future<void> getSpecifications() async {
@@ -132,6 +140,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           await dao.getSpecificationByItemSKUFromTable(
               widget.partnerID, widget.goodsItem.sku!, widget.goodsItem.sku!);
     }
+    return;
   }
 
   @override
@@ -146,16 +155,176 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: Column(
-        children: [
-          _inspectionNameIdInfo(),
-          const SizedBox(height: 8),
-          _inspectionStatusInfo(),
-          const SizedBox(height: 8),
-          if (layoutQtyRejectedVisibility) _inspectionQuantity(),
-        ],
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+      child: Obx(() {
+        if (!valueAssigned.value) {
+          return buildShimmer();
+        }
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 5,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _inspectionNameIdInfo(),
+                  const SizedBox(height: 2),
+                  _inspectionStatusInfo(),
+                  const SizedBox(height: 2),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        iconSize: 40,
+                        icon: inspectButtonImagePath,
+                        onPressed: () {
+                          if (widget.inspectTap != null) {
+                            widget.inspectTap!(
+                              inspection,
+                              partnerItemSKU,
+                              lotNumberController.text,
+                              packDateController.text,
+                              isComplete,
+                              isPartialComplete,
+                              inspectionId,
+                              widget.poNumber,
+                              widget.sealNumber,
+                            );
+                          }
+                        },
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          if (!informationIconEnabled) {
+                            return;
+                          }
+                          if (widget.infoTap != null) {
+                            widget.infoTap!(inspection, partnerItemSKU);
+                          }
+                        },
+                        icon: Image.asset(
+                          informationImagePath.assetName,
+                          width: 40,
+                          height: 40,
+                        ),
+                      ),
+                    ],
+                  ),
+                  orderStatusWidget(),
+                ],
+              ),
+            ),
+          ],
+        );
+      }),
+    );
+  }
+
+  Column buildShimmer() {
+    return Column(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 200.w,
+                    height: 20.h,
+                    color: AppColors.lightGrey,
+                  ),
+                  Container(
+                    width: 100.w,
+                    height: 20.h,
+                    color: AppColors.lightGrey,
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              iconSize: 40,
+              icon: inspectButtonImagePath,
+              onPressed: () {},
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: Image.asset(
+                informationImagePath.assetName,
+                width: 40,
+                height: 40,
+              ),
+            ),
+          ],
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              width: 100.w,
+              height: 20.h,
+              color: AppColors.lightGrey,
+            ),
+            Container(
+              width: 100.w,
+              height: 20.h,
+              color: AppColors.lightGrey,
+            ),
+            Container(
+              width: 100.w,
+              height: 20.h,
+              color: AppColors.lightGrey,
+            ),
+          ],
+        ),
+        if (resultButton != null || editPencilVisibility)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              if (resultButton != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: resultButtonColor,
+                    borderRadius: BorderRadius.circular(32),
+                  ),
+                  child: Text(
+                    resultButton ?? '',
+                    style: Get.textTheme.bodyMedium?.copyWith(
+                      fontSize: 28.sp,
+                    ),
+                  ),
+                ),
+              const SizedBox(width: 12),
+              if (editPencilVisibility)
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.edit_outlined,
+                    size: 30,
+                    color: AppColors.white,
+                  ),
+                ),
+            ],
+          ),
+      ],
     );
   }
 
@@ -179,69 +348,26 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
   }
 
   Widget _inspectionNameIdInfo() {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                widget.goodsItem.description ?? '-',
-                style: Get.textTheme.bodyMedium?.copyWith(
-                  fontSize: 28.sp,
-                  color: AppColors.lightGrey,
-                ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                widget.goodsItem.sku ?? '-',
-                style: Get.textTheme.bodyMedium?.copyWith(
-                  fontSize: 28.sp,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+        Text(
+          widget.goodsItem.description ?? '-',
+          style: Get.textTheme.bodyMedium?.copyWith(
+            fontSize: 28.sp,
+            color: AppColors.lightGrey,
           ),
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
         ),
-        IconButton(
-          iconSize: 40,
-          icon: inspectButtonImagePath,
-          onPressed: () {
-            if (widget.inspectTap != null) {
-              widget.inspectTap!(
-                inspection,
-                partnerItemSKU,
-                lotNumberController.text,
-                packDateController.text,
-                isComplete,
-                isPartialComplete,
-                inspectionId,
-                widget.poNumber,
-                widget.sealNumber,
-              );
-            }
-          },
-        ),
-        IconButton(
-          onPressed: () {
-            if (!informationIconEnabled) {
-              return;
-            }
-            if (widget.infoTap != null) {
-              widget.infoTap!(inspection, partnerItemSKU);
-            }
-          },
-          icon: Image.asset(
-            informationImagePath.assetName,
-            width: 40,
-            height: 40,
+        Text(
+          widget.goodsItem.sku ?? '-',
+          style: Get.textTheme.bodyMedium?.copyWith(
+            fontSize: 28.sp,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );
@@ -250,147 +376,185 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
   Widget _inspectionStatusInfo() {
     return Row(
       mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (widget.goodsItem.lotNumber != null)
-          Expanded(
-            flex: 2,
-            child: RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Lot No. ',
-                    style: Get.textTheme.bodyMedium
-                        ?.copyWith(fontSize: 28.sp, color: AppColors.white),
-                  ),
-                  if (widget.goodsItem.lotNumber != null)
-                    TextSpan(
-                      text: widget.goodsItem.lotNumber.toString(),
-                      style: Get.textTheme.bodyMedium
-                          ?.copyWith(fontSize: 28.sp, color: AppColors.white),
-                    ),
-                ],
+        // if (widget.goodsItem.lotNumber != null)
+        Expanded(
+          flex: 3,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Lot No. ',
+                style: Get.textTheme.bodyMedium
+                    ?.copyWith(fontSize: 22.sp, color: AppColors.white),
               ),
-            ),
-          ),
-        if (widget.goodsItem.packDate != null)
-          Expanded(
-            flex: 4,
-            child: RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Pack Date ',
-                    style: Get.textTheme.bodyMedium?.copyWith(
-                      fontSize: 28.sp,
-                    ),
-                  ),
-                  if (widget.goodsItem.packDate != null)
-                    TextSpan(
-                      text: (widget.goodsItem.packDate!),
-                      style: Get.textTheme.bodyMedium?.copyWith(
-                        fontSize: 28.sp,
-                      ),
-                    ),
-                ],
+              // if (widget.goodsItem.lotNumber != null)
+              Text(
+                widget.goodsItem.lotNumber ?? '',
+                style: Get.textTheme.bodyMedium
+                    ?.copyWith(fontSize: 22.sp, color: AppColors.white),
               ),
-            ),
+            ],
           ),
-        if (resultButton != null || editPencilVisibility)
-          Expanded(
-            flex: 3,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                if (resultButton != null)
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 26, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: resultButtonColor,
-                      borderRadius: BorderRadius.circular(32),
-                    ),
-                    child: Text(
-                      resultButton ?? '',
-                      style: Get.textTheme.bodyMedium?.copyWith(
-                        fontSize: 28.sp,
-                      ),
-                    ),
-                  ),
-                const SizedBox(width: 12),
-                if (editPencilVisibility)
-                  IconButton(
-                    onPressed: () {
-                      if (widget.onTapEdit != null) {
-                        widget.onTapEdit!(inspection, partnerItemSKU);
-                      }
-                    },
-                    icon: Icon(
-                      Icons.edit_outlined,
-                      size: 24,
-                      color: AppColors.white,
-                    ),
-                  ),
-              ],
-            ),
+        ),
+        // if (widget.goodsItem.packDate != null)
+        Expanded(
+          flex: 3,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Pack Date ',
+                style: Get.textTheme.bodyMedium
+                    ?.copyWith(fontSize: 22.sp, color: AppColors.white),
+              ),
+              // if (widget.goodsItem.packDate != null)
+              Text(
+                (widget.goodsItem.packDate ?? ''),
+                style: Get.textTheme.bodyMedium
+                    ?.copyWith(fontSize: 22.sp, color: AppColors.white),
+              ),
+            ],
           ),
+        ),
       ],
     );
+  }
+
+  Widget orderStatusWidget() {
+    if (resultButton != null || editPencilVisibility) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (resultButton != null)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: resultButtonColor,
+                borderRadius: BorderRadius.circular(32),
+              ),
+              child: Text(
+                resultButton ?? '',
+                style: Get.textTheme.bodyMedium?.copyWith(
+                  fontSize: 28.sp,
+                ),
+              ),
+            ),
+          const SizedBox(width: 12),
+          if (editPencilVisibility)
+            IconButton(
+              onPressed: () {
+                if (widget.onTapEdit != null) {
+                  widget.onTapEdit!(inspection, partnerItemSKU);
+                }
+              },
+              icon: Icon(
+                Icons.edit_outlined,
+                size: 30,
+                color: AppColors.white,
+              ),
+            ),
+        ],
+      );
+    } else {
+      return SizedBox();
+    }
   }
 
   Widget _inspectionQuantity() {
     return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(
-          flex: 1,
-          child: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Qty Shipped * ',
-                  style: Get.textTheme.bodyMedium?.copyWith(
-                    fontSize: 28.sp,
-                  ),
-                ),
-                // if (widget.goodsItem.quantityShipped != null)
-                TextSpan(
-                  text: lotNumberController.text,
-                  style: Get.textTheme.bodyMedium
-                      ?.copyWith(fontSize: 28.sp, color: AppColors.white),
-                ),
-              ],
+        Text('Qty Shipped * ',
+            style: Get.textTheme.bodyMedium
+                ?.copyWith(fontSize: 22.sp, color: AppColors.white)),
+        // if (widget.goodsItem.quantityShipped != null)
+        SizedBox(
+          width: 80,
+          child: TextField(
+            controller: qtyShippedController,
+            textAlign: TextAlign.center,
+            style: Get.textTheme.bodyMedium?.copyWith(
+              fontSize: 22.sp,
+              color: AppColors.white,
+              fontWeight: FontWeight.normal,
             ),
-          ),
-        ),
-        if (widget.goodsItem.packDate != null)
-          Expanded(
-            flex: 1,
-            child: RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Qty Rejected * ',
-                    style: Get.textTheme.bodyMedium?.copyWith(
-                      fontSize: 28.sp,
-                    ),
-                  ),
-                  if (widget.goodsItem.packDate != null)
-                    TextSpan(
-                      text: '200', // TODO: implement this
-                      style: Get.textTheme.bodyMedium
-                          ?.copyWith(fontSize: 28.sp, color: AppColors.white),
-                    ),
-                ],
+            decoration: InputDecoration(
+              enabled: etQtyShippedEnabled,
+              isDense: true,
+              border: const UnderlineInputBorder(),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              disabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              errorBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedErrorBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
               ),
             ),
           ),
+        ),
+        const SizedBox(width: 10),
+        // const Spacer(),
+        if (widget.goodsItem.packDate != null)
+          Text('Qty Rejected * ',
+              style: Get.textTheme.bodyMedium
+                  ?.copyWith(fontSize: 22.sp, color: AppColors.white)),
+        // if (qtyRejectedController.text.isNotEmpty)
+        SizedBox(
+          width: 80,
+          child: TextField(
+            controller: qtyRejectedController,
+            textAlign: TextAlign.center,
+            style: Get.textTheme.bodyMedium?.copyWith(
+              fontSize: 22.sp,
+              color: AppColors.white,
+              fontWeight: FontWeight.normal,
+            ),
+            decoration: const InputDecoration(
+              isDense: true,
+              border: UnderlineInputBorder(),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              disabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              errorBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedErrorBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+            ),
+          ),
+        ),
+        const Spacer(),
       ],
     );
   }
 
-  Future<void> asyncTask() async {
+  Future<void> asyncTask([bool s = false]) async {
+    if (s && fromSetState /*&& valueAssigned.value*/) {
+      fromSetState = true;
+      return;
+    }
+    fromSetState = true;
     partnerItemSKU = await dao.findPartnerItemSKU(
         widget.partnerID,
         widget.goodsItem.sku!,
@@ -398,9 +562,13 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
 
     await getSpecifications();
     if (partnerItemSKU == null) {
+      valueAssigned.value = true;
+      setState(() {});
       return;
     }
     if (partnerItemSKU?.inspectionId == null) {
+      valueAssigned.value = true;
+      setState(() {});
       return;
     }
     if (partnerItemSKU != null) {
@@ -574,6 +742,9 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           });
         };*/
       }
+
+      valueAssigned.value = true;
+      setState(() {});
     }
 
     await getSpecifications();
@@ -602,6 +773,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
         informationIconEnabled = false;
       }
     }
+    valueAssigned.value = true;
   }
 
   String getPoNumber(int position) {
@@ -618,5 +790,3 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
     return packDateController.text;
   }
 }
-
-// TODO: implement above UI based on existing app logic

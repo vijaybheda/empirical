@@ -4,23 +4,12 @@ import 'package:pverify/controller/new_purchase_order_details_controller.dart';
 
 class NewPurchaseOrderDetailsScreen
     extends GetWidget<NewPurchaseOrderDetailsController> {
-  // final PartnerItem partner;
-  // final CarrierItem carrier;
-  // final CommodityItem commodity;
-  // final QCHeaderDetails? qcHeaderDetails;
-  const NewPurchaseOrderDetailsScreen({
-    super.key,
-    // required this.partner,
-    // required this.carrier,
-    // required this.commodity,
-    // required this.qcHeaderDetails,
-  });
+  const NewPurchaseOrderDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<NewPurchaseOrderDetailsController>(
-        init: NewPurchaseOrderDetailsController(
-            /*partner: partner, carrier: carrier, commodity: commodity*/),
+        init: NewPurchaseOrderDetailsController(),
         builder: (controller) {
           return Scaffold(
             appBar: AppBar(

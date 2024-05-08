@@ -34,11 +34,6 @@ import 'package:pverify/utils/utils.dart';
 import '../ui/trailer_temp/trailertemp.dart';
 
 class PurchaseOrderDetailsController extends GetxController {
-  // final PartnerItem partner;
-  // final CarrierItem carrier;
-  // final CommodityItem commodity;
-  // final QCHeaderDetails? qcHeaderDetails;
-
   final TextEditingController searchController = TextEditingController();
 
   int? serverInspectionID;
@@ -68,19 +63,12 @@ class PurchaseOrderDetailsController extends GetxController {
 
   PurchaseOrderDetailsController();
 
-  /*PurchaseOrderDetailsController({
-    required this.partner,
-    required this.carrier,
-    required this.commodity,
-    required this.qcHeaderDetails,
-  });*/
-
   @override
   void onInit() {
     Map<String, dynamic>? args = Get.arguments;
     if (args == null) {
       Get.back();
-      throw Exception('Arguments not allowed');
+      throw Exception('Arguments required!');
     }
 
     serverInspectionID = args[Consts.SERVER_INSPECTION_ID] ?? -1;
@@ -90,7 +78,7 @@ class PurchaseOrderDetailsController extends GetxController {
     carrierID = args[Consts.CARRIER_ID] ?? 0;
     poNumber = args[Consts.PO_NUMBER] ?? '';
     sealNumber = args[Consts.SEAL_NUMBER] ?? '';
-    currentLotNumber = args[Consts.Lot_No] ?? '';
+    currentLotNumber = args[Consts.LOT_NO] ?? '';
     currentItemSKU = args[Consts.ITEM_SKU] ?? '';
     currentPackDate = args[Consts.PACK_DATE] ?? '';
     currentLotSize = args[Consts.LOT_SIZE] ?? '';
@@ -147,14 +135,14 @@ class PurchaseOrderDetailsController extends GetxController {
       }).toList();
       filteredInspectionsList.addAll(items);
     }
-    update(['inspectionItems']);
+    update();
   }
 
   List<PurchaseOrderItem> getPurchaseOrderData() {
     List<PurchaseOrderItem> list = [];
 
     for (FinishedGoodsItemSKU item in (selectedItemSKUList)) {
-      list.add(PurchaseOrderItem.newData(
+      PurchaseOrderItem newData = PurchaseOrderItem.newData(
           item.name,
           item.sku,
           item.poNo,
@@ -164,7 +152,8 @@ class PurchaseOrderDetailsController extends GetxController {
           item.commodityName,
           item.packDate,
           item.FTLflag,
-          item.Branded));
+          item.Branded);
+      list.add(newData);
     }
     return list;
   }
@@ -262,7 +251,11 @@ class PurchaseOrderDetailsController extends GetxController {
 
         appStorage.specificationGradeToleranceArrayList =
             specificationGradeToleranceArrayList;
+        listAssigned.value = false;
+        update();
         await calculateResult();
+
+        listAssigned.value = true;
         update();
       } else {
         AppSnackBar.info(message: AppStrings.noItemsCompleted);
@@ -410,6 +403,7 @@ class PurchaseOrderDetailsController extends GetxController {
 
             // TODO: implement logic
             // await dao.updateInspectionUploadStatus(inspection.id!, (result == "RJ"? "RJ": "AC"));
+            update();
           } else if (appStorage.specificationGradeToleranceList != null &&
               (appStorage.specificationGradeToleranceList ?? []).isNotEmpty) {
             int totalSampleSize = 0;
@@ -449,15 +443,23 @@ class PurchaseOrderDetailsController extends GetxController {
     String? currentItemSKU = goodsItem.sku;
     String? currentItemSKUName = goodsItem.description;
     // String? current_pack_Date = packDate;
+    int currentItemSKUId = finishedGoodsItemSKU.id!;
+    String currentUniqueId = finishedGoodsItemSKU.uniqueItemId!;
+    int? currentCommodityId = finishedGoodsItemSKU.commodityID;
+    String currentCommodityName = finishedGoodsItemSKU.commodityName!;
+    String? currentGtin = finishedGoodsItemSKU.gtin;
+    String? dateType = finishedGoodsItemSKU.dateType;
 
     Map<String, dynamic> passingData = {};
 
     if (!isComplete && !ispartialComplete) {
       passingData[Consts.SERVER_INSPECTION_ID] = -1;
     } else {
-      // FIXME: below
-      // passingData[Consts.SERVER_INSPECTION_ID] = viewHolder.inspectionId;
-
+      PartnerItemSKUInspections? partnerItemSKU = await dao.findPartnerItemSKU(
+          partnerID!, currentItemSKU!, currentUniqueId);
+      if (partnerItemSKU != null) {
+        passingData[Consts.SERVER_INSPECTION_ID] = partnerItemSKU.inspectionId;
+      }
       passingData[Consts.SPECIFICATION_NUMBER] = specificationNumber;
       passingData[Consts.SPECIFICATION_VERSION] = specificationVersion;
       passingData[Consts.SPECIFICATION_NAME] = specificationName;
@@ -471,98 +473,26 @@ class PurchaseOrderDetailsController extends GetxController {
     passingData[Consts.CARRIER_NAME] = carrierName;
     passingData[Consts.CARRIER_ID] = carrierID;
 
-    // FIXME: below
-    // passingData[Consts.Lot_No] = current_lot_number;
+    passingData[Consts.LOT_NO] = currentLotNumber;
+    passingData[Consts.LOT_SIZE] = currentLotSize;
     passingData[Consts.ITEM_SKU] = currentItemSKU;
     passingData[Consts.ITEM_SKU_NAME] = currentItemSKUName;
-    // passingData[Consts.ITEM_SKU_ID] = current_Item_SKU_Id;
-    // passingData[Consts.PACK_DATE] = current_pack_Date;
+    passingData[Consts.ITEM_SKU_ID] = currentItemSKUId;
+    passingData[Consts.PACK_DATE] = currentPackDate;
 
     passingData[Consts.COMPLETED] = isComplete;
     passingData[Consts.PARTIAL_COMPLETED] = ispartialComplete;
 
-    // FIXME: below
-    // passingData[Consts.COMMODITY_ID] = current_commodity_id;
-    // passingData[Consts.COMMODITY_NAME] = current_commodity_name;
-    // passingData[Consts.ITEM_UNIQUE_ID] = current_unique_id;
-    // passingData[Consts.GTIN] = current_gtin;
-    // passingData[Consts.PRODUCT_TRANSFER] = productTransfer;
-    // passingData[Consts.DATETYPE] = dateType;
-
-    await Get.to(
-        () => QCDetailsShortFormScreen(
-            // partner: partner,
-            // carrier: carrier,
-            // commodity: commodity,
-            // qcHeaderDetails: qcHeaderDetails,
-            // purchaseOrderItem: goodsItem,
-            ),
+    passingData[Consts.COMMODITY_ID] = currentCommodityId;
+    passingData[Consts.COMMODITY_NAME] = currentCommodityName;
+    passingData[Consts.ITEM_UNIQUE_ID] = currentUniqueId;
+    passingData[Consts.GTIN] = currentGtin;
+    passingData[Consts.PRODUCT_TRANSFER] = productTransfer;
+    passingData[Consts.DATETYPE] = dateType;
+    final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+    await Get.to(() => QCDetailsShortFormScreen(tag: tag),
         arguments: passingData);
   }
-
-  /*Future<void> onEditTap(PurchaseOrderItem goodsItem, int index) async {
-    PartnerItemSKUInspections? partnerItemSKU = await dao.findPartnerItemSKU(
-        partnerID,
-        dataList.get(position).getSku(),
-        appStorage.selectedItemSKUList.get(position).getUniqueItemId());
-
-    Inspection? inspection =
-        await dao.findInspectionByID(partnerItemSKU.getInspectionId());
-
-    Map<String, dynamic> passingData = {
-      Consts.SERVER_INSPECTION_ID: inspection.inspection_id,
-      Consts.PARTNER_NAME: partnerName,
-      Consts.PARTNER_ID: partnerID,
-      Consts.CARRIER_NAME: carrierName,
-      Consts.CARRIER_ID: carrierID,
-      Consts.COMMODITY_NAME:
-          appStorage.selectedItemSKUList[position].commodityName,
-      Consts.COMMODITY_ID: appStorage.selectedItemSKUList[position].commodityID,
-      Consts.INSPECTION_RESULT: finalInspectionResult,
-      Consts.ITEM_SKU: goodsItem.sku,
-      Consts.PO_NUMBER: po_number,
-    };
-
-    if (productTransfer == "Transfer") {
-      appStorage.specificationByItemSKUList =
-          await dao.getSpecificationByItemSKUFromTableForTransfer(
-              partnerID, goodsItem.sku, goodsItem.sku);
-    } else {
-      appStorage.specificationByItemSKUList =
-          await dao.getSpecificationByItemSKUFromTable(
-              partnerID, goodsItem.sku, goodsItem.sku);
-    }
-
-    if (appStorage.specificationByItemSKUList != null &&
-        appStorage.specificationByItemSKUList!.isNotEmpty) {
-      specificationNumber =
-          appStorage.specificationByItemSKUList!.first.specificationNumber;
-      specificationVersion =
-          appStorage.specificationByItemSKUList!.first.specificationVersion;
-      specificationName =
-          appStorage.specificationByItemSKUList!.first.specificationName;
-      specificationTypeName =
-          appStorage.specificationByItemSKUList!.first.specificationTypeName;
-    }
-
-    passingData.addAll({
-      Consts.SPECIFICATION_NUMBER: specificationNumber,
-      Consts.SPECIFICATION_VERSION: specificationVersion,
-      Consts.SPECIFICATION_NAME: specificationName,
-      Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
-      Consts.PRODUCT_TRANSFER: productTransfer,
-    });
-
-    await Get.to(
-        () => QCDetailsShortFormScreen(
-              partner: partner,
-              carrier: carrier,
-              commodity: commodity,
-              qcHeaderDetails: qcHeaderDetails,
-              purchaseOrderItem: goodsItem,
-            ),
-        arguments: passingData);
-  }*/
 
   Future onInformationIconTap(PurchaseOrderItem goodsItem) async {
     if (productTransfer == "Transfer") {
@@ -738,6 +668,7 @@ class PurchaseOrderDetailsController extends GetxController {
     int? inspectionId,
     String poNumber,
     String sealNumber,
+    int position,
     Function(Map data)? poInterface,
   ) async {
     bool checkItemSKUAndLot =
@@ -796,7 +727,7 @@ class PurchaseOrderDetailsController extends GetxController {
 
         if (poInterface != null) {
           Map<String, dynamic> bundle = {
-            Consts.Lot_No: currentLotNumber,
+            Consts.LOT_NO: currentLotNumber,
             Consts.ITEM_SKU: currentItemSKU,
             Consts.ITEM_SKU_NAME: currentItemSKUName,
             Consts.PACK_DATE: currentPackDate,
@@ -850,7 +781,7 @@ class PurchaseOrderDetailsController extends GetxController {
           passigData[Consts.PARTNER_ID] = partnerID;
           passigData[Consts.CARRIER_NAME] = carrierName;
           passigData[Consts.CARRIER_ID] = carrierID;
-          passigData[Consts.Lot_No] = currentLotNumber;
+          passigData[Consts.LOT_NO] = currentLotNumber;
           passigData[Consts.ITEM_SKU] = currentItemSKU;
           passigData[Consts.ITEM_SKU_NAME] = currentItemSKUName;
           passigData[Consts.ITEM_SKU_ID] = currentItemSKUId;
@@ -863,17 +794,18 @@ class PurchaseOrderDetailsController extends GetxController {
           passigData[Consts.GTIN] = currentGtin;
           passigData[Consts.PRODUCT_TRANSFER] = productTransfer;
           passigData[Consts.DATETYPE] = dateType;
-
-          Get.to(
-            () => QCDetailsShortFormScreen(
-                // partner: partner,
-                // carrier: carrier,
-                // commodity: commodity,
-                // qcHeaderDetails: qcHeaderDetails,
-                // purchaseOrderItem: goodsItem,
-                ),
+          passigData[Consts.CALLER_ACTIVITY] = "PurchaseOrderDetailsActivity";
+          passigData[Consts.IS1STTIMEACTIVITY] = "PurchaseOrderDetailsActivity";
+          final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+          await Get.to(
+            () => QCDetailsShortFormScreen(tag: tag),
             arguments: passigData,
           );
+          AppAlertDialog.confirmationAlert(
+              Get.context!, AppStrings.alert, 'Calculate results?',
+              onYesTap: () {
+            calculateButtonClick(Get.context!);
+          });
         } else {
           AppAlertDialog.validateAlerts(Get.context!, AppStrings.alert,
               'No specification alert for $currentItemSKU');
@@ -928,7 +860,7 @@ class PurchaseOrderDetailsController extends GetxController {
 
   void onTailerTempMenuTap() {
     Get.to(
-        () => TrailerTemp(
+        () => const TrailerTemp(
             // carrier: carrier,
             // orderNumber: poNumber!,
             ),
@@ -947,7 +879,7 @@ class PurchaseOrderDetailsController extends GetxController {
 
   Future<void> onQCHeaderMenuTap() async {
     Get.to(
-        () => QualityControlHeader(
+        () => const QualityControlHeader(
             // carrier: carrier,
             ),
         arguments: {
@@ -979,11 +911,7 @@ class PurchaseOrderDetailsController extends GetxController {
       Get.to(() => const CommodityTransferScreen(), arguments: passingData);
     } else {
       Get.to(
-        () => CommodityIDScreen(
-            // partner: partner,
-            // carrier: carrier,
-            // qcHeaderDetails: qcHeaderDetails,
-            ),
+        () => const CommodityIDScreen(),
         arguments: passingData,
       );
     }
@@ -1007,20 +935,17 @@ class PurchaseOrderDetailsController extends GetxController {
         arguments: passingData,
       );
     } else {
+      final String tag = DateTime.now().millisecondsSinceEpoch.toString();
       Get.to(
         () => PurchaseOrderScreen(
-          // carrier: carrier,
-          // qcHeaderDetails: qcHeaderDetails,
-          // commodity: commodity,
-          // partner: partner,
-          tag: commodityID.toString(),
+          tag: tag /*commodityID.toString()*/,
         ),
         arguments: passingData,
       );
     }
   }
 
-  void initAsyncActions() {
+  Future<void> initAsyncActions() async {
     if (callerActivity.isNotEmpty) {
       if (callerActivity == "GTINActivity") {
         if (selectedItemSKUList.isNotEmpty) {
@@ -1032,6 +957,40 @@ class PurchaseOrderDetailsController extends GetxController {
                   "GTIN has to be for the same supplier: $partnerName\nFinish & upload pfg for $partnerName\n\n"
                   "For a new supplier go to the Home page and select Inspect New Product");
             });
+          }
+        }
+      }
+    }
+
+    if (callerActivity.isNotEmpty) {
+      if (callerActivity == "QualityControlHeaderActivity" ||
+          callerActivity == "PurchaseOrderDetailsActivity") {
+        for (int i = 0; i < selectedItemSKUList.length; i++) {
+          bool isComplete = await dao.isInspectionComplete(partnerID!,
+              selectedItemSKUList[i].sku!, selectedItemSKUList[i].uniqueItemId);
+
+          if (isComplete) {
+            PartnerItemSKUInspections? partnerItemSKU =
+                await dao.findPartnerItemSKU(
+                    partnerID!,
+                    selectedItemSKUList[i].sku!,
+                    selectedItemSKUList[i].uniqueItemId);
+
+            if (partnerItemSKU != null) {
+              Inspection? inspection2 =
+                  await dao.findInspectionByID(partnerItemSKU.inspectionId!);
+              if (inspection2 != null && inspection2.result != null) {
+                callerActivity = "PurchaseOrderDetailsActivity";
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  AppAlertDialog.confirmationAlert(
+                      Get.context!, AppStrings.alert, "Calculate results?",
+                      onYesTap: () {
+                    calculateButtonClick(Get.context!);
+                  });
+                });
+                break;
+              }
+            }
           }
         }
       }

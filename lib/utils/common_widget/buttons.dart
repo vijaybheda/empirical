@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-Widget customButton(
-  Color? backgroundColor,
-  String title,
-  double width,
-  double height,
-  TextStyle fontStyle, {
+Widget customButton({
+  required Color backgroundColor,
+  required String title,
+  required double width,
+  required double height,
+  required TextStyle fontStyle,
   Function? onClickAction,
 }) {
   return InkWell(

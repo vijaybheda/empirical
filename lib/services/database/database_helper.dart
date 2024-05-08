@@ -2,7 +2,7 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:pverify/services/database/column_names.dart';
 import 'package:pverify/services/database/db_tables.dart';
@@ -30,6 +30,11 @@ class DatabaseHelper {
   Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), _databaseName);
     debugPrint('path:${path}');
+    if (kDebugMode) {
+      await Sqflite.devSetDebugModeOn(true);
+      await Sqflite.devSetOptions(
+          SqfliteOptions(logLevel: sqfliteLogLevelVerbose));
+    }
     return await openDatabase(
       path,
       version: _databaseVersion,

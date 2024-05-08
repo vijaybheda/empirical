@@ -572,7 +572,6 @@ class Utils {
   Future<String?> loadFileToStringFromExternalStorage(
       String filename, String directory) async {
     String externalStoragePath = await Utils().getExternalStoragePath();
-    log('path: $externalStoragePath');
 
     String path = '$externalStoragePath/$directory/$filename';
     File file = File(path);
@@ -745,12 +744,19 @@ int? parseIntOrReturnNull(dynamic value) {
   if (value is int) {
     return value;
   }
+  if (value is double) {
+    return value.toInt();
+  }
   if (value is String) {
     if (value.isEmpty) {
       return null;
     } else {
       return int.tryParse(value);
     }
+  }
+  String _value = value.toString();
+  if (_value.isNotEmpty) {
+    return int.tryParse(_value);
   }
   return null;
 }
@@ -762,12 +768,19 @@ double? parseDoubleOrReturnNull(value) {
   if (value is double) {
     return value;
   }
+  if (value is int) {
+    return value.toDouble();
+  }
   if (value is String) {
     if (value.isEmpty) {
       return null;
     } else {
       return double.tryParse(value);
     }
+  }
+  String _value = value.toString();
+  if (_value.isNotEmpty) {
+    return double.tryParse(_value);
   }
   return null;
 }

@@ -19,85 +19,78 @@ import 'package:pverify/utils/theme/colors.dart';
 // Main class
 class PurchaseOrderDetailsScreen
     extends GetView<PurchaseOrderDetailsController> {
-  // final PartnerItem partner;
-  // final CarrierItem carrier;
-  // final CommodityItem commodity;
-  // final QCHeaderDetails? qcHeaderDetails;
   final String tag;
-  const PurchaseOrderDetailsScreen({
-    super.key,
-    required this.tag,
-    // required this.partner,
-    // required this.carrier,
-    // required this.commodity,
-    // required this.qcHeaderDetails,
-  });
+  const PurchaseOrderDetailsScreen({super.key, required this.tag});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<PurchaseOrderDetailsController>(
-        init: PurchaseOrderDetailsController(
-            // partner: partner,
-            // carrier: carrier,
-            // commodity: commodity,
-            // qcHeaderDetails: qcHeaderDetails,
-            ),
+        init: PurchaseOrderDetailsController(),
         tag: tag,
         builder: (controller) {
-          return Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.background,
-            resizeToAvoidBottomInset: false,
-            appBar: AppBar(
-              toolbarHeight: 150.h,
-              leading: const Offstage(),
-              leadingWidth: 0,
-              centerTitle: false,
-              backgroundColor: Theme.of(context).primaryColor,
-              title: HeaderContentView(
-                title: AppStrings.beginInspection,
-                message: 'PO# ${controller.poNumber ?? '-'}',
+          return WillPopScope(
+            onWillPop: () {
+              return Future.value(false);
+            },
+            child: Scaffold(
+              backgroundColor: Theme.of(context).colorScheme.background,
+              resizeToAvoidBottomInset: false,
+              appBar: AppBar(
+                toolbarHeight: 150.h,
+                leading: const Offstage(),
+                leadingWidth: 0,
+                centerTitle: false,
+                backgroundColor: Theme.of(context).primaryColor,
+                title: HeaderContentView(
+                  title: AppStrings.beginInspection,
+                  message: 'PO# ${controller.poNumber ?? '-'}',
+                ),
               ),
-            ),
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  color: AppColors.textFieldText_Color,
-                  width: double.infinity,
-                  child: Text(
-                    controller.partnerName ?? '-',
-                    textAlign: TextAlign.start,
-                    maxLines: 3,
-                    style: GoogleFonts.poppins(
-                        fontSize: 38.sp,
-                        fontWeight: FontWeight.w600,
-                        textStyle: TextStyle(color: AppColors.white)),
+              body: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    color: AppColors.textFieldText_Color,
+                    width: double.infinity,
+                    child: Text(
+                      controller.partnerName ?? '-',
+                      textAlign: TextAlign.start,
+                      maxLines: 3,
+                      style: GoogleFonts.poppins(
+                          fontSize: 38.sp,
+                          fontWeight: FontWeight.w600,
+                          textStyle: TextStyle(color: AppColors.white)),
+                    ),
                   ),
-                ),
-                _SearchOrderItemsWidget(tag),
-                Expanded(flex: 10, child: _purchaseOrderItemSection(context)),
-                BottomCustomButtonView(
-                  title: AppStrings.inspectionCalculateResultButton,
-                  backgroundColor: AppColors.orange,
-                  onPressed: () async {
-                    await controller.calculateButtonClick(context);
-                  },
-                ),
-                _footerMenuView(controller),
-                FooterContentView()
-              ],
+                  _SearchOrderItemsWidget(tag),
+                  Expanded(
+                      flex: 10, child: _purchaseOrderItemSection(context, tag)),
+                  BottomCustomButtonView(
+                    title: AppStrings.inspectionCalculateResultButton,
+                    backgroundColor: AppColors.orange,
+                    onPressed: () async {
+                      await controller.calculateButtonClick(context);
+                      controller.update();
+                    },
+                  ),
+                  _footerMenuView(controller),
+                  FooterContentView(
+                    hasLeftButton: false,
+                  )
+                ],
+              ),
             ),
           );
         });
   }
 
   GetBuilder<PurchaseOrderDetailsController> _purchaseOrderItemSection(
-      BuildContext context) {
+      BuildContext context, String tag) {
     return GetBuilder<PurchaseOrderDetailsController>(
-      id: 'inspectionItems',
+      // id: 'inspectionItems',
       tag: tag,
       builder: (controller) {
         return Container(
@@ -145,77 +138,73 @@ class PurchaseOrderDetailsScreen
       itemBuilder: (context, index) {
         PurchaseOrderItem goodsItem =
             controller.filteredInspectionsList.elementAt(index);
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          child: PurchaseOrderListViewItem(
-            goodsItem: goodsItem,
-            inspectTap: (
-              Inspection? inspection,
-              PartnerItemSKUInspections? partnerItemSKU,
-              String lotNo,
-              String packDate,
-              bool isComplete,
-              bool isPartialComplete,
-              int? inspectionId,
-              String poNumber,
-              String sealNumber,
-            ) async {
-              FinishedGoodsItemSKU? finishedGoodsItemSKU = controller
-                  .appStorage.selectedItemSKUList
-                  .elementAtOrNull(index);
-              if (finishedGoodsItemSKU == null) {
-                return;
-              }
+        return GetBuilder<PurchaseOrderDetailsController>(
+            tag: tag,
+            builder: (controller) {
+              return Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: PurchaseOrderListViewItem(
+                  goodsItem: goodsItem,
+                  inspectTap: (
+                    Inspection? inspection,
+                    PartnerItemSKUInspections? partnerItemSKU,
+                    String lotNo,
+                    String packDate,
+                    bool isComplete,
+                    bool isPartialComplete,
+                    int? inspectionId,
+                    String poNumber,
+                    String sealNumber,
+                  ) async {
+                    FinishedGoodsItemSKU? finishedGoodsItemSKU = controller
+                        .appStorage.selectedItemSKUList
+                        .elementAtOrNull(index);
+                    if (finishedGoodsItemSKU == null) {
+                      return;
+                    }
 
-              await controller.onInspectTap(
-                goodsItem,
-                finishedGoodsItemSKU,
-                inspection,
-                partnerItemSKU,
-                lotNo,
-                packDate,
-                isComplete,
-                isPartialComplete,
-                inspectionId,
-                poNumber,
-                sealNumber,
-                (data) {
-                  // TODO: implement below
-                  // current_lot_number = data[Consts.Lot_No];
-                  // current_Item_SKU = data[Consts.ITEM_SKU];
-                  // current_pack_Date = data[Consts.PACK_DATE];
-                  // current_Item_SKU_ID = data[Consts.ITEM_SKU_ID];
-                  // current_lot_size = data[Consts.LOT_SIZE];
-                  // current_unique_id = data[Consts.ITEM_UNIQUE_ID];
-                  // item_SKU_Name = data[Consts.ITEM_SKU_NAME];
-                  // commodityID = data[Consts.COMMODITY_ID];
-                  // commodityName = data[Consts.COMMODITY_NAME];
-                  // gtin = data[Consts.GTIN];
-                },
+                    await controller.onInspectTap(
+                      goodsItem,
+                      finishedGoodsItemSKU,
+                      inspection,
+                      partnerItemSKU,
+                      lotNo,
+                      packDate,
+                      isComplete,
+                      isPartialComplete,
+                      inspectionId,
+                      poNumber,
+                      sealNumber,
+                      index,
+                      (data) {
+                        // controller.appStorage.selectedItemSKUList[index] = data;
+                      },
+                    );
+                  },
+                  onTapEdit: (Inspection? inspection,
+                      PartnerItemSKUInspections? partnerItemSKU) async {
+                    FinishedGoodsItemSKU? finishedGoodsItemSKU = controller
+                        .appStorage.selectedItemSKUList
+                        .elementAtOrNull(index);
+                    if (finishedGoodsItemSKU == null || inspection == null) {
+                      return;
+                    }
+                    await controller.onEditIconTap(goodsItem,
+                        finishedGoodsItemSKU, inspection, partnerItemSKU);
+                  },
+                  infoTap: (Inspection? inspection,
+                      PartnerItemSKUInspections? partnerItemSKU) async {
+                    await controller.onInformationIconTap(goodsItem);
+                  },
+                  partnerID: controller.partnerID!,
+                  position: index,
+                  productTransfer: controller.productTransfer ?? '',
+                  poNumber: controller.poNumber!,
+                  sealNumber: controller.sealNumber!,
+                ),
               );
-            },
-            onTapEdit: (Inspection? inspection,
-                PartnerItemSKUInspections? partnerItemSKU) async {
-              FinishedGoodsItemSKU? finishedGoodsItemSKU = controller
-                  .appStorage.selectedItemSKUList
-                  .elementAtOrNull(index);
-              if (finishedGoodsItemSKU == null || inspection == null) {
-                return;
-              }
-              await controller.onEditIconTap(
-                  goodsItem, finishedGoodsItemSKU, inspection, partnerItemSKU);
-            },
-            infoTap: (Inspection? inspection,
-                PartnerItemSKUInspections? partnerItemSKU) async {
-              await controller.onInformationIconTap(goodsItem);
-            },
-            partnerID: controller.partnerID!,
-            position: index,
-            productTransfer: controller.productTransfer ?? '',
-            poNumber: controller.poNumber!,
-            sealNumber: controller.sealNumber!,
-          ),
-        );
+            });
       },
       separatorBuilder: (BuildContext context, int index) {
         return Divider(

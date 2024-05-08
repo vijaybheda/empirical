@@ -13,29 +13,13 @@ import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
 
 class PurchaseOrderScreen extends StatelessWidget {
-  // final PartnerItem partner;
-  // final CarrierItem carrier;
-  // final CommodityItem commodity;
-  // final QCHeaderDetails? qcHeaderDetails;
   final String tag;
-  const PurchaseOrderScreen({
-    super.key,
-    required this.tag,
-    // required this.partner,
-    // required this.carrier,
-    // required this.commodity,
-    // required this.qcHeaderDetails,
-  });
+  const PurchaseOrderScreen({super.key, required this.tag});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<PurchaseOrderScreenController>(
-        init: PurchaseOrderScreenController(
-            // carrier: carrier,
-            // partner: partner,
-            // commodity: commodity,
-            // qcHeaderDetails: qcHeaderDetails,
-            ),
+        init: PurchaseOrderScreenController(),
         tag: tag,
         builder: (controller) {
           return Scaffold(
@@ -139,8 +123,8 @@ class PurchaseOrderScreen extends StatelessWidget {
         FinishedGoodsItemSKU goodsItem =
             controller.filteredItemSkuList.elementAt(index);
         return InkWell(
-          onTap: () {
-            goodsItem = onCheckboxChange(
+          onTap: () async {
+            goodsItem = await onCheckboxChange(
                 goodsItem, !(goodsItem.isSelected ?? false), controller);
           },
           child: Container(
@@ -173,9 +157,9 @@ class PurchaseOrderScreen extends StatelessWidget {
                   scale: 1.5,
                   child: Checkbox(
                     value: goodsItem.isSelected ?? false,
-                    onChanged: (bool? newValue) {
-                      goodsItem =
-                          onCheckboxChange(goodsItem, newValue, controller);
+                    onChanged: (bool? newValue) async {
+                      goodsItem = await onCheckboxChange(
+                          goodsItem, newValue, controller);
                     },
                     fillColor: MaterialStateProperty.all(
                       (goodsItem.isSelected ?? false)
@@ -238,14 +222,14 @@ class PurchaseOrderScreen extends StatelessWidget {
     );
   }
 
-  FinishedGoodsItemSKU onCheckboxChange(FinishedGoodsItemSKU goodsItem,
-      bool? value, PurchaseOrderScreenController controller) {
+  Future<FinishedGoodsItemSKU> onCheckboxChange(FinishedGoodsItemSKU goodsItem,
+      bool? value, PurchaseOrderScreenController controller) async {
     goodsItem = goodsItem.copyWith(isSelected: (value!));
     goodsItem.uniqueItemId = generateUUID();
     if (value) {
       controller.appStorage.selectedItemSKUList.add(goodsItem);
       controller.appStorage.tempSelectedItemSKUList.add(goodsItem);
-      controller.dao.createSelectedItemSKU(
+      await controller.dao.createSelectedItemSKU(
         skuId: goodsItem.id,
         itemSKUCode: goodsItem.sku,
         poNo: "",
@@ -266,7 +250,7 @@ class PurchaseOrderScreen extends StatelessWidget {
     } else {
       controller.appStorage.selectedItemSKUList.remove(goodsItem);
       controller.appStorage.tempSelectedItemSKUList.remove(goodsItem);
-      controller.dao.deleteSelectedItemSKUByUniqueId(
+      await controller.dao.deleteSelectedItemSKUByUniqueId(
         uniqueId: goodsItem.uniqueItemId!,
         itemId: goodsItem.id,
         itemCode: goodsItem.sku,

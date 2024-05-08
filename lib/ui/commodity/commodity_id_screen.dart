@@ -11,24 +11,12 @@ import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
-  // final PartnerItem partner;
-  // final CarrierItem carrier;
-  // final QCHeaderDetails? qcHeaderDetails;
-  const CommodityIDScreen({
-    super.key,
-    // required this.partner,
-    // required this.carrier,
-    // required this.qcHeaderDetails,
-  });
+  const CommodityIDScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<CommodityIDScreenController>(
-        init: CommodityIDScreenController(
-            // partner: partner,
-            // carrier: carrier,
-            // qcHeaderDetails: qcHeaderDetails,
-            ),
+        init: CommodityIDScreenController(),
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,

@@ -16,7 +16,6 @@ import 'package:pverify/models/sample_data.dart';
 import 'package:pverify/models/severity.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
-import 'package:pverify/ui/defects/special_instructions.dart';
 import 'package:pverify/ui/defects/table_dialog.dart';
 import 'package:pverify/ui/inspection_photos/inspection_photos_screen.dart';
 import 'package:pverify/utils/app_snackbar.dart';
@@ -24,6 +23,7 @@ import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
+import 'package:pverify/utils/dialogs/custom_listview_dialog.dart';
 import 'package:pverify/utils/utils.dart';
 
 class DefectsScreenController extends GetxController {
@@ -168,7 +168,7 @@ class DefectsScreenController extends GetxController {
   void onInit() {
     Map<String, dynamic>? args = Get.arguments;
     if (args == null) {
-      throw Exception('Arguments not allowed');
+      throw Exception('Arguments required!');
     }
     serverInspectionID = args[Consts.SERVER_INSPECTION_ID] ?? 0;
     completed = args[Consts.COMPLETED] ?? false;
@@ -189,9 +189,12 @@ class DefectsScreenController extends GetxController {
     isMyInspectionScreen = args[Consts.IS_MY_INSPECTION_SCREEN] ?? false;
     itemSku = args[Consts.ITEM_SKU] ?? '';
     itemSkuId = args[Consts.ITEM_SKU_ID] ?? 0;
-    lotNo = args[Consts.Lot_No] ?? '';
+    lotNo = args[Consts.LOT_NO] ?? '';
     gtin = args[Consts.GTIN] ?? '';
-    packDate = args[Consts.PACK_DATE];
+    String packDateString = args[Consts.PACK_DATE] ?? '';
+    if (packDateString.isNotEmpty) {
+      packDate = Utils().dateFormat.parse(packDateString);
+    }
     itemUniqueId = args[Consts.ITEM_UNIQUE_ID] ?? '';
     lotSize = args[Consts.LOT_SIZE] ?? '';
     itemSkuName = args[Consts.ITEM_SKU_NAME] ?? '';
@@ -223,15 +226,14 @@ class DefectsScreenController extends GetxController {
     specificationVersion = args[Consts.SPECIFICATION_VERSION] ?? '';
     specificationTypeName = args[Consts.SPECIFICATION_TYPE_NAME] ?? '';
     isMyInspectionScreen = args[Consts.IS_MY_INSPECTION_SCREEN] ?? false;
-    lotNo = args[Consts.Lot_No] ?? '';
+    lotNo = args[Consts.LOT_NO] ?? '';
     gtin = args[Consts.GTIN] ?? '';
-    packDate = args[Consts.PACK_DATE] ?? '';
     itemUniqueId = args[Consts.ITEM_UNIQUE_ID] ?? '';
     lotSize = args[Consts.LOT_SIZE] ?? '';
     poLineNo = args[Consts.PO_LINE_NO] ?? 0;
     productTransfer = args[Consts.PRODUCT_TRANSFER] ?? '';
     callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
-    // appStorage.getCommodityList();
+    appStorage.getCommodityList();
     populateDefectSpinnerList();
     super.onInit();
   }
@@ -630,13 +632,13 @@ class DefectsScreenController extends GetxController {
   }
 
   Future onSpecialInstrMenuTap() async {
-    List<Map<String, String>> exceptionCollection = [];
+    /*List<Map<String, String>> exceptionCollection = [];
     Map<String, String> map;
     if (AppStorage.instance.commodityVarietyData?.exceptions != null) {
       for (var item in AppStorage.instance.commodityVarietyData!.exceptions) {
         map = {
-          'KEY_TITLE': item.shortDescription.toString(),
-          'KEY_DETAIL': item.longDescription.toString(),
+          Consts.TITLE: item.shortDescription.toString(),
+          Consts.DETAIL: item.longDescription.toString(),
         };
         exceptionCollection.add(map);
       }
@@ -645,7 +647,15 @@ class DefectsScreenController extends GetxController {
         () => SpecialInstructions(
               exceptionCollection: exceptionCollection,
             ),
-        transition: Transition.downToUp);
+        fullscreenDialog: true,
+        transition: Transition.downToUp);*/
+
+    CustomListViewDialog customDialog = CustomListViewDialog(
+      Get.context!,
+      (selectedValue) {},
+    );
+    customDialog.setCanceledOnTouchOutside(false);
+    customDialog.show();
   }
 
   Future onSpecificationTap(BuildContext context) async {
@@ -693,7 +703,7 @@ class DefectsScreenController extends GetxController {
         Consts.ITEM_SKU_NAME: itemSkuName,
         Consts.ITEM_SKU_ID: itemSkuId,
         Consts.ITEM_UNIQUE_ID: itemUniqueId,
-        Consts.Lot_No: lotNo,
+        Consts.LOT_NO: lotNo,
         Consts.GTIN: gtin,
         Consts.PACK_DATE: packDate,
         Consts.LOT_SIZE: lotSize,

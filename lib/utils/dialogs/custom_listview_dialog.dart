@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/models/exception_item.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class CustomListViewDialog {
@@ -15,7 +17,8 @@ class CustomListViewDialog {
     this.onSelected,
   );
 
-  Future show() {
+  Future show() async {
+    await Future.delayed(const Duration(milliseconds: 200));
     List<Map<String, String>> exceptionCollection = [];
     Map<String, String>? map;
 
@@ -67,7 +70,7 @@ class CustomListView extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       title: Text(
-        AppStrings.exceptions,
+        AppStrings.specException,
         style: Get.textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
           color: AppColors.white,
@@ -81,28 +84,43 @@ class CustomListView extends StatelessWidget {
             SizedBox(
               height: Get.height * 0.6,
               width: Get.width,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: exceptions.length,
-                itemBuilder: (context, index) {
-                  final item = exceptions[index];
-                  return ListTile(
-                    onTap: () {
-                      Get.back(result: item);
-                    },
-                    title: Text(
-                      item.shortDescription ?? '',
-                      style: Get.textTheme.titleMedium
-                          ?.copyWith(color: AppColors.white),
-                    ),
-                    subtitle: Text(
-                      item.shortDescription ?? '',
-                      style: Get.textTheme.titleSmall
-                          ?.copyWith(color: AppColors.white),
-                    ),
-                  );
-                },
-              ),
+              child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: exceptions.length,
+                  itemBuilder: (context, index) {
+                    final item = exceptions[index];
+                    return ListTile(
+                      onTap: () {
+                        Get.back(result: item);
+                      },
+                      leading: SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: Image.asset(
+                          AppImages.ic_special_instruction,
+                          width: 150.w,
+                          height: 150.h,
+                        ),
+                      ),
+                      title: Text(
+                        item.shortDescription ?? '',
+                        style: Get.textTheme.titleMedium
+                            ?.copyWith(color: AppColors.white),
+                      ),
+                      subtitle: Text(
+                        item.longDescription ?? '',
+                        style: Get.textTheme.titleSmall?.copyWith(
+                          color: AppColors.white,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return Divider(
+                      color: AppColors.white,
+                    );
+                  }),
             )
           ],
         ),
@@ -132,7 +150,7 @@ class CustomListView extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                   child: Text(
-                    AppStrings.cancel,
+                    AppStrings.ok,
                     style: Get.textTheme.labelLarge?.copyWith(
                       color: AppColors.white,
                     ),

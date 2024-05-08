@@ -15,7 +15,8 @@ class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
         builder: (controller) {
           return Scaffold(
             backgroundColor: AppColors.blue,
-            appBar: AppBar(
+            appBar:
+                null /*AppBar(
               leading: const Offstage(),
               leadingWidth: 0,
               title: Text(AppStrings.cacheDownload,
@@ -23,7 +24,8 @@ class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
                       ?.copyWith(color: Colors.white, fontSize: 30)),
               backgroundColor: AppColors.blue,
               foregroundColor: AppColors.blue,
-            ),
+            )*/
+            ,
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

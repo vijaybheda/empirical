@@ -28,7 +28,7 @@ class SelectCarrierScreenController extends GetxController {
 
   final TextEditingController searchController = TextEditingController();
 
-  double get listHeight => 190.h;
+  double get listHeight => 195.h;
 
   String? callerActivity;
   String? carrierName;

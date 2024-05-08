@@ -129,7 +129,7 @@ class DefectsScreenController extends GetxController {
     Map<String, dynamic>? extras = Get.arguments;
     if (extras == null) {
       Get.back();
-      throw Exception('Arguments not allowed');
+      throw Exception('Arguments required!');
     }
 
     serverInspectionID = extras[Consts.SERVER_INSPECTION_ID] ?? -1;
@@ -165,7 +165,7 @@ class DefectsScreenController extends GetxController {
     specificationVersion = extras[Consts.SPECIFICATION_VERSION];
     specificationTypeName = extras[Consts.SPECIFICATION_TYPE_NAME];
     isMyInspectionScreen = extras[Consts.IS_MY_INSPECTION_SCREEN] ?? false;
-    lotNo = extras[Consts.Lot_No] ?? '';
+    lotNo = extras[Consts.LOT_NO] ?? '';
     gtin = extras[Consts.GTIN] ?? '';
     packDate = extras[Consts.PACK_DATE] ?? '';
     itemUniqueId = extras[Consts.ITEM_UNIQUE_ID] ?? '';
@@ -188,7 +188,7 @@ class DefectsScreenController extends GetxController {
     specificationVersion = extras[Consts.SPECIFICATION_VERSION];
     specificationTypeName = extras[Consts.SPECIFICATION_TYPE_NAME];
     isMyInspectionScreen = extras[Consts.IS_MY_INSPECTION_SCREEN] ?? false;
-    lotNo = extras[Consts.Lot_No] ?? '';
+    lotNo = extras[Consts.LOT_NO] ?? '';
     gtin = extras[Consts.GTIN] ?? '';
     packDate = extras[Consts.PACK_DATE] ?? '';
     itemUniqueId = extras[Consts.ITEM_UNIQUE_ID] ?? '';

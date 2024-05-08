@@ -6,7 +6,7 @@ class Commodity {
   String? keywords;
   String? keywordName;
 
-  Commodity(this.id, this.name, this.keywords);
+  Commodity({this.id, this.name, this.keywords});
 
   Commodity.fromJson(Map<String, dynamic> json) {
     id = json[CommodityColumn.ID];
@@ -32,9 +32,9 @@ class Commodity {
     String? keywordName,
   }) {
     return Commodity(
-      id ?? this.id,
-      name ?? this.name,
-      keywords ?? this.keywords,
+      id: id ?? this.id,
+      name: name ?? this.name,
+      keywords: keywords ?? this.keywords,
     );
   }
 }

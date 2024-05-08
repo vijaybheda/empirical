@@ -13,11 +13,6 @@ import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/utils.dart';
 
 class PurchaseOrderScreenController extends GetxController {
-  // final PartnerItem partner;
-  // final CarrierItem carrier;
-  // final CommodityItem commodity;
-  // final QCHeaderDetails? qcHeaderDetails;
-
   late final String poNumber;
   late final String sealNumber;
   late final String partnerName;
@@ -29,14 +24,7 @@ class PurchaseOrderScreenController extends GetxController {
   late final String productTransfer;
 
   final TextEditingController searchController = TextEditingController();
-  PurchaseOrderScreenController(
-      // {
-      // required this.partner,
-      // required this.carrier,
-      // required this.commodity,
-      // required this.qcHeaderDetails,
-      // }
-      );
+  PurchaseOrderScreenController();
 
   final AppStorage appStorage = AppStorage.instance;
   final GlobalConfigController globalConfigController =
@@ -53,7 +41,7 @@ class PurchaseOrderScreenController extends GetxController {
     Map<String, dynamic>? args = Get.arguments;
     if (args == null) {
       Get.back();
-      throw Exception('Arguments not allowed');
+      throw Exception('Arguments required!');
     }
 
     poNumber = args[Consts.PO_NUMBER] ?? '';
@@ -77,7 +65,6 @@ class PurchaseOrderScreenController extends GetxController {
       if (filteredItemSkuList.isEmpty) {
         int enterpriseId =
             await dao.getEnterpriseIdByUserId(userData.userName!.toLowerCase());
-        // TODO:
         List<FinishedGoodsItemSKU>? finishedGoodItems =
             await dao.getFinishedGoodItemSkuFromTable(
           partnerID,
@@ -94,8 +81,6 @@ class PurchaseOrderScreenController extends GetxController {
         listAssigned.value = true;
         update();
       } else {
-        // TODO:
-        // filteredItemSkuList = asd;
         listAssigned.value = true;
         update();
       }
@@ -107,7 +92,8 @@ class PurchaseOrderScreenController extends GetxController {
 
     // remove if exist in appStorage.selectedItemSKUList
     appStorage.selectedItemSKUList.removeWhere((element) {
-      return element.id == partner.id;
+      return element.id == partner.id &&
+          element.uniqueItemId == partner.uniqueItemId;
     });
     if (partner.isSelected ?? false) {
       appStorage.selectedItemSKUList.add(partner);
@@ -126,8 +112,10 @@ class PurchaseOrderScreenController extends GetxController {
       if (filteredIndex != -1) {
         itemSkuList[filteredIndex] = partner;
       }
-      update(['itemSkuList']);
+    } else {
+      filteredItemSkuList.add(partner);
     }
+    update(['itemSkuList']);
   }
 
   Future<void> navigateToPurchaseOrderDetails(
@@ -146,42 +134,27 @@ class PurchaseOrderScreenController extends GetxController {
 
     if (appStorage.selectedItemSKUList.isNotEmpty) {
       if (userId == 4180) {
-        Get.to(
-            () => NewPurchaseOrderDetailsScreen(
-                // partner: partner,
-                // carrier: carrier,
-                // commodity: commodity,
-                // qcHeaderDetails: qcHeaderDetails,
-                ),
-            arguments: {
-              Consts.PARTNER_NAME: partnerName,
-              Consts.PARTNER_ID: partnerID,
-              Consts.CARRIER_NAME: carrierName,
-              Consts.CARRIER_ID: carrierID,
-              Consts.COMMODITY_ID: commodityID,
-              Consts.COMMODITY_NAME: commodityName,
-              Consts.PO_NUMBER: poNumber,
-              Consts.SEAL_NUMBER: sealNumber,
-            });
+        Get.to(() => const NewPurchaseOrderDetailsScreen(), arguments: {
+          Consts.PARTNER_NAME: partnerName,
+          Consts.PARTNER_ID: partnerID,
+          Consts.CARRIER_NAME: carrierName,
+          Consts.CARRIER_ID: carrierID,
+          Consts.COMMODITY_ID: commodityID,
+          Consts.COMMODITY_NAME: commodityName,
+          Consts.PO_NUMBER: poNumber,
+          Consts.SEAL_NUMBER: sealNumber,
+        });
       } else {
         final String tag = DateTime.now().millisecondsSinceEpoch.toString();
-        Get.to(
-            () => PurchaseOrderDetailsScreen(
-                  // partner: partner,
-                  // carrier: carrier,
-                  // commodity: commodity,
-                  // qcHeaderDetails: qcHeaderDetails,
-                  tag: tag,
-                ),
-            arguments: {
-              Consts.PARTNER_ID: partnerID,
-              Consts.PARTNER_NAME: partnerName,
-              Consts.CARRIER_ID: carrierID,
-              Consts.CARRIER_NAME: carrierName,
-              Consts.COMMODITY_ID: commodityID,
-              Consts.COMMODITY_NAME: commodityName,
-              Consts.PO_NUMBER: poNumber,
-            });
+        Get.to(() => PurchaseOrderDetailsScreen(tag: tag), arguments: {
+          Consts.PARTNER_ID: partnerID,
+          Consts.PARTNER_NAME: partnerName,
+          Consts.CARRIER_ID: carrierID,
+          Consts.CARRIER_NAME: carrierName,
+          Consts.COMMODITY_ID: commodityID,
+          Consts.COMMODITY_NAME: commodityName,
+          Consts.PO_NUMBER: poNumber,
+        });
       }
     } else {
       AppAlertDialog.validateAlerts(

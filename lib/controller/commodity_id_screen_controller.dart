@@ -19,9 +19,6 @@ import 'package:pverify/utils/dialogs/update_data_dialog.dart';
 import 'package:pverify/utils/utils.dart';
 
 class CommodityIDScreenController extends GetxController {
-  // final PartnerItem partner;
-  // final CarrierItem carrier;
-  // final QCHeaderDetails? qcHeaderDetails;
   late final int partnerID;
   late final String partnerName;
   late final String sealNumber;
@@ -33,12 +30,6 @@ class CommodityIDScreenController extends GetxController {
   final TextEditingController searchController = TextEditingController();
 
   CommodityIDScreenController();
-
-  /*CommodityIDScreenController({
-    required this.partner,
-    required this.carrier,
-    required this.qcHeaderDetails,
-  });*/
 
   final ScrollController scrollController = ScrollController();
   final AppStorage appStorage = AppStorage.instance;
@@ -57,7 +48,7 @@ class CommodityIDScreenController extends GetxController {
     Map<String, dynamic>? args = Get.arguments;
     if (args == null) {
       Get.back();
-      throw Exception('Arguments not allowed');
+      throw Exception('Arguments required!');
     }
 
     partnerID = args[Consts.PARTNER_ID] ?? 0;
@@ -179,14 +170,8 @@ class CommodityIDScreenController extends GetxController {
       Consts.COMMODITY_NAME: commodity.name,
       // Consts.PRODUCT_TRANSFER: qcHeaderDetails?.productTransfer ?? '',
     };
-    Get.to(
-        () => PurchaseOrderScreen(
-              // partner: partner,
-              // carrier: carrier,
-              // qcHeaderDetails: qcHeaderDetails,
-              // commodity: commodity,
-              tag: commodity.id.toString(),
-            ),
+    final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+    Get.to(() => PurchaseOrderScreen(tag: tag /*commodity.id.toString()*/),
         arguments: passingData);
   }
 

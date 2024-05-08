@@ -81,7 +81,7 @@ class AppStorage extends GetxController {
 
   List<SpecificationGradeTolerance> specificationGradeToleranceTable = [];
 
-  bool resumeFromSpecificationAttributes = true;
+  bool resumeFromSpecificationAttributes = false;
   // instance of this class
   static AppStorage get instance => _instance;
   static final AppStorage _instance = AppStorage._internal();

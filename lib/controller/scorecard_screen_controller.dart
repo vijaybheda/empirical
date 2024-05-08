@@ -20,7 +20,7 @@ class ScorecardScreenController extends GetxController {
     Map<String, dynamic>? args = Get.arguments;
     if (args == null) {
       Get.back();
-      throw Exception('Arguments not allowed');
+      throw Exception('Arguments required!');
     }
 
     scorecardName = args[Consts.SCORECARD_NAME] ?? '';

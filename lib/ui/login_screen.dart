@@ -106,11 +106,11 @@ class LoginScreen extends GetView<AuthController> {
                     height: 70.h,
                   ),
                   customButton(
-                    Theme.of(context).primaryColor,
-                    AppStrings.logIn.toUpperCase(),
-                    double.infinity,
-                    90,
-                    Theme.of(context)
+                    backgroundColor: Theme.of(context).primaryColor,
+                    title: AppStrings.logIn.toUpperCase(),
+                    width: double.infinity,
+                    height: 90,
+                    fontStyle: Theme.of(context)
                         .textTheme
                         .displayMedium!
                         .copyWith(fontSize: 25.sp),
@@ -124,17 +124,18 @@ class LoginScreen extends GetView<AuthController> {
                     height: 40.h,
                   ),
                   customButton(
-                      Theme.of(context).primaryColor,
-                      AppStrings.setup.toUpperCase(),
-                      double.infinity,
-                      90,
-                      Theme.of(context)
+                      backgroundColor: Theme.of(context).primaryColor,
+                      title: AppStrings.setup.toUpperCase(),
+                      width: double.infinity,
+                      height: 90,
+                      fontStyle: Theme.of(context)
                           .textTheme
                           .displayMedium!
-                          .copyWith(fontSize: 25.sp), onClickAction: () async {
-                    await doLoginAction(authController,
-                        isLoginButton: false, context: context);
-                  }),
+                          .copyWith(fontSize: 25.sp),
+                      onClickAction: () async {
+                        await doLoginAction(authController,
+                            isLoginButton: false, context: context);
+                      }),
                 ],
               ),
             ),
