@@ -7,18 +7,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/defects_screen_controller.dart';
 import 'package:pverify/controller/json_file_operations.dart';
 import 'package:pverify/models/defect_item.dart';
+import 'package:pverify/models/worksheet_data_table.dart';
 import 'package:pverify/ui/components/drawer_header_content_view.dart';
+import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/inspection_photos/inspection_photos_screen.dart';
 import 'package:pverify/ui/side_drawer.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
+import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
-
-import '../../models/worksheet_data_table.dart';
-import '../../utils/dialogs/app_alerts.dart';
 
 class DefectsScreen extends GetView<DefectsScreenController> {
   const DefectsScreen({
@@ -42,7 +42,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               backgroundColor: Theme.of(context).primaryColor,
               titleSpacing: 0,
               title: DrawerHeaderContentView(
-                title: AppStrings.itemDefects,
+                title: controller.partnerName,
               ),
             ),
             drawer: SideDrawer(
@@ -69,13 +69,20 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                 await JsonFileOperations.instance.viewSpecInsPdf();
               },
             ),
-            body: Stack(
+            body: Column(
               children: [
-                Container(
-                  color: Theme.of(context).colorScheme.background,
-                  child: contentView(context, controller),
+                Expanded(
+                  child: Stack(
+                    children: [
+                      Container(
+                        color: Theme.of(context).colorScheme.background,
+                        child: contentView(context, controller),
+                      ),
+                      infoPopup(context)
+                    ],
+                  ),
                 ),
-                infoPopup(context)
+                FooterContentView(),
               ],
             ),
           );
@@ -83,64 +90,62 @@ class DefectsScreen extends GetView<DefectsScreenController> {
   }
 
   Widget infoPopup(BuildContext context) {
-    return Obx(
-      () => controller.isVisibleInfoPopup.value
-          ? Container(
-              color: Colors.black.withOpacity(0.5),
-              child: Center(
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                      color: AppColors.black,
-                      borderRadius: BorderRadius.circular(10)),
-                  margin: EdgeInsets.all(20),
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          height: 0.5, // Adjust the height of the underline
-                          color: AppColors
-                              .background, // Set the color of the underline
+    return Obx(() => controller.isVisibleInfoPopup.value
+        ? Container(
+            color: Colors.black.withOpacity(0.5),
+            child: Center(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                    color: AppColors.black,
+                    borderRadius: BorderRadius.circular(10)),
+                margin: EdgeInsets.all(20),
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: 0.5, // Adjust the height of the underline
+                        color: AppColors
+                            .background, // Set the color of the underline
+                      ),
+                      SizedBox(height: 30.h),
+                      Text(
+                        'Popup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup Content',
+                        style: GoogleFonts.poppins(
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.normal,
+                          color: AppColors.white,
+                          height: 1.8,
                         ),
-                        SizedBox(height: 30.h),
-                        Text(
-                          'Popup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup ContentPopup Content',
-                          style: GoogleFonts.poppins(
-                              fontSize: 24.sp,
-                              fontWeight: FontWeight.normal,
-                              textStyle: TextStyle(
-                                  color: AppColors.white, height: 1.8)),
-                        ),
-                        SizedBox(height: 30.h),
-                        Container(
-                          height: 0.5, // Adjust the height of the underline
-                          color: AppColors
-                              .background, // Set the color of the underline
-                        ),
-                        SizedBox(height: 40.h),
-                        customButton(
-                            backgroundColor: AppColors.white,
-                            title: AppStrings.ok,
-                            width: 300.w,
-                            height: 100,
-                            fontStyle: GoogleFonts.poppins(
-                                fontSize: 35.sp,
-                                fontWeight: FontWeight.w600,
-                                textStyle: TextStyle(
-                                    color: AppColors.textFieldText_Color)),
-                            onClickAction: () async {
-                              controller.hidePopup();
-                            }),
-                      ],
-                    ),
+                      ),
+                      SizedBox(height: 30.h),
+                      Container(
+                        height: 0.5, // Adjust the height of the underline
+                        color: AppColors
+                            .background, // Set the color of the underline
+                      ),
+                      SizedBox(height: 40.h),
+                      customButton(
+                          backgroundColor: AppColors.white,
+                          title: AppStrings.ok,
+                          width: 300.w,
+                          height: 100,
+                          fontStyle: GoogleFonts.poppins(
+                              fontSize: 35.sp,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textFieldText_Color),
+                          onClickAction: () async {
+                            controller.hidePopup();
+                          }),
+                    ],
                   ),
                 ),
               ),
-            )
-          : SizedBox(),
-    );
+            ),
+          )
+        : SizedBox());
   }
 
 // MAIN CONTENTS VIEW
@@ -155,120 +160,118 @@ class DefectsScreen extends GetView<DefectsScreenController> {
         child: Row(
           children: [
             Text(
-              'Strawberries',
+              controller.commodityName,
               style: GoogleFonts.poppins(
                   fontSize: 35.sp,
                   fontWeight: FontWeight.w600,
-                  textStyle: TextStyle(color: AppColors.white)),
+                  color: AppColors.white),
             ),
             const Spacer(),
             Text(
-              'SB2021',
+              controller.itemSku ?? '',
               style: GoogleFonts.poppins(
                   fontSize: 35.sp,
                   fontWeight: FontWeight.w600,
-                  textStyle: TextStyle(color: AppColors.white)),
+                  color: AppColors.white),
             )
           ],
         ),
       ),
-      Obx(
-        () => Container(
-          padding: EdgeInsets.only(left: 40.w, right: 40.w),
-          color: AppColors.black,
-          height: 150.h,
-          width: ResponsiveHelper.getDeviceWidth(context),
-          child: Row(
-            children: [
-              controller.sampleSetObs.isNotEmpty
-                  ? GestureDetector(
-                      onTap: () {
-                        controller.activeTabIndex.value = 0;
-                      },
-                      child: customViewDefectsView(
-                        100.h,
-                        320.w,
-                        AppStrings.defectsTable,
-                        context,
-                        controller.activeTabIndex.value == 0,
-                      ),
-                    )
-                  : const SizedBox(),
-              controller.sampleSetObs.isNotEmpty
-                  ? Container(
-                      width: 3.w,
-                      height: 100.h,
-                      decoration:
-                          BoxDecoration(color: Theme.of(context).primaryColor),
-                      child: Container(
-                        decoration:
-                            BoxDecoration(color: Theme.of(context).canvasColor),
-                      ),
-                    )
-                  : const SizedBox(),
-              GestureDetector(
-                onTap: () {
-                  controller.activeTabIndex.value = 1;
-                },
-                child: customViewDefectsView(
-                  100.h,
-                  320.w,
-                  AppStrings.defectsEntry,
-                  context,
-                  controller.activeTabIndex.value == 1,
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
+      Obx(() => Container(
+            padding: EdgeInsets.only(left: 40.w, right: 40.w),
+            color: AppColors.black,
+            height: 150.h,
+            width: double.infinity,
+            child: Row(
+              children: [
+                controller.sampleSetObs.isNotEmpty
+                    ? GestureDetector(
+                        onTap: () {
+                          controller.activeTabIndex.value = 0;
+                        },
+                        child: customViewDefectsView(
+                          100.h,
+                          320.w,
+                          AppStrings.defectsTable,
+                          context,
+                          controller.activeTabIndex.value == 0,
+                        ),
+                      )
+                    : const SizedBox(),
+                controller.sampleSetObs.isNotEmpty
+                    ? Container(
+                        width: 3.w,
+                        height: 100.h,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).canvasColor),
+                        ),
+                      )
+                    : const SizedBox(),
+                GestureDetector(
+                  onTap: () {
+                    controller.activeTabIndex.value = 1;
+                  },
+                  child: customViewDefectsView(
+                    100.h,
+                    320.w,
+                    AppStrings.defectsEntry,
+                    context,
+                    controller.activeTabIndex.value == 1,
+                  ),
+                )
+              ],
+            ),
+          )),
       Container(
         padding: EdgeInsets.only(left: 20.w, right: 20.w),
         color: AppColors.lightSky,
         height: 165.h,
         width: ResponsiveHelper.getDeviceWidth(context),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            customviewCategories(AppStrings.injuryIcon, AppStrings.injury),
-            customviewCategories(AppStrings.damageIcon, AppStrings.damage),
-            customviewCategories(
+            customViewCategories(AppStrings.injuryIcon, AppStrings.injury),
+            customViewCategories(AppStrings.damageIcon, AppStrings.damage),
+            customViewCategories(
                 AppStrings.seriousDamageIcon, AppStrings.seriousDamage),
-            customviewCategories(
+            customViewCategories(
                 AppStrings.verySeriousDamageIcon, AppStrings.verySeriousDamage),
-            customviewCategories(AppStrings.decayIcon, AppStrings.decay),
+            customViewCategories(AppStrings.decayIcon, AppStrings.decay),
           ],
         ),
       ),
       SizedBox(
         height: 60.h,
       ),
-      Obx(
-        () => controller.activeTabIndex.value == 0
-            ? Expanded(
-                child: SingleChildScrollView(
-                  child: DefectsTable(),
-                ),
-              )
-            : Expanded(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: 50.w, right: 50.w),
+      Obx(() => controller.activeTabIndex.value == 0
+          ? Expanded(
+              child: SingleChildScrollView(
+                child: DefectsTable(),
+              ),
+            )
+          : Expanded(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 50.w, right: 50.w),
+                    child: SizedBox(
+                      height: 150.h,
                       child: Row(
                         children: [
                           Expanded(
                             flex: 3,
                             child: Container(
                               alignment: Alignment.center,
-                              height: 200.h,
+                              padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                   color: AppColors.lightSky,
                                   borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(20.r),
                                       bottomLeft: Radius.circular(20.r))),
-                              child: SizedBox(
-                                width: 360.w,
+                              child: Container(
+                                margin: EdgeInsets.symmetric(horizontal: 20),
                                 child: BoxTextField1(
                                   textColor: AppColors.textFieldText_Color,
                                   hintColor: AppColors.textFieldText_Color,
@@ -276,6 +279,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                                   controller: controller
                                       .sizeOfNewSetTextController.value,
                                   onTap: () {},
+                                  textalign: TextAlign.center,
                                   errorText: '',
                                   onEditingCompleted: () {
                                     FocusScope.of(context).unfocus();
@@ -298,9 +302,8 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                                 }
                               },
                               child: Container(
-                                padding: EdgeInsets.only(left: 40.w),
-                                alignment: Alignment.centerLeft,
-                                height: 200.h,
+                                padding: EdgeInsets.all(10),
+                                alignment: Alignment.center,
                                 decoration: BoxDecoration(
                                     color: AppColors.primary,
                                     borderRadius: BorderRadius.only(
@@ -308,11 +311,11 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                                         topRight: Radius.circular(20.r))),
                                 child: Text(
                                   AppStrings.addSample,
+                                  textAlign: TextAlign.center,
                                   style: GoogleFonts.poppins(
-                                      fontSize: 35.sp,
+                                      fontSize: 30.sp,
                                       fontWeight: FontWeight.w400,
-                                      textStyle:
-                                          TextStyle(color: AppColors.white)),
+                                      color: AppColors.white),
                                 ),
                               ),
                             ),
@@ -320,47 +323,30 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 60.h,
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                          itemCount: controller.sampleSetObs.length,
-                          itemBuilder: (BuildContext context, int setIndex) {
-                            return Column(
-                              children: [
-                                sampleSetsUI(
-                                  context,
-                                  setIndex,
-                                  controller.sampleSetObs[setIndex].sampleValue
-                                      .toString(),
-                                  controller,
-                                ),
-                                /* Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          defectTags(AppStrings.damageIcon),
-                          SizedBox(
-                            width: 40.w,
-                          ),
-                          defectTags(AppStrings.seriousDamageIcon),
-                          SizedBox(
-                            width: 40.w,
-                          ),
-                          defectTags(AppStrings.decayIcon),
-                          SizedBox(
-                            width: 40.w,
-                          ),
-                        ],
-                      ), */
-                              ],
-                            );
-                          }),
-                    )
-                  ],
-                ),
+                  ),
+                  SizedBox(
+                    height: 60.h,
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                        itemCount: controller.sampleSetObs.length,
+                        itemBuilder: (BuildContext context, int setIndex) {
+                          return Column(
+                            children: [
+                              sampleSetsUI(
+                                context,
+                                setIndex,
+                                controller.sampleSetObs[setIndex].sampleValue
+                                    .toString(),
+                                controller,
+                              ),
+                            ],
+                          );
+                        }),
+                  )
+                ],
               ),
-      ),
+            )),
       bottomContent(context)
     ]);
   }
@@ -379,7 +365,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
         style: GoogleFonts.poppins(
             fontSize: 35.sp,
             fontWeight: FontWeight.w600,
-            textStyle: TextStyle(color: AppColors.white)),
+            color: AppColors.white),
       ),
     );
   }
@@ -416,7 +402,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
             style: GoogleFonts.poppins(
                 fontSize: 34.sp,
                 fontWeight: FontWeight.w600,
-                textStyle: TextStyle(color: AppColors.white)),
+                color: AppColors.white),
           ),
         ),
       ],
@@ -425,36 +411,40 @@ class DefectsScreen extends GetView<DefectsScreenController> {
 
 // CATEGORIES VIEW LIKE:: INJURY, DAMAGE
 
-  Widget customviewCategories(String tag, String title) {
-    return Row(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: AppColors.lightGrey), // Border color
-            borderRadius: BorderRadius.circular(15.0), // Border radius
+  Widget customViewCategories(String tag, String title) {
+    return Container(
+      padding: EdgeInsets.only(left: 10),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.lightGrey), // Border color
+              borderRadius: BorderRadius.circular(30), // Border radius
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 6),
+            child: Expanded(
+              child: Text(
+                textAlign: TextAlign.center,
+                tag,
+                style: GoogleFonts.poppins(
+                    fontSize: 26.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textFieldText_Color),
+              ),
+            ),
           ),
-          width: 72.w,
-          child: Text(
-            textAlign: TextAlign.center,
-            tag,
+          SizedBox(width: 5),
+          Text(
+            textAlign: TextAlign.start,
+            title,
             style: GoogleFonts.poppins(
-                fontSize: 32.sp,
+                fontSize: 26.sp,
                 fontWeight: FontWeight.w600,
-                textStyle: TextStyle(color: AppColors.textFieldText_Color)),
-          ),
-        ),
-        SizedBox(
-          width: 15.w,
-        ),
-        Text(
-          textAlign: TextAlign.center,
-          title,
-          style: GoogleFonts.poppins(
-              fontSize: 30.sp,
-              fontWeight: FontWeight.w600,
-              textStyle: TextStyle(color: AppColors.textFieldText_Color)),
-        )
-      ],
+                color: AppColors.textFieldText_Color),
+          )
+        ],
+      ),
     );
   }
 
@@ -478,8 +468,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                   fontStyle: GoogleFonts.poppins(
                       fontSize: 35.sp,
                       fontWeight: FontWeight.w600,
-                      textStyle:
-                          TextStyle(color: AppColors.textFieldText_Color)),
+                      color: AppColors.textFieldText_Color),
                   onClickAction: () {
                     controller
                         .deleteInspectionAndGotoMyInspectionScreen(context);
@@ -495,8 +484,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                   fontStyle: GoogleFonts.poppins(
                       fontSize: 35.sp,
                       fontWeight: FontWeight.w600,
-                      textStyle:
-                          TextStyle(color: AppColors.textFieldText_Color)),
+                      color: AppColors.textFieldText_Color),
                   onClickAction: () => {
                         if (controller.isValidDefects())
                           {
@@ -534,7 +522,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                 fontStyle: GoogleFonts.poppins(
                     fontSize: 28.sp,
                     fontWeight: FontWeight.w500,
-                    textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+                    color: AppColors.textFieldText_Color),
                 onClickAction: () {
                   controller.onSpecialInstrMenuTap();
                 },
@@ -550,7 +538,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                 fontStyle: GoogleFonts.poppins(
                     fontSize: 28.sp,
                     fontWeight: FontWeight.w500,
-                    textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+                    color: AppColors.textFieldText_Color),
                 onClickAction: () {
                   controller.onSpecificationTap(context);
                 },
@@ -571,7 +559,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                     ),
                   ),
                   onClickAction: () {
-                    controller.openPDFFile(context, "Grade");
+                    controller.openPDFFile(context, isForGrade: true);
                   }),
               SizedBox(
                 width: 20.w,
@@ -584,10 +572,9 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                   fontStyle: GoogleFonts.poppins(
                       fontSize: 28.sp,
                       fontWeight: FontWeight.w500,
-                      textStyle:
-                          TextStyle(color: AppColors.textFieldText_Color)),
+                      color: AppColors.textFieldText_Color),
                   onClickAction: () {
-                    controller.openPDFFile(context, "Inspection Instructions");
+                    controller.openPDFFile(context, isForGrade: false);
                   })
             ],
           ),
@@ -701,7 +688,7 @@ Widget sampleSetsUI(BuildContext context, int index, String sampleValue,
           style: GoogleFonts.poppins(
               fontSize: 36.sp,
               fontWeight: FontWeight.w600,
-              textStyle: TextStyle(color: AppColors.primary)),
+              color: AppColors.primary),
         ),
       ),
       SizedBox(height: 50.h),
@@ -754,9 +741,9 @@ Widget defectRow({
                     isExpanded: true,
                     dropdownColor: Theme.of(context).colorScheme.background,
                     iconEnabledColor: AppColors.hintColor,
-                    value: controller.sampleSetObs[setIndex]
-                            .defectItem?[defectItemIndex].name ??
-                        controller.defectSpinnerNames[0],
+                    // value: controller.sampleSetObs[setIndex]
+                    //         .defectItem?[defectItemIndex].name ??
+                    //     controller.defectSpinnerNames[0],
                     icon:
                         const Icon(Icons.arrow_drop_down, color: Colors.white),
                     items: controller.defectSpinnerNames.map((String value) {

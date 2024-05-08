@@ -1,5 +1,3 @@
-// ignore_for_file: curly_braces_in_flow_control_structures, non_constant_identifier_names, prefer_const_constructors, unnecessary_null_comparison, unrelated_type_equality_checks, unused_local_variable, unused_element, collection_methods_unrelated_type
-
 import 'dart:developer';
 import 'dart:io';
 
@@ -9,6 +7,7 @@ import 'package:open_file/open_file.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pverify/controller/json_file_operations.dart';
 import 'package:pverify/models/commodity_item.dart';
+import 'package:pverify/models/defect_categories.dart';
 import 'package:pverify/models/defect_instruction_attachment.dart';
 import 'package:pverify/models/defect_item.dart';
 import 'package:pverify/models/defects_data.dart';
@@ -139,7 +138,7 @@ class DefectsScreenController extends GetxController {
   List<String> seriousDefectList = [];
   Map<String, int> seriousDefectCountMap = <String, int>{};
   Map<int, String>? defectCategoriesMap;
-
+  List<SampleData> sampleList = [];
   String poNumber = '', sealNumber = '';
 
   String? lotNo, itemSku, itemUniqueId, lotSize;
@@ -166,37 +165,15 @@ class DefectsScreenController extends GetxController {
   var visisblePopupIndex = 0.obs;
   var isVisibleSpecificationPopup = false.obs;
 
+  Map<int, String> defectCategoriesHashMap = {};
+
   @override
   void onInit() {
     Map<String, dynamic>? args = Get.arguments;
     if (args == null) {
       throw Exception('Arguments required!');
     }
-    serverInspectionID = args[Consts.SERVER_INSPECTION_ID] ?? 0;
-    completed = args[Consts.COMPLETED] ?? false;
-    partnerName = args[Consts.PARTNER_NAME] ?? '';
-    partnerID = args[Consts.PARTNER_ID] ?? 0;
-    carrierName = args[Consts.CARRIER_NAME] ?? '';
-    carrierID = args[Consts.CARRIER_ID] ?? 0;
-    commodityName = args[Consts.COMMODITY_NAME] ?? '';
-    commodityID = args[Consts.COMMODITY_ID] ?? 0;
-    varietyName = args[Consts.VARIETY_NAME] ?? '';
-    varietySize = args[Consts.VARIETY_SIZE] ?? '';
-    varietyId = args[Consts.VARIETY_ID] ?? 0;
-    specificationNumber = args[Consts.SPECIFICATION_NUMBER] ?? '';
-    specificationVersion = args[Consts.SPECIFICATION_VERSION] ?? '';
-    sampleSizeByCount = args[Consts.SAMPLE_SIZE_BY_COUNT] ?? 0;
-    specificationName = args[Consts.SPECIFICATION_NAME] ?? '';
-    specificationTypeName = args[Consts.SPECIFICATION_TYPE_NAME] ?? '';
-    isMyInspectionScreen = args[Consts.IS_MY_INSPECTION_SCREEN] ?? false;
-    itemSku = args[Consts.ITEM_SKU] ?? '';
-    itemSkuId = args[Consts.ITEM_SKU_ID] ?? 0;
-    lotNo = args[Consts.LOT_NO] ?? '';
-    gtin = args[Consts.GTIN] ?? '';
-    String packDateString = args[Consts.PACK_DATE] ?? '';
-    if (packDateString.isNotEmpty) {
-      packDate = Utils().dateFormat.parse(packDateString);
-    }
+
     itemUniqueId = args[Consts.ITEM_UNIQUE_ID] ?? '';
     lotSize = args[Consts.LOT_SIZE] ?? '';
     itemSkuName = args[Consts.ITEM_SKU_NAME] ?? '';
@@ -207,20 +184,21 @@ class DefectsScreenController extends GetxController {
     serverInspectionID = args[Consts.SERVER_INSPECTION_ID] ?? -1;
     partnerName = args[Consts.PARTNER_NAME] ?? '';
     partnerID = args[Consts.PARTNER_ID] ?? 0;
-    carrierName = args[Consts.CARRIER_NAME];
+    carrierName = args[Consts.CARRIER_NAME] ?? '';
     carrierID = args[Consts.CARRIER_ID] ?? 0;
     commodityName = args[Consts.COMMODITY_NAME] ?? '';
     commodityID = args[Consts.COMMODITY_ID] ?? 0;
     sampleSizeByCount = args[Consts.SAMPLE_SIZE_BY_COUNT] ?? 0;
     varietyName = args[Consts.VARIETY_NAME] ?? '';
     varietySize = args[Consts.VARIETY_SIZE] ?? '';
-    varietyId = args[Consts.VARIETY_ID];
+    varietyId = args[Consts.VARIETY_ID] ?? 0;
     completed = args[Consts.COMPLETED] ?? false;
     inspectionResult = args[Consts.INSPECTION_RESULT] ?? '';
     selectedSpecification = args[Consts.SPECIFICATION_NAME] ?? '';
+    specificationName = args[Consts.SPECIFICATION_NAME] ?? '';
     poNumber = args[Consts.PO_NUMBER] ?? '';
     sealNumber = args[Consts.SEAL_NUMBER] ?? '';
-    //gradeId = args[Consts.GRADE_ID] ?? '';
+    gradeId = args[Consts.GRADE_ID] ?? 0;
     itemSku = args[Consts.ITEM_SKU] ?? '';
     itemSkuId = args[Consts.ITEM_SKU_ID] ?? 0;
     itemSkuName = args[Consts.ITEM_SKU_NAME] ?? '';
@@ -230,13 +208,22 @@ class DefectsScreenController extends GetxController {
     isMyInspectionScreen = args[Consts.IS_MY_INSPECTION_SCREEN] ?? false;
     lotNo = args[Consts.LOT_NO] ?? '';
     gtin = args[Consts.GTIN] ?? '';
+    String packDateString = args[Consts.PACK_DATE] ?? '';
+    if (packDateString.isNotEmpty) {
+      packDate = Utils().dateFormat.parse(packDateString);
+    }
     itemUniqueId = args[Consts.ITEM_UNIQUE_ID] ?? '';
     lotSize = args[Consts.LOT_SIZE] ?? '';
     poLineNo = args[Consts.PO_LINE_NO] ?? 0;
     productTransfer = args[Consts.PRODUCT_TRANSFER] ?? '';
     callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
+
+    if (serverInspectionID > -1) {
+      inspectionId = serverInspectionID;
+    }
+
+    // populateDefectSpinnerList();
     appStorage.getCommodityList();
-    populateDefectSpinnerList();
     super.onInit();
 
     setInit();
@@ -473,9 +460,9 @@ class DefectsScreenController extends GetxController {
     sampleSetObs.removeAt(index);
   }
 
-  void openPDFFile(BuildContext context, String type) async {
+  void openPDFFile(BuildContext context, {required bool isForGrade}) async {
     String filename;
-    if (type == "Inspection Instructions") {
+    if (!isForGrade) {
       filename =
           "II_${AppStorage.instance.commodityVarietyData?.commodityId.toString()}.pdf";
     } else {
@@ -498,7 +485,7 @@ class DefectsScreenController extends GetxController {
             isSuccess: false);
       }
     } else {
-      if (type == "Inspection Instructions") {
+      if (!isForGrade) {
         AppSnackBar.getCustomSnackBar("Error", "No Inspection Instructions",
             isSuccess: false);
       } else {
@@ -527,9 +514,9 @@ class DefectsScreenController extends GetxController {
 
   void populateDefectSpinnerList() {
     int commodityId;
-    if (serverInspectionID > -1)
+    if (serverInspectionID > -1) {
       commodityId = commodityID ?? 0;
-    else if (appStorage.currentInspection != null) {
+    } else if (appStorage.currentInspection != null) {
       commodityId = appStorage.currentInspection?.commodityId ?? 0;
     } else {
       commodityId = commodityID ?? 0;
@@ -571,12 +558,13 @@ class DefectsScreenController extends GetxController {
   void populateSeverityList() {
     int commodityId;
 
-    if (serverInspectionID > -1)
+    if (serverInspectionID > -1) {
       commodityId = commodityID ?? 0;
-    else if (appStorage.currentInspection != null)
+    } else if (appStorage.currentInspection != null) {
       commodityId = appStorage.currentInspection!.commodityId ?? 0;
-    else
+    } else {
       commodityId = commodityID ?? 0;
+    }
 
     CommodityItem? item;
 
@@ -649,24 +637,6 @@ class DefectsScreenController extends GetxController {
   }
 
   Future onSpecialInstrMenuTap() async {
-    /*List<Map<String, String>> exceptionCollection = [];
-    Map<String, String> map;
-    if (AppStorage.instance.commodityVarietyData?.exceptions != null) {
-      for (var item in AppStorage.instance.commodityVarietyData!.exceptions) {
-        map = {
-          Consts.TITLE: item.shortDescription.toString(),
-          Consts.DETAIL: item.longDescription.toString(),
-        };
-        exceptionCollection.add(map);
-      }
-    }
-    Get.to(
-        () => SpecialInstructions(
-              exceptionCollection: exceptionCollection,
-            ),
-        fullscreenDialog: true,
-        transition: Transition.downToUp);*/
-
     CustomListViewDialog customDialog = CustomListViewDialog(
       Get.context!,
       (selectedValue) {},
@@ -676,6 +646,9 @@ class DefectsScreenController extends GetxController {
   }
 
   Future onSpecificationTap(BuildContext context) async {
+    appStorage.specificationGradeToleranceTable =
+        await dao.getSpecificationGradeToleranceTable(
+            specificationNumber!, specificationVersion!);
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -756,7 +729,7 @@ class DefectsScreenController extends GetxController {
       List<DefectInstructionAttachment> attachments = [];
       String instruction = '';
       CommodityItem? item;
-      String? defectId = defectDataMap[position]?[0].defectId;
+      int? defectId = defectDataMap[position]?[0].defectId;
 
 // Get the commodity item
       item = appStorage
@@ -835,48 +808,55 @@ class DefectsScreenController extends GetxController {
   void getDefectCategories() {
     Map<int, String> defectCategoriesHashMap = {};
 
-    // TODO: implement getDefectCategories
-    /*if (appStorage.defectCategoriesList != null) {
-      for (var i = 0; i < AppInfo.defectCategoriesList.length; i++) {
-        if (AppInfo.defectCategoriesList[i].name == "Condition") {
-          List<DefectItem> defectItemList = AppInfo.defectCategoriesList[i].defectList;
+    for (var i = 0; i < defectCategoriesList.length; i++) {
+      if (defectCategoriesList[i].name == "Condition") {
+        List<DefectItem>? defectItemList = defectCategoriesList[i].defectList;
 
+        if (defectItemList != null) {
           for (var defectItem in defectItemList) {
-            if (defectItem.name.contains("Total Condition")) {
+            if (defectItem.name?.contains("Total Condition") ?? false) {
               totalConditionDefectId = defectItem.id;
             } else {
-              defectCategoriesHashMap[defectItem.id] = "Condition";
+              defectCategoriesHashMap[defectItem.id!] = "Condition";
             }
           }
-        } else if (AppInfo.defectCategoriesList[i].name == "Quality") {
-          List<DefectItem> defectItemList = AppInfo.defectCategoriesList[i].defectList;
+        }
+      } else if (defectCategoriesList[i].name == "Quality") {
+        List<DefectItem>? defectItemList = defectCategoriesList[i].defectList;
 
+        if (defectItemList != null) {
           for (var defectItem in defectItemList) {
-            if (defectItem.name.contains("Total Quality")) {
+            if (defectItem.name?.contains("Total Quality") ?? false) {
               totalQualityDefectId = defectItem.id;
             } else {
-              defectCategoriesHashMap[defectItem.id] = "Quality";
+              defectCategoriesHashMap[defectItem.id!] = "Quality";
             }
           }
-        } else if (AppInfo.defectCategoriesList[i].name == "Size") {
-          List<DefectItem> defectItemList = AppInfo.defectCategoriesList[i].defectList;
+        }
+      } else if (defectCategoriesList[i].name == "Size") {
+        List<DefectItem>? defectItemList = defectCategoriesList[i].defectList;
 
+        if (defectItemList != null) {
           for (var defectItem in defectItemList) {
-            defectCategoriesHashMap[defectItem.id] = "Size";
+            defectCategoriesHashMap[defectItem.id!] = "Size";
           }
-        } else if (AppInfo.defectCategoriesList[i].name == "Color") {
-          List<DefectItem> defectItemList = AppInfo.defectCategoriesList[i].defectList;
+        }
+      } else if (defectCategoriesList[i].name == "Color") {
+        List<DefectItem>? defectItemList = defectCategoriesList[i].defectList;
 
+        if (defectItemList != null) {
           for (var defectItem in defectItemList) {
-            defectCategoriesHashMap[defectItem.id] = "Color";
+            defectCategoriesHashMap[defectItem.id!] = "Color";
           }
         }
       }
-    }*/
+    }
   }
 
-  /*
-    Future<void> saveSamplesToDB() async {
+  List<DefectCategories> get defectCategoriesList =>
+      appStorage.defectCategoriesList ?? [];
+
+  Future<void> saveSamplesToDB() async {
     hasDamage = false;
     hasSeriousDamage = false;
 
@@ -920,50 +900,51 @@ class DefectsScreenController extends GetxController {
       var sampleSize = getSampleSize(entry.key);
       var sampleId = getSampleID(entry.key);
 
-      for (var defect in entry.value) {
-        var inspectionDefectId = defect.inspectionId;
-        var defectId = defect.defectId;
-        var injuryCnt = defect.injuryCnt;
-        var damageCnt = defect.damageCnt;
-        var seriousDamageCnt = defect.seriousDamageCnt;
-        var veryseriousDamageCnt = defect.verySeriousDamageCnt;
-        var decayCnt = defect.decayCnt;
-        var defectName = defect.spinnerSelection;
-        var defectComment = defect.comment;
-        var timestamp = defect.createdTime;
-        var attachmentIds = defect.attachmentIds;
-        var severityInjuryId = defect.severityInjuryId;
-        var severityDamageId = defect.severityDamageId;
-        var severitySeriousDamageId = defect.severitySeriousDamageId;
-        var severityVerySeriousDamageId = defect.severityVerySeriousDamageId;
-        var severityDecayId = defect.severityDecayId;
+      for (InspectionDefect defect in entry.value) {
+        int? inspectionDefectId = defect.inspectionDefectId;
+        int? defectId = defect.defectId;
+        int? injuryCnt = defect.injuryCnt;
+        int? damageCnt = defect.damageCnt;
+        int? seriousDamageCnt = defect.seriousDamageCnt;
+        int? veryseriousDamageCnt = defect.verySeriousDamageCnt;
+        int? decayCnt = defect.decayCnt;
+        String? defectName = defect.spinnerSelection;
+        String? defectComment = defect.comment;
+        int? timestamp = defect.createdTime;
+        List<int>? attachmentIds = defect.attachmentIds;
+        int? severityInjuryId = defect.severityInjuryId;
+        int? severityDamageId = defect.severityDamageId;
+        int? severitySeriousDamageId = defect.severitySeriousDamageId;
+        int? severityVerySeriousDamageId = defect.severityVerySeriousDamageId;
+        int? severityDecayId = defect.severityDecayId;
 
-        var defectCategory = DefectCategoriesHashMap != null
-            ? DefectCategoriesHashMap[defectId]
+        String defectCategory = defectCategoriesHashMap != null
+            ? defectCategoriesHashMap[defectId] ?? ''
             : '';
 
         if (defectId != 0) {
           if (inspectionDefectId == null) {
             // The inspection Defect has not been saved yet, save it.
             try {
-              inspectionDefectId = (await dao.createInspectionDefect(
-                  inspectionId: inspectionId ?? 0,
-                  sampleId: sampleId,
-                  defectId: int.parse(defectId.toString()),
-                  defectName: defectName,
-                  injuryCnt: injuryCnt,
-                  damageCnt: damageCnt,
-                  seriousDamageCnt: seriousDamageCnt,
-                  comments: defectComment,
-                  timestamp: timestamp,
-                  verySeriousDamageCnt: veryseriousDamageCnt,
-                  decayCnt: decayCnt,
-                  severityInjuryId: severityInjuryId,
-                  severityDamageId: severityDamageId,
-                  severitySeriousDamageId: severityVerySeriousDamageId,
-                  severityVerySeriousDamageId: severityVerySeriousDamageId,
-                  severityDecayId: severityDecayId,
-                  defectCategory: defectCategory)) as String?;
+              inspectionDefectId = await dao.createInspectionDefect(
+                inspectionId: inspectionId ?? 0,
+                sampleId: sampleId!,
+                defectId: int.parse(defectId.toString()),
+                defectName: defectName!,
+                injuryCnt: injuryCnt!,
+                damageCnt: damageCnt!,
+                seriousDamageCnt: seriousDamageCnt!,
+                comments: defectComment,
+                timestamp: timestamp!,
+                verySeriousDamageCnt: veryseriousDamageCnt!,
+                decayCnt: decayCnt!,
+                severityInjuryId: severityInjuryId!,
+                severityDamageId: severityDamageId!,
+                severitySeriousDamageId: severityVerySeriousDamageId!,
+                severityVerySeriousDamageId: severityVerySeriousDamageId,
+                severityDecayId: severityDecayId!,
+                defectCategory: defectCategory,
+              );
               defect.inspectionDefectId = inspectionDefectId;
               defect.sampleId = sampleId;
             } catch (e) {
@@ -975,18 +956,18 @@ class DefectsScreenController extends GetxController {
               await dao.updateInspectionDefect(
                   inspectionDefectId: inspectionId ?? 0,
                   defectId: int.parse(defectId.toString()),
-                  defectName: defectName,
-                  injuryCnt: injuryCnt,
-                  damageCnt: damageCnt,
-                  seriousDamageCnt: seriousDamageCnt,
-                  comments: defectComment,
-                  verySeriousDamageCnt: veryseriousDamageCnt,
-                  decayCnt: decayCnt,
-                  severityInjuryId: severityInjuryId,
-                  severityDamageId: severityDamageId,
-                  severitySeriousDamageId: severitySeriousDamageId,
-                  severityVerySeriousDamageId: severityVerySeriousDamageId,
-                  severityDecayId: severityDecayId,
+                  defectName: defectName!,
+                  injuryCnt: injuryCnt!,
+                  damageCnt: damageCnt!,
+                  seriousDamageCnt: seriousDamageCnt!,
+                  comments: defectComment!,
+                  verySeriousDamageCnt: veryseriousDamageCnt!,
+                  decayCnt: decayCnt!,
+                  severityInjuryId: severityInjuryId!,
+                  severityDamageId: severityDamageId!,
+                  severitySeriousDamageId: severitySeriousDamageId!,
+                  severityVerySeriousDamageId: severityVerySeriousDamageId!,
+                  severityDecayId: severityDecayId!,
                   defectCategory: defectCategory);
               defect.inspectionDefectId = inspectionDefectId;
             } catch (e) {
@@ -1005,10 +986,10 @@ class DefectsScreenController extends GetxController {
             );
           }
         }
-        if (damageCnt > 2) {
+        if (damageCnt != null && damageCnt > 2) {
           hasDamage = true;
         }
-        if (seriousDamageCnt > 0) {
+        if (seriousDamageCnt != null && seriousDamageCnt > 0) {
           hasSeriousDamage = true;
         }
       }
@@ -1016,5 +997,22 @@ class DefectsScreenController extends GetxController {
     dataEntered = false;
     dataSaved = true;
   }
-  */
+
+  int? getSampleSize(String name) {
+    for (var i = 0; i < sampleList.length; i++) {
+      if (name == sampleList[i].name) {
+        return sampleList[i].sampleSize;
+      }
+    }
+    return null;
+  }
+
+  int? getSampleID(String name) {
+    for (var i = 0; i < sampleList.length; i++) {
+      if (name == sampleList[i].name) {
+        return sampleList[i].sampleId;
+      }
+    }
+    return null;
+  }
 }

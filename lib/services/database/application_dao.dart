@@ -3405,6 +3405,52 @@ class ApplicationDao {
     return list;
   }
 
+  Future<List<SpecificationGradeTolerance>> getSpecificationGradeToleranceTable(
+      String number, String version) async {
+    List<SpecificationGradeTolerance> list = [];
+    SpecificationGradeTolerance item;
+
+    try {
+      String query = '''
+      SELECT Number_Specification, Version_Specification, Severity_Defect_ID, Defect_ID,
+      Grade_Tolerance_Percentage, Overridden, Defect_Name, Defect_Category_Name, Severity_Defect_Name
+      FROM Specification_Grade_Tolerance
+      WHERE Number_Specification=? AND Version_Specification=?
+    ''';
+      final Database db = dbProvider.lazyDatabase;
+      List<Map<String, dynamic>> result =
+          await db.rawQuery(query, [number, version]);
+
+      for (Map<String, dynamic> map in result) {
+        item = SpecificationGradeTolerance(
+          specificationNumber:
+              map[SpecificationGradeToleranceColumn.NUMBER_SPECIFICATION],
+          specificationVersion:
+              map[SpecificationGradeToleranceColumn.VERSION_SPECIFICATION],
+          severityDefectID:
+              map[SpecificationGradeToleranceColumn.SEVERITY_DEFECT_ID],
+          defectID: map[SpecificationGradeToleranceColumn.DEFECT_ID],
+          specTolerancePercentage:
+              map[SpecificationGradeToleranceColumn.GRADE_TOLERANCE_PERCENTAGE],
+          overridden: map[SpecificationGradeToleranceColumn.OVERRIDDEN],
+          defectName: map[SpecificationGradeToleranceColumn.DEFECT_NAME],
+          defectCategoryName:
+              map[SpecificationGradeToleranceColumn.DEFECT_CATEGORY_NAME],
+          severityDefectName:
+              map[SpecificationGradeToleranceColumn.SEVERITY_DEFECT_NAME],
+        );
+
+        print(
+            'spec tolerance - ${item.defectName}--${item.severityDefectName}');
+        list.add(item);
+      }
+    } catch (e) {
+      print('Error has occurred while finding quality control items. $e');
+    }
+
+    return list;
+  }
+
   Future<List<FinishedGoodsItemSKU>> getSelectedItemSKUList() async {
     List<FinishedGoodsItemSKU> list = [];
     try {
