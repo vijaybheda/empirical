@@ -1108,7 +1108,8 @@ class QCDetailsShortFormScreenController extends GetxController {
           passingData[Consts.CALLER_ACTIVITY] = 'GTINActivity';
 
           if (isMyInspectionScreen ?? false) {
-            Get.offAll(() => const Home());
+            final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+            Get.offAll(() => Home(tag: tag));
           } else {
             if (callerActivity == "GTINActivity") {
               final String tag =
@@ -1329,7 +1330,8 @@ class QCDetailsShortFormScreenController extends GetxController {
       };
 
       if (isMyInspectionScreen ?? false) {
-        Get.offAll(() => const Home(), arguments: passingData);
+        final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+        Get.offAll(() => Home(tag: tag), arguments: passingData);
       } else {
         if (callerActivity == "NewPurchaseOrderDetailsActivity") {
           Get.offAll(() => const NewPurchaseOrderDetailsScreen(),

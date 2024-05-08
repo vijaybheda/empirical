@@ -159,7 +159,9 @@ class AuthController extends GetxController {
                 await jsonFileOperations.offlineLoadCarriersData();
                 await jsonFileOperations.offlineLoadCommodityData();
                 await Utils.hideLoadingDialog();
-                Get.offAll(() => const Home());
+                final String tag =
+                    DateTime.now().millisecondsSinceEpoch.toString();
+                Get.offAll(() => Home(tag: tag));
               }
             } else {
               await Utils.hideLoadingDialog();
@@ -258,7 +260,8 @@ class AuthController extends GetxController {
             context, AppStrings.error, AppStrings.betterWifiConnWarning);
       }
     } else {
-      Get.offAll(() => const Home());
+      final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+      Get.offAll(() => Home(tag: tag));
       return;
     }
   }

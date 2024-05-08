@@ -14,12 +14,14 @@ import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class Home extends GetView<HomeController> {
-  const Home({super.key});
+  final String tag;
+  const Home({super.key, required this.tag});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
         init: HomeController(),
+        tag: tag,
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -367,6 +369,7 @@ class Home extends GetView<HomeController> {
     return Expanded(
       child: GetBuilder<HomeController>(
         id: 'inspectionsList',
+        tag: tag,
         builder: (controller) {
           return ListView.builder(
             itemCount: controller.listOfInspection.length,

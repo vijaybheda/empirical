@@ -735,7 +735,8 @@ class DefectsScreenController extends GetxController {
         MaterialPageRoute(
           builder: (context) {
             //if (isMyInspectionScreen) {
-            return Home();
+            final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+            return Home(tag: tag);
             //}
             // else {
             //   if (callerActivity == "NewPurchaseOrderDetailsActivity") {

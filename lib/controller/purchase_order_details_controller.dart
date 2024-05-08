@@ -851,7 +851,8 @@ class PurchaseOrderDetailsController extends GetxController {
     }
 
     if (isValid) {
-      Get.offAll(() => const Home());
+      final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+      Get.offAll(() => Home(tag: tag));
     }
   }
 

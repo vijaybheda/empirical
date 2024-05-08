@@ -59,7 +59,10 @@ class CacheDownloadController extends GetxController {
         return;
       } else {
         await appStorage.write(StorageKey.kIsCSVDownloaded1, true);
-        Get.offAll(() => const Home());
+        await appStorage.setInt(
+            StorageKey.kCacheDate, DateTime.now().millisecondsSinceEpoch);
+        final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+        Get.offAll(() => Home(tag: tag));
       }
     });
   }
