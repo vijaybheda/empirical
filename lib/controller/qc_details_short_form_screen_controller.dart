@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pverify/controller/global_config_controller.dart';
@@ -16,7 +17,6 @@ import 'package:pverify/models/specification_analytical.dart';
 import 'package:pverify/models/specification_analytical_request_item.dart';
 import 'package:pverify/models/specification_by_item_sku.dart';
 import 'package:pverify/models/uom_item.dart';
-import 'package:pverify/services/barcode_scanner.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
 import 'package:pverify/ui/defects/defects_screen.dart';
@@ -303,16 +303,9 @@ class QCDetailsShortFormScreenController extends GetxController {
     required Function(String scanResult)? onScanResult,
   }) async {
     // TODO: Implement scanBarcode
-    String? res = await Get.to(() => const BarcodeScannerScreen());
-    /*String? res = await Get.to(() => const SimpleBarcodeScannerPage(
-          scanType: ScanType.barcode,
-          centerTitle: true,
-          // appBarTitle: 'Scan a Barcode',
-          // cancelButtonText: 'Cancel',
-          // isShowFlashIcon: true,
-          // lineColor: AppColors.primaryColor.value.toString(),
-        ));*/
-    if (res != null && res.isNotEmpty && res != '-1') {
+    String? res = await FlutterBarcodeScanner.scanBarcode(
+        '#ff6666', 'Cancel', true, ScanMode.DEFAULT);
+    if (res.isNotEmpty && res != '-1') {
       if (onScanResult != null) {
         onScanResult(res);
       }

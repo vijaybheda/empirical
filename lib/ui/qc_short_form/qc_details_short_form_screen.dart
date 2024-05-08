@@ -379,7 +379,7 @@ class QCDetailsShortFormScreen
               ),
               const SizedBox(width: 5),
               Divider(
-                color: AppColors.darkSkyBlue,
+                color: AppColors.orange,
                 height: 1,
               ),
             ],
@@ -453,7 +453,7 @@ class QCDetailsShortFormScreen
               ),
               const SizedBox(width: 5),
               Divider(
-                color: AppColors.darkSkyBlue,
+                color: AppColors.orange,
                 height: 1,
               ),
             ],
@@ -525,7 +525,7 @@ class QCDetailsShortFormScreen
               ),
               const SizedBox(width: 5),
               Divider(
-                color: AppColors.darkSkyBlue,
+                color: AppColors.orange,
                 height: 1,
               ),
             ],
@@ -589,7 +589,7 @@ class QCDetailsShortFormScreen
               ),
               const SizedBox(width: 5),
               Divider(
-                color: AppColors.darkSkyBlue,
+                color: AppColors.orange,
                 height: 1,
               ),
             ],
@@ -654,7 +654,7 @@ class QCDetailsShortFormScreen
               ),
               const SizedBox(width: 5),
               Divider(
-                color: AppColors.darkSkyBlue,
+                color: AppColors.orange,
                 height: 1,
               ),
             ],

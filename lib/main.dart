@@ -1,8 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_zxing/flutter_zxing.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/services/database/database_helper.dart';
@@ -13,7 +11,6 @@ import 'package:pverify/utils/theme/colors_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  zx.setLogEnabled(kDebugMode);
   await DatabaseHelper.instance.database;
   await AppStorage.instance.initStorage();
   SystemChrome.setPreferredOrientations([

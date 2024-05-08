@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -6,7 +7,6 @@ import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
-import 'package:pverify/services/barcode_scanner.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/commodity/commodity_id_screen.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
@@ -584,15 +584,8 @@ class SelectSupplierScreenController extends GetxController {
   }) async {
     // TODO: uncomment this code to enable barcode scanning
 
-    String? res = await Get.to(() => const BarcodeScannerScreen());
-    /*String? res = await Get.to(() => SimpleBarcodeScannerPage(
-          scanType: ScanType.barcode,
-          centerTitle: true,
-          // appBarTitle: 'Scan a Barcode',
-          // cancelButtonText: 'Cancel',
-          // isShowFlashIcon: true,
-          // lineColor: AppColors.primaryColor.value.toString(),
-        ));*/
+    String? res = await FlutterBarcodeScanner.scanBarcode(
+        '#ff6666', 'Cancel', true, ScanMode.DEFAULT);
     if (res != null && res.length > 10) {
       if (onBarcodeScanned != null) {
         onBarcodeScanned(res);
@@ -648,16 +641,9 @@ class SelectSupplierScreenController extends GetxController {
   }
 
   Future<String?> scanBarcode() async {
-    String? res = await Get.to(() => const BarcodeScannerScreen());
-    /*String? res = await Get.to(() => SimpleBarcodeScannerPage(
-          scanType: ScanType.barcode,
-          centerTitle: true,
-          // appBarTitle: 'Scan a Barcode',
-          // cancelButtonText: 'Cancel',
-          // isShowFlashIcon: true,
-          // lineColor: AppColors.primaryColor.value.toString(),
-        ));*/
-    if (res != null && res.isNotEmpty && res != '-1') {
+    String? res = await FlutterBarcodeScanner.scanBarcode(
+        '#ff6666', 'Cancel', true, ScanMode.DEFAULT);
+    if (res.isNotEmpty && res != '-1') {
       // if (onBarcodeScanned != null) {
       //   onBarcodeScanned!(res);
       // }
