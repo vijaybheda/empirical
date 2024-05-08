@@ -3594,4 +3594,69 @@ class ApplicationDao {
 
     return branded;
   }
+
+  Future<int?> createOrUpdateOverriddenResult(
+    int inspectionID,
+    int overriddenBy,
+    String overriddenResult,
+    String overriddenComments,
+    int overriddenTimestamp,
+    String inspectionOldResult,
+    int originalQtyShipped,
+    int originalQtyRejected,
+    int qtyShipped,
+    int qtyRejected,
+  ) async {
+    int? inspectionId;
+    Database database = dbProvider.lazyDatabase;
+
+    try {
+      String query =
+          'SELECT Inspection_ID FROM Overridden_Result WHERE Inspection_ID = ?';
+      List<Map<String, dynamic>> result =
+          await database.rawQuery(query, [inspectionID]);
+
+      if (result.isNotEmpty) {
+        inspectionId = result.first['Inspection_ID'];
+      }
+
+      if (inspectionId == null) {
+        await database.transaction((txn) async {
+          var values = {
+            'Inspection_ID': inspectionID,
+            'Overridden_By': overriddenBy,
+            'Overridden_Result': overriddenResult,
+            'Overridden_Timestamp': overriddenTimestamp,
+            'Overridden_Comments': overriddenComments,
+            'Old_Result': inspectionOldResult,
+            'Original_Qty_Shipped': originalQtyShipped,
+            'Original_Qty_Rejected': originalQtyRejected,
+            'New_Qty_Shipped': qtyShipped,
+            'New_Qty_Rejected': qtyRejected,
+          };
+          inspectionId = await txn.insert('Overridden_Result', values);
+        });
+      } else {
+        await database.transaction((txn) async {
+          var values = {
+            'Overridden_By': overriddenBy,
+            'Overridden_Result': overriddenResult,
+            'Overridden_Timestamp': overriddenTimestamp,
+            'Overridden_Comments': overriddenComments,
+            'Old_Result': inspectionOldResult,
+            'Original_Qty_Shipped': originalQtyShipped,
+            'Original_Qty_Rejected': originalQtyRejected,
+            'New_Qty_Shipped': qtyShipped,
+            'New_Qty_Rejected': qtyRejected,
+          };
+          await txn.update('Overridden_Result', values,
+              where: 'Inspection_ID = ?', whereArgs: [inspectionID]);
+        });
+      }
+    } catch (e) {
+      throw Exception(
+          'Error occurred while creating or updating inspection: $e');
+    }
+    return inspectionId;
+  }
 }
