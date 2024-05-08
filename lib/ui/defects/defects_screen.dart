@@ -1098,7 +1098,7 @@ class DefectsTable extends StatelessWidget {
       case AppStrings.injury:
         return Colors.greenAccent;
       case AppStrings.damage:
-        return Colors.orangeAccent;
+        return AppColors.orange;
       case AppStrings.seriousDamage:
         return Colors.cyanAccent;
       case AppStrings.verySeriousDamage:

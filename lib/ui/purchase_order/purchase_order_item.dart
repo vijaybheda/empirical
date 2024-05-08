@@ -711,7 +711,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           } else if (inspectionResult == "AW" ||
               inspectionResult.toLowerCase() == AppStrings.acceptCondition) {
             // TODO: setting up the color
-            resultButtonColor = Colors.orange;
+            resultButtonColor = AppColors.orange;
             resultButton = "AW";
             layoutQtyRejectedVisibility = false;
           }

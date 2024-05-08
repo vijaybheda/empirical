@@ -367,14 +367,14 @@ class _SpecificationAnalyticalWidgetState
           ),
           _divider(),
           Expanded(
-            flex: 1,
+            flex: 2,
             child: IconButton(
               icon: Image.asset(
                 (reqobj.comment != null && (reqobj.comment ?? '').isNotEmpty)
                     ? AppImages.commentAddedImage
                     : AppImages.commentImage,
-                height: 50.w,
-                width: 50.w,
+                height: 65.w,
+                width: 65.w,
               ),
               onPressed: () async {
                 await showCommentInputDialog(context, comment: reqobj.comment,
@@ -394,15 +394,15 @@ class _SpecificationAnalyticalWidgetState
           ),
           _divider(),
           Expanded(
-            flex: 1,
+            flex: 2,
             child: IconButton(
               icon: Image.asset(
                 (widget.item.specTypeofEntry == 1 ||
                         widget.item.specTypeofEntry == 3)
                     ? AppImages.infoAddedImage
                     : AppImages.infoImage,
-                height: 50.w,
-                width: 50.w,
+                height: 65.w,
+                width: 65.w,
               ),
               onPressed: () => infoButtonTap(),
             ),

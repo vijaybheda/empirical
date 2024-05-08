@@ -41,7 +41,7 @@ class AppColors {
   static Color searchbar = const Color(0xFFE7E7E7);
 
   static Color primaryColor = const Color(0xffF29D38);
-  static Color secondaryColor = const Color(0xffc46d1d);
+  static Color secondaryColor = const Color(0xffF29D38);
   static Color backgroundColor = const Color(0xffEBF9F6);
   static Color darkPrimaryColor = const Color(0xff0D0D0D);
   static Color dark = const Color(0xff474747);
@@ -81,7 +81,7 @@ class AppColors {
       ? const Color(0xff5f5f5f)
       : const Color(0xff5f5f5f);
 
-  static Color orange = const Color(0xffFFA500);
+  static Color orange = const Color(0xffF29D38);
   static Color yellow = const Color(0xffFFFF00);
   static Color iconBlue = const Color(0xff5acdf1);
 }

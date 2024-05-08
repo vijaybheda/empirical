@@ -40,11 +40,8 @@ dependencies:
   connectivity_plus: ^6.0.3
   image_picker: ^1.0.7
   intl: ^0.19.0
-#  flutter_image_compress: ^2.1.0
   permission_handler: ^11.3.0
   dio: ^5.4.1
-#  file_picker: ^6.2.0
-#  device_info_plus: ^9.1.2
   path_provider: ^2.1.2
   google_fonts: ^6.2.1
   flutter_screenutil: ^5.9.0
@@ -55,9 +52,9 @@ dependencies:
   csv: ^6.0.0
   archive: ^3.4.10
   pointycastle: ^3.7.4
-  simple_barcode_scanner: ^0.1.1
   image_cropper: ^1.4.0
   open_file: ^3.3.2
+  flutter_barcode_scanner: ^2.0.0
 
 
 dev_dependencies:
