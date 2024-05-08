@@ -44,19 +44,14 @@ class OverriddenResultScreen
                 backgroundColor: AppColors.grey2,
                 onPressed: () {
                   if (controller.isOverrideControllerValidate(context)) {
-                    controller.saveAndContinue(context);
+                    controller.saveAndContinueClick(context,
+                        controller.finalInspectionResult?.value.toString());
                   }
                 },
               ),
               FooterContentView(
                 onBackTap: () {
                   Get.back();
-                  controller.backClickDialog(
-                    context,
-                    () {
-                      Get.back();
-                    },
-                  );
                 },
               )
             ],
