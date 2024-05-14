@@ -83,6 +83,7 @@ class LongFormQualityControlScreenController extends GetxController {
   int? poLineNo, varietyId, gradeId, itemSkuId;
   int? inspectionId;
   int sampleSizeByCount = 0;
+  int? qcID;
 
   String? partnerName;
   String? carrierName;
@@ -116,6 +117,7 @@ class LongFormQualityControlScreenController extends GetxController {
   DateTime? workDate;
   var packDateFocusNode = FocusNode();
   var workDateFocusNode = FocusNode();
+
   @override
   void onInit() {
     Map<String, dynamic>? args = Get.arguments;
@@ -162,6 +164,7 @@ class LongFormQualityControlScreenController extends GetxController {
     pulpTempMaxController.text = '0';
     String packDateString = args[Consts.PACK_DATE] ?? '';
     String workDateString = args[Consts.WORK_DATE] ?? '';
+
     if (packDateString.isNotEmpty) {
       packDate = Utils().dateFormat.parse(packDateString);
       if (packDate != null) {
@@ -206,6 +209,7 @@ class LongFormQualityControlScreenController extends GetxController {
     setTempSpinner();
 
     if (qualityControlItems != null) {
+      qcID = qualityControlItems!.qcID;
       qtyShippedController.text = qualityControlItems!.qtyShipped.toString();
       updateQtyApproved();
 
@@ -228,6 +232,58 @@ class LongFormQualityControlScreenController extends GetxController {
       } else {
         workDateController.text = "";
       }
+
+      commentsController.text = qualityControlItems!.qcComments ?? '';
+      qtyRejectedController.text =
+          (qualityControlItems?.qtyRejected ?? '').toString();
+      pulpTempMinController.text =
+          (qualityControlItems?.pulpTempMin ?? '').toString();
+      pulpTempMaxController.text =
+          (qualityControlItems?.pulpTempMax ?? '').toString();
+      recorderTempMinController.text =
+          (qualityControlItems?.recorderTempMin ?? '').toString();
+      recorderTempMaxController.text =
+          (qualityControlItems?.recorderTempMax ?? '').toString();
+
+      String rpcValue = qualityControlItems!.rpc!.isEmpty
+          ? "N/A"
+          : qualityControlItems?.rpc ?? "N/A";
+      selectedRpc.value = rpcValue;
+
+      String clamifiedValue = qualityControlItems!.claimFiledAgainst!.isEmpty
+          ? "No Claim"
+          : qualityControlItems?.claimFiledAgainst ?? "No Claim";
+      selectedClaimField.value = clamifiedValue;
+
+      String tempRecorderValue = qualityControlItems!.qcdOpen1!.isEmpty
+          ? "Yes"
+          : qualityControlItems?.qcdOpen1 ?? "Yes";
+      selectedTempRecorder.value = tempRecorderValue;
+
+      lotNoController.text = qualityControlItems!.lot ?? '';
+      qtyInspectedOkController.text = qualityControlItems?.qcdOpen3 ?? '';
+      sensitechSerialNoController.text = qualityControlItems?.qcdOpen4 ?? '';
+
+      //todo Need to verify below methods working or not ?
+      selectedBrand = brandList.firstWhere(
+        (brandItem) => brandItem.brandID == qualityControlItems!.brandID,
+        orElse: () => BrandItem(brandID: 0, brandName: 'Select Two'),
+      );
+
+      selectedOrigin = originList.firstWhere(
+        (originItem) => originItem.countryID == qualityControlItems!.originID,
+        orElse: () => CountryItem(0, 'Select Two'),
+      );
+
+      selectedUOM = uomList.firstWhere(
+        (uomItem) => uomItem.uomID == qualityControlItems!.uomQtyShippedID,
+        orElse: () => UOMItem(0, 'Select One'),
+      );
+
+      selectedReason = reasonList.firstWhere(
+        (reasonItem) => reasonItem.reasonID == qualityControlItems!.reasonID,
+        orElse: () => ReasonItem(0, 'Select One'),
+      );
     }
   }
 
@@ -463,5 +519,9 @@ class LongFormQualityControlScreenController extends GetxController {
   String getDateStingFromTime(int timestamp) {
     DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp);
     return Utils().dateFormat.format(date);
+  }
+
+  int findPositionInArray(List<String> array, String item) {
+    return array.indexOf(item);
   }
 }
