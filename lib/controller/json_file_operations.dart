@@ -5,9 +5,11 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart';
+import 'package:pverify/models/brand_item.dart';
 import 'package:pverify/models/carrier_item.dart';
 import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/commodity_variety_data.dart';
+import 'package:pverify/models/country_item.dart';
 import 'package:pverify/models/defect_categories.dart';
 import 'package:pverify/models/defect_instruction_attachment.dart';
 import 'package:pverify/models/defect_item.dart';
@@ -16,6 +18,7 @@ import 'package:pverify/models/document_item_data.dart';
 import 'package:pverify/models/exception_item.dart';
 import 'package:pverify/models/offline_commodity.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/reason_item.dart';
 import 'package:pverify/models/severity.dart';
 import 'package:pverify/models/severity_defect.dart';
 import 'package:pverify/models/uom_item.dart';
@@ -591,6 +594,83 @@ class JsonFileOperations {
       debugPrint(e.toString());
       return null;
     }
+    return list;
+  }
+
+  static Future<List<BrandItem>?> parseBrandJson() async {
+    var storagePath = await Utils().getExternalStoragePath();
+    final Directory directory =
+        Directory("$storagePath${FileManString.jsonFilesCache}/");
+    log('BrandJson directory ${directory.path}');
+
+    String jsonLoadText = await getJsonFileContent(directory,
+        fileName: FileManString.BRAND_FILENAME);
+
+    List<BrandItem> list = [];
+    try {
+      List<dynamic> brandArray = jsonDecode(jsonLoadText);
+      for (int i = 0; i < brandArray.length; i++) {
+        int? id = brandArray[i]['brandID'];
+        String? name = brandArray[i]['brandName'];
+
+        BrandItem listItem = BrandItem(brandID: id, brandName: name);
+        list.add(listItem);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      return null;
+    }
+    return list;
+  }
+
+  static Future<List<CountryItem>?> parseCountryJson() async {
+    var storagePath = await Utils().getExternalStoragePath();
+    final Directory directory =
+        Directory("$storagePath${FileManString.jsonFilesCache}/");
+    log('CountryJson directory ${directory.path}');
+    String jsonLoadText = await getJsonFileContent(directory,
+        fileName: FileManString.COUNTRY_FILENAME);
+
+    List<CountryItem> list = [];
+
+    try {
+      List<dynamic> countryArray = jsonDecode(jsonLoadText);
+      for (int i = 0; i < countryArray.length; i++) {
+        int id = countryArray[i]['countryID'];
+        String name = countryArray[i]['countryName'];
+
+        CountryItem listItem = CountryItem(id, name);
+        list.add(listItem);
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+
+    return list;
+  }
+
+  static Future<List<ReasonItem>?> parseReasonJson() async {
+    var storagePath = await Utils().getExternalStoragePath();
+    final Directory directory =
+        Directory("$storagePath${FileManString.jsonFilesCache}/");
+    log('CountryJson directory ${directory.path}');
+    String jsonLoadText = await getJsonFileContent(directory,
+        fileName: FileManString.REASON_FILENAME);
+    List<ReasonItem> list = [];
+
+    try {
+      List<dynamic> reasonArray = jsonDecode(jsonLoadText);
+      for (int i = 0; i < reasonArray.length; i++) {
+        int id = reasonArray[i]['reasonID'];
+        String name = reasonArray[i]['reasonName'];
+
+        ReasonItem listItem = ReasonItem(id, name);
+        list.add(listItem);
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+
     return list;
   }
 
