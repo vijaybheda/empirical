@@ -3,7 +3,7 @@ import 'package:pverify/models/inspection_defect.dart';
 import 'package:pverify/models/sample_data.dart';
 import 'package:pverify/utils/const.dart';
 
-class DefectsScreenController extends GetxController {
+class DefectsTempScreenController extends GetxController {
   int serverInspectionID = -1;
   String partnerName = "";
   int? partnerID;

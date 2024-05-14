@@ -1,5 +1,3 @@
-// ignore_for_file: unused_local_variable, prefer_const_constructors, unrelated_type_equality_checks
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -21,14 +19,17 @@ import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class DefectsScreen extends GetView<DefectsScreenController> {
+  final String tag;
   const DefectsScreen({
     super.key,
+    required this.tag,
   });
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<DefectsScreenController>(
         init: DefectsScreenController(),
+        tag: tag,
         builder: (controller) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -60,7 +61,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                 await controller.onSpecialInstrMenuTap();
               },
               onSpecificationTap: () async {
-                await controller.onSpecificationTap(context);
+                await controller.onSpecificationTap();
               },
               onGradeTap: () async {
                 await JsonFileOperations.instance.viewGradePdf();
@@ -72,6 +73,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
             body: Column(
               children: [
                 Expanded(
+                  flex: 1,
                   child: Stack(
                     children: [
                       Container(
@@ -99,9 +101,9 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                 decoration: BoxDecoration(
                     color: AppColors.black,
                     borderRadius: BorderRadius.circular(10)),
-                margin: EdgeInsets.all(20),
+                margin: const EdgeInsets.all(20),
                 child: Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -145,7 +147,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               ),
             ),
           )
-        : SizedBox());
+        : const SizedBox());
   }
 
 // MAIN CONTENTS VIEW
@@ -247,11 +249,13 @@ class DefectsScreen extends GetView<DefectsScreenController> {
       ),
       Obx(() => controller.activeTabIndex.value == 0
           ? Expanded(
+              flex: 1,
               child: SingleChildScrollView(
                 child: DefectsTable(),
               ),
             )
           : Expanded(
+              flex: 1,
               child: Column(
                 children: [
                   Padding(
@@ -264,20 +268,21 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                             flex: 3,
                             child: Container(
                               alignment: Alignment.center,
-                              padding: EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                   color: AppColors.lightSky,
                                   borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(20.r),
                                       bottomLeft: Radius.circular(20.r))),
                               child: Container(
-                                margin: EdgeInsets.symmetric(horizontal: 20),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 child: BoxTextField1(
                                   textColor: AppColors.textFieldText_Color,
                                   hintColor: AppColors.textFieldText_Color,
                                   isMulti: false,
-                                  controller: controller
-                                      .sizeOfNewSetTextController.value,
+                                  controller:
+                                      controller.sizeOfNewSetTextController,
                                   onTap: () {},
                                   textalign: TextAlign.center,
                                   errorText: '',
@@ -297,12 +302,12 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                             child: GestureDetector(
                               onTap: () {
                                 if (controller.isValid(context)) {
-                                  controller.addSampleSets(controller
+                                  controller.addSample(controller
                                       .sizeOfNewSetTextController.value.text);
                                 }
                               },
                               child: Container(
-                                padding: EdgeInsets.all(10),
+                                padding: const EdgeInsets.all(10),
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
                                     color: AppColors.primary,
@@ -328,6 +333,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                     height: 60.h,
                   ),
                   Expanded(
+                    flex: 1,
                     child: ListView.builder(
                         itemCount: controller.sampleSetObs.length,
                         itemBuilder: (BuildContext context, int setIndex) {
@@ -413,7 +419,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
 
   Widget customViewCategories(String tag, String title) {
     return Container(
-      padding: EdgeInsets.only(left: 10),
+      padding: const EdgeInsets.only(left: 10),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -422,8 +428,9 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               border: Border.all(color: AppColors.lightGrey), // Border color
               borderRadius: BorderRadius.circular(30), // Border radius
             ),
-            padding: EdgeInsets.symmetric(horizontal: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 6),
             child: Expanded(
+              flex: 1,
               child: Text(
                 textAlign: TextAlign.center,
                 tag,
@@ -434,7 +441,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               ),
             ),
           ),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Text(
             textAlign: TextAlign.start,
             title,
@@ -539,8 +546,16 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                     fontSize: 28.sp,
                     fontWeight: FontWeight.w500,
                     color: AppColors.textFieldText_Color),
-                onClickAction: () {
-                  controller.onSpecificationTap(context);
+                onClickAction: () async {
+                  /*controller.appStorage.specificationGradeToleranceTable =
+                      await controller.dao.getSpecificationGradeToleranceTable(
+                          controller.specificationNumber!,
+                          controller.specificationVersion!);
+                  if (controller
+                      .appStorage.specificationGradeToleranceTable.isNotEmpty) {
+                    controller.onSpecificationTap();
+                  }*/
+                  controller.onSpecificationTap();
                 },
               ),
               SizedBox(
@@ -558,8 +573,8 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                       color: AppColors.textFieldText_Color,
                     ),
                   ),
-                  onClickAction: () {
-                    controller.openPDFFile(context, isForGrade: true);
+                  onClickAction: () async {
+                    await controller.jsonFileOperations.viewGradePdf();
                   }),
               SizedBox(
                 width: 20.w,
@@ -573,8 +588,8 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                       fontSize: 28.sp,
                       fontWeight: FontWeight.w500,
                       color: AppColors.textFieldText_Color),
-                  onClickAction: () {
-                    controller.openPDFFile(context, isForGrade: false);
+                  onClickAction: () async {
+                    await controller.jsonFileOperations.viewSpecInsPdf();
                   })
             ],
           ),
@@ -594,8 +609,8 @@ Widget sampleSetsUI(BuildContext context, int index, String sampleValue,
   return Column(
     children: [
       Container(
-        padding: EdgeInsets.only(left: 110.w, right: 110.w),
-        height: 120.h,
+        padding: EdgeInsets.only(left: 100.w, right: 100.w),
+        height: 100.h,
         child: Row(
           children: [
             Expanded(
@@ -615,7 +630,7 @@ Widget sampleSetsUI(BuildContext context, int index, String sampleValue,
                   color: AppColors.lightSky,
                   child: Image.asset(
                     AppImages.ic_minus,
-                    width: 50.w,
+                    width: 40.w,
                     fit: BoxFit.contain,
                   ),
                 ),
@@ -632,7 +647,7 @@ Widget sampleSetsUI(BuildContext context, int index, String sampleValue,
                   textAlign: TextAlign.center,
                   '${sampleValue.toString()} samples   Set #${controller.sampleSetObs[index].sampleId}',
                   style: GoogleFonts.poppins(
-                    fontSize: 32.sp,
+                    fontSize: 30.sp,
                     fontWeight: FontWeight.w400,
                     textStyle: TextStyle(
                       color: index % 2 == 0 ? AppColors.black : AppColors.white,
@@ -741,9 +756,9 @@ Widget defectRow({
                     isExpanded: true,
                     dropdownColor: Theme.of(context).colorScheme.background,
                     iconEnabledColor: AppColors.hintColor,
-                    // value: controller.sampleSetObs[setIndex]
-                    //         .defectItem?[defectItemIndex].name ??
-                    //     controller.defectSpinnerNames[0],
+                    value: controller.sampleSetObs[setIndex]
+                            .defectItem?[defectItemIndex].name ??
+                        'Select',
                     icon:
                         const Icon(Icons.arrow_drop_down, color: Colors.white),
                     items: controller.defectSpinnerNames.map((String value) {
@@ -796,7 +811,7 @@ Widget defectRow({
                       },
                     ),
                   )
-                : Flexible(flex: 1, child: SizedBox()),
+                : const Flexible(flex: 1, child: SizedBox()),
             SizedBox(width: 20.w),
             controller.hasSeverityDamage
                 ? Flexible(
@@ -823,7 +838,7 @@ Widget defectRow({
                       },
                     ),
                   )
-                : Flexible(flex: 1, child: SizedBox()),
+                : const Flexible(flex: 1, child: SizedBox()),
             SizedBox(width: 20.w),
             controller.hasSeveritySeriousDamage
                 ? Flexible(
@@ -850,7 +865,7 @@ Widget defectRow({
                       },
                     ),
                   )
-                : Flexible(flex: 1, child: SizedBox()),
+                : const Flexible(flex: 1, child: SizedBox()),
             SizedBox(width: 20.w),
             controller.hasSeverityVerySeriousDamage
                 ? Flexible(
@@ -877,7 +892,7 @@ Widget defectRow({
                       },
                     ),
                   )
-                : Flexible(flex: 1, child: SizedBox()),
+                : const Flexible(flex: 1, child: SizedBox()),
             SizedBox(width: controller.hasSeveritySeriousDamage ? 0 : 20.w),
             controller.hasSeverityDecay
                 ? Flexible(
@@ -904,13 +919,13 @@ Widget defectRow({
                       },
                     ),
                   )
-                : Flexible(flex: 1, child: SizedBox()),
+                : const Flexible(flex: 1, child: SizedBox()),
             SizedBox(width: 10.w),
             Flexible(
               flex: 1,
               child: GestureDetector(
                 onTap: () {
-                  Get.to(const InspectionPhotos());
+                  Get.to(() => const InspectionPhotos());
                 },
                 child: Icon(
                   Icons.photo_camera,
@@ -999,7 +1014,7 @@ Widget defectCategoryTagRow(DefectsScreenController defectsScreenController) {
                   textStyle: textStyle,
                 ),
               )
-            : Flexible(flex: 1, child: SizedBox()),
+            : const Flexible(flex: 1, child: SizedBox()),
         const SizedBox(width: 15),
         defectsScreenController.hasSeverityDamage
             ? Flexible(
@@ -1009,7 +1024,7 @@ Widget defectCategoryTagRow(DefectsScreenController defectsScreenController) {
                   textStyle: textStyle,
                 ),
               )
-            : Flexible(flex: 1, child: SizedBox()),
+            : const Flexible(flex: 1, child: SizedBox()),
         const SizedBox(width: 15),
         defectsScreenController.hasSeriousDamage
             ? Flexible(
@@ -1019,7 +1034,7 @@ Widget defectCategoryTagRow(DefectsScreenController defectsScreenController) {
                   textStyle: textStyle,
                 ),
               )
-            : Flexible(flex: 1, child: SizedBox()),
+            : const Flexible(flex: 1, child: SizedBox()),
         SizedBox(
             width: defectsScreenController.hasSeveritySeriousDamage ? 0 : 15),
         defectsScreenController.hasSeveritySeriousDamage
@@ -1030,7 +1045,7 @@ Widget defectCategoryTagRow(DefectsScreenController defectsScreenController) {
                   textStyle: textStyle,
                 ),
               )
-            : Flexible(flex: 1, child: SizedBox()),
+            : const Flexible(flex: 1, child: SizedBox()),
         const SizedBox(width: 15),
         defectsScreenController.hasSeverityDecay
             ? Flexible(
@@ -1040,7 +1055,7 @@ Widget defectCategoryTagRow(DefectsScreenController defectsScreenController) {
                   textStyle: textStyle,
                 ),
               )
-            : Flexible(flex: 1, child: SizedBox()),
+            : const Flexible(flex: 1, child: SizedBox()),
         const SizedBox(width: 20),
         Flexible(child: Container()),
         const SizedBox(width: 10),

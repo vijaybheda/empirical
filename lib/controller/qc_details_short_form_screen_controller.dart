@@ -260,7 +260,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         if (is1stTimeActivity != "") {
           if (is1stTimeActivity == "PurchaseOrderDetailsActivity") {
             CustomListViewDialog customDialog = CustomListViewDialog(
-              Get.context!,
+              // Get.context!,
               (selectedValue) {},
             );
             customDialog.setCanceledOnTouchOutside(false);
@@ -288,7 +288,7 @@ class QCDetailsShortFormScreenController extends GetxController {
           if (is1stTimeActivity != "") {
             if (is1stTimeActivity == "PurchaseOrderDetailsActivity") {
               CustomListViewDialog customDialog =
-                  CustomListViewDialog(Get.context!, (selectedValue) {});
+                  CustomListViewDialog(/*Get.context!,*/ (selectedValue) {});
               customDialog.setCanceledOnTouchOutside(false);
               customDialog.show();
             }
@@ -302,7 +302,6 @@ class QCDetailsShortFormScreenController extends GetxController {
   Future<String?> scanBarcode({
     required Function(String scanResult)? onScanResult,
   }) async {
-    // TODO: Implement scanBarcode
     String? res = await FlutterBarcodeScanner.scanBarcode(
         '#ff6666', 'Cancel', true, ScanMode.DEFAULT);
     if (res.isNotEmpty && res != '-1') {
@@ -596,7 +595,6 @@ class QCDetailsShortFormScreenController extends GetxController {
     String typeofCut = '';
 
     if (uomList.isNotEmpty && selectedUOM != null) {
-      // TODO: check null for selectedUOM!.uomID values
       uomQtyShippedID = selectedUOM!.uomID!;
       uomQtyRejectedID = selectedUOM!.uomID!;
       uomQtyReceivedID = selectedUOM!.uomID!;
@@ -1104,7 +1102,6 @@ class QCDetailsShortFormScreenController extends GetxController {
           await dao.updateItemSKUInspectionComplete(inspectionId!, "true");
           await callNextItemQCDetails();
         } else {
-          // TODO: Implement navigation based on callerActivity
           passingData[Consts.CALLER_ACTIVITY] = 'GTINActivity';
 
           if (isMyInspectionScreen ?? false) {
@@ -1274,7 +1271,7 @@ class QCDetailsShortFormScreenController extends GetxController {
     if (_appStorage.commodityVarietyData != null &&
         (_appStorage.commodityVarietyData?.exceptions ?? []).isNotEmpty) {
       CustomListViewDialog customDialog = CustomListViewDialog(
-        Get.context!,
+        // Get.context!,
         (selectedValue) {},
       );
       customDialog.setCanceledOnTouchOutside(false);
@@ -1346,7 +1343,6 @@ class QCDetailsShortFormScreenController extends GetxController {
   }
 
   Future onLongFormClick() async {
-    // TODO: handle hasErrors2 variable
     if (await saveFieldsToDB()) {
       if (!hasErrors2) {
         await saveFieldsToDBSpecAttribute(true);
@@ -1491,8 +1487,8 @@ class QCDetailsShortFormScreenController extends GetxController {
     }
 
     passingData[Consts.CALLER_ACTIVITY] = callerActivityValue;
-
-    Get.to(() => const DefectsScreen(), arguments: passingData);
+    final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+    Get.to(() => DefectsScreen(tag: tag), arguments: passingData);
   }
 
   String? scanGTINResultContents(String scanResult) {

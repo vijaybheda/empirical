@@ -188,14 +188,8 @@ class InspectionPhotosController extends GetxController {
   void saveAction() async {
     await savePicturesToDB();
     AppStorage.instance.attachmentIds = attachmentIds;
-    /*Intent returnIntent = new Intent();
-      returnIntent.putExtra("callerActivity", "InspectionPhotosActivity");
-      setResult(RESULT_OK, returnIntent);
-     */
     Get.back();
   }
-
-  // TODO: FLUTTER CODE
 
   Future<void> savePicturesToDB() async {
     for (int i = 0; i < imagesList.length; i++) {

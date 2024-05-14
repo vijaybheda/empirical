@@ -11,6 +11,7 @@ import 'package:pverify/models/user_data.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/cache_download_screen.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_screen.dart';
+import 'package:pverify/ui/purchase_order_cte/purchase_order_screen_cte.dart';
 import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -26,6 +27,7 @@ class CommodityIDScreenController extends GetxController {
   late final String carrierName;
   late final int carrierID;
   late final String cteType;
+  late final String callerActivity;
 
   final TextEditingController searchController = TextEditingController();
 
@@ -51,12 +53,13 @@ class CommodityIDScreenController extends GetxController {
       throw Exception('Arguments required!');
     }
 
-    partnerID = args[Consts.PARTNER_ID] ?? 0;
     partnerName = args[Consts.PARTNER_NAME] ?? '';
-    sealNumber = args[Consts.SEAL_NUMBER] ?? '';
-    poNumber = args[Consts.PO_NUMBER] ?? '';
+    partnerID = args[Consts.PARTNER_ID] ?? 0;
     carrierName = args[Consts.CARRIER_NAME] ?? '';
     carrierID = args[Consts.CARRIER_ID] ?? 0;
+    sealNumber = args[Consts.SEAL_NUMBER] ?? '';
+    poNumber = args[Consts.PO_NUMBER] ?? '';
+    callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
     cteType = args[Consts.CTEType] ?? '';
     super.onInit();
     assignInitialData();
@@ -107,8 +110,11 @@ class CommodityIDScreenController extends GetxController {
           mainCommodityList[i].keywords = result;
         }
       }
+      commodityList.clear();
+      commodityList.addAll(mainCommodityList);
 
-      filteredCommodityList.addAll(commoditiesList);
+      filteredCommodityList.clear();
+      filteredCommodityList.addAll(commodityList);
       filteredCommodityList.sort((a, b) => a.name!.compareTo(b.name!));
       listAssigned.value = true;
       update(['commodityList']);
@@ -160,19 +166,24 @@ class CommodityIDScreenController extends GetxController {
 
   void navigateToPurchaseOrderScreen(Commodity commodity) {
     Map<String, dynamic> passingData = {
-      Consts.PO_NUMBER: poNumber,
-      Consts.SEAL_NUMBER: sealNumber,
-      Consts.PARTNER_NAME: partnerName,
       Consts.PARTNER_ID: partnerID,
+      Consts.PARTNER_NAME: partnerName,
       Consts.CARRIER_NAME: carrierName,
       Consts.CARRIER_ID: carrierID,
       Consts.COMMODITY_ID: commodity.id,
       Consts.COMMODITY_NAME: commodity.name,
-      // Consts.PRODUCT_TRANSFER: qcHeaderDetails?.productTransfer ?? '',
+      Consts.PO_NUMBER: poNumber,
+      Consts.SEAL_NUMBER: sealNumber,
+      Consts.CTEType: cteType,
+      Consts.CALLER_ACTIVITY: callerActivity,
     };
     final String tag = DateTime.now().millisecondsSinceEpoch.toString();
-    Get.to(() => PurchaseOrderScreen(tag: tag /*commodity.id.toString()*/),
-        arguments: passingData);
+
+    if (cteType == "Shipping") {
+      Get.to(() => PurchaseOrderScreenCTE(tag: tag), arguments: passingData);
+    } else {
+      Get.to(() => PurchaseOrderScreen(tag: tag), arguments: passingData);
+    }
   }
 
   Future<void> onDownloadTap() async {

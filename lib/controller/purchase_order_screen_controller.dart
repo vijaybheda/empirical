@@ -87,7 +87,7 @@ class PurchaseOrderScreenController extends GetxController {
     }
   }
 
-  void updateCommodityItem(FinishedGoodsItemSKU partner) {
+  void updateSelectedItemSKUItem(FinishedGoodsItemSKU partner) {
     appStorage.selectedItemSKUList = appStorage.selectedItemSKUList;
 
     // remove if exist in appStorage.selectedItemSKUList
@@ -118,11 +118,7 @@ class PurchaseOrderScreenController extends GetxController {
     update(['itemSkuList']);
   }
 
-  Future<void> navigateToPurchaseOrderDetails(
-      // PartnerItem partner,
-      // CarrierItem carrier,
-      // CommodityItem commodity,
-      ) async {
+  Future<void> navigateToPurchaseOrderDetails() async {
     UserData? userData = appStorage.getUserData();
 
     if (userData == null) {

@@ -12,13 +12,15 @@ import 'package:pverify/models/defect_instruction_attachment.dart';
 import 'package:pverify/models/defect_item.dart';
 import 'package:pverify/models/defects_data.dart';
 import 'package:pverify/models/inspection_defect.dart';
+import 'package:pverify/models/inspection_sample.dart';
 import 'package:pverify/models/sample_data.dart';
 import 'package:pverify/models/severity.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
 import 'package:pverify/ui/defects/table_dialog.dart';
 import 'package:pverify/ui/inspection_photos/inspection_photos_screen.dart';
-import 'package:pverify/utils/app_snackbar.dart';
+import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
+import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
@@ -30,13 +32,14 @@ class DefectsScreenController extends GetxController {
   final AppStorage appStorage = AppStorage.instance;
   final ApplicationDao dao = ApplicationDao();
   final JsonFileOperations jsonFileOperations = JsonFileOperations.instance;
-  final sizeOfNewSetTextController = TextEditingController().obs;
-  var isFirstTime = true;
+  final TextEditingController sizeOfNewSetTextController =
+      TextEditingController();
+  bool isFirstTime = true;
 
-  var isDefectEntry = true;
+  bool isDefectEntry = true;
 
   RxInt activeTabIndex = 1.obs;
-  var sampleSetObs = <SampleSetsObject>[].obs;
+  RxList<SampleSetsObject> sampleSetObs = <SampleSetsObject>[].obs;
   SampleSetsObject tempSampleObj = SampleSetsObject();
 
   int serverInspectionID = -1;
@@ -61,7 +64,6 @@ class DefectsScreenController extends GetxController {
   String? currentAttachPhotosDataName;
   int? currentAttachPhotosPosition;
 
-  bool isViewOnlyMode = false;
   bool hasDamage = false;
   bool hasSeriousDamage = false;
   bool dataEntered = false;
@@ -74,8 +76,8 @@ class DefectsScreenController extends GetxController {
 
   int? inspectionId;
 
-  final int tableTabSelected = 0;
-  final int entryTabSelected = 1;
+  int tableTabSelected = 0;
+  int entryTabSelected = 1;
   int tabSelected = 0;
   int numberSamples = 0;
   int totalSamples = 0;
@@ -161,11 +163,14 @@ class DefectsScreenController extends GetxController {
   List<String> defectSpinnerNames = <String>[].obs;
   List<int> defectSpinnerIds = <int>[].obs;
   RxBool informationIconEnabled = false.obs;
-  var isVisibleInfoPopup = false.obs;
-  var visisblePopupIndex = 0.obs;
-  var isVisibleSpecificationPopup = false.obs;
+  RxBool isVisibleInfoPopup = false.obs;
+  RxInt visisblePopupIndex = 0.obs;
+  RxBool isVisibleSpecificationPopup = false.obs;
 
   Map<int, String> defectCategoriesHashMap = {};
+
+  String get packDateString =>
+      packDate != null ? Utils().dateFormat.format(packDate!) : '';
 
   @override
   void onInit() {
@@ -222,9 +227,27 @@ class DefectsScreenController extends GetxController {
       inspectionId = serverInspectionID;
     }
 
-    // populateDefectSpinnerList();
+    populateDefectSpinnerList();
     appStorage.getCommodityList();
     super.onInit();
+
+    if (appStorage.severityList != null) {
+      for (var severity in appStorage.severityList!) {
+        if (severity.name == "Injury" || severity.name == "Lesión") {
+          hasSeverityInjury = true;
+        } else if (severity.name == "Damage" || severity.name == "Daño") {
+          hasSeverityDamage = true;
+        } else if (severity.name == "Serious Damage" ||
+            severity.name == "Daño Serio") {
+          hasSeveritySeriousDamage = true;
+        } else if (severity.name == "Very Serious Damage" ||
+            severity.name == "Daño Muy Serio") {
+          hasSeverityVerySeriousDamage = true;
+        } else if (severity.name == "Decay" || severity.name == "Pudrición") {
+          hasSeverityDecay = true;
+        }
+      }
+    }
 
     setInit();
   }
@@ -237,9 +260,43 @@ class DefectsScreenController extends GetxController {
             specificationNumber!, specificationVersion!);
     getDefectCategories();
 
-    // TODO: implement onInit
-    // loadSamplesAndDefectsFromDB();
-    // setInitialTabs();
+    loadSamplesAndDefectsFromDB();
+  }
+
+  void loadSamplesAndDefectsFromDB() async {
+    bool hasDefects = false;
+
+    // Load samples from DB
+    List<InspectionSample> samples =
+        await dao.findInspectionSamples(inspectionId!);
+    if (samples.isNotEmpty) {
+      numberSamples = samples.length;
+      for (int i = 0; i < samples.length; i++) {
+        SampleData temp = SampleData(
+          sampleId: samples[i].sampleId,
+          setNumber: samples[i].setNumber!,
+          sampleSize: samples[i].setSize!,
+          name: samples[i].setName!,
+          timeCreated: samples[i].createdTime,
+          complete: samples[i].isComplete ?? false,
+          sampleNameUser: samples[i].sampleName,
+        );
+
+        sampleList.add(temp);
+
+        List<InspectionDefect> defectList =
+            await dao.findInspectionDefects(temp.sampleId!);
+        if (defectList.isNotEmpty) {
+          hasDefects = true;
+          defectDataMap[temp.name] = defectList;
+        }
+        // loadDataIfNotEmpty(i, temp);
+      }
+    }
+    if (hasDefects) {
+      getDefectCategories();
+      // setTabSelected(tableTabSelected);
+    }
   }
 
   // LOGIN SCREEN VALIDATION'S
@@ -253,24 +310,15 @@ class DefectsScreenController extends GetxController {
     return true;
   }
 
-  addSampleSets(String setsValue) {
-    final int index;
-
-    // debugPrint("sampleSetObs.last ${sampleSetObs.reversed.last.sampleId}");
-
+  void addSample(String setsValue) {
     int id = sampleSetObs.isNotEmpty
         ? (int.tryParse(sampleSetObs.reversed.last.sampleId ?? "1") ?? 1) + 1
         : 1;
-    /*  if (sampleSetObs.length >= 1) {
-      index = sampleSetObs.elementAt(sampleSetObs.length - 1).setNumber! + 1;
-    } else {
-      index = sampleSetObs.length + 1;
-    }*/
     tempSampleObj = SampleSetsObject();
     tempSampleObj.sampleValue = setsValue;
     tempSampleObj.sampleId = id.toString();
     sampleSetObs.insert(0, tempSampleObj);
-    sizeOfNewSetTextController.value.text = "";
+    sizeOfNewSetTextController.text = "";
 
     populateSeverityList();
 
@@ -302,11 +350,15 @@ class DefectsScreenController extends GetxController {
       sDamageTextEditingController: TextEditingController(text: '0'),
       vsDamageTextEditingController: TextEditingController(text: '0'),
       decayTextEditingController: TextEditingController(text: '0'),
+      name: 'Select',
+      attachments: [],
     );
 
-    sampleSetObs[setIndex].defectItem == null
-        ? sampleSetObs[setIndex].defectItem = [emptyDefectItem]
-        : sampleSetObs[setIndex].defectItem?.add(emptyDefectItem);
+    if (sampleSetObs[setIndex].defectItem == null) {
+      sampleSetObs[setIndex].defectItem = [emptyDefectItem];
+    } else {
+      sampleSetObs[setIndex].defectItem?.add(emptyDefectItem);
+    }
     sampleSetObs.refresh();
   }
 
@@ -315,8 +367,10 @@ class DefectsScreenController extends GetxController {
     sampleSetObs.refresh();
   }
 
-  int getDefectItemIndex(
-      {required int setIndex, required DefectItem defectItem}) {
+  int getDefectItemIndex({
+    required int setIndex,
+    required DefectItem defectItem,
+  }) {
     return sampleSetObs[setIndex].defectItem?.indexOf(defectItem) ?? -1;
   }
 
@@ -400,7 +454,6 @@ class DefectsScreenController extends GetxController {
         }
 
       case AppStrings.decay:
-
         // not in current requirement
         /* sampleSetObs[setIndex]
             .defectItem?[rowIndex]
@@ -460,40 +513,6 @@ class DefectsScreenController extends GetxController {
     sampleSetObs.removeAt(index);
   }
 
-  void openPDFFile(BuildContext context, {required bool isForGrade}) async {
-    String filename;
-    if (!isForGrade) {
-      filename =
-          "II_${AppStorage.instance.commodityVarietyData?.commodityId.toString()}.pdf";
-    } else {
-      filename =
-          "GRADE_${AppStorage.instance.commodityVarietyData?.commodityId.toString()}.pdf";
-    }
-
-    var storagePath = await Utils().getExternalStoragePath();
-    String path = "$storagePath/${FileManString.COMMODITYDOCS}/$filename";
-
-    File file = File(path);
-
-    if (await file.exists()) {
-      try {
-        final Uri data2 = Uri.file(path);
-        await _grantPermissions(data2);
-        await openFile(path);
-      } catch (e) {
-        AppSnackBar.getCustomSnackBar("Error", "Error opening PDF file: $e",
-            isSuccess: false);
-      }
-    } else {
-      if (!isForGrade) {
-        AppSnackBar.getCustomSnackBar("Error", "No Inspection Instructions",
-            isSuccess: false);
-      } else {
-        AppSnackBar.getCustomSnackBar("Error", "No Grade", isSuccess: false);
-      }
-    }
-  }
-
   Future<void> _grantPermissions(Uri uri) async {
     final permissions = <Permission>[Permission.storage];
     for (final permission in permissions) {
@@ -525,6 +544,7 @@ class DefectsScreenController extends GetxController {
     CommodityItem? item;
     defectSpinnerIds.clear();
     defectSpinnerNames.clear();
+    defectSpinnerNames.add('Select');
 
     // Get the list of defects for the commodity
     if (appStorage.getCommodityList() != null &&
@@ -638,19 +658,19 @@ class DefectsScreenController extends GetxController {
 
   Future onSpecialInstrMenuTap() async {
     CustomListViewDialog customDialog = CustomListViewDialog(
-      Get.context!,
+      // Get.context!,
       (selectedValue) {},
     );
     customDialog.setCanceledOnTouchOutside(false);
     customDialog.show();
   }
 
-  Future onSpecificationTap(BuildContext context) async {
+  Future onSpecificationTap() async {
     appStorage.specificationGradeToleranceTable =
         await dao.getSpecificationGradeToleranceTable(
             specificationNumber!, specificationVersion!);
     showDialog(
-        context: context,
+        context: Get.context!,
         builder: (BuildContext context) {
           return tableDialog(context);
         });
@@ -671,58 +691,54 @@ class DefectsScreenController extends GetxController {
     await Get.to(() => const InspectionPhotos(), arguments: passingData);
   }
 
+  // FIXME: Implement this method
   Future saveAsDraftAndGotoMyInspectionScreen() async {}
 
   Future deleteInspectionAndGotoMyInspectionScreen(BuildContext context) async {
     if (serverInspectionID > -1) {
       dao.deleteInspection(serverInspectionID);
 
-      Map<String, dynamic> bundle = {
-        Consts.SERVER_INSPECTION_ID: -1,
-        Consts.PARTNER_NAME: partnerName,
-        Consts.PARTNER_ID: partnerID,
-        Consts.CARRIER_NAME: carrierName,
-        Consts.CARRIER_ID: carrierID,
-        Consts.COMMODITY_NAME: commodityName,
-        Consts.COMMODITY_ID: commodityID,
-        Consts.SPECIFICATION_NUMBER: specificationNumber,
-        Consts.SPECIFICATION_VERSION: specificationVersion,
-        Consts.SPECIFICATION_NAME: selectedSpecification,
-        Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
-        Consts.ITEM_SKU: itemSku,
-        Consts.ITEM_SKU_NAME: itemSkuName,
-        Consts.ITEM_SKU_ID: itemSkuId,
-        Consts.ITEM_UNIQUE_ID: itemUniqueId,
-        Consts.LOT_NO: lotNo,
-        Consts.GTIN: gtin,
-        Consts.PACK_DATE: packDate,
-        Consts.LOT_SIZE: lotSize,
-        Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
-        Consts.PO_NUMBER: poNumber,
-        Consts.PRODUCT_TRANSFER: productTransfer,
-        Consts.DATETYPE: '',
-      };
+      Map<String, dynamic> passingData = {};
+      passingData[Consts.SERVER_INSPECTION_ID] = -1;
+      passingData[Consts.PARTNER_NAME] = partnerName;
+      passingData[Consts.PARTNER_ID] = partnerID;
+      passingData[Consts.CARRIER_NAME] = carrierName;
+      passingData[Consts.CARRIER_ID] = carrierID;
+      passingData[Consts.PO_NUMBER] = poNumber;
+      passingData[Consts.COMMODITY_NAME] = commodityName;
+      passingData[Consts.COMMODITY_ID] = commodityID;
+      passingData[Consts.VARIETY_NAME] = varietyName;
+      passingData[Consts.VARIETY_ID] = varietyId;
+      passingData[Consts.GRADE_ID] = gradeId;
+      passingData[Consts.SPECIFICATION_NUMBER] = specificationNumber;
+      passingData[Consts.SPECIFICATION_VERSION] = specificationVersion;
+      passingData[Consts.SPECIFICATION_NAME] = selectedSpecification;
+      passingData[Consts.SPECIFICATION_TYPE_NAME] = specificationTypeName;
+      passingData[Consts.ITEM_SKU] = itemSku;
+      passingData[Consts.ITEM_SKU_ID] = itemSkuId;
+      passingData[Consts.ITEM_SKU_NAME] = itemSkuName;
+      passingData[Consts.LOT_NO] = lotNo;
+      passingData[Consts.GTIN] = gtin;
+      passingData[Consts.PACK_DATE] = packDateString;
+      passingData[Consts.LOT_SIZE] = lotSize;
+      passingData[Consts.ITEM_UNIQUE_ID] = itemUniqueId;
+      passingData[Consts.IS_MY_INSPECTION_SCREEN] = isMyInspectionScreen;
+      passingData[Consts.PRODUCT_TRANSFER] = productTransfer;
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            //if (isMyInspectionScreen) {
-            final String tag = DateTime.now().millisecondsSinceEpoch.toString();
-            return Home(tag: tag);
-            //}
-            // else {
-            //   if (callerActivity == "NewPurchaseOrderDetailsActivity") {
-            //     return NewPurchaseOrderDetailsActivity(
-            //         callerActivity: "NewPurchaseOrderDetailsActivity");
-            //   } else {
-            //     return PurchaseOrderDetailsActivity();
-            //   }
-            // }
-          },
-          settings: RouteSettings(arguments: bundle),
-        ),
-      );
+      final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+
+      if (callerActivity == "TrendingReportActivity") {
+        passingData[Consts.CALLER_ACTIVITY] = "TrendingReportActivity";
+        Get.offAll(() => Home(tag: tag), arguments: passingData);
+      } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+        passingData[Consts.CALLER_ACTIVITY] = "NewPurchaseOrderDetailsActivity";
+        Get.off(() => const NewPurchaseOrderDetailsScreen(),
+            arguments: passingData);
+      } else {
+        passingData[Consts.CALLER_ACTIVITY] = "PurchaseOrderDetailsActivity";
+        Get.off(() => PurchaseOrderDetailsScreen(tag: tag),
+            arguments: passingData);
+      }
     }
 
     Future infoActionTap(int position) async {
@@ -1014,5 +1030,21 @@ class DefectsScreenController extends GetxController {
       }
     }
     return null;
+  }
+
+  void populateDefectData(List<InspectionDefect> defectList, String dataName,
+      int sampleListPosition) {
+    for (int i = 0; i < defectList.length; i++) {
+      loadDefectData(i, defectList, dataName, sampleListPosition);
+    }
+  }
+
+  void hideKeypad() {
+    unFocus();
+  }
+
+  void loadDefectData(int i, List<InspectionDefect> defectList, String dataName,
+      int sampleListPosition) {
+    populateDefectSpinnerList();
   }
 }

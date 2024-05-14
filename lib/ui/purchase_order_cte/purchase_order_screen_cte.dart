@@ -4,7 +4,8 @@ import 'package:pverify/controller/purchase_order_screen_cte_controller.dart';
 
 class PurchaseOrderScreenCTE
     extends GetWidget<PurchaseOrderScreenCTEController> {
-  const PurchaseOrderScreenCTE({super.key});
+  final String tag;
+  const PurchaseOrderScreenCTE({super.key, required this.tag});
 
   @override
   Widget build(BuildContext context) {

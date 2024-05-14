@@ -549,25 +549,19 @@ class SelectSupplierScreenController extends GetxController {
       if (selectedPartner != null) {
         clearSearch();
         // TODO: handle other type of partner Item
-        Get.to(
-            () => CommodityIDScreen(
-                // partner: selectedPartner,
-                // qcHeaderDetails: qcHeaderDetails,
-                // carrier: carrier,
-                ),
-            arguments: {
-              Consts.PARTNER_ID: partner.id,
-              Consts.PARTNER_NAME: partner.name,
-              Consts.SEAL_NUMBER: sealNumber,
-              Consts.PO_NUMBER: poNumber,
-              Consts.CARRIER_NAME: carrierName,
-              Consts.CARRIER_ID: carrierID,
-              Consts.CTEType: cteType,
-            });
+        Get.to(() => const CommodityIDScreen(), arguments: {
+          Consts.PARTNER_ID: partner.id,
+          Consts.PARTNER_NAME: partner.name,
+          Consts.SEAL_NUMBER: sealNumber,
+          Consts.PO_NUMBER: poNumber,
+          Consts.CARRIER_NAME: carrierName,
+          Consts.CARRIER_ID: carrierID,
+          Consts.CTEType: cteType,
+        });
       }
     } else {
       clearSearch();
-      Get.to(() => CommodityIDScreen(), arguments: {
+      Get.to(() => const CommodityIDScreen(), arguments: {
         Consts.PARTNER_ID: partner.id,
         Consts.PARTNER_NAME: partner.name,
         Consts.SEAL_NUMBER: sealNumber,
@@ -582,8 +576,6 @@ class SelectSupplierScreenController extends GetxController {
   Future<void> navigateToScanBarcodeScreen({
     Function(String scannedCode)? onBarcodeScanned,
   }) async {
-    // TODO: uncomment this code to enable barcode scanning
-
     String? res = await FlutterBarcodeScanner.scanBarcode(
         '#ff6666', 'Cancel', true, ScanMode.DEFAULT);
     if (res != null && res.length > 10) {

@@ -242,19 +242,13 @@ class QualityControlController extends GetxController {
           }
         } else {
           po_number = orderNoTextController.value.text.trim();
-          Get.to(
-              () => SelectSupplierScreen(
-                  /*carrier: carrier, qcHeaderDetails: qcHeaderDetails*/),
-              arguments: {
-                Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
-                Consts.CARRIER_ID: carrierID,
-                Consts.CARRIER_NAME: carrierName,
-                Consts.PO_NUMBER: po_number,
-                Consts.SEAL_NUMBER: seal_number,
-                // TODO: Need to pass dynamic value
-                // 'name': ,
-                // 'id': ,
-              });
+          Get.to(() => const SelectSupplierScreen(), arguments: {
+            Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
+            Consts.CARRIER_ID: carrierID,
+            Consts.CARRIER_NAME: carrierName,
+            Consts.PO_NUMBER: po_number,
+            Consts.SEAL_NUMBER: seal_number,
+          });
           /*
           Get.to(() => PartnerActivity(), arguments: {
             'poNumber': orderNoTextController.value.text,
@@ -298,28 +292,14 @@ class QualityControlController extends GetxController {
           */
         }
       } else {
-        /*
-        Get.to(() => PartnerActivity(), arguments: {
-          'poNumber': orderNoTextController.value.text,
-          'sealNumber': sealTextController.value.text,
-          'carrierName': 'carrierName', // Need to pass dynamic value
-          'carrierID': 'carrierID', // Need to pass dynamic value
-        });
-        */
         po_number = orderNoTextController.value.text.trim();
-        Get.to(
-            () => SelectSupplierScreen(
-                /*carrier: carrier, qcHeaderDetails: qcHeaderDetails*/),
-            arguments: {
-              Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
-              Consts.CARRIER_ID: carrierID,
-              Consts.CARRIER_NAME: carrierName,
-              Consts.PO_NUMBER: po_number,
-              Consts.SEAL_NUMBER: seal_number,
-              // TODO: Need to pass dynamic value
-              // 'name': ,
-              // 'id': ,
-            });
+        Get.to(() => const SelectSupplierScreen(), arguments: {
+          Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
+          Consts.CARRIER_ID: carrierID,
+          Consts.CARRIER_NAME: carrierName,
+          Consts.PO_NUMBER: po_number,
+          Consts.SEAL_NUMBER: seal_number,
+        });
       }
     }
   }

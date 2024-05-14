@@ -257,7 +257,7 @@ class PurchaseOrderScreen extends StatelessWidget {
       );
     }
 
-    controller.updateCommodityItem(goodsItem);
+    controller.updateSelectedItemSKUItem(goodsItem);
     return goodsItem;
   }
 }

@@ -27,20 +27,21 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
   final int? inspectionId;
   final String? callerActivity;
 
-  const InspectionPhotos(
-      {super.key,
-      this.partnerName,
-      this.partnerID,
-      this.carrierName,
-      this.carrierID,
-      this.commodityName,
-      this.commodityID,
-      this.varietyName,
-      this.varietySize,
-      this.varietyId,
-      this.isViewOnlyMode,
-      this.inspectionId,
-      this.callerActivity});
+  const InspectionPhotos({
+    super.key,
+    this.partnerName,
+    this.partnerID,
+    this.carrierName,
+    this.carrierID,
+    this.commodityName,
+    this.commodityID,
+    this.varietyName,
+    this.varietySize,
+    this.varietyId,
+    this.isViewOnlyMode,
+    this.inspectionId,
+    this.callerActivity,
+  });
 
   @override
   Widget build(BuildContext context) {

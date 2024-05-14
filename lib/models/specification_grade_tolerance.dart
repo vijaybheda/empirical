@@ -5,7 +5,7 @@ class SpecificationGradeTolerance {
   String? specificationVersion;
   int? gradeTolerancePercentage;
   int? specTolerancePercentage;
-  String? severityDefectID;
+  int? severityDefectID;
   int? defectID;
   int? overridden;
   String? defectName;
@@ -31,7 +31,7 @@ class SpecificationGradeTolerance {
     String? specificationVersion,
     int? gradeTolerancePercentage,
     int? specTolerancePercentage,
-    String? severityDefectID,
+    int? severityDefectID,
     int? defectID,
     int? overridden,
     String? defectName,

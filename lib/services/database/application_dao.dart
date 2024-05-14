@@ -2609,7 +2609,7 @@ class ApplicationDao {
 
     try {
       String query = 'SELECT Result, Result_Reason, Defect_Comments '
-          'FROM Result_Rejection_Details '
+          'FROM ${DBTables.RESULT_REJECTION_DETAILS} '
           'WHERE Inspection_ID = ?';
 
       List<Map<String, dynamic>> result =
@@ -3586,7 +3586,7 @@ class ApplicationDao {
       final Database db = dbProvider.lazyDatabase;
       await db.transaction((txn) async {
         String query =
-            'DELETE FROM Result_Rejection_Details WHERE Inspection_ID = $inspectionId';
+            'DELETE FROM ${DBTables.RESULT_REJECTION_DETAILS} WHERE Inspection_ID = $inspectionId';
         await txn.rawDelete(query);
       });
     } catch (e) {
@@ -3704,5 +3704,23 @@ class ApplicationDao {
           'Error occurred while creating or updating inspection: $e');
     }
     return inspectionId;
+  }
+
+  Future<void> updateInspectionResultReason(
+      int inspectionId, String result) async {
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      await db.transaction((txn) async {
+        var values = {
+          'Result_Reason': result,
+        };
+        await txn.update(DBTables.RESULT_REJECTION_DETAILS, values,
+            where: 'Inspection_ID = ?', whereArgs: [inspectionId]);
+      });
+    } catch (e) {
+      print('Error has occurred while updating an inspection: $e');
+      rethrow;
+    }
   }
 }

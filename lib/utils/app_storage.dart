@@ -160,6 +160,7 @@ class AppStorage extends GetxController {
 
   Future<void> saveCommodityList(List<CommodityItem> commodityList) {
     // list to String
+    this.commodityList = commodityList;
     List<Map<String, dynamic>> commodityListString =
         commodityList.map((e) => e.toJson()).toList();
     return write(StorageKey.kCommodityList, commodityListString);

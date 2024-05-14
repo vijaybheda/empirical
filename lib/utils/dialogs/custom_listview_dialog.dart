@@ -8,12 +8,12 @@ import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class CustomListViewDialog {
-  BuildContext context;
+  // BuildContext context;
   final AppStorage _appStorage = AppStorage.instance;
   bool canCanceledOnTouchOutside = false;
   final Function(String selectedValue) onSelected;
   CustomListViewDialog(
-    this.context,
+    // this.context,
     this.onSelected,
   );
 
@@ -39,7 +39,7 @@ class CustomListViewDialog {
     }
 
     return showDialog(
-      context: context,
+      context: Get.context!,
       barrierDismissible: canCanceledOnTouchOutside,
       builder: (BuildContext context) {
         return CustomListView(
@@ -59,8 +59,11 @@ class CustomListViewDialog {
 class CustomListView extends StatelessWidget {
   final List<ExceptionItem> exceptions;
   final Function(String selectedValue) onSelected;
-  const CustomListView(
-      {super.key, required this.exceptions, required this.onSelected});
+  const CustomListView({
+    super.key,
+    required this.exceptions,
+    required this.onSelected,
+  });
 
   @override
   Widget build(BuildContext context) {

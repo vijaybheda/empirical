@@ -77,7 +77,7 @@ class AuthController extends GetxController {
                 mUsername.toLowerCase(),
                 userData.access1!,
                 userData.enterpriseId!,
-                userData.status == 3 ? "Inactive" : "Active",
+                (userData.status == 3) ? "Inactive" : "Active",
                 userData.subscriptionExpired ?? false,
                 userData.supplierId!,
                 userData.headquarterSupplierId!,
