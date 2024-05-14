@@ -49,6 +49,7 @@ class Consts {
   static const String LOT_NO = "LOT_NO";
   static const String ITEM_SKU = "ITEM_SKU";
   static const String PACK_DATE = "PACK_DATE";
+  static const String WORK_DATE = "WORK_DATE";
   static const String SEAL_NUMBER = "SEAL_NUMBER";
   static const String ORDERNUMBER = "ORDERNUMBER";
   // static const String CARRIER = "CARRIER";
