@@ -86,7 +86,7 @@ class OverriddenResultScreen
                     ),
                     SizedBox(width: 240.w),
                     Text(
-                      controller.finalInspectionResult?.value ?? '',
+                      controller.myInspectionResult,
                       style: Get.textTheme.bodyMedium?.copyWith(
                         color: controller.finalInspectionResultColor,
                         fontSize: 65.h,

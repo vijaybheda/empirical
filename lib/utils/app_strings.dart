@@ -447,6 +447,7 @@ class AppStrings {
   static const String approval = 'Approval1';
   static const String managerRejection = 'Manager rejection';
   static const String acceptCondition = 'Accept w/Protection';
+  static const String a_minus = 'A-';
 
   static const String noClaim = 'No Claim';
   static const String partnerClaim = 'Partner Claim';
@@ -614,10 +615,10 @@ class AppStrings {
   ];
 
   static const List<String> newResultList = [
-    'Accept',
-    'A-',
-    'Accept w/Protection',
-    'Reject',
+    accept,
+    a_minus,
+    acceptCondition,
+    reject,
   ];
 
   static const List<String> types = [

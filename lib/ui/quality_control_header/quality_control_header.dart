@@ -15,12 +15,7 @@ import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class QualityControlHeader extends StatefulWidget {
-  // final CarrierItem carrier;
-
-  const QualityControlHeader({
-    super.key,
-    // required this.carrier,
-  });
+  const QualityControlHeader({super.key});
 
   @override
   State<QualityControlHeader> createState() => _QualityControlHeaderState();

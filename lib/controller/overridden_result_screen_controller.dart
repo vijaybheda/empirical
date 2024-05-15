@@ -7,7 +7,6 @@ import 'package:pverify/models/result_rejection_details.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
-
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
@@ -17,13 +16,14 @@ class OverriddenResultScreenController extends GetxController {
   final ApplicationDao dao = ApplicationDao();
   final AppStorage appStorage = AppStorage.instance;
   ResultRejectionDetail? resultRejectionDetail;
-  List newResultList = AppStrings.newResultList;
+  List<String> newResultList = AppStrings.newResultList;
 
-  final ovverRiddenCommentTextController = TextEditingController().obs;
-  final gtyRejectController = TextEditingController().obs;
+  final Rx<TextEditingController> ovverRiddenCommentTextController =
+      TextEditingController().obs;
+  final Rx<TextEditingController> gtyRejectController =
+      TextEditingController().obs;
 
   QualityControlItem? qualityControlItems;
-  late Map<String, dynamic> passingData;
 
   int? carrierId;
   int? partnerId;
@@ -31,7 +31,7 @@ class OverriddenResultScreenController extends GetxController {
   int? varietyId;
   int? gradeId;
   int? itemSkuId;
-  int? serverInspectionID;
+  int? inspectionID;
   RxInt qtyShipped = 0.obs;
   RxInt qtyRejected = 0.obs;
 
@@ -53,14 +53,14 @@ class OverriddenResultScreenController extends GetxController {
   String? productTransfer;
   String carrierName = "";
 
-  RxString newResultAccept = 'Accept'.obs;
-  RxString newResultA = 'A-'.obs;
-  RxString newResultProtection = 'Accept w/Protection'.obs;
-  RxString newResultReject = 'Reject'.obs;
-  RxString? finalInspectionResult = ''.obs;
-  RxString? txtRejectionDetails = ''.obs;
-  RxString? txtDefectComment = ''.obs;
-
+  RxString newResultAccept = AppStrings.accept.obs;
+  RxString newResultA = AppStrings.a_minus.obs;
+  RxString newResultProtection = AppStrings.acceptCondition.obs;
+  RxString newResultReject = AppStrings.reject.obs;
+  RxString finalInspectionResult = ''.obs;
+  RxString txtRejectionDetails = ''.obs;
+  RxString txtDefectComment = ''.obs;
+  String myInspectionResult = '';
   RxBool layoutQtyRejectedVisibility = false.obs;
   RxBool rejectionDetailsVisibility = false.obs;
   RxBool defectCommentsVisibility = false.obs;
@@ -69,12 +69,12 @@ class OverriddenResultScreenController extends GetxController {
 
   @override
   void onInit() {
-    passingData = Get.arguments as Map<String, dynamic>;
-
+    Map<String, dynamic> passingData = Get.arguments as Map<String, dynamic>;
+    inspectionID = passingData[Consts.SERVER_INSPECTION_ID] ?? -1;
     partnerName = passingData[Consts.PARTNER_NAME];
     commodityName = passingData[Consts.COMMODITY_NAME];
     itemSku = passingData[Consts.ITEM_SKU];
-    finalInspectionResult?.value = passingData[Consts.INSPECTION_RESULT];
+    myInspectionResult = passingData[Consts.INSPECTION_RESULT];
     partnerId = passingData[Consts.PARTNER_ID];
     carrierName = passingData[Consts.CARRIER_NAME];
     carrierId = passingData[Consts.CARRIER_ID];
@@ -96,67 +96,107 @@ class OverriddenResultScreenController extends GetxController {
     itemSkuId = passingData[Consts.ITEM_SKU_ID];
     itemSkuName = passingData[Consts.ITEM_SKU_NAME];
 
-    updateFinalInspectionResult(finalInspectionResult?.value);
+    if (myInspectionResult == "AC" || myInspectionResult == AppStrings.accept) {
+      myInspectionResult = AppStrings.accept;
+    } else if (myInspectionResult == "RJ" ||
+        myInspectionResult == AppStrings.reject) {
+      myInspectionResult = AppStrings.reject;
+    } else if (myInspectionResult == AppStrings.a_minus) {
+      myInspectionResult = AppStrings.a_minus;
+    } else if (myInspectionResult == "AW" ||
+        myInspectionResult.toLowerCase() == AppStrings.acceptCondition) {
+      myInspectionResult = AppStrings.acceptCondition;
+    }
+
+    finalInspectionResult.value = myInspectionResult;
+    updateFinalInspectionResult(finalInspectionResult.value);
     super.onInit();
   }
 
   void updateFinalInspectionResult(String? inspectionResult) async {
-    serverInspectionID = passingData[Consts.SERVER_INSPECTION_ID] ?? -1;
-
-    qualityControlItems =
-        await dao.findQualityControlDetails(serverInspectionID!);
+    qualityControlItems = await dao.findQualityControlDetails(inspectionID!);
 
     qtyShipped.value = qualityControlItems?.qtyShipped ?? 0;
     qtyRejected.value = qualityControlItems?.qtyRejected ?? 0;
     gtyRejectController.value.text = qtyRejected.value.toString();
     if (inspectionResult == "RJ" || inspectionResult == AppStrings.reject) {
       finalInspectionResultColor = Colors.red;
-      finalInspectionResult?.value = AppStrings.reject;
+      finalInspectionResult.value = AppStrings.reject;
       layoutQtyRejectedVisibility.value = true;
     } else if (inspectionResult == "AC" ||
         inspectionResult == AppStrings.accept) {
       finalInspectionResultColor = Colors.green;
-      finalInspectionResult?.value = AppStrings.accept;
+      finalInspectionResult.value = AppStrings.accept;
       layoutQtyRejectedVisibility.value = false;
-    } else if (inspectionResult == "A-") {
+    } else if (inspectionResult == AppStrings.a_minus) {
       finalInspectionResultColor = Colors.yellow;
-      finalInspectionResult?.value = "A-";
+      finalInspectionResult.value = AppStrings.a_minus;
       layoutQtyRejectedVisibility.value = false;
     } else if (inspectionResult == "AW" ||
         inspectionResult?.toLowerCase() == AppStrings.acceptCondition) {
       finalInspectionResultColor = Colors.green;
-      finalInspectionResult?.value = AppStrings.acceptCondition;
+      finalInspectionResult.value = AppStrings.acceptCondition;
       layoutQtyRejectedVisibility.value = false;
     }
-    resultRejectionDetail =
-        await dao.getResultRejectionDetails(serverInspectionID!);
+    resultRejectionDetail = await dao.getResultRejectionDetails(inspectionID!);
 
     if (resultRejectionDetail != null) {
       rejectionDetailsVisibility.value = true;
-      txtRejectionDetails?.value = resultRejectionDetail?.resultReason ?? "";
+      txtRejectionDetails.value = resultRejectionDetail?.resultReason ?? "";
       if (resultRejectionDetail?.defectComments != null &&
           resultRejectionDetail?.defectComments != "") {
         defectCommentsVisibility.value = true;
-        txtDefectComment?.value = resultRejectionDetail?.defectComments ?? "";
+        txtDefectComment.value = resultRejectionDetail?.defectComments ?? "";
       }
     } else {
       debugPrint(" 🔴 Reject Rejection Database is null 🔴 ");
     }
   }
 
-  void setSelected(String value, String inspectionResult) {
+  Future<void> setSelected(String value, String inspectionResult) async {
+    qualityControlItems = await dao.findQualityControlDetails(inspectionID!);
+
+    if (value == AppStrings.reject) {
+      layoutQtyRejectedVisibility.value = false;
+      if (qualityControlItems != null) {
+        if (qualityControlItems!.qtyRejected == 0) {
+          gtyRejectController.value.text = '0';
+        } else {
+          gtyRejectController.value.text =
+              qualityControlItems!.qtyRejected.toString();
+        }
+        int qtyRejected = int.parse(gtyRejectController.value.text);
+        int qtyReceived = qualityControlItems!.qtyShipped! - qtyRejected;
+
+        await dao.updateQuantityRejected(
+            inspectionID!, qtyRejected, qtyReceived);
+      }
+    } else {
+      if (!(inspectionResult == "RJ" ||
+          inspectionResult == AppStrings.reject)) {
+        // linearLayoutReject.setVisibility(View.GONE);
+        layoutQtyRejectedVisibility.value = false;
+      } else {}
+      if (qualityControlItems != null &&
+          qualityControlItems!.qtyRejected! > 0) {
+        // linearLayoutReject.setVisibility(View.VISIBLE);
+        layoutQtyRejectedVisibility.value = false;
+      }
+    }
+
     if (inspectionResult == "AC" || inspectionResult == AppStrings.accept) {
-      newResultAccept.value = value;
-    } else if (inspectionResult == "A-") {
-      newResultA.value = value;
+      finalInspectionResult.value = value;
+    } else if (inspectionResult == AppStrings.a_minus) {
+      finalInspectionResult.value = value;
     } else if (inspectionResult == "AW" ||
         inspectionResult.toLowerCase() == AppStrings.acceptCondition) {
-      newResultProtection.value = value;
+      finalInspectionResult.value = value;
     } else if (inspectionResult == "RJ" ||
         inspectionResult == AppStrings.reject) {
-      newResultReject.value = value;
-      finalInspectionResult?.value = AppStrings.reject;
-    } else if (newResultAccept.value == value) {
+      finalInspectionResult.value = value;
+      finalInspectionResult.value = AppStrings.reject;
+    }
+    if (newResultAccept.value == value) {
       layoutQtyRejectedVisibility.value = false;
     } else if (newResultA.value == value) {
       layoutQtyRejectedVisibility.value = false;
@@ -165,6 +205,9 @@ class OverriddenResultScreenController extends GetxController {
     } else if (newResultReject.value == value) {
       layoutQtyRejectedVisibility.value = true;
     }
+
+    finalInspectionResult.value = value;
+    update();
   }
 
   bool isOverrideControllerValidate(BuildContext context) {
@@ -197,7 +240,7 @@ class OverriddenResultScreenController extends GetxController {
       bool isValid = true;
       if (isValid) {
         Map<String, dynamic> passingData = {
-          Consts.SERVER_INSPECTION_ID: serverInspectionID,
+          Consts.SERVER_INSPECTION_ID: inspectionID,
           Consts.CARRIER_NAME: carrierName,
           Consts.CARRIER_ID: carrierId,
           Consts.PARTNER_NAME: partnerName,
@@ -224,13 +267,8 @@ class OverriddenResultScreenController extends GetxController {
         };
         final String tag = DateTime.now().millisecondsSinceEpoch.toString();
 
-        Get.to(
-            () => PurchaseOrderDetailsScreen(
-                  tag: tag,
-                ),
+        Get.to(() => PurchaseOrderDetailsScreen(tag: tag),
             arguments: passingData);
-
-        /* Get.back(result: {Consts.INSPECTION_ID: serverInspectionID}); */
       }
     }
   }
@@ -239,42 +277,42 @@ class OverriddenResultScreenController extends GetxController {
   Future<bool> saveFieldsToDB(
       BuildContext context, String? inspectionResult) async {
     bool hasErrors = false;
-    ovverRiddenCommentTextController.value.text = '';
 
     String comments = ovverRiddenCommentTextController.value.text;
     String result = "";
 
-    if (newResultAccept.value == newResultList[0]) {
+    if (finalInspectionResult.value == newResultList[0]) {
       result = "AC";
-    } else if (newResultA.value == newResultList[1]) {
-      result = "A-";
-    } else if (newResultProtection.value == newResultList[2]) {
+    } else if (finalInspectionResult.value == newResultList[1]) {
+      result = AppStrings.a_minus;
+    } else if (finalInspectionResult.value == newResultList[2]) {
       result = "AW";
-    } else if (newResultReject.value == newResultList[3]) {
+    } else if (finalInspectionResult.value == newResultList[3]) {
       result = "RJ";
     }
-    qualityControlItems =
-        await dao.findQualityControlDetails(serverInspectionID!);
+    qualityControlItems = await dao.findQualityControlDetails(inspectionID!);
     log("Hereee is ${qualityControlItems?.inspectionID}");
     if (layoutQtyRejectedVisibility.isTrue ||
         rejectionDetailsVisibility.isTrue) {
       String tempqty = gtyRejectController.value.text;
 
-      if (tempqty.isEmpty || tempqty == '') {
+      if (tempqty.isEmpty) {
         if ((inspectionResult == 'RJ' ||
                 inspectionResult?.toLowerCase() == AppStrings.reject) &&
-            (result == 'AC' || result == 'A-' || result == 'AW')) {
+            (result == 'AC' ||
+                result == AppStrings.a_minus ||
+                result == 'AW')) {
           gtyRejectController.value.text = '0';
 
-          int qtyRejected = int.parse(gtyRejectController.value.text);
+          int qtyRejected = int.tryParse(gtyRejectController.value.text) ?? 0;
           int qtyReceived = qualityControlItems!.qtyShipped! - qtyRejected;
 
           if (comments.isEmpty) {
-            ovverRiddenCommentTextController.value.text = 'overridden_comments';
+            // ovverRiddenCommentTextController.value.text = 'overridden_comments';
             hasErrors = true;
           } else {
-            dao.updateQuantityRejected(
-                serverInspectionID!, qtyRejected, qtyReceived);
+            await dao.updateQuantityRejected(
+                inspectionID!, qtyRejected, qtyReceived);
           }
         } else {
           hasErrors = true;
@@ -293,44 +331,46 @@ class OverriddenResultScreenController extends GetxController {
             log("here is qty received $qtyReceived");
           }
 
-          dao.updateQuantityRejected(
-              serverInspectionID!, qtyRejected, qtyReceived);
+          await dao.updateQuantityRejected(
+              inspectionID!, qtyRejected, qtyReceived);
         }
       }
     }
-    if (!newResultList.contains(inspectionResult?.toLowerCase())) {
+    if (finalInspectionResult.value != inspectionResult) {
       if (comments.isEmpty) {
         hasErrors = true;
       }
     }
-    if (hasErrors) {
-      var orgQtyRejected =
-          int.parse(qualityControlItems?.qtyRejected.toString() ?? "0");
+    if (!hasErrors) {
+      int orgQtyRejected =
+          int.tryParse(qualityControlItems!.qtyRejected.toString()) ?? 0;
 
       int orgQtyShipped = int.parse(qualityControlItems!.qtyShipped.toString());
 
-      var userId = appStorage.getUserData()?.id;
+      qualityControlItems = await dao.findQualityControlDetails(inspectionID!);
+
+      int? userId = appStorage.getUserData()?.id;
       if (qualityControlItems != null) {
-        dao.createOrUpdateOverriddenResult(
-          serverInspectionID!,
+        await dao.createOrUpdateOverriddenResult(
+          inspectionID!,
           userId!,
           result,
           comments,
           DateTime.now().millisecondsSinceEpoch,
-          inspectionResult!,
+          finalInspectionResult.value,
           orgQtyShipped,
           orgQtyRejected,
           qualityControlItems?.qtyShipped ?? 0,
           qualityControlItems?.qtyRejected ?? 0,
         );
       } else {
-        dao.createOrUpdateOverriddenResult(
-          serverInspectionID!,
+        await dao.createOrUpdateOverriddenResult(
+          inspectionID!,
           userId!,
           result,
           comments,
           DateTime.now().millisecondsSinceEpoch,
-          inspectionResult!,
+          finalInspectionResult.value,
           orgQtyShipped,
           orgQtyRejected,
           orgQtyShipped,

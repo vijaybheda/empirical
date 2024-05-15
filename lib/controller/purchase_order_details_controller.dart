@@ -2563,7 +2563,7 @@ class PurchaseOrderDetailsController extends GetxController {
                     rejectReasonArray.add("${dbobj.analyticalName} = N");
 
                     rejectReason += "${dbobj.analyticalName} = N";
-                    dao.createOrUpdateResultReasonDetails(
+                    await dao.createOrUpdateResultReasonDetails(
                         inspection.inspectionId!,
                         "RJ",
                         rejectReason,

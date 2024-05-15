@@ -696,7 +696,7 @@ class DefectsScreenController extends GetxController {
 
   Future deleteInspectionAndGotoMyInspectionScreen(BuildContext context) async {
     if (serverInspectionID > -1) {
-      dao.deleteInspection(serverInspectionID);
+      await dao.deleteInspection(serverInspectionID);
 
       Map<String, dynamic> passingData = {};
       passingData[Consts.SERVER_INSPECTION_ID] = -1;

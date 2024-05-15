@@ -677,7 +677,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
             qtyRejectedController.selection = TextSelection.fromPosition(
                 TextPosition(offset: qtyRejectedController.text.length));
 
-            qtyRejectedController.addListener(() {
+            qtyRejectedController.addListener(() async {
               if (!qtyRejectedFocusNode.hasFocus) {
                 String tempQty = qtyRejectedController.text;
 
@@ -687,12 +687,12 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
                   if (qualityControlItems != null) {
                     qtyReceived = qualityControlItems.qtyShipped! - qtyRejected;
                   }
-                  dao.updateQuantityRejected(
+                  await dao.updateQuantityRejected(
                       inspection!.inspectionId!, qtyRejected, qtyReceived);
                 } else {
                   if (qualityControlItems != null) {
-                    dao.updateQuantityRejected(inspection!.inspectionId!, 0,
-                        qualityControlItems.qtyShipped!);
+                    await dao.updateQuantityRejected(inspection!.inspectionId!,
+                        0, qualityControlItems.qtyShipped!);
                   }
                 }
               }
