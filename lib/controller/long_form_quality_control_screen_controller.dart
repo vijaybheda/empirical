@@ -156,8 +156,285 @@ class LongFormQualityControlScreenController extends GetxController {
     super.onInit();
   }
 
+  Future<bool> saveFieldsToDB() async {
+    bool hasErrors = false;
+
+    // qtyShipped
+    String qtyShippedString = qtyShippedController.text;
+    int qtyShipped = 0;
+
+    if (qtyShippedString.isNotEmpty) {
+      try {
+        qtyShipped = int.parse(qtyShippedString);
+        if (qtyShipped < 1) {
+          hasErrors = true;
+        }
+      } catch (e) {
+        Utils.showErrorAlertDialog("Please enter a valid value");
+        hasErrors = true;
+      }
+    } else {
+      Utils.showErrorAlertDialog("Please enter a valid value");
+      hasErrors = true;
+    }
+
+    // comments
+    String qcComments = commentsController.text ?? "";
+
+    // qtyRejected
+    String qtyRejectedString = qtyRejectedController.text;
+    int qtyRejected = 0;
+    if (qtyRejectedString.isNotEmpty) {
+      try {
+        qtyRejected = int.parse(qtyRejectedString);
+      } catch (e) {
+        qtyRejectedController.text = '';
+        Utils.showErrorAlertDialog("Please enter a valid value");
+        hasErrors = true;
+      }
+    } else {
+      qtyRejectedController.text = '';
+      Utils.showErrorAlertDialog("Please enter a valid value");
+      hasErrors = true;
+    }
+
+    // qtyReceived
+    String qtyReceivedString = qtyAprrovedController.text;
+    int qtyReceived = 0;
+    if (qtyReceivedString.isNotEmpty) {
+      try {
+        qtyReceived = int.parse(qtyReceivedString);
+      } catch (e) {
+        qtyAprrovedController.clear();
+
+        Utils.showErrorAlertDialog("Please enter a valid value");
+
+        hasErrors = true;
+      }
+    } else {
+      qtyAprrovedController.clear();
+      Utils.showErrorAlertDialog("Please enter a valid value");
+      hasErrors = true;
+    }
+
+    // lotNo
+    int lotNoLength = lotNoController.text.length;
+    if (lotNoLength > 30) {
+      hasErrors = true;
+      Utils.showErrorAlertDialog("Lot No should not exceed 30 characters");
+    }
+
+    // sensitechSerialNo
+    int serialNoLength = sensitechSerialNoController.text.length;
+    if (serialNoLength > 20) {
+      hasErrors = true;
+      Utils.showErrorAlertDialog(
+          "Sensitech Serial Number should not exceed 20 characters");
+    }
+
+    // qtyInspectedOk
+    int qtyInspectedOkLength = qtyInspectedOkController.text.length;
+    if (qtyInspectedOkLength > 20) {
+      hasErrors = true;
+      Utils.showErrorAlertDialog(
+          "QTY Inspected OK should not exceed 20 characters");
+    }
+
+    int pulpTempMin = 0,
+        pulpTempMax = 0,
+        recorderTempMin = 0,
+        recorderTempMax = 0;
+
+    // pulpTempMin
+    if (pulpTempMinController.text.isNotEmpty) {
+      if (isValidNumber(pulpTempMinController.text)) {
+        pulpTempMin = int.parse(pulpTempMinController.text);
+      } else {
+        hasErrors = true;
+        Utils.showErrorAlertDialog(
+            "Pulp Temp Min should not exceed 4 digits & 2 decimals");
+      }
+    }
+
+    // pulpTempMax
+    if (pulpTempMaxController.text.isNotEmpty) {
+      if (isValidNumber(pulpTempMaxController.text)) {
+        pulpTempMax = int.parse(pulpTempMaxController.text);
+      } else {
+        hasErrors = true;
+        Utils.showErrorAlertDialog(
+            "Pulp Temp Max should not exceed 4 digits & 2 decimals");
+      }
+    }
+
+    // recorderTempMin
+    if (recorderTempMinController.text.isNotEmpty) {
+      if (isValidNumber(recorderTempMinController.text)) {
+        recorderTempMin = int.parse(recorderTempMinController.text);
+      } else {
+        hasErrors = true;
+        Utils.showErrorAlertDialog(
+            "Recorder Temp Min should not exceed 4 digits & 2 decimals");
+      }
+    }
+
+    // recorderTempMax
+    if (recorderTempMaxController.text.isNotEmpty) {
+      if (isValidNumber(recorderTempMaxController.text)) {
+        recorderTempMax = int.parse(recorderTempMaxController.text);
+      } else {
+        hasErrors = true;
+        Utils.showErrorAlertDialog(
+            "Recorder Temp Max should not exceed 4 digits & 2 decimals");
+      }
+    }
+
+    // packDate
+    String packDateS = packDateController.text.trim();
+    int packDate = 0;
+    if (packDateS.isNotEmpty) {
+      DateTime parsedDate = Utils().dateFormat.parse(packDateS);
+      packDate = parsedDate.millisecondsSinceEpoch;
+      log("hereeeeee issss $packDate");
+      log("hereeeeee issss S $packDateS");
+    }
+    // rpc
+    int rpcIndex = rpcList.indexOf(selectedRpc.value);
+    String rpc = rpcList[rpcIndex];
+
+    // claimFiledAgainst
+    int clamFiledAgainstIndex =
+        claimFieldList.indexOf(selectedClaimField.value);
+    String claimFiledAgainst = claimFieldList[clamFiledAgainstIndex];
+    mapClaimFiledAgainst(claimFiledAgainst);
+
+    int uomQtyShippedID = 0;
+    int uomQtyRejectedID = 0;
+    int uomQtyReceivedID = 0;
+    int brandID = 0;
+    int reasonID = 0;
+    int originID = 0;
+    String typeofCut = '';
+
+    // uom
+    if (uomList.isNotEmpty && selectedUOM != null) {
+      uomQtyShippedID = selectedUOM!.uomID!;
+      uomQtyRejectedID = selectedUOM!.uomID!;
+      uomQtyReceivedID = selectedUOM!.uomID!;
+    }
+
+    // reason
+    if (reasonList.isNotEmpty && selectedReason != null) {
+      reasonID = selectedReason!.reasonID!;
+    }
+
+    // brand
+    if (brandList.isNotEmpty && selectedBrand != null) {
+      brandID = selectedBrand!.brandID!;
+    }
+
+    // origin
+    if (originList.isNotEmpty && selectedOrigin != null) {
+      originID = selectedOrigin!.countryID!;
+    }
+
+    // typeofCut
+    int typeofCutIndex = rpcList.indexOf(selectedRpc.value);
+    typeofCut = rpcList[typeofCutIndex];
+
+    String workDateS = workDateController.text.trim();
+    int workDate = 0;
+    if (workDateS.isNotEmpty) {
+      DateTime parsedDate = Utils().dateFormat.parse(workDateS);
+      workDate = parsedDate.millisecondsSinceEpoch;
+    }
+
+    if (!hasErrors) {
+      lotNo = lotNoController.text;
+      if (qcID == null) {
+        await dao.createQualityControl(
+          inspectionId: inspectionId!,
+          brandID: brandID,
+          originID: originID,
+          qtyShipped: qtyShipped,
+          uomQtyShippedID: uomQtyShippedID,
+          poNumber: poNumber!,
+          pulpTempMin: pulpTempMin,
+          pulpTempMax: pulpTempMax,
+          recorderTempMin: recorderTempMin,
+          recorderTempMax: recorderTempMax,
+          rpc: rpc,
+          claimFiledAgainst: claimFiledAgainst,
+          qtyRejected: qtyRejected,
+          uomQtyRejectedID: uomQtyRejectedID,
+          reasonID: reasonID,
+          qcComments: qcComments,
+          qtyReceived: qtyReceived,
+          uomQtyReceivedID: uomQtyReceivedID,
+          specificationName: specificationName ?? "",
+          packDate: packDate,
+          seal_no: _appStorage.currentSealNumber!,
+          lot_no: lotNo!,
+          qcdOpen1: selectedTempRecorder.value,
+          qcdOpen2: lotNoController.text,
+          qcdOpen3: qtyInspectedOkController.text,
+          qcdOpen4: sensitechSerialNoController.text,
+          workDate: workDate,
+          gtin: gtin ?? "",
+          lot_size: 0,
+          shipDate: 0,
+          dateType: dateTypeDesc,
+        );
+      } else {
+        log("here is Quanitity Rejected: $packDate");
+
+        dao.updateQualityControl(
+          qcID: qcID!,
+          inspectionId: inspectionId!,
+          brandID: brandID,
+          originID: originID,
+          qtyShipped: qtyShipped,
+          uomQtyShippedID: uomQtyShippedID,
+          poNumber: poNumber!,
+          pulpTempMin: pulpTempMin,
+          pulpTempMax: pulpTempMax,
+          recorderTempMin: recorderTempMin,
+          recorderTempMax: recorderTempMax,
+          rpc: rpc,
+          claimFiledAgainst: claimFiledAgainst,
+          qtyRejected: qtyRejected,
+          uomQtyRejectedID: uomQtyRejectedID,
+          reasonID: reasonID,
+          qcComments: qcComments,
+          qtyReceived: qtyReceived,
+          uomQtyReceivedID: uomQtyReceivedID,
+          specificationName: specificationName ?? "",
+          packDate: packDate,
+          seal_no: _appStorage.currentSealNumber!,
+          lot_no: lotNo!,
+          qcdOpen1: selectedTempRecorder.value,
+          qcdOpen2: lotNoController.text,
+          qcdOpen3: qtyInspectedOkController.text,
+          qcdOpen4: sensitechSerialNoController.text,
+          workDate: workDate,
+          gtin: gtin ?? "",
+          lot_size: 0,
+          shipDate: 0,
+          dateType: dateTypeDesc,
+        );
+      }
+      return true;
+    }
+    return false;
+  }
+
+  bool isValidNumber(String number) {
+    // Regular expression to match the desired format: up to 4 whole numbers and up to 2 decimal places
+    RegExp regex = RegExp(r'\d{1,4}(\.\d{0,2})?');
+    return regex.hasMatch(number);
+  }
+
   Future<void> loadFiledsFromDB(Map<String, dynamic> args) async {
-    qtyRejectedController.text = '0';
     recorderTempMinController.text = '0';
     recorderTempMaxController.text = '0';
     pulpTempMinController.text = '0';
@@ -165,6 +442,9 @@ class LongFormQualityControlScreenController extends GetxController {
     String packDateString = args[Consts.PACK_DATE] ?? '';
     String workDateString = args[Consts.WORK_DATE] ?? '';
 
+    log("HERE IS WORKDATE $workDateString");
+    log("HERE IS PACKDATE $packDateString");
+    packDateString = qualityControlItems!.packDate!;
     if (packDateString.isNotEmpty) {
       packDate = Utils().dateFormat.parse(packDateString);
       if (packDate != null) {
@@ -200,15 +480,17 @@ class LongFormQualityControlScreenController extends GetxController {
     });
 
     qualityControlItems = await dao.findQualityControlDetails(inspectionId!);
-    setUOMSpinner();
-    setBrandSpinner();
-    setOriginSpinner();
-    setReasonSpinner();
-    setSpinnerClaimField();
-    setRpcSpinner();
-    setTempSpinner();
 
     if (qualityControlItems != null) {
+      setUOMSpinner();
+      setBrandSpinner();
+      setOriginSpinner();
+      setReasonSpinner();
+      setSpinnerClaimField();
+      setRpcSpinner();
+      setTempSpinner();
+      QualityControlItem item = qualityControlItems!;
+      log("Here is QualityControlItem ${item.toJson()}");
       qcID = qualityControlItems!.qcID;
       qtyShippedController.text = qualityControlItems!.qtyShipped.toString();
       updateQtyApproved();
@@ -236,6 +518,7 @@ class LongFormQualityControlScreenController extends GetxController {
       commentsController.text = qualityControlItems!.qcComments ?? '';
       qtyRejectedController.text =
           (qualityControlItems?.qtyRejected ?? '').toString();
+
       pulpTempMinController.text =
           (qualityControlItems?.pulpTempMin ?? '').toString();
       pulpTempMaxController.text =
@@ -260,30 +543,9 @@ class LongFormQualityControlScreenController extends GetxController {
           : qualityControlItems?.qcdOpen1 ?? "Yes";
       selectedTempRecorder.value = tempRecorderValue;
 
-      lotNoController.text = qualityControlItems!.lot ?? '';
+      lotNoController.text = qualityControlItems!.qcdOpen2 ?? '';
       qtyInspectedOkController.text = qualityControlItems?.qcdOpen3 ?? '';
       sensitechSerialNoController.text = qualityControlItems?.qcdOpen4 ?? '';
-
-      //todo Need to verify below methods working or not ?
-      selectedBrand = brandList.firstWhere(
-        (brandItem) => brandItem.brandID == qualityControlItems!.brandID,
-        orElse: () => BrandItem(brandID: 0, brandName: 'Select Two'),
-      );
-
-      selectedOrigin = originList.firstWhere(
-        (originItem) => originItem.countryID == qualityControlItems!.originID,
-        orElse: () => CountryItem(0, 'Select Two'),
-      );
-
-      selectedUOM = uomList.firstWhere(
-        (uomItem) => uomItem.uomID == qualityControlItems!.uomQtyShippedID,
-        orElse: () => UOMItem(0, 'Select One'),
-      );
-
-      selectedReason = reasonList.firstWhere(
-        (reasonItem) => reasonItem.reasonID == qualityControlItems!.reasonID,
-        orElse: () => ReasonItem(0, 'Select One'),
-      );
     }
   }
 
@@ -312,10 +574,14 @@ class LongFormQualityControlScreenController extends GetxController {
         selectedUOM = chileUOMID;
       }
     }
-    log("Selected UOM $selectedUOM");
     SchedulerBinding.instance.addPostFrameCallback((_) {
       update();
     });
+    selectedUOM = uomList.firstWhere(
+      (uomItem) => uomItem.uomID == qualityControlItems!.uomQtyShippedID,
+      orElse: () => UOMItem(0, 'Select One'),
+    );
+    update();
   }
 
   UOMItem? getUOMID(String uomName) {
@@ -339,10 +605,14 @@ class LongFormQualityControlScreenController extends GetxController {
     if (brandListArray.isNotEmpty) {
       selectedBrand = brandList[0];
     }
-    log('Selected Brand $selectedBrand');
     SchedulerBinding.instance.addPostFrameCallback((_) {
       update();
     });
+    selectedBrand = brandList.firstWhere(
+      (originItem) => originItem.brandID == qualityControlItems!.brandID,
+      orElse: () => BrandItem(brandID: 0, brandName: 'Select One'),
+    );
+    update();
   }
 
   // Method to set ORIGIN spinner
@@ -359,10 +629,14 @@ class LongFormQualityControlScreenController extends GetxController {
     if (originListArray.isNotEmpty) {
       selectedOrigin = originList[0];
     }
-    log('Selected Origin $selectedOrigin');
     SchedulerBinding.instance.addPostFrameCallback((_) {
       update();
     });
+    selectedOrigin = originList.firstWhere(
+      (originItem) => originItem.countryID == qualityControlItems!.originID,
+      orElse: () => CountryItem(0, 'Select One'),
+    );
+    update();
   }
 
   // Method to set REASON spinner
@@ -378,10 +652,14 @@ class LongFormQualityControlScreenController extends GetxController {
     if (reasonListArray.isNotEmpty) {
       selectedReason = reasonList[0];
     }
-    log('Selected Reason $selectedReason');
     SchedulerBinding.instance.addPostFrameCallback((_) {
       update();
     });
+    selectedReason = reasonList.firstWhere(
+      (reasonItem) => reasonItem.reasonID == qualityControlItems!.reasonID,
+      orElse: () => ReasonItem(0, 'Select One'),
+    );
+    update();
   }
 
   // Method to set CLAIM FIELD spinner
@@ -523,5 +801,22 @@ class LongFormQualityControlScreenController extends GetxController {
 
   int findPositionInArray(List<String> array, String item) {
     return array.indexOf(item);
+  }
+
+  String mapClaimFiledAgainst(String claimFiledAgainst) {
+    switch (claimFiledAgainst) {
+      case "NC":
+        return "NC";
+      case "PC":
+        return "PC";
+      case "CC":
+        return "CC";
+      default:
+        return "";
+    }
+  }
+
+  checkQuantityAlert() {
+    Utils.showErrorAlertDialog("Please enter a valid quantity");
   }
 }
