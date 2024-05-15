@@ -46,14 +46,24 @@ class LongFormQualityControlScreen
                 context,
                 controller: controller,
                 onShortFormClick: () {
-                  Get.back();
+                  if (controller.isValidQuantityRejected.value) {
+                    Get.back();
+                  } else {
+                    controller.checkQuantityAlert();
+                  }
                 },
                 onSpecAttribueClick: () {
+                  if (controller.isValidQuantityRejected.value) {
+                    Get.back();
+                  } else {
+                    controller.checkQuantityAlert();
+                  }
                   log("onSpecAttribueClick");
                 },
               ),
               FooterContentView(
                 onBackTap: () {
+                  controller.saveFieldsToDB();
                   Get.back();
                 },
               )
