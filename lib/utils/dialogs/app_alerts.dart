@@ -1,5 +1,8 @@
 // ignore_for_file: prefer_const_constructors, unused_local_variable
 
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -168,5 +171,34 @@ class AppAlertDialog {
                     textStyle: TextStyle(color: AppColors.primary)),
               )),
         ]);
+  }
+
+  static void customAlert(BuildContext context, Widget content,
+      List<Widget> actions, Widget title) {
+    Platform.isIOS || Platform.isMacOS
+        ? showCupertinoDialog<String>(
+            barrierDismissible: false,
+            context: context,
+            builder: (BuildContext context) => Theme(
+              data: ThemeData.dark(),
+              child: CupertinoAlertDialog(
+                title: title,
+                content: content,
+                actions: actions,
+              ),
+            ),
+          )
+        : showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(5))),
+              backgroundColor: Theme.of(context).colorScheme.background,
+              title: title,
+              content: content,
+              actions: actions,
+            ),
+          );
   }
 }

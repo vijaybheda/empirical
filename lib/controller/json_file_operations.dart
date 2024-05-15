@@ -283,12 +283,26 @@ class JsonFileOperations {
         String? dInstruction = defectItem['inspectionInstruction'];
 
         List<DefectInstructionAttachment> attachments = [];
+        int l = 0;
         for (var attachmentObject in defectItem['attachments']) {
+          l = l++;
           DefectInstructionAttachment attachmentItem =
               DefectInstructionAttachment();
           attachmentItem.attachmentId = attachmentObject['attachmentId'];
           attachmentItem.url = attachmentObject['url'];
           attachmentItem.name = attachmentObject['name'];
+
+          String fileContent = attachmentObject["fileContent"];
+
+          List<int> bytes = base64Decode(fileContent);
+
+          String directoryPath =
+              await Utils.createCommodityVarietyDocumentDirectory();
+          File pdfFile =
+              File('$directoryPath/instruction_${id}_$dId${l - 1}.png');
+
+          await pdfFile.writeAsBytes(bytes);
+
           attachments.add(attachmentItem);
         }
 

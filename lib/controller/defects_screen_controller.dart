@@ -163,11 +163,13 @@ class DefectsScreenController extends GetxController {
   List<String> defectSpinnerNames = <String>[].obs;
   List<int> defectSpinnerIds = <int>[].obs;
   RxBool informationIconEnabled = false.obs;
-  RxBool isVisibleInfoPopup = false.obs;
-  RxInt visisblePopupIndex = 0.obs;
+  // RxBool isVisibleInfoPopup = false.obs;
+  // RxInt visisblePopupIndex = 0.obs;
   RxBool isVisibleSpecificationPopup = false.obs;
 
   Map<int, String> defectCategoriesHashMap = {};
+
+  bool defectTableAddSampleVisible = false;
 
   String get packDateString =>
       packDate != null ? Utils().dateFormat.format(packDate!) : '';
@@ -254,7 +256,7 @@ class DefectsScreenController extends GetxController {
 
   Future<void> setInit() async {
     await jsonFileOperations.offlineLoadSeverities(commodityID.toString());
-    jsonFileOperations.offlineLoadDefectCategories();
+    await jsonFileOperations.offlineLoadDefectCategories();
     appStorage.specificationGradeToleranceList =
         await dao.getSpecificationGradeTolerance(
             specificationNumber!, specificationVersion!);
@@ -350,7 +352,7 @@ class DefectsScreenController extends GetxController {
       sDamageTextEditingController: TextEditingController(text: '0'),
       vsDamageTextEditingController: TextEditingController(text: '0'),
       decayTextEditingController: TextEditingController(text: '0'),
-      name: 'Select',
+      // name: 'Select',
       attachments: [],
     );
 
@@ -649,11 +651,11 @@ class DefectsScreenController extends GetxController {
   }
 
   void showPopup() {
-    isVisibleInfoPopup.value = true;
+    // isVisibleInfoPopup.value = true;
   }
 
   void hidePopup() {
-    isVisibleInfoPopup.value = false;
+    // isVisibleInfoPopup.value = false;
   }
 
   Future onSpecialInstrMenuTap() async {
@@ -1014,6 +1016,24 @@ class DefectsScreenController extends GetxController {
     dataSaved = true;
   }
 
+  String getKeyFromIndex(int index) {
+    return "Set #${index + 1}";
+  }
+
+  int getIndexFromKey(String name) {
+    String numString = name.replaceAll("Set #", "");
+    return int.parse(numString) - 1;
+  }
+
+  /*int getSampleSize(String name, List<SampleData> sampleList) {
+    for (int i = 0; i < sampleList.length; i++) {
+      if (name == sampleList[i].name) {
+        return sampleList[i].sampleSize;
+      }
+    }
+    return -1;
+  }*/
+
   int? getSampleSize(String name) {
     for (var i = 0; i < sampleList.length; i++) {
       if (name == sampleList[i].name) {
@@ -1046,5 +1066,1883 @@ class DefectsScreenController extends GetxController {
   void loadDefectData(int i, List<InspectionDefect> defectList, String dataName,
       int sampleListPosition) {
     populateDefectSpinnerList();
+  }
+
+  void navigateToCameraScreen({required int position, required int rowIndex}) {
+    Map<String, dynamic> passingData = {};
+    passingData.putIfAbsent(Consts.PARTNER_NAME, () => partnerName);
+    passingData.putIfAbsent(Consts.PARTNER_NAME, () => partnerName);
+    passingData.putIfAbsent(Consts.PARTNER_ID, () => partnerID);
+    passingData.putIfAbsent(Consts.CARRIER_NAME, () => carrierName);
+    passingData.putIfAbsent(Consts.CARRIER_ID, () => carrierID);
+    passingData.putIfAbsent(Consts.COMMODITY_NAME, () => commodityName);
+    passingData.putIfAbsent(Consts.COMMODITY_ID, () => commodityID);
+    passingData.putIfAbsent(Consts.VARIETY_NAME, () => varietyName);
+    passingData.putIfAbsent(Consts.VARIETY_SIZE, () => varietySize);
+    passingData.putIfAbsent(Consts.VARIETY_ID, () => varietyId);
+    int? sampleId = getSampleID(sampleDataMap[rowIndex]!.name);
+    if (sampleId != null) {
+      passingData.putIfAbsent(Consts.SAMPLE_ID, () => sampleId);
+    }
+
+    Get.to(() => const InspectionPhotos(), arguments: passingData);
+  }
+
+  void setSampleAndDefectCounts() {
+    sampleDataMap.clear();
+    sampleDataMapIndexList.clear();
+    numberSamples = 0;
+
+    seriousDefectList.clear();
+    seriousDefectCountMap.clear();
+    totalSamples = 0;
+    totalInjury = 0;
+    totalDamage = 0;
+    totalSeriousDamage = 0;
+    totalVerySeriousDamage = 0;
+    totalDecay = 0;
+
+    totalConditionInjury = 0;
+    totalConditionDamage = 0;
+    totalConditionSeriousDamage = 0;
+    totalConditionVerySeriousDamage = 0;
+    totalConditionDecay = 0;
+
+    totalQualityInjury = 0;
+    totalQualityDamage = 0;
+    totalQualitySeriousDamage = 0;
+    totalQualityVerySeriousDamage = 0;
+    totalQualityDecay = 0;
+
+    totalSizeInjury = 0;
+    totalSizeDamage = 0;
+    totalSizeSeriousDamage = 0;
+    totalSizeVerySeriousDamage = 0;
+    totalSizeDecay = 0;
+
+    totalColorInjury = 0;
+    totalColorDamage = 0;
+    totalColorSeriousDamage = 0;
+    totalColorVerySeriousDamage = 0;
+    totalColorDecay = 0;
+
+    for (int j = 0; j < sampleList.length; j++) {
+      totalSamples += sampleList[j].sampleSize;
+      numberSamples++;
+      sampleDataMapIndexList.add(getIndexFromKey(sampleList[j].name));
+
+      SampleData data = SampleData(
+          sampleSize: sampleList[j].sampleSize,
+          name: sampleList[j].name,
+          complete: false,
+          setNumber: sampleList[j].setNumber,
+          timeCreated: sampleList[j].timeCreated,
+          sampleId: sampleList[j].sampleId);
+      sampleDataMap[getIndexFromKey(sampleList[j].name)] = data;
+    }
+
+    defectDataMap.forEach((key, value) {
+      bool hasDefects = false;
+      int? sampleSize = getSampleSize(key);
+      SampleData data = SampleData(
+          sampleSize: sampleSize ?? 0,
+          name: key,
+          complete: false,
+          setNumber: 0,
+          timeCreated: DateTime.now().millisecondsSinceEpoch,
+          sampleId: 0);
+
+      for (int i = 0; i < value.length; i++) {
+        // Check the counts for each defect entry
+        if (value[i].injuryCnt! > 0 ||
+            value[i].damageCnt! > 0 ||
+            value[i].seriousDamageCnt! > 0 ||
+            value[i].verySeriousDamageCnt! > 0 ||
+            value[i].decayCnt! > 0) {
+          hasDefects = true;
+          data.sampleId = value[i].sampleId;
+          data.iCnt += value[i].injuryCnt!;
+          data.dCnt += value[i].damageCnt!;
+          data.sdCnt += value[i].seriousDamageCnt!;
+          data.vsdCnt += value[i].verySeriousDamageCnt!;
+          data.dcCnt += value[i].decayCnt!;
+
+          //Mob-285
+          totalSeriousDamage += value[i].seriousDamageCnt!;
+
+          int defectId = value[i].defectId!;
+
+          if (defectCategoriesHashMap.containsKey(defectId)) {
+            if (defectCategoriesHashMap[defectId] == "Condition") {
+              totalConditionInjury += value[i].injuryCnt!;
+              totalConditionDamage += value[i].damageCnt!;
+              totalConditionSeriousDamage += value[i].seriousDamageCnt!;
+              totalConditionVerySeriousDamage += value[i].verySeriousDamageCnt!;
+              totalConditionDecay += value[i].decayCnt!;
+            } else if (defectCategoriesHashMap[defectId] == "Quality") {
+              totalQualityInjury += value[i].injuryCnt!;
+              totalQualityDamage += value[i].damageCnt!;
+              totalQualitySeriousDamage += value[i].seriousDamageCnt!;
+              totalQualityVerySeriousDamage += value[i].verySeriousDamageCnt!;
+              totalQualityDecay += value[i].decayCnt!;
+            } else if (defectCategoriesHashMap[defectId] == "Size") {
+              totalSizeInjury += value[i].injuryCnt!;
+              totalSizeDamage += value[i].damageCnt!;
+              totalSizeSeriousDamage += value[i].seriousDamageCnt!;
+              totalSizeVerySeriousDamage += value[i].verySeriousDamageCnt!;
+              totalSizeDecay += value[i].decayCnt!;
+            } else if (defectCategoriesHashMap[defectId] == "Color") {
+              totalColorInjury += value[i].injuryCnt!;
+              totalColorDamage += value[i].damageCnt!;
+              totalColorSeriousDamage += value[i].seriousDamageCnt!;
+              totalColorVerySeriousDamage += value[i].verySeriousDamageCnt!;
+              totalColorDecay += value[i].decayCnt!;
+            }
+          }
+
+          // build out a list of serious defect names
+          if (value[i].seriousDamageCnt! > 0) {
+            String defectName = value[i].spinnerSelection!;
+
+            if (seriousDefectList.isEmpty ||
+                !seriousDefectList.contains(defectName)) {
+              seriousDefectList.add(defectName);
+              seriousDefectCountMap[defectName] = 0;
+            }
+            if (defectCategoriesHashMap != null &&
+                defectCategoriesHashMap.containsKey(defectId)) {
+              if (defectCategoriesHashMap[defectId] != "Size" &&
+                  defectCategoriesHashMap[defectId] != "Color") {
+                if (seriousDefectCountMap.containsKey(defectName)) {
+                  // seriousDefectCountMap[defectName] += data.sdCnt;
+                  seriousDefectCountMap[defectName] =
+                      (seriousDefectCountMap[defectName] ?? 0) + data.sdCnt;
+                } else {
+                  seriousDefectCountMap[defectName] = data.sdCnt;
+                }
+              }
+            } else {
+              if (seriousDefectCountMap.containsKey(defectName)) {
+                seriousDefectCountMap[defectName] =
+                    (seriousDefectCountMap[defectName] ?? 0) + data.sdCnt;
+              } else {
+                seriousDefectCountMap[defectName] = data.sdCnt;
+              }
+            }
+          }
+        }
+      }
+
+      if (hasDefects) {
+        sampleDataMap[getIndexFromKey(key)] = data;
+        totalInjury += data.iCnt;
+        totalDamage += data.dCnt;
+        totalVerySeriousDamage += data.vsdCnt;
+        totalVerySeriousDamage =
+            (totalVerySeriousDamage - totalSizeVerySeriousDamage) -
+                totalColorVerySeriousDamage;
+        totalDecay += data.dcCnt;
+        totalDecay = (totalDecay - totalSizeDecay) - totalColorDecay;
+      }
+    });
+    totalInjury = (totalInjury - totalSizeInjury) - totalColorInjury;
+    totalDamage = (totalDamage - totalSizeDamage) - totalColorDamage;
+    totalVerySeriousDamage =
+        (totalVerySeriousDamage - totalSizeVerySeriousDamage) -
+            totalColorVerySeriousDamage;
+
+    numberSeriousDefects = 1;
+    if (seriousDefectList.length > 1) {
+      numberSeriousDefects = seriousDefectList.length;
+    }
+  }
+
+  Container drawDefectsTable() {
+    if (numberSamples > 0) {
+      defectTableAddSampleVisible = false;
+    } else {
+      defectTableAddSampleVisible = true;
+    }
+
+    populateSeverityList();
+
+    if (appStorage.severityList != null) {
+      for (var severity in appStorage.severityList!) {
+        if (severity.name == "Injury" || severity.name == "Lesión") {
+          hasSeverityInjury = true;
+        } else if (severity.name == "Damage" || severity.name == "Daño") {
+          hasSeverityDamage = true;
+        } else if (severity.name == "Serious Damage" ||
+            severity.name == "Daño Serio") {
+          hasSeveritySeriousDamage = true;
+        } else if (severity.name == "Very Serious Damage" ||
+            severity.name == "Daño Muy Serio") {
+          hasSeverityVerySeriousDamage = true;
+        } else if (severity.name == "Decay" || severity.name == "Pudrición") {
+          hasSeverityDecay = true;
+        }
+      }
+    }
+
+    // Note: In Flutter, instead of using LayoutInflater, we typically create widgets directly.
+    // Here's an example of creating a TableLayout widget:
+    double borderBlack = 3;
+    double borderGrey = 3;
+    double borderOutside = 6;
+    Column tableLayout = const Column(
+        // borderBlack: borderBlack,
+        // borderGrey: borderGrey,
+        // borderOutside: borderOutside,
+        );
+
+    // Create the table row
+    // Row tableRow = const Row();
+
+// Label column
+    Widget labelContainer = Container(
+      margin: EdgeInsets.only(left: borderOutside, top: borderOutside),
+      child: const Text(
+        'Type',
+        style: TextStyle(fontSize: 20),
+      ),
+    );
+    Widget? injuryColumn;
+    Widget? damageColumn;
+    Widget? seriousDamageColumn;
+    Widget? verySeriousDamageColumn;
+    Widget? decayColumn1;
+    Widget? lableColumn2;
+    Widget? picturesCommentsColumn;
+
+// Injury column
+    if (hasSeverityInjury) {
+      injuryColumn = Container(
+        margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
+        color: Colors.blue,
+        child: const Text(
+          'Defects',
+          style: TextStyle(fontSize: 16),
+        ), // or use your color from resources
+      );
+    }
+
+// Damage column
+    if (hasSeverityDamage) {
+      damageColumn = Container(
+        margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
+        color: Colors.green,
+        child: const Text(
+          'Defects',
+          style: TextStyle(fontSize: 16),
+        ), // or use your color from resources
+      );
+    }
+
+// Serious damage column(s)
+    for (int i = 0; i < numberSeriousDefects; i++) {
+      seriousDamageColumn = Container(
+        margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
+        color: Colors.orange,
+        child: const Text(
+          'Defects',
+          style: TextStyle(fontSize: 16),
+        ), // or use your color from resources
+      );
+    }
+
+    // Very serious damage column
+    if (hasSeverityVerySeriousDamage) {
+      verySeriousDamageColumn = Container(
+        margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
+        color: Colors.blue,
+        child: const Text(
+          'Defects',
+          style: TextStyle(fontSize: 16),
+        ), // or use your color from resources
+      );
+    }
+
+// Decay column
+    if (hasSeverityDecay) {
+      decayColumn1 = Container(
+        margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
+        color: Colors.green,
+        child: const Text(
+          'Defects',
+          style: TextStyle(fontSize: 16),
+        ), // or use your color from resources
+      );
+    }
+
+// Add the constructed row to the table layout
+//     tableLayout.children.add(tableRow);
+
+    // Create the table row
+    Row tableRow2 = const Row();
+
+// Label column
+    tableRow2.children.add(Container(
+      margin: EdgeInsets.only(left: borderOutside, right: borderGrey),
+      child: const Text(
+        'Severity',
+        style: TextStyle(fontSize: 20),
+      ),
+    ));
+
+// Injury column
+    if (hasSeverityInjury) {
+      Widget injuryColumn = Container(
+        margin: EdgeInsets.only(right: borderGrey, bottom: borderOutside),
+        child: Stack(
+          children: [
+            Container(
+              margin: EdgeInsets.all(borderGrey),
+              color: Colors.blue, // or use your color from resources
+              child: const Icon(Icons.circle, color: Colors.red),
+            ),
+            const Positioned.fill(
+              child: Center(
+                child: Text('I', style: TextStyle(color: Colors.white)),
+              ),
+            ),
+          ],
+        ),
+      );
+      tableRow2.children.add(injuryColumn);
+    }
+
+// Damage column
+    if (hasSeverityDamage) {
+      Widget damageColumn = Container(
+        margin: EdgeInsets.only(right: borderGrey, bottom: borderOutside),
+        child: Stack(
+          children: [
+            Container(
+              margin: EdgeInsets.all(borderGrey),
+              color: Colors.green, // or use your color from resources
+              child: const Icon(Icons.circle, color: Colors.red),
+            ),
+            const Positioned.fill(
+              child: Center(
+                child: Text('D', style: TextStyle(color: Colors.white)),
+              ),
+            ),
+          ],
+        ),
+      );
+      tableRow2.children.add(damageColumn);
+    }
+
+// Add the constructed row to the table layout
+    tableLayout.children.add(tableRow2);
+
+    // Serious damage column(s)
+    for (int i = 0; i < numberSeriousDefects; i++) {
+      Widget seriousDamageColumn = Container(
+        margin: EdgeInsets.only(
+          left: borderGrey,
+          right: i == numberSeriousDefects - 1 ? borderOutside : borderGrey,
+          bottom: i == numberSeriousDefects - 1 ? borderOutside : 0,
+        ),
+        child: Stack(
+          children: [
+            Container(
+              margin: EdgeInsets.all(borderGrey),
+              color: Colors.orange, // or use your color from resources
+              child: const Icon(Icons.circle, color: Colors.red),
+            ),
+            const Positioned.fill(
+              child: Center(
+                child: Text(
+                  'SD',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+
+      if (numberSeriousDefects > 1) {
+        // Add subscript to indicate index
+        int subscriptIndex = i + 1;
+        seriousDamageColumn = GestureDetector(
+          child: seriousDamageColumn,
+          onTap: () {
+            showDialog(
+              context: Get.context!,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('Serious Defect ${subscriptIndex}'),
+                      const SizedBox(height: 10),
+                      Text(seriousDefectList[subscriptIndex - 1]),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        );
+      }
+
+      if (hasSeveritySeriousDamage) {
+        tableRow2.children.add(seriousDamageColumn);
+      }
+    }
+
+// Very serious damage column
+    if (hasSeverityVerySeriousDamage) {
+      Widget verySeriousDamageColumn = Container(
+        margin: EdgeInsets.only(
+            left: borderGrey, right: borderGrey, bottom: borderOutside),
+        child: Stack(
+          children: [
+            Container(
+              margin: EdgeInsets.all(borderGrey),
+              color: Colors.blue, // or use your color from resources
+              child: const Icon(Icons.circle, color: Colors.red),
+            ),
+            const Positioned.fill(
+              child: Center(
+                child: Text(
+                  'VSD',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+      tableRow2.children.add(verySeriousDamageColumn);
+    }
+
+// Decay column
+    if (hasSeverityDecay) {
+      Widget decayColumn = Container(
+        margin: EdgeInsets.only(
+            left: borderGrey, right: borderGrey, bottom: borderOutside),
+        child: Stack(
+          children: [
+            Container(
+              margin: EdgeInsets.all(borderGrey),
+              color: Colors.green, // or use your color from resources
+              child: const Icon(Icons.circle, color: Colors.red),
+            ),
+            const Positioned.fill(
+              child: Center(
+                child: Text(
+                  'DC',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+      tableRow2.children.add(decayColumn);
+    }
+
+// Add the constructed row to the table layout
+    tableLayout.children.add(tableRow2);
+
+    // **************************
+// Row - Sample(s)
+// **************************
+    for (int j = 0; j < numberSamples; j++) {
+      Row tableRow = const Row();
+
+      final int index = sampleDataMapIndexList[j];
+
+      // Label column
+      lableColumn2 = Container(
+        margin: EdgeInsets.only(
+          left: borderOutside,
+          right: j == numberSamples - 1 ? 0 : borderOutside,
+          bottom: j == numberSamples - 1 ? borderOutside : 0,
+        ),
+        child: Text(
+          sampleDataMap[index]!.sampleSize.toString(),
+          style: const TextStyle(fontSize: 20),
+        ),
+      );
+      // tableRow.children.add();
+
+      // Injury column
+      Widget injuryColumn = Container(
+        margin: EdgeInsets.only(
+          left: 0,
+          right: j == numberSamples - 1 ? 0 : borderOutside,
+          bottom: j == numberSamples - 1 ? borderOutside : 0,
+        ),
+        color: hasSeverityInjury ? Colors.blue : null,
+        child: Text(
+          sampleDataMap[index]!.iCnt.toString(),
+          style: const TextStyle(fontSize: 20),
+        ),
+      );
+      tableRow.children.add(injuryColumn);
+
+      // Damage column
+      Widget damageColumn = Container(
+        margin: EdgeInsets.only(
+          left: 0,
+          right: j == numberSamples - 1 ? 0 : borderOutside,
+          bottom: j == numberSamples - 1 ? borderOutside : 0,
+        ),
+        color: hasSeverityDamage ? Colors.green : null,
+        child: Text(
+          sampleDataMap[index]!.dCnt.toString(),
+          style: const TextStyle(fontSize: 20),
+        ),
+      );
+      tableRow.children.add(damageColumn);
+
+      // Serious damage column(s)
+      for (int i = 0; i < numberSeriousDefects; i++) {
+        int count = 0;
+        final data = defectDataMap[getKeyFromIndex(index)];
+        if (data != null) {
+          for (int k = 0; k < data.length; k++) {
+            if (!seriousDefectList.isEmpty &&
+                data[k].spinnerSelection == seriousDefectList[i]) {
+              count += data[k].seriousDamageCnt!;
+            }
+          }
+        }
+        Widget seriousDamageColumn = Container(
+          margin: EdgeInsets.only(
+            left: 0,
+            right: i == numberSeriousDefects - 1 ? borderOutside : 0,
+            bottom: j == numberSamples - 1 ? borderOutside : 0,
+          ),
+          color: hasSeveritySeriousDamage ? Colors.orange : null,
+          child: Text(
+            count.toString(),
+            style: const TextStyle(fontSize: 20),
+          ),
+        );
+        tableRow.children.add(seriousDamageColumn);
+      }
+
+      // Very serious damage column
+      Widget verySeriousDamageColumn = Container(
+        margin: EdgeInsets.only(
+          left: 0,
+          right: 0,
+          bottom: j == numberSamples - 1 ? borderOutside : 0,
+        ),
+        color: hasSeverityVerySeriousDamage ? Colors.blue : null,
+        child: Text(
+          sampleDataMap[index]!.vsdCnt.toString(),
+          style: const TextStyle(fontSize: 20),
+        ),
+      );
+      tableRow.children.add(verySeriousDamageColumn);
+
+      // Decay column
+      Widget decayColumn = Container(
+        margin: EdgeInsets.only(
+          left: 0,
+          right: 0,
+          bottom: j == numberSamples - 1 ? borderOutside : 0,
+        ),
+        color: hasSeverityDecay ? Colors.green : null,
+        child: Text(
+          sampleDataMap[index]!.dcCnt.toString(),
+          style: const TextStyle(fontSize: 20),
+        ),
+      );
+      tableRow.children.add(decayColumn);
+
+      // Pictures / Comments column
+      picturesCommentsColumn = Container(
+        margin: EdgeInsets.only(
+          left: 0,
+          right: borderOutside,
+          bottom: j == numberSamples - 1 ? borderOutside : 0,
+        ),
+        child: Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.camera),
+              onPressed: () {
+                // Your onPressed function for camera button
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.comment),
+              onPressed: () {
+                // Your onPressed function for comment button
+              },
+            ),
+          ],
+        ),
+      );
+      // tableRow.children.add(picturesCommentsColumn);
+
+      tableLayout.children.add(tableRow);
+    }
+
+// **********************************************************************************
+// Row - Total Quality Defects
+// ***********************************************************************************
+    Row totalQualityRow = const Row();
+
+// Label column
+    Widget totalQualityLabelColumn = Container(
+      margin: EdgeInsets.only(left: borderOutside),
+      child: const Text(
+        'Total Quality Defects',
+        style: TextStyle(fontSize: 20),
+      ),
+    );
+    totalQualityRow.children.add(totalQualityLabelColumn);
+
+// Injury column
+    Widget totalQualityInjuryColumn = Container(
+      margin: const EdgeInsets.only(left: 0),
+      color: hasSeverityInjury ? Colors.blue : null,
+      child: Text(
+        totalQualityInjury.toString(),
+        style: const TextStyle(fontSize: 20),
+      ),
+    );
+    totalQualityRow.children.add(totalQualityInjuryColumn);
+
+// Damage column
+    Widget totalQualityDamageColumn = Container(
+      margin: const EdgeInsets.only(left: 0),
+      color: hasSeverityDamage ? Colors.green : null,
+      child: Text(
+        totalQualityDamage.toString(),
+        style: const TextStyle(fontSize: 20),
+      ),
+    );
+    totalQualityRow.children.add(totalQualityDamageColumn);
+
+    tableLayout.children.add(totalQualityRow);
+
+    List<Widget> columnViews = [];
+    // Serious damage column(s)
+    for (int i = 0; i < numberSeriousDefects; i++) {
+      Widget columnView = Container(
+        margin: EdgeInsets.only(
+          right: i == numberSeriousDefects - 1 ? borderOutside : 0,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.orange,
+          border: Border(
+            right: BorderSide(
+              color: Colors.grey,
+              width: borderGrey.toDouble(),
+            ),
+          ),
+        ),
+        child: Text(
+          i == 0 ? totalQualitySeriousDamage.toString() : '',
+          style: const TextStyle(fontSize: 20),
+        ),
+      );
+
+      if (hasSeveritySeriousDamage) {
+        columnViews.add(columnView);
+      }
+    }
+
+    /*Row tableRow = Row(
+      children: [...picturesCommentsColumn, ...columnViews],
+    );*/
+// Very serious damage column
+    /*Widget verySeriousDamageColumn = Container(
+      margin: EdgeInsets.only(
+        left: borderGrey.toDouble(),
+        right: borderGrey.toDouble(),
+      ),
+      decoration: BoxDecoration(
+        color: Colors.blue,
+        border: Border.all(
+          color: Colors.grey,
+          width: borderGrey.toDouble(),
+        ),
+      ),
+      child: Text(
+        totalQualityVerySeriousDamage.toString(),
+        style: const TextStyle(fontSize: 20),
+      ),
+    );
+
+    if (hasSeverityVerySeriousDamage) {
+      tableRow.children.add(verySeriousDamageColumn);
+    }*/
+
+// Damage column
+    Widget damageColumn2 = Container(
+      margin: EdgeInsets.only(
+        left: borderGrey.toDouble(),
+        right: borderGrey.toDouble() + borderOutside.toDouble(),
+      ),
+      decoration: BoxDecoration(
+        color: Colors.green,
+        border: Border.all(
+          color: Colors.grey,
+          width: borderGrey.toDouble(),
+        ),
+      ),
+      child: Text(
+        totalQualityDecay.toString(),
+        style: const TextStyle(fontSize: 20),
+      ),
+    );
+
+    if (hasSeverityDecay) {
+      // tableRow.children.add(damageColumn);
+    }
+
+    // tableLayout.children.add(tableRow);
+
+    // Row - Total Quality Defects %
+    Row tableRow1 = Row(
+      children: [
+        // label column
+        Container(
+          margin: EdgeInsets.fromLTRB(
+              borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: const Text(
+            "Total Quality Defects %",
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+        // injury column
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.blue,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "${((totalQualityInjury / totalSamples) * 100).round()}%",
+            style: TextStyle(
+                fontSize: 20,
+                color: (injuryQualitySpec != null &&
+                        ((totalQualityInjury / totalSamples) * 100) >
+                            injuryQualitySpec!)
+                    ? Colors.red
+                    : Colors.black),
+          ),
+        ),
+        // damage column
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.green,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "${((totalQualityDamage / totalSamples) * 100).round()}%",
+            style: TextStyle(
+                fontSize: 20,
+                color: (damageQualitySpec != null &&
+                        ((totalQualityDamage / totalSamples) * 100) >
+                            damageQualitySpec!)
+                    ? Colors.red
+                    : Colors.black),
+          ),
+        ),
+      ],
+    );
+
+// Serious damage column(s)
+    for (int i = 0; i < numberSeriousDefects; i++) {
+      tableRow1.children.add(
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
+              i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.orange,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            i == 0
+                ? "${((totalQualitySeriousDamage / totalSamples) * 100).round()}%"
+                : "",
+            style: TextStyle(
+                fontSize: 20,
+                color: (seriousDamageQualitySpec != null &&
+                        ((totalQualitySeriousDamage / totalSamples) * 100) >
+                            seriousDamageQualitySpec!)
+                    ? Colors.red
+                    : Colors.black),
+          ),
+        ),
+      );
+    }
+
+// Very serious damage column
+    tableRow1.children.add(
+      Container(
+        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+        decoration: const BoxDecoration(
+          color: Colors.blue,
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+            right: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Text(
+          "${((totalQualityVerySeriousDamage / totalSamples) * 100).round()}%",
+          style: TextStyle(
+              fontSize: 20,
+              color: (verySeriousDamageQualitySpec != null &&
+                      ((totalQualityVerySeriousDamage / totalSamples) * 100) >
+                          verySeriousDamageQualitySpec!)
+                  ? Colors.red
+                  : Colors.black),
+        ),
+      ),
+    );
+
+    // **************************
+// Row - Total Condition Defects
+// **************************
+    Row conditionTableRow = Row(
+      children: [
+        // label column
+        Container(
+          margin: EdgeInsets.fromLTRB(
+              borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: const Text(
+            "Total Condition Defects",
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+        // injury column
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.blue,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "$totalConditionInjury",
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+        // damage column
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.green,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "$totalConditionDamage",
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+      ],
+    );
+
+// Serious damage column(s)
+    for (int i = 0; i < numberSeriousDefects; i++) {
+      conditionTableRow.children.add(
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
+              i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.orange,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            i == 0 ? "$totalConditionSeriousDamage" : "",
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+      );
+    }
+
+// Very serious damage column
+    conditionTableRow.children.add(
+      Container(
+        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+        decoration: const BoxDecoration(
+          color: Colors.blue,
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+            right: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Text(
+          "$totalConditionVerySeriousDamage",
+          style: const TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+
+// Decay column
+    conditionTableRow.children.add(
+      Container(
+        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+        decoration: const BoxDecoration(
+          color: Colors.green,
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+            right: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Text(
+          "$totalConditionDecay",
+          style: const TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+
+// Add the row to the table layout
+    tableLayout.children.add(conditionTableRow);
+
+// **************************
+// Row - Total Condition Defects %
+// **************************
+    Row conditionPercentageRow = Row(
+      children: [
+        // label column
+        Container(
+          margin: EdgeInsets.fromLTRB(
+              borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: const Text(
+            "Total Condition Defects %",
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+        // injury column
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.blue,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "${((totalConditionInjury / totalSamples) * 100).round()}%",
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+        // damage column
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.green,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "${((totalConditionDamage / totalSamples) * 100).round()}%",
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+      ],
+    );
+
+// Serious damage column(s)
+    for (int i = 0; i < numberSeriousDefects; i++) {
+      conditionPercentageRow.children.add(
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
+              i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.orange,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            i == 0
+                ? "${((totalConditionSeriousDamage / totalSamples) * 100).round()}%"
+                : "",
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+      );
+    }
+
+// Very serious damage column
+    conditionPercentageRow.children.add(
+      Container(
+        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+        decoration: const BoxDecoration(
+          color: Colors.blue,
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+            right: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Text(
+          "${((totalConditionVerySeriousDamage / totalSamples) * 100).round()}%",
+          style: const TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+
+// Decay column
+    conditionPercentageRow.children.add(
+      Container(
+        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+        decoration: const BoxDecoration(
+          color: Colors.green,
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+            right: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Text(
+          "${((totalConditionDecay / totalSamples) * 100).round()}%",
+          style: const TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+
+// Add the row to the table layout
+    tableLayout.children.add(conditionPercentageRow);
+
+    // **************************
+// Row - Total Severity by Defect Type
+// **************************
+    Row severityTableRow = Row(
+      children: [
+        // label column
+        Container(
+          margin: EdgeInsets.fromLTRB(
+              borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: const Text(
+            "Total Severity by Defect Type",
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+        // injury column
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.blue,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "$totalInjury",
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+        // damage column
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.green,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "$totalDamage",
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+      ],
+    );
+
+// Serious damage column(s)
+    for (int i = 0; i < numberSeriousDefects; i++) {
+      int sdcount = seriousDefectList.isEmpty
+          ? 0
+          : seriousDefectCountMap[seriousDefectList[i]] ?? 0;
+      severityTableRow.children.add(
+        Container(
+          margin: EdgeInsets.fromLTRB(
+              0,
+              borderBlack.toDouble(),
+              i == numberSeriousDefects - 1
+                  ? borderOutside.toDouble()
+                  : borderGrey.toDouble(),
+              0),
+          decoration: const BoxDecoration(
+            color: Colors.orange,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "$sdcount",
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+      );
+    }
+
+// Very serious damage column
+    severityTableRow.children.add(
+      Container(
+        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+        decoration: const BoxDecoration(
+          color: Colors.blue,
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+            right: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Text(
+          "$totalVerySeriousDamage",
+          style: const TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+
+// Decay column
+    severityTableRow.children.add(
+      Container(
+        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+        decoration: const BoxDecoration(
+          color: Colors.green,
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+            right: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Text(
+          "$totalDecay",
+          style: const TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+
+// Add the row to the table layout
+    tableLayout.children.add(severityTableRow);
+
+    // Row - Total Severity by Defect Type %
+    Row defectTypePercentRow = Row(
+      children: [
+        // label column
+        Container(
+          margin: EdgeInsets.fromLTRB(borderOutside.toDouble(),
+              borderBlack.toDouble(), 0, borderBlack.toDouble()),
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: const Text(
+            "Total Severity by Defect Type %",
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+        // injury column
+        Container(
+          margin: EdgeInsets.fromLTRB(
+              0, borderBlack.toDouble(), 0, borderBlack.toDouble()),
+          decoration: const BoxDecoration(
+            color: Colors.blue,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "${((totalInjury / totalSamples) * 100).round()}%",
+            style: TextStyle(
+                fontSize: 20,
+                color: injurySpec != null &&
+                        (totalInjury / totalSamples) * 100 > injurySpec!
+                    ? Colors.red
+                    : null),
+          ),
+        ),
+        // damage column
+        Container(
+          margin: EdgeInsets.fromLTRB(
+              0, borderBlack.toDouble(), 0, borderBlack.toDouble()),
+          decoration: const BoxDecoration(
+            color: Colors.green,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "${((totalDamage / totalSamples) * 100).round()}%",
+            style: TextStyle(
+                fontSize: 20,
+                color: damageSpec != null &&
+                        (totalDamage / totalSamples) * 100 > damageSpec!
+                    ? Colors.red
+                    : null),
+          ),
+        ),
+      ],
+    );
+
+// Serious damage column(s)
+    for (int i = 0; i < numberSeriousDefects; i++) {
+      int sdcount = seriousDefectList.isEmpty
+          ? 0
+          : seriousDefectCountMap[seriousDefectList[i]] ?? 0;
+      double percent = (sdcount / totalSamples) * 100;
+      defectTypePercentRow.children.add(
+        Container(
+          margin: EdgeInsets.fromLTRB(
+              0,
+              borderBlack.toDouble(),
+              i == numberSeriousDefects - 1
+                  ? borderOutside.toDouble()
+                  : borderGrey.toDouble(),
+              borderBlack.toDouble()),
+          decoration: const BoxDecoration(
+            color: Colors.orange,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "${percent.round()}%",
+            style: TextStyle(
+                fontSize: 20,
+                color: seriousDamageSpec != null && percent > seriousDamageSpec!
+                    ? Colors.red
+                    : null),
+          ),
+        ),
+      );
+    }
+
+// Very serious damage column
+    defectTypePercentRow.children.add(
+      Container(
+        margin: EdgeInsets.fromLTRB(
+            0, borderBlack.toDouble(), 0, borderBlack.toDouble()),
+        decoration: const BoxDecoration(
+          color: Colors.blue,
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+            right: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Text(
+          "${((totalVerySeriousDamage / totalSamples) * 100).round()}%",
+          style: TextStyle(
+              fontSize: 20,
+              color: verySeriousDamageSpec != null &&
+                      (totalVerySeriousDamage / totalSamples) * 100 >
+                          verySeriousDamageSpec!
+                  ? Colors.red
+                  : null),
+        ),
+      ),
+    );
+
+// Decay column
+    defectTypePercentRow.children.add(
+      Container(
+        margin: EdgeInsets.fromLTRB(
+            0, borderBlack.toDouble(), 0, borderBlack.toDouble()),
+        decoration: const BoxDecoration(
+          color: Colors.green,
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+            right: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Text(
+          "${((totalDecay / totalSamples) * 100).round()}%",
+          style: TextStyle(
+              fontSize: 20,
+              color: decaySpec != null &&
+                      (totalDecay / totalSamples) * 100 > decaySpec!
+                  ? Colors.red
+                  : null),
+        ),
+      ),
+    );
+
+// Add the row to the table layout
+    tableLayout.children.add(defectTypePercentRow);
+
+// Row - % by Severity Level
+    Row severityLevelPercentRow = Row(
+      children: [
+        // label column
+        Container(
+          margin: EdgeInsets.fromLTRB(borderOutside.toDouble(),
+              borderOutside.toDouble(), 0, borderOutside.toDouble()),
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: const Text(
+            "Percent by Severity Level",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
+        // injury column
+        Container(
+          margin: EdgeInsets.fromLTRB(
+              0, borderOutside.toDouble(), 0, borderOutside.toDouble()),
+          decoration: const BoxDecoration(
+            color: Colors.blue,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "${((totalInjury / totalSamples) * 100).round()}%",
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
+        // damage column
+        Container(
+          margin: EdgeInsets.fromLTRB(
+              0, borderOutside.toDouble(), 0, borderOutside.toDouble()),
+          decoration: const BoxDecoration(
+            color: Colors.green,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "${((totalDamage / totalSamples) * 100).round()}%",
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
+    );
+
+// Add the row to the table layout
+    tableLayout.children.add(severityLevelPercentRow);
+
+    // Row - Total Size Defects
+    Row totalSizeDefectsRow = Row(
+      children: [
+        // label column
+        Container(
+          margin: EdgeInsets.fromLTRB(
+              borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: const Text(
+            "Total Size Defects",
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+        // injury column
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.blue,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            totalSizeInjury.toString(),
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+        // damage column
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.green,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            totalSizeDamage.toString(),
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+      ],
+    );
+
+// Serious damage column(s)
+    for (int i = 0; i < numberSeriousDefects; i++) {
+      totalSizeDefectsRow.children.add(
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
+              i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.orange,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            i == 0 ? totalSizeSeriousDamage.toString() : '',
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+      );
+    }
+
+// Very serious damage column
+    totalSizeDefectsRow.children.add(
+      Container(
+        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+        decoration: const BoxDecoration(
+          color: Colors.blue,
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+            right: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Text(
+          totalSizeVerySeriousDamage.toString(),
+          style: const TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+
+// Decay column
+    totalSizeDefectsRow.children.add(
+      Container(
+        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+        decoration: const BoxDecoration(
+          color: Colors.green,
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+            right: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Text(
+          totalSizeDecay.toString(),
+          style: const TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+
+// Add the row to the table layout
+    tableLayout.children.add(totalSizeDefectsRow);
+
+    // **************************
+// Row - Total Size Defects %
+// **************************
+    Row totalSizeDefectsPercentageRow = Row(
+      children: [
+        // label column
+        Container(
+          margin: EdgeInsets.fromLTRB(
+              borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: const Text(
+            "Total Size Defects Percentage",
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+        // injury column
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.blue,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "${((totalSizeInjury / totalSamples) * 100).toStringAsFixed(2)}%",
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+        // damage column
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.green,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "${((totalSizeDamage / totalSamples) * 100).toStringAsFixed(2)}%",
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+      ],
+    );
+
+// Serious damage column(s)
+    for (int i = 0; i < numberSeriousDefects; i++) {
+      totalSizeDefectsPercentageRow.children.add(
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
+              i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.orange,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            i == 0
+                ? "${((totalSizeSeriousDamage / totalSamples) * 100).toStringAsFixed(2)}%"
+                : '',
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+      );
+    }
+
+// Very serious damage column
+    totalSizeDefectsPercentageRow.children.add(
+      Container(
+        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+        decoration: const BoxDecoration(
+          color: Colors.blue,
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+            right: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Text(
+          "${((totalSizeVerySeriousDamage / totalSamples) * 100).toStringAsFixed(2)}%",
+          style: const TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+
+// Decay column
+    totalSizeDefectsPercentageRow.children.add(
+      Container(
+        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+        decoration: const BoxDecoration(
+          color: Colors.green,
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+            right: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Text(
+          "${((totalSizeDecay / totalSamples) * 100).toStringAsFixed(2)}%",
+          style: const TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+
+// Add the row to the table layout
+    tableLayout.children.add(totalSizeDefectsPercentageRow);
+
+// **************************
+// Row - Total Color Defects
+// **************************
+    Row totalColorDefectsRow = Row(
+      children: [
+        // label column
+        Container(
+          margin: EdgeInsets.fromLTRB(
+              borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: const Text(
+            "Total Color Defects",
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+        // injury column
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.blue,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            totalColorInjury.toString(),
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+        // damage column
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.green,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            totalColorDamage.toString(),
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+      ],
+    );
+
+// Serious damage column(s)
+    for (int i = 0; i < numberSeriousDefects; i++) {
+      totalColorDefectsRow.children.add(
+        Container(
+          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
+              i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
+          decoration: const BoxDecoration(
+            color: Colors.orange,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            i == 0 ? totalColorSeriousDamage.toString() : '',
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+      );
+    }
+
+// Very serious damage column
+    totalColorDefectsRow.children.add(
+      Container(
+        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+        decoration: const BoxDecoration(
+          color: Colors.blue,
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+            right: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Text(
+          totalColorVerySeriousDamage.toString(),
+          style: const TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+
+// Decay column
+    totalColorDefectsRow.children.add(
+      Container(
+        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
+        decoration: const BoxDecoration(
+          color: Colors.green,
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+            right: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Text(
+          totalColorDecay.toString(),
+          style: const TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+
+// Add the row to the table layout
+    tableLayout.children.add(totalColorDefectsRow);
+
+// **************************
+// Row - Total Color Defects %
+// **************************
+    Row totalColorDefectsPercentageRow = Row(
+      children: [
+        // label column
+        Container(
+          margin: EdgeInsets.fromLTRB(borderOutside.toDouble(),
+              borderBlack.toDouble(), 0, borderOutside.toDouble()),
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: const Text(
+            "Total Color Defects Percentage",
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+        // injury column
+        Container(
+          margin: EdgeInsets.fromLTRB(
+              0, borderBlack.toDouble(), 0, borderOutside.toDouble()),
+          decoration: const BoxDecoration(
+            color: Colors.blue,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "${((totalColorInjury / totalSamples) * 100).toStringAsFixed(2)}%",
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+        // damage column
+        Container(
+          margin: EdgeInsets.fromLTRB(
+              0, borderBlack.toDouble(), 0, borderOutside.toDouble()),
+          decoration: const BoxDecoration(
+            color: Colors.green,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            "${((totalColorDamage / totalSamples) * 100).toStringAsFixed(2)}%",
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+      ],
+    );
+
+// Serious damage column(s)
+    for (int i = 0; i < numberSeriousDefects; i++) {
+      totalColorDefectsPercentageRow.children.add(
+        Container(
+          margin: EdgeInsets.fromLTRB(
+              0,
+              borderBlack.toDouble(),
+              i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0,
+              borderOutside.toDouble()),
+          decoration: const BoxDecoration(
+            color: Colors.orange,
+            border: Border(
+              bottom: BorderSide(color: Colors.black),
+              right: BorderSide(color: Colors.grey),
+            ),
+          ),
+          child: Text(
+            i == 0
+                ? "${((totalColorSeriousDamage / totalSamples) * 100).toStringAsFixed(2)}%"
+                : '',
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+      );
+    }
+
+// Very serious damage column
+    totalColorDefectsPercentageRow.children.add(
+      Container(
+        margin: EdgeInsets.fromLTRB(
+            0, borderBlack.toDouble(), 0, borderOutside.toDouble()),
+        decoration: const BoxDecoration(
+          color: Colors.blue,
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+            right: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Text(
+          "${((totalColorVerySeriousDamage / totalSamples) * 100).toStringAsFixed(2)}%",
+          style: const TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+
+// Decay column
+    totalColorDefectsPercentageRow.children.add(
+      Container(
+        margin: EdgeInsets.fromLTRB(
+            0, borderBlack.toDouble(), 0, borderOutside.toDouble()),
+        decoration: const BoxDecoration(
+          color: Colors.green,
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+            right: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Text(
+          "${((totalColorDecay / totalSamples) * 100).toStringAsFixed(2)}%",
+          style: const TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+
+// Add the row to the table layout
+    tableLayout.children.add(totalColorDefectsPercentageRow);
+
+    Container defectsTableContainer = Container(
+      child: tableLayout,
+    );
+    return defectsTableContainer;
   }
 }

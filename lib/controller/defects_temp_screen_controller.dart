@@ -102,7 +102,6 @@ class DefectsTempScreenController extends GetxController {
   Map<String, List<InspectionDefect>> defectDataMap =
       <String, List<InspectionDefect>>{};
   Map<int, SampleData> sampleDataMap = <int, SampleData>{};
-  List<int> sampleDataMapIndexList = [];
   List<String> seriousDefectList = [];
   Map<String, int> seriousDefectCountMap = <String, int>{};
   Map<int, String>? defectCategoriesMap;

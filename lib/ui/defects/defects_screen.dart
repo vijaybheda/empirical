@@ -8,7 +8,7 @@ import 'package:pverify/models/defect_item.dart';
 import 'package:pverify/models/worksheet_data_table.dart';
 import 'package:pverify/ui/components/drawer_header_content_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
-import 'package:pverify/ui/inspection_photos/inspection_photos_screen.dart';
+import 'package:pverify/ui/defects/defects_info_dialog.dart';
 import 'package:pverify/ui/side_drawer.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -74,15 +74,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               children: [
                 Expanded(
                   flex: 1,
-                  child: Stack(
-                    children: [
-                      Container(
-                        color: Theme.of(context).colorScheme.background,
-                        child: contentView(context, controller),
-                      ),
-                      infoPopup(context)
-                    ],
-                  ),
+                  child: contentView(context, controller),
                 ),
                 FooterContentView(),
               ],
@@ -91,7 +83,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
         });
   }
 
-  Widget infoPopup(BuildContext context) {
+  /*Widget infoPopup(BuildContext context) {
     return Obx(() => controller.isVisibleInfoPopup.value
         ? Container(
             color: Colors.black.withOpacity(0.5),
@@ -124,9 +116,8 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                       ),
                       SizedBox(height: 30.h),
                       Container(
-                        height: 0.5, // Adjust the height of the underline
-                        color: AppColors
-                            .background, // Set the color of the underline
+                        height: 0.5,
+                        color: AppColors.background,
                       ),
                       SizedBox(height: 40.h),
                       customButton(
@@ -148,7 +139,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
             ),
           )
         : const SizedBox());
-  }
+  }*/
 
 // MAIN CONTENTS VIEW
 
@@ -247,12 +238,14 @@ class DefectsScreen extends GetView<DefectsScreenController> {
       SizedBox(
         height: 60.h,
       ),
-      Obx(() => controller.activeTabIndex.value == 0
+       controller.activeTabIndex.value == 0
           ? Expanded(
               flex: 1,
-              child: SingleChildScrollView(
+              child: controller
+                  .drawDefectsTable() /*SingleChildScrollView(
                 child: DefectsTable(),
-              ),
+              )*/
+              ,
             )
           : Expanded(
               flex: 1,
@@ -352,7 +345,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                   )
                 ],
               ),
-            )),
+            ),
       bottomContent(context)
     ]);
   }
@@ -681,7 +674,7 @@ Widget sampleSetsUI(BuildContext context, int index, String sampleValue,
                 defectItemIndex: controller.getDefectItemIndex(
                     setIndex: index, defectItem: e),
                 defectItem: e,
-                setIndex: index,
+                position: index,
               ),
             )
             .toList(),
@@ -716,7 +709,7 @@ Widget defectRow({
   required DefectsScreenController controller,
   required DefectItem? defectItem,
   required int defectItemIndex,
-  required int setIndex,
+  required int position,
 }) {
   return Padding(
     padding: EdgeInsets.symmetric(horizontal: 50.w),
@@ -733,7 +726,7 @@ Widget defectRow({
                       context, AppStrings.alert, AppStrings.removeDefect,
                       onYesTap: () {
                     controller.removeDefectRow(
-                      setIndex: setIndex,
+                      setIndex: position,
                       rowIndex: defectItemIndex,
                     );
                   });
@@ -756,7 +749,7 @@ Widget defectRow({
                     isExpanded: true,
                     dropdownColor: Theme.of(context).colorScheme.background,
                     iconEnabledColor: AppColors.hintColor,
-                    value: controller.sampleSetObs[setIndex]
+                    value: controller.sampleSetObs[position]
                             .defectItem?[defectItemIndex].name ??
                         'Select',
                     icon:
@@ -776,7 +769,7 @@ Widget defectRow({
                             .defectSpinnerNames
                             .indexWhere((obj) => obj == value)],
                         value: value ?? "",
-                        setIndex: setIndex,
+                        setIndex: position,
                         rowIndex: defectItemIndex,
                       );
                       controller.defectsSelect_Action(defectItem);
@@ -803,7 +796,7 @@ Widget defectRow({
                       onChanged: (v) {
                         controller.onTextChange(
                           value: v,
-                          setIndex: setIndex,
+                          setIndex: position,
                           rowIndex: defectItemIndex,
                           fieldName: AppStrings.injury,
                           context: context,
@@ -830,7 +823,7 @@ Widget defectRow({
                       onChanged: (v) {
                         controller.onTextChange(
                           value: v,
-                          setIndex: setIndex,
+                          setIndex: position,
                           rowIndex: defectItemIndex,
                           fieldName: AppStrings.damage,
                           context: context,
@@ -857,7 +850,7 @@ Widget defectRow({
                       onChanged: (v) {
                         controller.onTextChange(
                           value: v,
-                          setIndex: setIndex,
+                          setIndex: position,
                           rowIndex: defectItemIndex,
                           fieldName: AppStrings.seriousDamage,
                           context: context,
@@ -884,7 +877,7 @@ Widget defectRow({
                       onChanged: (v) {
                         controller.onTextChange(
                           value: v,
-                          setIndex: setIndex,
+                          setIndex: position,
                           rowIndex: defectItemIndex,
                           fieldName: AppStrings.verySeriousDamage,
                           context: context,
@@ -911,7 +904,7 @@ Widget defectRow({
                       onChanged: (v) {
                         controller.onTextChange(
                           value: v,
-                          setIndex: setIndex,
+                          setIndex: position,
                           rowIndex: defectItemIndex,
                           fieldName: AppStrings.decay,
                           context: context,
@@ -925,7 +918,10 @@ Widget defectRow({
               flex: 1,
               child: GestureDetector(
                 onTap: () {
-                  Get.to(() => const InspectionPhotos());
+                  controller.navigateToCameraScreen(
+                    position: position,
+                    rowIndex: defectItemIndex,
+                  );
                 },
                 child: Icon(
                   Icons.photo_camera,
@@ -947,7 +943,7 @@ Widget defectRow({
                       defectItem?.instruction = value;
                       controller.onCommentAdd(
                         value: value ?? "",
-                        setIndex: setIndex,
+                        setIndex: position,
                         rowIndex: defectItemIndex,
                       );
                     },
@@ -971,8 +967,16 @@ Widget defectRow({
               child: Obx(
                 () => InkWell(
                   onTap: () {
-                    controller.visisblePopupIndex.value = setIndex;
-                    controller.isVisibleInfoPopup.value = true;
+                    // controller.visisblePopupIndex.value = setIndex;
+                    // controller.isVisibleInfoPopup.value = true;
+
+                    DefectsInfoDialog defectsInfoDialog = DefectsInfoDialog(
+                      position: position,
+                      commodityID: controller.commodityID!,
+                      commodityList: controller.appStorage.commodityList!,
+                    );
+
+                    defectsInfoDialog.showDefectDialog(Get.context!);
                   },
                   child: Image.asset(
                     controller.informationIconEnabled.value

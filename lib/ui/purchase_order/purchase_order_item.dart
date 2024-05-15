@@ -174,6 +174,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
                   const SizedBox(height: 2),
                   _inspectionStatusInfo(),
                   const SizedBox(height: 2),
+                  if (layoutQtyRejectedVisibility) _inspectionQuantity(),
                 ],
               ),
             ),

@@ -46,7 +46,7 @@ class InspectionPhotosController extends GetxController {
       throw Exception('Arguments required!');
     }
 
-    inspectionId = args[Consts.INSPECTION_ID];
+    inspectionId = args[Consts.INSPECTION_ID] ?? -1;
     partnerName = args[Consts.PARTNER_NAME] ?? '';
     partnerID = args[Consts.PARTNER_ID] ?? 0;
     carrierName = args[Consts.CARRIER_NAME] ?? '';

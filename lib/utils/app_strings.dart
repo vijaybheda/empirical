@@ -242,7 +242,7 @@ class AppStrings {
 
   static String exceptions = 'Exceptions';
 
-  static String quantityRejected = 'Quantity rejected';
+  static String quantityRejected = 'Please enter a valid Quantity Rejected';
 
   static String noGradeDocument = 'No Grade Document';
 
