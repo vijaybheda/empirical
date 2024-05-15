@@ -3162,6 +3162,94 @@ class ApplicationDao {
     }
   }
 
+  Future<int?> updateQualityControl({
+    required int qcID,
+    required int inspectionId,
+    required int brandID,
+    required int originID,
+    required int qtyShipped,
+    required int uomQtyShippedID,
+    required String poNumber,
+    required int pulpTempMin,
+    required int pulpTempMax,
+    required int recorderTempMin,
+    required int recorderTempMax,
+    required String rpc,
+    required String claimFiledAgainst,
+    required int qtyRejected,
+    required int uomQtyRejectedID,
+    required int reasonID,
+    required String qcComments,
+    required int qtyReceived,
+    required int uomQtyReceivedID,
+    required String specificationName,
+    required int packDate,
+    required String seal_no,
+    required String lot_no,
+    required String qcdOpen1,
+    required String qcdOpen2,
+    required String qcdOpen3,
+    required String qcdOpen4,
+    required int workDate,
+    required String gtin,
+    required int lot_size,
+    required int shipDate,
+    required String dateType,
+  }) async {
+    final Database db = dbProvider.lazyDatabase;
+    int? rowsAffected;
+    try {
+      rowsAffected = await db.transaction((txn) async {
+        Map<String, dynamic> values = {
+          QualityControlColumn.INSPECTION_ID: inspectionId,
+          QualityControlColumn.BRAND_ID: brandID,
+          QualityControlColumn.ORIGIN_ID: originID,
+          QualityControlColumn.QTY_SHIPPED: qtyShipped,
+          QualityControlColumn.UOM_QTY_SHIPPED_ID: uomQtyShippedID,
+          QualityControlColumn.PO_NO: poNumber,
+          QualityControlColumn.PACK_DATE: packDate,
+          QualityControlColumn.DATE_TYPE: dateType,
+          QualityControlColumn.PULP_TEMP_MIN: pulpTempMin,
+          QualityControlColumn.PULP_TEMP_MAX: pulpTempMax,
+          QualityControlColumn.RECORDER_TEMP_MIN: recorderTempMin,
+          QualityControlColumn.RECORDER_TEMP_MAX: recorderTempMax,
+          QualityControlColumn.LOT_NUMBER: lot_no,
+          QualityControlColumn.SEAL: seal_no,
+          QualityControlColumn.RPC: rpc,
+          QualityControlColumn.CLAIM_FILED_AGAINST: claimFiledAgainst,
+          QualityControlColumn.QTY_REJECTED: qtyRejected,
+          QualityControlColumn.UOM_QTY_REJECTED_ID: uomQtyRejectedID,
+          QualityControlColumn.REASON_ID: reasonID,
+          QualityControlColumn.QC_COMMENTS: qcComments,
+          QualityControlColumn.QTY_RECEIVED: qtyReceived,
+          QualityControlColumn.UOM_QTY_RECEIVED: uomQtyReceivedID,
+          QualityControlColumn.IS_COMPLETE: 1,
+          QualityControlColumn.SPECIFICATION_NAME: specificationName,
+          QualityControlColumn.QCDOPEN1: qcdOpen1,
+          QualityControlColumn.QCDOPEN2: qcdOpen2,
+          QualityControlColumn.QCDOPEN3: qcdOpen3,
+          QualityControlColumn.QCDOPEN4: qcdOpen4,
+          QualityControlColumn.QCDOPEN5: workDate,
+          QualityControlColumn.GTIN: gtin,
+          QualityControlColumn.LOT_SIZE: lot_size,
+          QualityControlColumn.SHIP_DATE: shipDate,
+        };
+
+        return await txn.update(
+          DBTables.QUALITY_CONTROL,
+          values,
+          where: '${QualityControlColumn.ID} = ?',
+          whereArgs: [qcID],
+        );
+      });
+    } catch (e) {
+      log('Error has occurred while updating a quality control entry: $e');
+      return null;
+    }
+
+    return rowsAffected;
+  }
+
   Future<void> deleteSpecAttributesByInspectionId(int inspectionId) async {
     final Database db = dbProvider.lazyDatabase;
 
