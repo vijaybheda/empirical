@@ -4,7 +4,6 @@ import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/theme/magic_number.dart';
-import 'package:pverify/utils/theme/text_theme.dart';
 
 class AppSnackBar {
   static void getCustomSnackBar(
@@ -25,10 +24,17 @@ class AppSnackBar {
               onPressed: onMainButtonPress,
               child: Text(
                 "Undo",
-                style: AppFontStyle.bodySmall?.copyWith(
-                  color: AppColors.primaryColor,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Get.textTheme.bodySmall
+                    ?.copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      fontStyle: FontStyle.normal,
+                      color: AppColors.textColor,
+                    )
+                    .copyWith(
+                      color: AppColors.primaryColor,
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
             )
           : null,
@@ -37,15 +43,26 @@ class AppSnackBar {
         padding: const EdgeInsets.only(left: 18.0),
         child: Text(
           message,
-          style: AppFontStyle.bodySmall
-              ?.copyWith(fontWeight: FontWeight.w600, color: AppColors.black),
+          style: Get.textTheme.bodySmall
+              ?.copyWith(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                fontStyle: FontStyle.normal,
+                color: AppColors.textColor,
+              )
+              .copyWith(fontWeight: FontWeight.w600, color: AppColors.black),
         ),
       ),
       messageText: Padding(
         padding: const EdgeInsets.only(left: 18.0),
         child: Text(
           title ?? "",
-          style: AppFontStyle.labelLarge?.copyWith(color: Colors.grey),
+          style: Get.textTheme.labelLarge?.copyWith(
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+            fontStyle: FontStyle.normal,
+            color: Colors.grey,
+          ),
         ),
       ),
       backgroundColor: AppColors.white,

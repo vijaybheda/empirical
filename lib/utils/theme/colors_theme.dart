@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pverify/utils/app_font.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class AppThemeData {
@@ -41,7 +40,7 @@ class AppThemeData {
         dividerTheme: DividerThemeData(
             color: Colors.grey[500], indent: 8.0, endIndent: 8.0, space: 8.0),
         focusColor: Colors.pink[50],
-        fontFamily: AppFont.fontFamily,
+        fontFamily: GoogleFonts.poppins().fontFamily,
         hintColor: Colors.grey,
         indicatorColor: AppColors.primaryColor,
         outlinedButtonTheme: OutlinedButtonThemeData(style: textButtonStyle),
@@ -95,7 +94,7 @@ class AppThemeData {
           ),
           hintStyle: TextStyle(
             fontSize: 14, // 35
-            fontFamily: AppFont.fontFamily,
+            fontFamily: GoogleFonts.poppins().fontFamily,
             color: AppColors.primaryColor,
           ),
         ),
@@ -107,23 +106,23 @@ class AppThemeData {
           toolbarTextStyle: TextTheme(
                   bodyLarge: TextStyle(
                     fontSize: 29.h, // 35
-                    fontFamily: AppFont.fontFamily,
+                    fontFamily: GoogleFonts.poppins().fontFamily,
                     color: isDark ? Colors.white : Colors.black,
                   ),
                   bodyMedium: TextStyle(
                       fontSize: 29, // 35
-                      fontFamily: AppFont.fontFamily,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
                       color: Colors.grey))
               .bodyMedium,
           titleTextStyle: TextTheme(
                   bodyLarge: TextStyle(
                     fontSize: 29, // 35
-                    fontFamily: AppFont.fontFamily,
+                    fontFamily: GoogleFonts.poppins().fontFamily,
                     color: isDark ? Colors.white : Colors.black,
                   ),
                   bodyMedium: TextStyle(
                       fontSize: 29, // 35
-                      fontFamily: AppFont.fontFamily,
+                      fontFamily: GoogleFonts.poppins().fontFamily,
                       color: Colors.grey))
               .titleLarge,
         ),
@@ -141,11 +140,11 @@ class AppThemeData {
           unselectedLabelColor: Colors.grey[400],
           labelStyle: TextStyle(
             fontSize: 22,
-            fontFamily: AppFont.fontFamily,
+            fontFamily: GoogleFonts.poppins().fontFamily,
           ),
           unselectedLabelStyle: TextStyle(
             fontSize: 22,
-            fontFamily: AppFont.fontFamily,
+            fontFamily: GoogleFonts.poppins().fontFamily,
           ),
         ),
         textTheme: textTheme(isDark, context),
@@ -179,7 +178,7 @@ class AppThemeData {
       // backgroundColor: primaryColor,
       textStyle: TextStyle(
         color: Colors.white,
-        fontFamily: AppFont.fontFamily,
+        fontFamily: GoogleFonts.poppins().fontFamily,
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     );
@@ -198,14 +197,14 @@ class AppThemeData {
               TextStyle(color: isDark ? AppColors.white : AppColors.black)),
       displaySmall: TextStyle(
           fontSize: 9,
-          fontFamily: AppFont.fontFamily,
+          fontFamily: GoogleFonts.poppins().fontFamily,
           color: AppColors.lightGrey,
           letterSpacing: 0,
           height: 1.7,
           fontWeight: FontWeight.w500),
       headlineLarge: TextStyle(
           fontSize: 19.5,
-          fontFamily: AppFont.fontMedium,
+          fontFamily: GoogleFonts.poppins().fontFamily,
           color: AppColors.darkPrimaryColor,
           letterSpacing: 0,
           fontWeight: FontWeight.w500),
@@ -213,45 +212,45 @@ class AppThemeData {
         fontSize: 14,
         color: isDark ? AppColors.darkPrimaryColor : AppColors.white,
         fontWeight: FontWeight.w600,
-        fontFamily: AppFont.fontFamily,
+        fontFamily: GoogleFonts.poppins().fontFamily,
       ),
       headlineSmall: TextStyle(
           fontSize: 13,
-          fontFamily: AppFont.fontMedium,
+          fontFamily: GoogleFonts.poppins().fontFamily,
           height: 1.4,
           letterSpacing: 0,
           color: AppColors.grey,
           fontWeight: FontWeight.w500),
       titleLarge: TextStyle(
           fontSize: 40.sp,
-          fontFamily: AppFont.fontMedium,
+          fontFamily: GoogleFonts.poppins().fontFamily,
           height: 1.4,
           letterSpacing: 0,
           color: isDark ? Colors.white : AppColors.black,
           fontWeight: FontWeight.w500),
       bodyLarge: TextStyle(
         fontSize: 20.sp,
-        fontFamily: AppFont.fontMedium,
+        fontFamily: GoogleFonts.poppins().fontFamily,
         letterSpacing: 0,
         fontWeight: FontWeight.w500,
         color: isDark ? Colors.white : AppColors.dark,
       ),
       bodyMedium: TextStyle(
         fontSize: 15,
-        fontFamily: AppFont.fontMedium,
+        fontFamily: GoogleFonts.poppins().fontFamily,
         letterSpacing: 0,
         fontWeight: FontWeight.w500,
         color: isDark ? Colors.white : AppColors.darkPrimaryColor,
       ),
       bodySmall: TextStyle(
         fontSize: 12.5,
-        fontFamily: AppFont.fontMedium,
+        fontFamily: GoogleFonts.poppins().fontFamily,
         letterSpacing: 0,
         fontWeight: FontWeight.w500,
         color: isDark ? Colors.white : AppColors.grey,
       ),
       titleMedium: TextStyle(
-        fontFamily: AppFont.fontMedium,
+        fontFamily: GoogleFonts.poppins().fontFamily,
         fontWeight: FontWeight.w600,
         letterSpacing: 0,
         fontSize: 15,
@@ -259,27 +258,27 @@ class AppThemeData {
       ),
       titleSmall: TextStyle(
         fontSize: 11,
-        fontFamily: AppFont.fontFamily,
+        fontFamily: GoogleFonts.poppins().fontFamily,
         fontWeight: FontWeight.bold,
         letterSpacing: 0,
         color: isDark ? Colors.white : AppColors.darkPrimaryColor,
       ),
       labelSmall: TextStyle(
           fontSize: 13,
-          fontFamily: AppFont.fontMedium,
+          fontFamily: GoogleFonts.poppins().fontFamily,
           fontWeight: FontWeight.w600,
           letterSpacing: 0,
           color: AppColors.grey),
       labelLarge: TextStyle(
         fontSize: 15.5,
-        fontFamily: AppFont.fontFamily,
+        fontFamily: GoogleFonts.poppins().fontFamily,
         fontWeight: FontWeight.w600,
         letterSpacing: 0,
         color: isDark ? Colors.white : AppColors.black,
       ),
       labelMedium: TextStyle(
         fontSize: 13,
-        fontFamily: AppFont.fontMedium,
+        fontFamily: GoogleFonts.poppins().fontFamily,
         fontWeight: FontWeight.w600,
         letterSpacing: 0,
         color: isDark ? AppColors.darkPrimaryColor : AppColors.primaryColor,

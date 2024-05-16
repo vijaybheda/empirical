@@ -379,6 +379,7 @@ class CommodityColumn {
   static const String NAME = 'Name';
   static const String SAMPLE_SIZE_BY_COUNT = 'Sample_Size_By_Count';
   static const String KEYWORDS = 'Keywords';
+  static const String keywordName = 'keywordName';
 }
 
 class CommodityCteColumn {
