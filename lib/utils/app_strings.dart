@@ -432,7 +432,7 @@ class AppStrings {
   static const String comply = 'Comply';
   static const String specAttributes = 'Specification Attributes';
   static const String comment = 'Comment';
-
+  static const String specBrandAndPrivateLabel = "Spec Brand and Private Label";
   static String alertMessage(String item) => 'Value needed for: $item';
 
   static String alertCommentMessage(String item) =>
@@ -536,6 +536,7 @@ class AppStrings {
   static const String QCHOPEN10 = 'Comments';
   static const String QCDOPEN4 = 'Quantity Inspected';
   static const String QCDOPEN5 = 'QTY Inspected OK';
+
   static const String QCDOPEN6 = 'Sensitech Serial No.';
   static const String QCDOPEN7 = 'Work Date';
   static const String QCDOPEN1 = 'Temp Recorder Present';
@@ -556,7 +557,9 @@ class AppStrings {
       'Container # should not exceed 20 characters';
   static const String totalQuantityInvalid =
       'Total Quantity should not exceed 20 characters';
-
+  static const String qtyApproved = "Quantity Approved";
+  static const String min = "Min";
+  static const String max = "Max";
   String getDayMessage(int days) =>
       "Data has not been updated in $days days; need to update. \nPlease go to your hotspot and update data now.";
   String getDayMessage1(int days) =>
@@ -644,6 +647,9 @@ class FileManString {
   static const String CARRIERS_JSON_FILENAME = "carriers.json";
   static const String COMMODITY_JSON_FILENAME = "commodity.json";
   static const String UOM_FILENAME = "uom.json";
+  static const String BRAND_FILENAME = "brand.json";
+  static const String COUNTRY_FILENAME = "country.json";
+  static const String REASON_FILENAME = "reason.json";
   static const String DEFECT_CATEGORIES_JSON_FILENAME = "defectcategories.json";
   static const String SPECIFICATION_BANNER_DATA_JSON_FILENAME =
       "specificationBannerData.json";
