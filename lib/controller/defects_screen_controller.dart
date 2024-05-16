@@ -21,6 +21,7 @@ import 'package:pverify/ui/defects/table_dialog.dart';
 import 'package:pverify/ui/inspection_photos/inspection_photos_screen.dart';
 import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
+import 'package:pverify/ui/qc_short_form/qc_details_short_form_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
@@ -343,6 +344,7 @@ class DefectsScreenController extends GetxController {
     }
 
     sampleSetObs.refresh();
+    update();
   }
 
   void addDefectRow({required int setIndex}) {
@@ -352,7 +354,7 @@ class DefectsScreenController extends GetxController {
       sDamageTextEditingController: TextEditingController(text: '0'),
       vsDamageTextEditingController: TextEditingController(text: '0'),
       decayTextEditingController: TextEditingController(text: '0'),
-      // name: 'Select',
+      name: defectSpinnerNames[0],
       attachments: [],
     );
 
@@ -362,11 +364,13 @@ class DefectsScreenController extends GetxController {
       sampleSetObs[setIndex].defectItem?.add(emptyDefectItem);
     }
     sampleSetObs.refresh();
+    update();
   }
 
   void removeDefectRow({required int setIndex, required int rowIndex}) {
     sampleSetObs[setIndex].defectItem?.removeAt(rowIndex);
     sampleSetObs.refresh();
+    update();
   }
 
   int getDefectItemIndex({
@@ -407,6 +411,7 @@ class DefectsScreenController extends GetxController {
               ?.text = '0';
         }
         sampleSetObs.refresh();
+        update();
       case AppStrings.damage:
         sampleSetObs[setIndex]
             .defectItem?[rowIndex]
@@ -419,6 +424,7 @@ class DefectsScreenController extends GetxController {
               ?.text = isError ? '0' : value;
         }
         sampleSetObs.refresh();
+        update();
       case AppStrings.seriousDamage:
         sampleSetObs[setIndex]
             .defectItem?[rowIndex]
@@ -435,6 +441,7 @@ class DefectsScreenController extends GetxController {
               ?.text = isError ? '0' : value;
         }
         sampleSetObs.refresh();
+        update();
       case AppStrings.verySeriousDamage:
         sampleSetObs[setIndex]
             .defectItem?[rowIndex]
@@ -495,6 +502,7 @@ class DefectsScreenController extends GetxController {
     sampleSetObs[setIndex].defectItem?[rowIndex].name = value;
     sampleSetObs[setIndex].defectItem?[rowIndex].id = id;
     sampleSetObs.refresh();
+    update();
   }
 
   void onCommentAdd({
@@ -504,6 +512,7 @@ class DefectsScreenController extends GetxController {
   }) {
     sampleSetObs[setIndex].defectItem?[rowIndex].instruction = value;
     sampleSetObs.refresh();
+    update();
   }
 
   void getDropDownValues() {
@@ -546,7 +555,7 @@ class DefectsScreenController extends GetxController {
     CommodityItem? item;
     defectSpinnerIds.clear();
     defectSpinnerNames.clear();
-    defectSpinnerNames.add('Select');
+    // defectSpinnerNames.add('Select');
 
     // Get the list of defects for the commodity
     if (appStorage.getCommodityList() != null &&
@@ -766,7 +775,7 @@ class DefectsScreenController extends GetxController {
     }
   }
 
-  bool isValidDefects() {
+  bool validateDefects1() {
     bool isValidValue = true;
     for (SampleSetsObject element in sampleSetObs) {
       bool isAnyErrorInDefect = false;
@@ -808,6 +817,35 @@ class DefectsScreenController extends GetxController {
       }
     }
     return isValidValue;
+  }
+
+  bool validateDefects() {
+    for (var entry in defectDataMap.entries) {
+      for (var i = 0; i < entry.value.length; i++) {
+        int? injuryCnt = entry.value[i].injuryCnt;
+        int? damageCnt = entry.value[i].damageCnt;
+        int? seriousDamageCnt = entry.value[i].seriousDamageCnt;
+        int? verySeriousDamageCnt = entry.value[i].verySeriousDamageCnt;
+        int? decayCnt = entry.value[i].decayCnt;
+
+        if (injuryCnt == null &&
+            damageCnt == null &&
+            seriousDamageCnt == null &&
+            verySeriousDamageCnt == null &&
+            decayCnt == null) {
+          return false;
+        }
+
+        if (injuryCnt == 0 &&
+            damageCnt == 0 &&
+            seriousDamageCnt == 0 &&
+            verySeriousDamageCnt == 0 &&
+            decayCnt == 0) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   bool validateSameDefects() {
@@ -1068,7 +1106,10 @@ class DefectsScreenController extends GetxController {
     populateDefectSpinnerList();
   }
 
-  void navigateToCameraScreen({required int position, required int rowIndex}) {
+  Future<void> navigateToCameraScreen(
+      {required int position,
+      required int rowIndex,
+      required String dataName}) async {
     Map<String, dynamic> passingData = {};
     passingData.putIfAbsent(Consts.PARTNER_NAME, () => partnerName);
     passingData.putIfAbsent(Consts.PARTNER_NAME, () => partnerName);
@@ -1080,12 +1121,27 @@ class DefectsScreenController extends GetxController {
     passingData.putIfAbsent(Consts.VARIETY_NAME, () => varietyName);
     passingData.putIfAbsent(Consts.VARIETY_SIZE, () => varietySize);
     passingData.putIfAbsent(Consts.VARIETY_ID, () => varietyId);
-    int? sampleId = getSampleID(sampleDataMap[rowIndex]!.name);
-    if (sampleId != null) {
-      passingData.putIfAbsent(Consts.SAMPLE_ID, () => sampleId);
-    }
+    // FIXME: Implement below code
+    // int? sampleId = getSampleID(sampleDataMap[rowIndex]!.name);
+    // if (sampleId != null) {
+    //   passingData.putIfAbsent(Consts.SAMPLE_ID, () => sampleId);
+    // }
 
-    Get.to(() => const InspectionPhotos(), arguments: passingData);
+    currentAttachPhotosDataName = dataName;
+    currentAttachPhotosPosition = position;
+    var result =
+        await Get.to(() => const InspectionPhotos(), arguments: passingData);
+    if (result != null) {
+      try {
+        List<InspectionDefect>? inspection =
+            defectDataMap[currentAttachPhotosDataName];
+        inspection![currentAttachPhotosPosition!].attachmentIds =
+            appStorage.attachmentIds;
+        defectDataMap[currentAttachPhotosDataName!] = inspection;
+      } catch (e) {
+        print(e);
+      }
+    }
   }
 
   void setSampleAndDefectCounts() {
@@ -2944,5 +3000,47 @@ class DefectsScreenController extends GetxController {
       child: tableLayout,
     );
     return defectsTableContainer;
+  }
+
+  void getToQCDetailShortForm() {
+    Map<String, dynamic> args = {
+      Consts.SERVER_INSPECTION_ID: serverInspectionID,
+      Consts.SEAL_NUMBER: sealNumber,
+      Consts.PO_NUMBER: poNumber,
+      Consts.COMPLETED: completed,
+      Consts.PARTNER_NAME: partnerName,
+      Consts.PARTNER_ID: partnerID,
+      Consts.CARRIER_NAME: carrierName,
+      Consts.CARRIER_ID: carrierID,
+      Consts.COMMODITY_NAME: commodityName,
+      Consts.COMMODITY_ID: commodityID,
+      Consts.VARIETY_NAME: varietyName,
+      Consts.VARIETY_SIZE: varietySize,
+      Consts.VARIETY_ID: varietyId,
+      Consts.GRADE_ID: gradeId,
+      Consts.SPECIFICATION_NUMBER: specificationNumber,
+      Consts.SPECIFICATION_VERSION: specificationVersion,
+      Consts.SPECIFICATION_NAME: selectedSpecification,
+      Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
+      Consts.LOT_NO: lotNo,
+      Consts.GTIN: gtin,
+      Consts.PACK_DATE: packDateString,
+      Consts.LOT_SIZE: lotSize,
+      Consts.ITEM_UNIQUE_ID: itemUniqueId,
+      Consts.ITEM_SKU: itemSku,
+      Consts.ITEM_SKU_ID: itemSkuId,
+      Consts.ITEM_SKU_NAME: itemSkuName,
+      Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
+      Consts.PO_LINE_NO: poLineNo,
+      Consts.PRODUCT_TRANSFER: productTransfer,
+      Consts.CALLER_ACTIVITY:
+          (callerActivity == "NewPurchaseOrderDetailsActivity")
+              ? "NewPurchaseOrderDetailsActivity"
+              : "PurchaseOrderDetailsActivity",
+    };
+
+    final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+    Get.off(() => QCDetailsShortFormScreen(tag: tag), arguments: args);
+    return;
   }
 }

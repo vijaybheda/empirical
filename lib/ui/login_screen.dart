@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -164,12 +162,12 @@ class LoginScreen extends GetView<AuthController> {
             Utils.hideLoadingDialog();
 
             AppAlertDialog.validateAlerts(
-                context, AppStrings.error, AppStrings.subscriptionExpired);
+                Get.context!, AppStrings.error, AppStrings.subscriptionExpired);
           } else if (userData.status == 3) {
             Utils.hideLoadingDialog();
 
             AppAlertDialog.validateAlerts(
-                context, AppStrings.error, AppStrings.accountNotActive);
+                Get.context!, AppStrings.error, AppStrings.accountNotActive);
           } else {
             await authController.persistUserName();
 
@@ -178,7 +176,7 @@ class LoginScreen extends GetView<AuthController> {
             // await authController.jsonFileOperations.offlineLoadCarriersData();
             // await authController.jsonFileOperations.offlineLoadCommodityData();
 
-            await authController.downloadCloudData(context);
+            await authController.downloadCloudData();
           }
         } else {
           // Utils.hideLoadingDialog();
@@ -188,7 +186,8 @@ class LoginScreen extends GetView<AuthController> {
         debugPrint('doLoginAction ${e.toString()}');
         if (e is CustomException) {
           // info alert dialog
-          AppAlertDialog.validateAlerts(context, AppStrings.error, e.message);
+          AppAlertDialog.validateAlerts(
+              Get.context!, AppStrings.error, e.message);
         }
       }
     }
