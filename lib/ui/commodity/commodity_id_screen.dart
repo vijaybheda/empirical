@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/commodity_id_screen_controller.dart';
 import 'package:pverify/models/commodity_data.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
@@ -44,10 +43,10 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
                     "${controller.partnerName} > ${controller.carrierName}",
                     textAlign: TextAlign.start,
                     maxLines: 3,
-                    style: GoogleFonts.poppins(
-                        fontSize: 38.sp,
-                        fontWeight: FontWeight.w600,
-                        textStyle: TextStyle(color: AppColors.white)),
+                    style: Get.textTheme.titleLarge!.copyWith(
+                      fontSize: 38.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 const _SearchGradingStandardWidget(),
@@ -135,10 +134,10 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
                   height: 20,
                   child: Text(
                     letter,
-                    style: Get.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.white,
-                        fontSize: 60.h,
-                        fontWeight: FontWeight.bold),
+                    style: Get.textTheme.titleLarge?.copyWith(
+                      fontSize: 60.h,
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -154,9 +153,7 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
     return Center(
       child: Text(
         'No data found',
-        style: Get.textTheme.displayMedium?.copyWith(
-          color: Colors.white,
-        ),
+        style: Get.textTheme.titleLarge?.copyWith(),
       ),
     );
   }
@@ -191,8 +188,9 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
                           Expanded(
                             child: Text(
                               partner.name ?? '-',
-                              style: Get.textTheme.bodyMedium?.copyWith(
-                                  color: AppColors.white, fontSize: 50.h),
+                              style: Get.textTheme.titleLarge?.copyWith(
+                                fontSize: 50.h,
+                              ),
                             ),
                           ),
                         ],
@@ -249,8 +247,7 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
               alignment: Alignment.topLeft,
               child: Text(
                 alphabet,
-                style: Get.textTheme.headlineMedium?.copyWith(
-                  color: AppColors.white,
+                style: Get.textTheme.titleLarge?.copyWith(
                   fontSize: 60.h,
                 ),
                 textAlign: TextAlign.start,
@@ -293,8 +290,10 @@ class _SearchGradingStandardWidget extends StatelessWidget {
                     Get.find<CommodityIDScreenController>().searchController,
                 decoration: InputDecoration(
                   hintText: AppStrings.searchCommodity,
-                  hintStyle: Get.textTheme.bodyLarge?.copyWith(
-                      fontSize: 25.sp, color: AppColors.white.withOpacity(0.8)),
+                  hintStyle: Get.textTheme.titleLarge?.copyWith(
+                    fontSize: 25.sp,
+                    color: AppColors.white.withOpacity(0.8),
+                  ),
                   isDense: true,
                   contentPadding:
                       EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),

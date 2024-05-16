@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/adaptive_alert.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -15,17 +14,17 @@ class UpdateDataAlert {
     return AdaptiveAlert.customAlert(context,
         title: Text(
           AppStrings.alert,
-          style: GoogleFonts.poppins(
-              fontSize: 28.sp,
-              fontWeight: FontWeight.w500,
-              textStyle: TextStyle(color: AppColors.white)),
+          style: Get.textTheme.titleLarge!.copyWith(
+            fontSize: 28.sp,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         content: Text(
           message ?? AppStrings.updateDataConfirmation,
-          style: GoogleFonts.poppins(
-              fontSize: 25.sp,
-              fontWeight: FontWeight.normal,
-              textStyle: TextStyle(color: AppColors.white)),
+          style: Get.textTheme.titleLarge!.copyWith(
+            fontSize: 25.sp,
+            fontWeight: FontWeight.normal,
+          ),
         ),
         actions: [
           TextButton(
@@ -34,10 +33,11 @@ class UpdateDataAlert {
               },
               child: Text(
                 AppStrings.cancel,
-                style: GoogleFonts.poppins(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.primary)),
+                style: Get.textTheme.titleLarge!.copyWith(
+                  color: AppColors.primary,
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.normal,
+                ),
               )),
           SizedBox(
             width: 10.w,
@@ -51,10 +51,11 @@ class UpdateDataAlert {
               },
               child: Text(
                 AppStrings.ok,
-                style: GoogleFonts.poppins(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.bold,
-                    textStyle: TextStyle(color: AppColors.primary)),
+                style: Get.textTheme.titleLarge!.copyWith(
+                  color: AppColors.primary,
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.normal,
+                ),
               )),
         ]);
   }

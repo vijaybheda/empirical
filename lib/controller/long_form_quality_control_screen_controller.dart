@@ -439,6 +439,7 @@ class LongFormQualityControlScreenController extends GetxController {
   }
 
   Future<void> loadFiledsFromDB(Map<String, dynamic> args) async {
+    qtyRejectedController.text = "0";
     recorderTempMinController.text = '0';
     recorderTempMaxController.text = '0';
     pulpTempMinController.text = '0';
@@ -710,9 +711,9 @@ class LongFormQualityControlScreenController extends GetxController {
         qtyRejected = int.parse(qtyRejectedString);
         int qtyReceived = qtyShipped - qtyRejected;
         qtyAprrovedController.text = qtyReceived.toString();
-        if (qtyReceived < 0) {
+        /* if (qtyReceived < 0) {
           qtyAprrovedController.text = qtyShipped.toString();
-        }
+        } */
         if (qtyRejected > qtyShipped) {
           isValidQuantityRejected.value = false;
           Utils.showErrorAlertDialog("Please enter a valid Quantity");

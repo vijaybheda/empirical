@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/inspection_photos_controller.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
@@ -83,10 +82,10 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
           width: ResponsiveHelper.getDeviceWidth(context),
           child: Text(
             controller.carrierName ?? '',
-            style: GoogleFonts.poppins(
-                fontSize: 35.sp,
-                fontWeight: FontWeight.w600,
-                textStyle: TextStyle(color: AppColors.white)),
+            style: Get.textTheme.titleLarge!.copyWith(
+              fontSize: 35.sp,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
         Expanded(
@@ -106,11 +105,11 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
                   title: AppStrings.savePhotosButton,
                   width: (MediaQuery.of(context).size.width / 3.5),
                   height: 115,
-                  fontStyle: GoogleFonts.poppins(
-                      fontSize: 35.sp,
-                      fontWeight: FontWeight.w600,
-                      textStyle:
-                          TextStyle(color: AppColors.textFieldText_Color)),
+                  fontStyle: Get.textTheme.titleLarge!.copyWith(
+                    fontSize: 35.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textFieldText_Color,
+                  ),
                   onClickAction: () {
                     controller.saveAction();
                   }),
@@ -122,11 +121,11 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
                   title: AppStrings.openPhotosButton,
                   width: (MediaQuery.of(context).size.width / 3.5),
                   height: 115,
-                  fontStyle: GoogleFonts.poppins(
-                      fontSize: 35.sp,
-                      fontWeight: FontWeight.w600,
-                      textStyle:
-                          TextStyle(color: AppColors.textFieldText_Color)),
+                  fontStyle: Get.textTheme.titleLarge!.copyWith(
+                    fontSize: 35.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textFieldText_Color,
+                  ),
                   onClickAction: () async {
                     await controller.getImageFromGallery();
                   }),
@@ -138,11 +137,11 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
                   title: AppStrings.takePhotoButton,
                   width: (MediaQuery.of(context).size.width / 3.5),
                   height: 115,
-                  fontStyle: GoogleFonts.poppins(
-                      fontSize: 35.sp,
-                      fontWeight: FontWeight.w600,
-                      textStyle:
-                          TextStyle(color: AppColors.textFieldText_Color)),
+                  fontStyle: Get.textTheme.titleLarge!.copyWith(
+                    fontSize: 35.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textFieldText_Color,
+                  ),
                   onClickAction: () async {
                     await controller.getImageFromCamera();
                   }),
@@ -200,7 +199,9 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
                         },
                         child: Text(
                           AppStrings.delete,
-                          style: TextStyle(color: AppColors.textBlue),
+                          style: TextStyle(
+                            color: AppColors.textBlue,
+                          ),
                         )),
                     TextButton(
                         onPressed: () async {

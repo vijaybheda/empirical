@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/images.dart';
@@ -42,20 +41,20 @@ class HeaderContentView extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: GoogleFonts.poppins(
-                  fontSize: 38.sp,
-                  fontWeight: FontWeight.w600,
-                  textStyle: TextStyle(color: AppColors.white)),
+              style: Get.textTheme.titleLarge!.copyWith(
+                fontSize: 38.sp,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           message != null
               ? Expanded(
                   child: Text(
                     message ?? '',
-                    style: GoogleFonts.poppins(
-                        fontSize: 38.sp,
-                        fontWeight: FontWeight.w600,
-                        textStyle: TextStyle(color: AppColors.white)),
+                    style: Get.textTheme.titleLarge!.copyWith(
+                      fontSize: 38.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 )
               : const Offstage(),
@@ -64,10 +63,10 @@ class HeaderContentView extends StatelessWidget {
               ? Obx(
                   () => Text(
                     globalConfigController.appVersion.value,
-                    style: GoogleFonts.poppins(
-                        fontSize: 40.sp,
-                        fontWeight: FontWeight.bold,
-                        textStyle: TextStyle(color: AppColors.white)),
+                    style: Get.textTheme.titleLarge!.copyWith(
+                      fontSize: 40.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 )
               : Container(),

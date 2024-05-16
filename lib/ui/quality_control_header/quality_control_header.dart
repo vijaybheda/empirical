@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/quality_control_controller.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
@@ -65,15 +64,15 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
                   title: AppStrings.trailerTemp,
                   width: (MediaQuery.of(context).size.width / 2.3),
                   height: 115,
-                  fontStyle: GoogleFonts.poppins(
-                      fontSize: 35.sp,
-                      fontWeight: FontWeight.w600,
-                      textStyle:
-                          TextStyle(color: AppColors.textFieldText_Color)),
+                  fontStyle: Get.textTheme.titleLarge!.copyWith(
+                    fontSize: 35.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textFieldText_Color,
+                  ),
                   onClickAction: () {
                     if (controller.isQualityControlFields_Validate(context)) {
                       Get.to(
-                          () => TrailerTemp(
+                          () => const TrailerTemp(
                               // carrier: carrier,
                               // orderNumber: controller
                               //     .orderNoTextController.value.text
@@ -100,11 +99,10 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
                         : AppStrings.detailedForm,
                     width: (MediaQuery.of(context).size.width / 2.3),
                     height: 115,
-                    fontStyle: GoogleFonts.poppins(
+                    fontStyle: Get.textTheme.titleLarge!.copyWith(
+                        color: AppColors.textFieldText_Color,
                         fontSize: 35.sp,
-                        fontWeight: FontWeight.w600,
-                        textStyle:
-                            TextStyle(color: AppColors.textFieldText_Color)),
+                        fontWeight: FontWeight.w600),
                     onClickAction: () => {
                           if (controller.isShortForm == true)
                             {controller.isShortForm.value = false}
@@ -125,10 +123,10 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
               title: AppStrings.save,
               width: (MediaQuery.of(context).size.width),
               height: 115,
-              fontStyle: GoogleFonts.poppins(
+              fontStyle: Get.textTheme.titleLarge!.copyWith(
+                  color: AppColors.textFieldText_Color,
                   fontSize: 35.sp,
-                  fontWeight: FontWeight.w600,
-                  textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+                  fontWeight: FontWeight.w600),
               onClickAction: () async {
                 if (controller.isQualityControlFields_Validate(context)) {
                   await controller.saveAction();
@@ -245,10 +243,10 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
           flex: 2,
           child: Text(
             labelTitle,
-            style: GoogleFonts.poppins(
-                fontSize: 31.sp,
-                fontWeight: FontWeight.w700,
-                textStyle: TextStyle(color: AppColors.white)),
+            style: Get.textTheme.titleLarge!.copyWith(
+              fontSize: 31.sp,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
         Expanded(
@@ -290,35 +288,37 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
           flex: 2,
           child: Text(
             labelTitle,
-            style: GoogleFonts.poppins(
-                fontSize: 31.sp,
-                fontWeight: FontWeight.w700,
-                textStyle: TextStyle(color: AppColors.white)),
+            style: Get.textTheme.titleLarge!.copyWith(
+              fontSize: 31.sp,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
         Expanded(
           flex: 2,
           child: Obx(
             () => DropdownButtonFormField<String>(
-              decoration: InputDecoration(border: InputBorder.none),
+              decoration: const InputDecoration(border: InputBorder.none),
               dropdownColor: Theme.of(context).colorScheme.background,
               iconEnabledColor: AppColors.hintColor,
               hint: Text(
                 hintText,
-                style: GoogleFonts.poppins(
-                    fontSize: 28.sp,
-                    fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.hintColor)),
+                style: Get.textTheme.titleLarge!.copyWith(
+                  color: AppColors.hintColor,
+                  fontSize: 28.sp,
+                  fontWeight: FontWeight.normal,
+                ),
               ),
               items: items.map((selectedType) {
                 return DropdownMenuItem<String>(
                   value: selectedType,
                   child: Text(
                     selectedType,
-                    style: GoogleFonts.poppins(
-                        fontSize: 28.sp,
-                        fontWeight: FontWeight.normal,
-                        textStyle: TextStyle(color: AppColors.hintColor)),
+                    style: Get.textTheme.titleLarge!.copyWith(
+                      color: AppColors.hintColor,
+                      fontSize: 28.sp,
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
                 );
               }).toList(),

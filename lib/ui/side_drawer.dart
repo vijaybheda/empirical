@@ -70,11 +70,8 @@ class SideDrawer extends StatelessWidget {
                   height: 150.h,
                 ),
                 Text(
-                  '${AppStrings.appNameInspection}\n${AppStrings.version.capitalizeFirst} ${globalConfigController.appVersion.value}',
-                  style: Get.textTheme.headlineLarge!.copyWith(
-                    color: AppColors.white,
-                  ),
-                ),
+                    '${AppStrings.appNameInspection}\n${AppStrings.version.capitalizeFirst} ${globalConfigController.appVersion.value}',
+                    style: Get.textTheme.headlineLarge),
               ],
             ),
           ),

@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/cache_download_screen.dart';
@@ -72,11 +71,10 @@ class FooterContentView extends StatelessWidget {
                           },
                           child: Text(
                             leftText ?? AppStrings.back,
-                            style: GoogleFonts.poppins(
+                            style: Get.textTheme.titleLarge!.copyWith(
+                                color: AppColors.textFieldText_Color,
                                 fontSize: 35.sp,
-                                fontWeight: FontWeight.bold,
-                                textStyle: TextStyle(
-                                    color: AppColors.textFieldText_Color)),
+                                fontWeight: FontWeight.bold),
                           ),
                         )
                       : const Offstage(),
@@ -91,10 +89,10 @@ class FooterContentView extends StatelessWidget {
                   children: [
                     Text(
                       getDaysMessage(),
-                      style: GoogleFonts.poppins(
+                      style: Get.textTheme.titleLarge!.copyWith(
+                          color: getMessageColor(),
                           fontSize: 40.sp,
-                          fontWeight: FontWeight.bold,
-                          textStyle: TextStyle(color: getMessageColor())),
+                          fontWeight: FontWeight.bold),
                     ),
                     SizedBox(
                       width: 20.w,
@@ -143,11 +141,10 @@ class FooterContentView extends StatelessWidget {
                   },
                   child: Text(
                     AppStrings.logOut,
-                    style: GoogleFonts.poppins(
+                    style: Get.textTheme.titleLarge!.copyWith(
+                        color: AppColors.textFieldText_Color,
                         fontSize: 35.sp,
-                        fontWeight: FontWeight.bold,
-                        textStyle:
-                            TextStyle(color: AppColors.textFieldText_Color)),
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ),

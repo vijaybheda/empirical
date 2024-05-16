@@ -15,7 +15,7 @@ class NewPurchaseOrderDetailsScreen
             appBar: AppBar(
               title: const Text('New Purchase Order Details'),
             ),
-            body: Center(
+            body: const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[

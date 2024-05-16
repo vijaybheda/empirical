@@ -132,7 +132,7 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
                   height: 20,
                   child: Text(
                     letter,
-                    style: Get.textTheme.bodyMedium?.copyWith(
+                    style: Get.textTheme.titleLarge?.copyWith(
                         color: AppColors.white,
                         fontSize: 60.h,
                         fontWeight: FontWeight.bold),
@@ -151,9 +151,7 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
     return Center(
       child: Text(
         'No data found',
-        style: Get.textTheme.displayMedium?.copyWith(
-          color: Colors.white,
-        ),
+        style: Get.textTheme.titleLarge?.copyWith(),
       ),
     );
   }
@@ -184,8 +182,9 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
                       Expanded(
                         child: Text(
                           partner.name ?? '-',
-                          style: Get.textTheme.bodyMedium?.copyWith(
-                              color: AppColors.white, fontSize: 50.h),
+                          style: Get.textTheme.titleLarge?.copyWith(
+                            fontSize: 50.h,
+                          ),
                         ),
                       ),
                       GestureDetector(
@@ -258,8 +257,7 @@ class SelectSupplierScreen extends GetWidget<SelectSupplierScreenController> {
         children: [
           Text(
             alphabet,
-            style: Get.textTheme.headlineMedium?.copyWith(
-              color: AppColors.white,
+            style: Get.textTheme.titleLarge?.copyWith(
               fontSize: 60.h,
             ),
           ),
@@ -305,8 +303,10 @@ class SearchSupplierWidget extends StatelessWidget {
                   .searchSuppController,
               decoration: InputDecoration(
                 hintText: AppStrings.searchPartner,
-                hintStyle: Get.textTheme.bodyLarge?.copyWith(
-                    fontSize: 25.sp, color: AppColors.white.withOpacity(0.8)),
+                hintStyle: Get.textTheme.titleLarge?.copyWith(
+                  fontSize: 25.sp,
+                  color: AppColors.white.withOpacity(0.8),
+                ),
                 isDense: true,
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),

@@ -46,7 +46,6 @@ class CacheDownloadScreen extends GetWidget<CacheDownloadController> {
                     AppStrings.cacheDataForOffline,
                     textAlign: TextAlign.center,
                     style: Get.textTheme.titleLarge?.copyWith(
-                      color: Colors.white,
                       fontSize: 27,
                     ),
                   ),

@@ -1,9 +1,6 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, avoid_types_as_parameter_names, must_be_immutable, avoid_unnecessary_containers, unrelated_type_equality_checks, unused_element, sized_box_for_whitespace
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/home_controller.dart';
 import 'package:pverify/ui/carrier/choose_carrier.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
@@ -82,7 +79,10 @@ class Home extends GetView<HomeController> {
                             child: Text(
                               AppStrings.myInspectionScreen,
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.displayLarge,
+                              style: Get.textTheme.titleLarge!.copyWith(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                           Container(
@@ -109,8 +109,10 @@ class Home extends GetView<HomeController> {
                                 child: Text(
                                   AppStrings.upload,
                                   textAlign: TextAlign.center,
-                                  style:
-                                      Theme.of(context).textTheme.displayLarge,
+                                  style: Get.textTheme.titleLarge!.copyWith(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
@@ -137,8 +139,10 @@ class Home extends GetView<HomeController> {
                                 Text(
                                   AppStrings.trsCompleteAll,
                                   textAlign: TextAlign.center,
-                                  style:
-                                      Theme.of(context).textTheme.displayLarge,
+                                  style: Get.textTheme.titleLarge!.copyWith(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 InkWell(
                                   onTap: () {
@@ -182,10 +186,10 @@ class Home extends GetView<HomeController> {
                         child: Text(
                           AppStrings.ID,
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
-                              fontSize: 30.sp,
-                              fontWeight: FontWeight.w600,
-                              textStyle: TextStyle(color: AppColors.white)),
+                          style: Get.textTheme.titleLarge!.copyWith(
+                            fontSize: 30.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                       Container(
@@ -201,12 +205,10 @@ class Home extends GetView<HomeController> {
                         child: Text(
                           AppStrings.qcPoNumber,
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
+                          style: Get.textTheme.titleLarge!.copyWith(
                               fontSize: 30.sp,
                               fontWeight: FontWeight.w600,
-                              textStyle: TextStyle(
-                                  color: AppColors.white,
-                                  overflow: TextOverflow.ellipsis)),
+                              overflow: TextOverflow.ellipsis),
                         ),
                       ),
                       InkWell(
@@ -226,11 +228,10 @@ class Home extends GetView<HomeController> {
                               Text(
                                 AppStrings.trsItemNo,
                                 textAlign: TextAlign.center,
-                                style: GoogleFonts.poppins(
-                                    fontSize: 30.sp,
-                                    fontWeight: FontWeight.w600,
-                                    textStyle:
-                                        TextStyle(color: AppColors.white)),
+                                style: Get.textTheme.titleLarge!.copyWith(
+                                  fontSize: 30.sp,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                               SizedBox(
                                 width: 3,
@@ -262,10 +263,10 @@ class Home extends GetView<HomeController> {
                         child: Text(
                           AppStrings.Res,
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
-                              fontSize: 30.sp,
-                              fontWeight: FontWeight.w600,
-                              textStyle: TextStyle(color: AppColors.white)),
+                          style: Get.textTheme.titleLarge!.copyWith(
+                            fontSize: 30.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                       Container(
@@ -278,10 +279,10 @@ class Home extends GetView<HomeController> {
                         child: Text(
                           AppStrings.trsItem,
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
-                              fontSize: 30.sp,
-                              fontWeight: FontWeight.w600,
-                              textStyle: TextStyle(color: AppColors.white)),
+                          style: Get.textTheme.titleLarge!.copyWith(
+                            fontSize: 30.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                       Container(
@@ -298,10 +299,10 @@ class Home extends GetView<HomeController> {
                           AppStrings.trsSupplier,
                           textAlign: TextAlign.center,
                           maxLines: 1,
-                          style: GoogleFonts.poppins(
-                              fontSize: 30.sp,
-                              fontWeight: FontWeight.w600,
-                              textStyle: TextStyle(color: AppColors.white)),
+                          style: Get.textTheme.titleLarge!.copyWith(
+                            fontSize: 30.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                       Container(
@@ -315,10 +316,10 @@ class Home extends GetView<HomeController> {
                         child: Text(
                           AppStrings.trsDefectType,
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
-                              fontSize: 30.sp,
-                              fontWeight: FontWeight.w600,
-                              textStyle: TextStyle(color: AppColors.white)),
+                          style: Get.textTheme.titleLarge!.copyWith(
+                            fontSize: 30.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       )
                     ],
@@ -336,7 +337,7 @@ class Home extends GetView<HomeController> {
           children: [
             GestureDetector(
               onTap: () async {
-                await Get.to(() => SelectCarrierScreen());
+                await Get.to(() => const SelectCarrierScreen());
               },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 25.w),
@@ -346,10 +347,10 @@ class Home extends GetView<HomeController> {
                 child: Text(
                   textAlign: TextAlign.center,
                   AppStrings.inspectNewProduct.toUpperCase(),
-                  style: GoogleFonts.poppins(
-                      fontSize: 38.sp,
-                      fontWeight: FontWeight.w600,
-                      textStyle: TextStyle(color: AppColors.white)),
+                  style: Get.textTheme.titleLarge!.copyWith(
+                    fontSize: 38.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
@@ -402,7 +403,10 @@ class Home extends GetView<HomeController> {
                       child: Text(
                         controller.listOfInspection[position]['ID'] ?? '',
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.displayMedium,
+                        style: Get.textTheme.titleLarge!.copyWith(
+                          fontSize: 30.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     Container(
@@ -425,7 +429,10 @@ class Home extends GetView<HomeController> {
                       child: Text(
                         controller.listOfInspection[position]['PO'] ?? '',
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.displayMedium,
+                        style: Get.textTheme.titleLarge!.copyWith(
+                          fontSize: 30.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     Container(
@@ -448,7 +455,10 @@ class Home extends GetView<HomeController> {
                       child: Text(
                         controller.listOfInspection[position]['Item'] ?? '',
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.displayMedium,
+                        style: Get.textTheme.titleLarge!.copyWith(
+                          fontSize: 30.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     Container(
@@ -469,14 +479,14 @@ class Home extends GetView<HomeController> {
                                 width: 2.0,
                               ))),
                       child: Text(
-                          controller.listOfInspection[position]['Res'] ?? '',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .displayMedium
-                              ?.copyWith(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.w800)),
+                        controller.listOfInspection[position]['Res'] ?? '',
+                        textAlign: TextAlign.center,
+                        style: Get.textTheme.titleLarge!.copyWith(
+                          color: AppColors.primary,
+                          fontSize: 30.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                     Container(
                       alignment: Alignment.center,
@@ -498,7 +508,10 @@ class Home extends GetView<HomeController> {
                       child: Text(
                         controller.listOfInspection[position]['GR'] ?? '',
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.displayMedium,
+                        style: Get.textTheme.titleLarge!.copyWith(
+                          fontSize: 30.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     GestureDetector(
@@ -543,7 +556,10 @@ class Home extends GetView<HomeController> {
                                         '')
                                 ? TextOverflow.visible
                                 : TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.displayMedium,
+                            style: Get.textTheme.titleLarge!.copyWith(
+                              fontSize: 30.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
@@ -573,12 +589,11 @@ class Home extends GetView<HomeController> {
                             controller.listOfInspection[position]['Status'] ??
                                 '',
                             textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .displayMedium
-                                ?.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w800),
+                            style: Get.textTheme.titleLarge!.copyWith(
+                              color: AppColors.primary,
+                              fontSize: 30.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           InkWell(
                             onTap: () {
