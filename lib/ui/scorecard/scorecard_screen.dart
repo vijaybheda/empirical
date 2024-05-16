@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/scorecard_screen_controller.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
@@ -108,12 +107,9 @@ class HeaderCell extends GetWidget<ScorecardScreenController> {
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
-                  textStyle: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 20.sp,
-                    color: Colors.white,
-                  ),
+                style: Get.textTheme.titleLarge!.copyWith(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               Image.asset(

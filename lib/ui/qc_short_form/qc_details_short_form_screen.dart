@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/json_file_operations.dart';
 import 'package:pverify/controller/qc_details_short_form_screen_controller.dart';
 import 'package:pverify/models/uom_item.dart';
@@ -92,10 +91,10 @@ class QCDetailsShortFormScreen
                   controller.partnerName ?? '-',
                   textAlign: TextAlign.start,
                   maxLines: 3,
-                  style: GoogleFonts.poppins(
-                      fontSize: 38.sp,
-                      fontWeight: FontWeight.w600,
-                      textStyle: TextStyle(color: AppColors.white)),
+                  style: Get.textTheme.titleLarge!.copyWith(
+                    fontSize: 38.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               Expanded(
@@ -212,10 +211,11 @@ class QCDetailsShortFormScreen
         title: AppStrings.saveAndContinue,
         width: (MediaQuery.of(context).size.width / 2.3),
         height: 115,
-        fontStyle: GoogleFonts.poppins(
-            fontSize: 35.sp,
-            fontWeight: FontWeight.w600,
-            textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+        fontStyle: Get.textTheme.titleLarge!.copyWith(
+          color: AppColors.textFieldText_Color,
+          fontSize: 35.sp,
+          fontWeight: FontWeight.w600,
+        ),
         onClickAction: () async {
           await controller.saveContinue(context);
         });
@@ -228,10 +228,11 @@ class QCDetailsShortFormScreen
         title: AppStrings.defectDiscard,
         width: (MediaQuery.of(context).size.width / 2.3),
         height: 115,
-        fontStyle: GoogleFonts.poppins(
-            fontSize: 35.sp,
-            fontWeight: FontWeight.w600,
-            textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+        fontStyle: Get.textTheme.titleLarge!.copyWith(
+          color: AppColors.textFieldText_Color,
+          fontSize: 35.sp,
+          fontWeight: FontWeight.w600,
+        ),
         onClickAction: () async {
           await controller.deleteInspectionAndGotoMyInspectionScreen();
         });
@@ -244,10 +245,11 @@ class QCDetailsShortFormScreen
         title: AppStrings.detailedForm,
         width: (MediaQuery.of(context).size.width / 2.5),
         height: 115,
-        fontStyle: GoogleFonts.poppins(
-            fontSize: 35.sp,
-            fontWeight: FontWeight.w600,
-            textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+        fontStyle: Get.textTheme.titleLarge!.copyWith(
+          color: AppColors.textFieldText_Color,
+          fontSize: 35.sp,
+          fontWeight: FontWeight.w600,
+        ),
         onClickAction: () async {
           await controller.onLongFormClick();
         });
@@ -264,10 +266,11 @@ class QCDetailsShortFormScreen
         title: AppStrings.inspectionWorksheet,
         width: (MediaQuery.of(context).size.width / 2.5),
         height: 115,
-        fontStyle: GoogleFonts.poppins(
-            fontSize: 35.sp,
-            fontWeight: FontWeight.w600,
-            textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+        fontStyle: Get.textTheme.titleLarge!.copyWith(
+          color: AppColors.textFieldText_Color,
+          fontSize: 35.sp,
+          fontWeight: FontWeight.w600,
+        ),
         onClickAction: () async {
           await controller.onInspectionWorksheetClick();
         });
@@ -292,7 +295,7 @@ class QCDetailsShortFormScreen
                     Expanded(
                       child: Text(
                         AppStrings.uom,
-                        style: Get.textTheme.bodyLarge!.copyWith(
+                        style: Get.textTheme.titleLarge!.copyWith(
                           fontSize: 26.sp,
                         ),
                       ),
@@ -316,14 +319,15 @@ class QCDetailsShortFormScreen
             items: controller.uomList.map((UOMItem value) {
               return DropdownMenuItem<UOMItem>(
                 value: value,
-                child: Text(value.uomName ?? '-',
-                    style:
-                        Get.textTheme.bodyLarge!.copyWith(color: Colors.white)),
+                child: Text(
+                  value.uomName ?? '-',
+                  style: Get.textTheme.bodyLarge!.copyWith(color: Colors.white),
+                ),
               );
             }).toList(),
             decoration: InputDecoration(
               hintText: AppStrings.uom,
-              hintStyle: Get.textTheme.bodyLarge!.copyWith(
+              hintStyle: Get.textTheme.titleLarge!.copyWith(
                 fontSize: 26.sp,
                 color: AppColors.grey,
               ),
@@ -369,7 +373,7 @@ class QCDetailsShortFormScreen
                     Expanded(
                       child: Text(
                         AppStrings.qcQtyShipped,
-                        style: Get.textTheme.bodyLarge!.copyWith(
+                        style: Get.textTheme.titleLarge!.copyWith(
                           fontSize: 26.sp,
                         ),
                       ),
@@ -389,7 +393,7 @@ class QCDetailsShortFormScreen
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               hintText: AppStrings.qcQtyShipped,
-              hintStyle: Get.textTheme.bodyLarge!.copyWith(
+              hintStyle: Get.textTheme.titleLarge!.copyWith(
                   fontSize: 26.sp,
                   fontWeight: FontWeight.normal,
                   color: Colors.grey),
@@ -443,7 +447,7 @@ class QCDetailsShortFormScreen
                     Expanded(
                       child: Text(
                         AppStrings.packdate,
-                        style: Get.textTheme.bodyLarge!.copyWith(
+                        style: Get.textTheme.titleLarge!.copyWith(
                           fontSize: 26.sp,
                         ),
                       ),
@@ -465,7 +469,7 @@ class QCDetailsShortFormScreen
             focusNode: controller.packDateFocusNode,
             decoration: InputDecoration(
               hintText: AppStrings.packdate,
-              hintStyle: Get.textTheme.bodyLarge!.copyWith(
+              hintStyle: Get.textTheme.titleLarge!.copyWith(
                   fontSize: 26.sp,
                   fontWeight: FontWeight.normal,
                   color: Colors.grey),
@@ -515,7 +519,7 @@ class QCDetailsShortFormScreen
                     Expanded(
                       child: Text(
                         AppStrings.lotnumber,
-                        style: Get.textTheme.bodyLarge!.copyWith(
+                        style: Get.textTheme.titleLarge!.copyWith(
                           fontSize: 26.sp,
                         ),
                       ),
@@ -534,7 +538,7 @@ class QCDetailsShortFormScreen
             controller: controller.lotNoController,
             decoration: InputDecoration(
               hintText: AppStrings.lotnumber,
-              hintStyle: Get.textTheme.bodyLarge!.copyWith(
+              hintStyle: Get.textTheme.titleLarge!.copyWith(
                   fontSize: 26.sp,
                   fontWeight: FontWeight.normal,
                   color: Colors.grey),
@@ -578,7 +582,7 @@ class QCDetailsShortFormScreen
                     Expanded(
                       child: Text(
                         AppStrings.gln,
-                        style: Get.textTheme.bodyLarge!.copyWith(
+                        style: Get.textTheme.titleLarge!.copyWith(
                           fontSize: 26.sp,
                         ),
                       ),
@@ -598,7 +602,7 @@ class QCDetailsShortFormScreen
             controller: controller.glnController,
             decoration: InputDecoration(
               hintText: AppStrings.gln,
-              hintStyle: Get.textTheme.bodyLarge!.copyWith(
+              hintStyle: Get.textTheme.titleLarge!.copyWith(
                   fontSize: 26.sp,
                   fontWeight: FontWeight.normal,
                   color: Colors.grey),
@@ -643,7 +647,7 @@ class QCDetailsShortFormScreen
                     Expanded(
                       child: Text(
                         AppStrings.gtin,
-                        style: Get.textTheme.bodyLarge!.copyWith(
+                        style: Get.textTheme.titleLarge!.copyWith(
                           fontSize: 26.sp,
                         ),
                       ),
@@ -663,7 +667,7 @@ class QCDetailsShortFormScreen
             controller: controller.gtinController,
             decoration: InputDecoration(
               hintText: AppStrings.gtin,
-              hintStyle: Get.textTheme.bodyLarge!.copyWith(
+              hintStyle: Get.textTheme.titleLarge!.copyWith(
                   fontSize: 26.sp,
                   fontWeight: FontWeight.normal,
                   color: Colors.grey),
@@ -748,19 +752,19 @@ class QCDetailsShortFormScreen
           controller.itemSkuName ?? '-',
           textAlign: TextAlign.start,
           maxLines: 3,
-          style: GoogleFonts.poppins(
-              fontSize: 38.sp,
-              fontWeight: FontWeight.w600,
-              textStyle: TextStyle(color: AppColors.white)),
+          style: Get.textTheme.titleLarge!.copyWith(
+            fontSize: 38.sp,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         Text(
           controller.itemSKU ?? '-',
           textAlign: TextAlign.start,
           maxLines: 3,
-          style: GoogleFonts.poppins(
-              fontSize: 38.sp,
-              fontWeight: FontWeight.w600,
-              textStyle: TextStyle(color: AppColors.white)),
+          style: Get.textTheme.titleLarge!.copyWith(
+            fontSize: 38.sp,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ],
     );

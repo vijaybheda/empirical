@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/purchase_order_screen_controller.dart';
 import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/ui/components/bottom_custom_button_view.dart';
@@ -45,13 +44,13 @@ class PurchaseOrderScreen extends StatelessWidget {
                   color: AppColors.textFieldText_Color,
                   width: double.infinity,
                   child: Text(
-                    controller.partnerName ?? '-',
+                    controller.partnerName,
                     textAlign: TextAlign.start,
                     maxLines: 3,
-                    style: GoogleFonts.poppins(
-                        fontSize: 38.sp,
-                        fontWeight: FontWeight.w600,
-                        textStyle: TextStyle(color: AppColors.white)),
+                    style: Get.textTheme.titleLarge!.copyWith(
+                      fontSize: 38.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 _SearchItemSkuWidget(tag),
@@ -105,9 +104,7 @@ class PurchaseOrderScreen extends StatelessWidget {
     return Center(
       child: Text(
         'No data found',
-        style: Get.textTheme.displayMedium?.copyWith(
-          color: Colors.white,
-        ),
+        style: Get.textTheme.titleLarge?.copyWith(),
       ),
     );
   }
@@ -139,14 +136,17 @@ class PurchaseOrderScreen extends StatelessWidget {
                         children: [
                           TextSpan(
                             text: goodsItem.sku ?? '-',
-                            style: Get.textTheme.bodyMedium?.copyWith(
-                                color: AppColors.white, fontSize: 50.h),
+                            style: Get.textTheme.titleLarge?.copyWith(
+                              fontSize: 50.h,
+                            ),
                           ),
                           const TextSpan(text: ' '),
                           TextSpan(
                             text: goodsItem.name ?? '-',
-                            style: Get.textTheme.bodyMedium?.copyWith(
-                                color: AppColors.primary, fontSize: 50.h),
+                            style: Get.textTheme.titleLarge?.copyWith(
+                              color: AppColors.primary,
+                              fontSize: 50.h,
+                            ),
                           ),
                         ],
                       ),
@@ -287,8 +287,10 @@ class _SearchItemSkuWidget extends StatelessWidget {
                 ).searchController,
                 decoration: InputDecoration(
                   hintText: AppStrings.searchItem,
-                  hintStyle: Get.textTheme.bodyLarge?.copyWith(
-                      fontSize: 25.sp, color: AppColors.white.withOpacity(0.8)),
+                  hintStyle: Get.textTheme.titleLarge?.copyWith(
+                    fontSize: 25.sp,
+                    color: AppColors.white.withOpacity(0.8),
+                  ),
                   isDense: true,
                   contentPadding:
                       EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),

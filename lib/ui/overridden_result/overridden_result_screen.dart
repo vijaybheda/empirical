@@ -45,7 +45,7 @@ class OverriddenResultScreen
                 onPressed: () {
                   if (controller.isOverrideControllerValidate(context)) {
                     controller.saveAndContinueClick(context,
-                        controller.finalInspectionResult?.value.toString());
+                        controller.finalInspectionResult.value.toString());
                   }
                 },
               ),
@@ -78,8 +78,7 @@ class OverriddenResultScreen
                   children: [
                     Text(
                       AppStrings.originalResult,
-                      style: Get.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.white,
+                      style: Get.textTheme.titleLarge?.copyWith(
                         fontSize: 65.h,
                         fontWeight: FontWeight.w400,
                       ),
@@ -87,7 +86,7 @@ class OverriddenResultScreen
                     SizedBox(width: 240.w),
                     Text(
                       controller.myInspectionResult,
-                      style: Get.textTheme.bodyMedium?.copyWith(
+                      style: Get.textTheme.titleLarge?.copyWith(
                         color: controller.finalInspectionResultColor,
                         fontSize: 65.h,
                         fontWeight: FontWeight.bold,
@@ -101,7 +100,7 @@ class OverriddenResultScreen
                     Text(
                       "(Original Qtys:  Accepted ${controller.qtyShipped.value} / Rejected ${controller.qtyRejected.value})"
                           .tr,
-                      style: Get.textTheme.bodyMedium?.copyWith(
+                      style: Get.textTheme.titleLarge?.copyWith(
                         color: AppColors.white,
                         fontSize: 55.h,
                         fontWeight: FontWeight.w300,
@@ -130,8 +129,8 @@ class OverriddenResultScreen
                   ),
                 ),
                 SizedBox(
-                  height: (controller.finalInspectionResult?.value == "RJ" ||
-                          controller.finalInspectionResult?.value ==
+                  height: (controller.finalInspectionResult.value == "RJ" ||
+                          controller.finalInspectionResult.value ==
                               AppStrings.reject ||
                           controller.layoutQtyRejectedVisibility.isTrue)
                       ? 50.h
@@ -142,7 +141,7 @@ class OverriddenResultScreen
                         children: [
                           Text(
                             AppStrings.rejectionDetails,
-                            style: Get.textTheme.bodyMedium?.copyWith(
+                            style: Get.textTheme.titleLarge?.copyWith(
                               color: AppColors.white,
                               fontSize: 65.h,
                               fontWeight: FontWeight.w400,
@@ -151,8 +150,8 @@ class OverriddenResultScreen
                           SizedBox(width: 195.w),
                           Flexible(
                             child: Text(
-                              controller.txtRejectionDetails?.value ?? '',
-                              style: Get.textTheme.bodyMedium?.copyWith(
+                              controller.txtRejectionDetails.value,
+                              style: Get.textTheme.titleLarge?.copyWith(
                                 color: AppColors.white,
                                 fontSize: 50.h,
                                 fontWeight: FontWeight.w400,
@@ -171,7 +170,7 @@ class OverriddenResultScreen
                         children: [
                           Text(
                             AppStrings.defectComments,
-                            style: Get.textTheme.bodyMedium?.copyWith(
+                            style: Get.textTheme.titleLarge?.copyWith(
                               color: AppColors.white,
                               fontSize: 65.h,
                               fontWeight: FontWeight.w400,
@@ -180,8 +179,8 @@ class OverriddenResultScreen
                           SizedBox(width: 195.w),
                           Flexible(
                             child: Text(
-                              controller.txtDefectComment?.value ?? '',
-                              style: Get.textTheme.bodyMedium?.copyWith(
+                              controller.txtDefectComment.value,
+                              style: Get.textTheme.titleLarge?.copyWith(
                                 color: AppColors.white,
                                 fontSize: 50.h,
                                 fontWeight: FontWeight.w400,
@@ -220,19 +219,19 @@ class OverriddenResultScreen
             controller.commodityName ?? '',
             textAlign: TextAlign.start,
             maxLines: 3,
-            style: GoogleFonts.poppins(
-                fontSize: 38.sp,
-                fontWeight: FontWeight.w600,
-                textStyle: TextStyle(color: AppColors.white)),
+            style: Get.textTheme.titleLarge!.copyWith(
+              fontSize: 38.sp,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           Text(
             controller.itemSku ?? '',
             textAlign: TextAlign.start,
             maxLines: 3,
-            style: GoogleFonts.poppins(
-                fontSize: 38.sp,
-                fontWeight: FontWeight.w600,
-                textStyle: TextStyle(color: AppColors.white)),
+            style: Get.textTheme.titleLarge!.copyWith(
+              fontSize: 38.sp,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -251,7 +250,7 @@ class OverriddenResultScreen
           flex: 2,
           child: Text(
             labelTitle,
-            style: Get.textTheme.bodyMedium?.copyWith(
+            style: Get.textTheme.titleLarge?.copyWith(
               color: AppColors.white,
               fontSize: 65.h,
               fontWeight: FontWeight.w400,
@@ -298,7 +297,7 @@ class OverriddenResultScreen
           flex: 2,
           child: Text(
             labelTitle,
-            style: Get.textTheme.bodyMedium?.copyWith(
+            style: Get.textTheme.titleLarge?.copyWith(
               color: AppColors.white,
               fontSize: 65.h,
               fontWeight: FontWeight.w400,
@@ -314,10 +313,11 @@ class OverriddenResultScreen
               iconEnabledColor: AppColors.hintColor,
               hint: Text(
                 hintText,
-                style: GoogleFonts.poppins(
-                    fontSize: 28.sp,
-                    fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.hintColor)),
+                style: Get.textTheme.titleLarge!.copyWith(
+                  fontSize: 28.sp,
+                  fontWeight: FontWeight.normal,
+                  color: AppColors.hintColor,
+                ),
               ),
               items: items.map((selectedType) {
                 return DropdownMenuItem<String>(
