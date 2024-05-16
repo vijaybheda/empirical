@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/purchase_order_details_controller.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/item_sku_data.dart';
@@ -59,10 +58,10 @@ class PurchaseOrderDetailsScreen
                       controller.partnerName ?? '-',
                       textAlign: TextAlign.start,
                       maxLines: 3,
-                      style: GoogleFonts.poppins(
-                          fontSize: 38.sp,
-                          fontWeight: FontWeight.w600,
-                          textStyle: TextStyle(color: AppColors.white)),
+                      style: Get.textTheme.titleLarge!.copyWith(
+                        fontSize: 38.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   _SearchOrderItemsWidget(tag),
@@ -121,9 +120,7 @@ class PurchaseOrderDetailsScreen
     return Center(
       child: Text(
         'No data found',
-        style: Get.textTheme.displayMedium?.copyWith(
-          color: Colors.white,
-        ),
+        style: Get.textTheme.titleLarge?.copyWith(),
       ),
     );
   }
@@ -309,8 +306,10 @@ class _SearchOrderItemsWidget extends StatelessWidget {
           ).searchController,
           decoration: InputDecoration(
             hintText: AppStrings.searchItem,
-            hintStyle: Get.textTheme.bodyLarge?.copyWith(
-                fontSize: 25.sp, color: AppColors.white.withOpacity(0.8)),
+            hintStyle: Get.textTheme.titleLarge?.copyWith(
+              fontSize: 25.sp,
+              color: AppColors.white.withOpacity(0.8),
+            ),
             isDense: true,
             contentPadding:
                 EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),

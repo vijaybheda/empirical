@@ -103,10 +103,10 @@ class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
                 height: 20,
                 child: Text(
                   letter,
-                  style: Get.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.white,
-                      fontSize: 60.h,
-                      fontWeight: FontWeight.bold),
+                  style: Get.textTheme.titleLarge!.copyWith(
+                    fontSize: 60.h,
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -121,9 +121,7 @@ class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
     return Center(
       child: Text(
         'No data found',
-        style: Get.textTheme.displayMedium?.copyWith(
-          color: Colors.white,
-        ),
+        style: Get.textTheme.titleLarge!.copyWith(),
       ),
     );
   }
@@ -167,8 +165,9 @@ class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
                             Expanded(
                               child: Text(
                                 carrier.name ?? '-',
-                                style: Get.textTheme.bodyMedium?.copyWith(
-                                    color: AppColors.white, fontSize: 45.h),
+                                style: Get.textTheme.titleLarge!.copyWith(
+                                  fontSize: 45.h,
+                                ),
                               ),
                             ),
                             GestureDetector(
@@ -243,9 +242,9 @@ class SelectCarrierScreen extends GetWidget<SelectCarrierScreenController> {
         children: [
           Text(
             alphabet,
-            style: Get.textTheme.headlineMedium?.copyWith(
-              color: AppColors.white,
+            style: Get.textTheme.titleLarge!.copyWith(
               fontSize: 60.h,
+              fontWeight: FontWeight.bold,
             ),
           ),
           Divider(
@@ -290,7 +289,7 @@ class SearchCarrierWidget extends StatelessWidget {
                   Get.find<SelectCarrierScreenController>().searchController,
               decoration: InputDecoration(
                 hintText: AppStrings.searchCarrier,
-                hintStyle: Get.textTheme.bodyLarge?.copyWith(
+                hintStyle: Get.textTheme.titleLarge?.copyWith(
                     fontSize: 25.sp, color: AppColors.white.withOpacity(0.8)),
                 isDense: true,
                 contentPadding:

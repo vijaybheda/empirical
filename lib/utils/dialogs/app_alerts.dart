@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/adaptive_alert.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -18,17 +17,17 @@ class AppAlertDialog {
     AdaptiveAlert.customAlert(context,
         title: Text(
           title,
-          style: GoogleFonts.poppins(
-              fontSize: 28.sp,
-              fontWeight: FontWeight.w500,
-              textStyle: TextStyle(color: AppColors.white)),
+          style: Get.textTheme.titleLarge!.copyWith(
+            fontSize: 28.sp,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         content: Text(
           message,
-          style: GoogleFonts.poppins(
-              fontSize: 25.sp,
-              fontWeight: FontWeight.normal,
-              textStyle: TextStyle(color: AppColors.white)),
+          style: Get.textTheme.titleLarge!.copyWith(
+            fontSize: 25.sp,
+            fontWeight: FontWeight.normal,
+          ),
         ),
         actions: [
           TextButton(
@@ -37,10 +36,11 @@ class AppAlertDialog {
               },
               child: Text(
                 AppStrings.ok,
-                style: GoogleFonts.poppins(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.primary)),
+                style: Get.textTheme.titleLarge!.copyWith(
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.normal,
+                  color: AppColors.primary,
+                ),
               )),
         ]);
   }
@@ -58,18 +58,16 @@ class AppAlertDialog {
     AdaptiveAlert.customAlertWithTextField(context,
         title: Text(
           title,
-          style: GoogleFonts.poppins(
-              fontSize: 28.sp,
-              fontWeight: FontWeight.w500,
-              textStyle: TextStyle(color: AppColors.white)),
+          style: Get.textTheme.titleLarge!.copyWith(
+            fontSize: 28.sp,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         content: SizedBox(
           width: windowWidth,
           child: TextFormField(
-            style: GoogleFonts.poppins(
-                fontSize: 30.sp,
-                fontWeight: FontWeight.normal,
-                textStyle: TextStyle(color: AppColors.white)),
+            style: Get.textTheme.titleLarge!
+                .copyWith(fontSize: 30.sp, fontWeight: FontWeight.normal),
             maxLines: isMultiLine == true ? null : 1,
             cursorColor: Theme.of(context).textSelectionTheme.cursorColor,
             initialValue: value,
@@ -81,10 +79,11 @@ class AppAlertDialog {
                 borderSide: BorderSide(color: Theme.of(context).primaryColor),
               ),
               hintText: '',
-              hintStyle: GoogleFonts.poppins(
-                  fontSize: 30.sp,
-                  fontWeight: FontWeight.normal,
-                  textStyle: TextStyle(color: AppColors.hintColor)),
+              hintStyle: Get.textTheme.titleLarge!.copyWith(
+                fontSize: 30.sp,
+                fontWeight: FontWeight.normal,
+                color: AppColors.hintColor,
+              ),
               border: InputBorder.none,
               isDense: true,
               contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
@@ -101,10 +100,11 @@ class AppAlertDialog {
               },
               child: Text(
                 AppStrings.cancel,
-                style: GoogleFonts.poppins(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.primary)),
+                style: Get.textTheme.titleLarge!.copyWith(
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.normal,
+                  color: AppColors.primary,
+                ),
               )),
           TextButton(
               onPressed: () {
@@ -115,10 +115,11 @@ class AppAlertDialog {
               },
               child: Text(
                 AppStrings.ok,
-                style: GoogleFonts.poppins(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.primary)),
+                style: Get.textTheme.titleLarge!.copyWith(
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.normal,
+                  color: AppColors.primary,
+                ),
               )),
         ]);
   }
@@ -129,17 +130,17 @@ class AppAlertDialog {
     AdaptiveAlert.customAlert(context,
         title: Text(
           title,
-          style: GoogleFonts.poppins(
-              fontSize: 28.sp,
-              fontWeight: FontWeight.w500,
-              textStyle: TextStyle(color: AppColors.white)),
+          style: Get.textTheme.titleLarge!.copyWith(
+            fontSize: 28.sp,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         content: Text(
           message,
-          style: GoogleFonts.poppins(
-              fontSize: 25.sp,
-              fontWeight: FontWeight.normal,
-              textStyle: TextStyle(color: AppColors.white)),
+          style: Get.textTheme.titleLarge!.copyWith(
+            fontSize: 25.sp,
+            fontWeight: FontWeight.normal,
+          ),
         ),
         actions: [
           TextButton(
@@ -149,10 +150,11 @@ class AppAlertDialog {
                   },
               child: Text(
                 AppStrings.cancel,
-                style: GoogleFonts.poppins(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.primary)),
+                style: Get.textTheme.titleLarge!.copyWith(
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.normal,
+                  color: AppColors.primary,
+                ),
               )),
           TextButton(
               onPressed: () {
@@ -163,10 +165,11 @@ class AppAlertDialog {
               },
               child: Text(
                 AppStrings.ok,
-                style: GoogleFonts.poppins(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.primary)),
+                style: Get.textTheme.titleLarge!.copyWith(
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.normal,
+                  color: AppColors.primary,
+                ),
               )),
         ]);
   }

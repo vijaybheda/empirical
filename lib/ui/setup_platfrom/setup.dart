@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/setup_controller.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/utils/app_const.dart';
@@ -72,10 +71,9 @@ class SetupScreen extends GetView<SetupController> {
                       title: AppStrings.save.toUpperCase(),
                       width: double.infinity,
                       height: 90,
-                      fontStyle: GoogleFonts.poppins(
-                          fontSize: 25.sp,
-                          fontWeight: FontWeight.w500,
-                          textStyle: TextStyle(color: AppColors.white)),
+                      fontStyle: Get.textTheme.titleLarge!.copyWith(
+                        fontSize: 25.sp,
+                      ),
                       onClickAction: () => {
                             if (Controller.isSetupFieldsValidate(context))
                               {debugPrint('All Fields Are Validate')}
@@ -88,10 +86,9 @@ class SetupScreen extends GetView<SetupController> {
                       title: AppStrings.checkForUpdate.toUpperCase(),
                       width: double.infinity,
                       height: 90,
-                      fontStyle: GoogleFonts.poppins(
-                          fontSize: 25.sp,
-                          fontWeight: FontWeight.w500,
-                          textStyle: TextStyle(color: AppColors.white)),
+                      fontStyle: Get.textTheme.titleLarge!.copyWith(
+                        fontSize: 25.sp,
+                      ),
                       onClickAction: () => {}),
                   SizedBox(
                     height: 40.h,
@@ -101,10 +98,9 @@ class SetupScreen extends GetView<SetupController> {
                       title: AppStrings.cacheForOfflineUse.toUpperCase(),
                       width: double.infinity,
                       height: 90,
-                      fontStyle: GoogleFonts.poppins(
-                          fontSize: 25.sp,
-                          fontWeight: FontWeight.w500,
-                          textStyle: TextStyle(color: AppColors.white)),
+                      fontStyle: Get.textTheme.titleLarge!.copyWith(
+                        fontSize: 25.sp,
+                      ),
                       onClickAction: () => {}),
                 ],
               ),
@@ -124,10 +120,10 @@ class SetupScreen extends GetView<SetupController> {
           flex: 1,
           child: Text(
             labelTitle,
-            style: GoogleFonts.poppins(
-                fontSize: 30.sp,
-                fontWeight: FontWeight.normal,
-                textStyle: TextStyle(color: AppColors.white)),
+            style: Get.textTheme.titleLarge!.copyWith(
+              fontSize: 30.sp,
+              fontWeight: FontWeight.normal,
+            ),
           ),
         ),
         Expanded(
@@ -140,20 +136,22 @@ class SetupScreen extends GetView<SetupController> {
                     iconEnabledColor: AppColors.hintColor,
                     hint: Text(
                       'Select DateFormat',
-                      style: GoogleFonts.poppins(
-                          fontSize: 30.sp,
-                          fontWeight: FontWeight.normal,
-                          textStyle: TextStyle(color: AppColors.sky)),
+                      style: Get.textTheme.titleLarge!.copyWith(
+                        color: AppColors.sky,
+                        fontSize: 30.sp,
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
                     items: setupController.dateformats.map((selectedType) {
                       return DropdownMenuItem<String>(
                         value: selectedType,
                         child: Text(
                           selectedType,
-                          style: GoogleFonts.poppins(
-                              fontSize: 30.sp,
-                              fontWeight: FontWeight.normal,
-                              textStyle: TextStyle(color: AppColors.sky)),
+                          style: Get.textTheme.titleLarge!.copyWith(
+                            color: AppColors.sky,
+                            fontSize: 30.sp,
+                            fontWeight: FontWeight.normal,
+                          ),
                         ),
                       );
                     }).toList(),

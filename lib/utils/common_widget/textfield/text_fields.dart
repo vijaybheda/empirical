@@ -2,8 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/state_manager.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:get/get.dart';
 import 'package:pverify/utils/common_widget/textfield/textfield_controller.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/theme/theme.dart';
@@ -156,10 +155,10 @@ class BoxTextField1 extends StatelessWidget {
         readOnly: readOnly,
         keyboardType: keyboardType,
         controller: controller,
-        style: GoogleFonts.poppins(
-            fontSize: 32.sp,
-            fontWeight: FontWeight.w400,
-            textStyle: TextStyle(color: textColor)),
+        style: Get.textTheme.titleLarge!.copyWith(
+          fontSize: 32.sp,
+          fontWeight: FontWeight.w400,
+        ),
         cursorColor: Theme.of(context).textSelectionTheme.cursorColor,
         decoration: InputDecoration(
           enabledBorder: UnderlineInputBorder(
@@ -169,10 +168,10 @@ class BoxTextField1 extends StatelessWidget {
             borderSide: BorderSide(color: Theme.of(context).primaryColor),
           ),
           hintText: hintText,
-          hintStyle: GoogleFonts.poppins(
-              fontSize: 32.sp,
-              fontWeight: FontWeight.w400,
-              textStyle: TextStyle(color: hintColor)),
+          hintStyle: Get.textTheme.titleLarge!.copyWith(
+            fontSize: 32.sp,
+            fontWeight: FontWeight.w400,
+          ),
           border: InputBorder.none,
           isDense: true,
           contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
@@ -286,10 +285,10 @@ class BoxTextField2 extends StatelessWidget {
               readOnly: readOnly,
               keyboardType: keyboardType,
               controller: controller,
-              style: GoogleFonts.poppins(
-                  fontSize: 28.sp,
-                  fontWeight: FontWeight.normal,
-                  textStyle: TextStyle(color: AppColors.white)),
+              style: Get.textTheme.titleLarge!.copyWith(
+                fontSize: 28.sp,
+                fontWeight: FontWeight.normal,
+              ),
               cursorColor: Theme.of(context).textSelectionTheme.cursorColor,
               decoration: InputDecoration(
                 counterText: "",
@@ -300,10 +299,10 @@ class BoxTextField2 extends StatelessWidget {
                   borderSide: BorderSide(color: Theme.of(context).primaryColor),
                 ),
                 hintText: hintText,
-                hintStyle: GoogleFonts.poppins(
-                    fontSize: 28.sp,
-                    fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.hintColor)),
+                hintStyle: Get.textTheme.titleLarge!.copyWith(
+                  fontSize: 28.sp,
+                  fontWeight: FontWeight.normal,
+                ),
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding:

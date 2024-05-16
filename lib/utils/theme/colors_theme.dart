@@ -205,7 +205,7 @@ class AppThemeData {
       headlineLarge: TextStyle(
           fontSize: 19.5,
           fontFamily: GoogleFonts.poppins().fontFamily,
-          color: AppColors.darkPrimaryColor,
+          color: isDark ? AppColors.white : AppColors.darkPrimaryColor,
           letterSpacing: 0,
           fontWeight: FontWeight.w500),
       headlineMedium: TextStyle(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/trailertemp_controller.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
@@ -69,11 +68,11 @@ class TrailerTemp extends GetView<TrailerTempController> {
                   title: AppStrings.skip,
                   width: (MediaQuery.of(context).size.width / 2.3),
                   height: 115,
-                  fontStyle: GoogleFonts.poppins(
-                      fontSize: 35.sp,
-                      fontWeight: FontWeight.w600,
-                      textStyle:
-                          TextStyle(color: AppColors.textFieldText_Color)),
+                  fontStyle: Get.textTheme.titleLarge!.copyWith(
+                    color: AppColors.textFieldText_Color,
+                    fontSize: 35.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
                   onClickAction: () {
                     if (controller.allDataBlank()) {
                       controller.showPurchaseOrder();
@@ -96,11 +95,11 @@ class TrailerTemp extends GetView<TrailerTempController> {
                   title: AppStrings.saveReadingsButton,
                   width: (MediaQuery.of(context).size.width / 2.3),
                   height: 115,
-                  fontStyle: GoogleFonts.poppins(
-                      fontSize: 35.sp,
-                      fontWeight: FontWeight.w600,
-                      textStyle:
-                          TextStyle(color: AppColors.textFieldText_Color)),
+                  fontStyle: Get.textTheme.titleLarge!.copyWith(
+                    color: AppColors.textFieldText_Color,
+                    fontSize: 35.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
                   onClickAction: () {
                     if (controller.allDataBlank()) {
                       AppAlertDialog.validateAlerts(context, AppStrings.error,
@@ -147,12 +146,13 @@ class TrailerTemp extends GetView<TrailerTempController> {
           child: Stack(
             children: [
               Obx(
-                () => Image.asset(controller.selectetdTruckArea.value ==
-                        AppStrings.nose
-                    ? AppImages.ic_trailerNose
-                    : controller.selectetdTruckArea.value == AppStrings.middle
-                        ? AppImages.ic_trailerMiddle
-                        : AppImages.ic_trailerTail),
+                () => Image.asset(
+                  controller.selectetdTruckArea.value == AppStrings.nose
+                      ? AppImages.ic_trailerNose
+                      : controller.selectetdTruckArea.value == AppStrings.middle
+                          ? AppImages.ic_trailerMiddle
+                          : AppImages.ic_trailerTail,
+                ),
               ),
               Container(
                 margin: EdgeInsets.only(
@@ -204,17 +204,17 @@ class TrailerTemp extends GetView<TrailerTempController> {
         Obx(
           () => Text(
             controller.selectetdTruckArea.value,
-            style: GoogleFonts.poppins(
-                fontSize: 32.sp,
-                fontWeight: FontWeight.w600,
-                textStyle: TextStyle(color: AppColors.white)),
+            style: Get.textTheme.titleLarge!.copyWith(
+              fontSize: 35.sp,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
         SizedBox(
           height: 40.h,
         ),
         Padding(
-          padding: EdgeInsets.only(left: 50, right: 50),
+          padding: const EdgeInsets.only(left: 50, right: 50),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -261,17 +261,17 @@ class TrailerTemp extends GetView<TrailerTempController> {
           height: 40.h,
         ),
         Padding(
-          padding: EdgeInsets.only(left: 50, right: 50),
+          padding: const EdgeInsets.only(left: 50, right: 50),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 AppStrings.comments,
-                style: GoogleFonts.poppins(
-                    fontSize: 30.sp,
-                    fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.white)),
+                style: Get.textTheme.titleLarge!.copyWith(
+                  fontSize: 30.sp,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               SizedBox(
                 width: 50.w,
@@ -314,10 +314,10 @@ class TrailerTemp extends GetView<TrailerTempController> {
       children: [
         Text(
           PalletTitle,
-          style: GoogleFonts.poppins(
-              fontSize: 32.sp,
-              fontWeight: FontWeight.w600,
-              textStyle: TextStyle(color: AppColors.white)),
+          style: Get.textTheme.titleLarge!.copyWith(
+            fontSize: 32.sp,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         SizedBox(
           width: 280.w,

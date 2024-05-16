@@ -108,10 +108,10 @@ class LoginScreen extends GetView<AuthController> {
                     title: AppStrings.logIn.toUpperCase(),
                     width: double.infinity,
                     height: 90,
-                    fontStyle: Theme.of(context)
-                        .textTheme
-                        .displayMedium!
-                        .copyWith(fontSize: 25.sp),
+                    fontStyle: Get.textTheme.titleLarge!.copyWith(
+                      fontSize: 25.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
                     onClickAction: () async {
                       TextInput.finishAutofillContext();
                       await doLoginAction(authController,
@@ -122,18 +122,19 @@ class LoginScreen extends GetView<AuthController> {
                     height: 40.h,
                   ),
                   customButton(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      title: AppStrings.setup.toUpperCase(),
-                      width: double.infinity,
-                      height: 90,
-                      fontStyle: Theme.of(context)
-                          .textTheme
-                          .displayMedium!
-                          .copyWith(fontSize: 25.sp),
-                      onClickAction: () async {
-                        await doLoginAction(authController,
-                            isLoginButton: false, context: context);
-                      }),
+                    backgroundColor: Theme.of(context).primaryColor,
+                    title: AppStrings.setup.toUpperCase(),
+                    width: double.infinity,
+                    height: 90,
+                    fontStyle: Get.textTheme.titleLarge!.copyWith(
+                      fontSize: 25.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    onClickAction: () async {
+                      await doLoginAction(authController,
+                          isLoginButton: false, context: context);
+                    },
+                  ),
                 ],
               ),
             ),

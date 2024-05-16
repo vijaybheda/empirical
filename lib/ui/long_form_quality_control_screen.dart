@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/long_form_quality_control_screen_controller.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
@@ -93,8 +92,8 @@ class LongFormQualityControlScreen
                     },
                     (item) => Text(
                       item.brandName ?? '-',
-                      style: Get.textTheme.bodyLarge!.copyWith(
-                        color: Colors.white,
+                      style: Get.textTheme.titleLarge!.copyWith(
+                        fontSize: 24.sp,
                       ),
                     ),
                     "Select One",
@@ -111,8 +110,8 @@ class LongFormQualityControlScreen
                     },
                     (item) => Text(
                       item.countryName ?? '-',
-                      style: Get.textTheme.bodyLarge!.copyWith(
-                        color: Colors.white,
+                      style: Get.textTheme.titleLarge!.copyWith(
+                        fontSize: 20.sp,
                       ),
                     ),
                     "Select One",
@@ -140,8 +139,8 @@ class LongFormQualityControlScreen
                     },
                     (item) => Text(
                       item.uomName ?? '-',
-                      style: Get.textTheme.bodyLarge!.copyWith(
-                        color: Colors.white,
+                      style: Get.textTheme.titleLarge!.copyWith(
+                        fontSize: 24.sp,
                       ),
                     ),
                     "Select One",
@@ -278,8 +277,8 @@ class LongFormQualityControlScreen
                     },
                     (item) => Text(
                       item.reasonName ?? '-',
-                      style: Get.textTheme.bodyLarge!.copyWith(
-                        color: Colors.white,
+                      style: Get.textTheme.titleLarge!.copyWith(
+                        fontSize: 24.sp,
                       ),
                     ),
                     "Select One",
@@ -310,10 +309,8 @@ class LongFormQualityControlScreen
         controller.partnerName ?? '-',
         textAlign: TextAlign.start,
         maxLines: 3,
-        style: GoogleFonts.poppins(
-            fontSize: 38.sp,
-            fontWeight: FontWeight.w600,
-            textStyle: TextStyle(color: AppColors.white)),
+        style: Get.textTheme.titleLarge!
+            .copyWith(fontSize: 38.sp, fontWeight: FontWeight.w600),
       ),
     );
   }
@@ -332,19 +329,17 @@ class LongFormQualityControlScreen
             controller.commodityName ?? '',
             textAlign: TextAlign.start,
             maxLines: 3,
-            style: GoogleFonts.poppins(
-                fontSize: 38.sp,
-                fontWeight: FontWeight.w600,
-                textStyle: TextStyle(color: AppColors.white)),
+            style: Get.textTheme.titleLarge!.copyWith(
+              fontSize: 38.sp,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           Text(
             controller.itemSKU ?? '',
             textAlign: TextAlign.start,
             maxLines: 3,
-            style: GoogleFonts.poppins(
-                fontSize: 38.sp,
-                fontWeight: FontWeight.w600,
-                textStyle: TextStyle(color: AppColors.white)),
+            style: Get.textTheme.titleLarge!
+                .copyWith(fontSize: 38.sp, fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -374,12 +369,10 @@ class LongFormQualityControlScreen
               title: AppStrings.specAttributes,
               width: (MediaQuery.of(context).size.width / 2.3),
               height: 115,
-              fontStyle: GoogleFonts.poppins(
+              fontStyle: Get.textTheme.titleLarge!.copyWith(
                 fontSize: 35.sp,
                 fontWeight: FontWeight.w600,
-                textStyle: TextStyle(
-                  color: AppColors.textFieldText_Color,
-                ),
+                color: AppColors.textFieldText_Color,
               ),
               onClickAction: onSpecAttribueClick,
             ),
@@ -389,10 +382,11 @@ class LongFormQualityControlScreen
               title: AppStrings.shortForm,
               width: (MediaQuery.of(context).size.width / 2.3),
               height: 115,
-              fontStyle: GoogleFonts.poppins(
-                  fontSize: 35.sp,
-                  fontWeight: FontWeight.w600,
-                  textStyle: TextStyle(color: AppColors.textFieldText_Color)),
+              fontStyle: Get.textTheme.titleLarge!.copyWith(
+                fontSize: 35.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textFieldText_Color,
+              ),
               onClickAction: onShortFormClick,
             )
           ],
@@ -427,7 +421,7 @@ class LongFormQualityControlScreen
                     Expanded(
                       child: Text(
                         labelText,
-                        style: Get.textTheme.bodyLarge!.copyWith(
+                        style: Get.textTheme.titleLarge!.copyWith(
                           fontSize: 26.sp,
                         ),
                       ),
@@ -453,8 +447,8 @@ class LongFormQualityControlScreen
             }).toList(),
             decoration: InputDecoration(
               hintText: hintText,
-              hintStyle: Get.textTheme.bodyLarge!.copyWith(
-                color: Colors.white,
+              hintStyle: Get.textTheme.titleLarge!.copyWith(
+                fontSize: 24.sp,
               ),
               enabledBorder: const UnderlineInputBorder(
                 borderSide: BorderSide.none,
@@ -505,7 +499,7 @@ class LongFormQualityControlScreen
                     Expanded(
                       child: Text(
                         labelText,
-                        style: Get.textTheme.bodyLarge!.copyWith(
+                        style: Get.textTheme.titleLarge!.copyWith(
                           fontSize: 26.sp,
                         ),
                       ),
@@ -521,16 +515,20 @@ class LongFormQualityControlScreen
             ],
           ),
           TextField(
-            onSubmitted: onSubmitted,
+            style: Get.textTheme.titleLarge!.copyWith(
+              fontSize: 24.sp,
+            ),
+            onChanged: onSubmitted,
             readOnly: readOnly ?? false,
             controller: textEditingController,
             keyboardType: keyboardType ?? TextInputType.number,
             decoration: InputDecoration(
               hintText: labelText,
-              hintStyle: Get.textTheme.bodyLarge!.copyWith(
-                  fontSize: 26.sp,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.grey),
+              hintStyle: Get.textTheme.titleLarge!.copyWith(
+                fontSize: 24.sp,
+                fontWeight: FontWeight.normal,
+                color: Colors.grey,
+              ),
               enabledBorder: const UnderlineInputBorder(
                 borderSide: BorderSide.none,
               ),
@@ -582,7 +580,7 @@ class LongFormQualityControlScreen
                     Expanded(
                       child: Text(
                         AppStrings.QCDOPEN6,
-                        style: Get.textTheme.bodyLarge!.copyWith(
+                        style: Get.textTheme.titleLarge!.copyWith(
                           fontSize: 26.sp,
                         ),
                       ),
@@ -599,13 +597,17 @@ class LongFormQualityControlScreen
             ],
           ),
           TextField(
+            style: Get.textTheme.titleLarge!.copyWith(
+              fontSize: 24.sp,
+            ),
             controller: controller.sensitechSerialNoController,
             decoration: InputDecoration(
               hintText: AppStrings.QCDOPEN6,
-              hintStyle: Get.textTheme.bodyLarge!.copyWith(
-                  fontSize: 26.sp,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.grey),
+              hintStyle: Get.textTheme.titleLarge!.copyWith(
+                fontSize: 24.sp,
+                fontWeight: FontWeight.normal,
+                color: Colors.grey,
+              ),
               enabledBorder: const UnderlineInputBorder(
                 borderSide: BorderSide.none,
               ),
@@ -685,6 +687,9 @@ class LongFormQualityControlScreen
             ],
           ),
           TextField(
+            style: Get.textTheme.titleLarge!.copyWith(
+              fontSize: 24.sp,
+            ),
             controller: controller.workDateController,
             readOnly: false,
             autofocus: false,
@@ -692,7 +697,7 @@ class LongFormQualityControlScreen
             decoration: InputDecoration(
               hintText: AppStrings.QCDOPEN7,
               hintStyle: Get.textTheme.bodyLarge!.copyWith(
-                  fontSize: 26.sp,
+                  fontSize: 24.sp,
                   fontWeight: FontWeight.normal,
                   color: Colors.grey),
               suffixIcon: GestureDetector(
@@ -758,14 +763,17 @@ class LongFormQualityControlScreen
             ],
           ),
           TextField(
+            style: Get.textTheme.titleLarge!.copyWith(
+              fontSize: 24.sp,
+            ),
             controller: controller.packDateController,
             readOnly: false,
             autofocus: false,
             focusNode: controller.packDateFocusNode,
             decoration: InputDecoration(
               hintText: AppStrings.packdate,
-              hintStyle: Get.textTheme.bodyLarge!.copyWith(
-                  fontSize: 26.sp,
+              hintStyle: Get.textTheme.titleLarge!.copyWith(
+                  fontSize: 24.sp,
                   fontWeight: FontWeight.normal,
                   color: Colors.grey),
               suffixIcon: GestureDetector(
@@ -858,7 +866,7 @@ class LongFormQualityControlScreen
                     Expanded(
                       child: Text(
                         labelText,
-                        style: GoogleFonts.poppins(
+                        style: Get.textTheme.bodyLarge!.copyWith(
                           fontSize: 26.sp,
                         ),
                       ),
@@ -881,20 +889,19 @@ class LongFormQualityControlScreen
                 value: selectedType,
                 child: Text(
                   selectedType,
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.normal,
-                    textStyle: TextStyle(color: AppColors.hintColor),
+                  style: Get.textTheme.titleLarge!.copyWith(
+                    fontSize: 24.sp,
+                    color: AppColors.hintColor,
                   ),
                 ),
               );
             }).toList(),
             decoration: InputDecoration(
               hintText: labelText,
-              hintStyle: GoogleFonts.poppins(
-                fontSize: 28.sp,
-                fontWeight: FontWeight.normal,
-                textStyle: TextStyle(color: AppColors.hintColor),
-              ),
+              hintStyle: Get.textTheme.titleLarge!.copyWith(
+                  fontSize: 24.sp,
+                  fontWeight: FontWeight.normal,
+                  color: AppColors.hintColor),
               enabledBorder: const UnderlineInputBorder(
                 borderSide: BorderSide.none,
               ),
@@ -946,7 +953,7 @@ class LongFormQualityControlScreen
                     Flexible(
                       child: Text(
                         labelText,
-                        style: Get.textTheme.bodyLarge!.copyWith(
+                        style: Get.textTheme.titleLarge!.copyWith(
                           fontSize: 26.sp,
                         ),
                       ),
@@ -968,17 +975,28 @@ class LongFormQualityControlScreen
               children: [
                 Text(
                   AppStrings.min,
-                  style: Get.textTheme.bodyLarge!
-                      .copyWith(fontSize: 22.sp, color: AppColors.lightGrey),
+                  style: Get.textTheme.bodyLarge!.copyWith(
+                    fontSize: 26.sp,
+                    color: AppColors.lightGrey,
+                  ),
                 ),
                 SizedBox(width: 50.w),
                 Flexible(
                     child: TextField(
+                  style: Get.textTheme.titleLarge!.copyWith(
+                    fontSize: 24.sp,
+                  ),
                   onSubmitted: onSubmittedMin,
                   readOnly: readOnly ?? false,
                   controller: minTextEditingController,
                   keyboardType: keyboardType ?? TextInputType.number,
                   decoration: InputDecoration(
+                    labelStyle: Get.textTheme.titleLarge!.copyWith(
+                      fontSize: 24.sp,
+                    ),
+                    hintStyle: Get.textTheme.titleLarge!.copyWith(
+                      fontSize: 24.sp,
+                    ),
                     contentPadding: EdgeInsets.only(top: 50.h),
                     border: UnderlineInputBorder(
                       borderSide: BorderSide(
@@ -1004,11 +1022,14 @@ class LongFormQualityControlScreen
                 Text(
                   AppStrings.max,
                   style: Get.textTheme.bodyLarge!
-                      .copyWith(fontSize: 22.sp, color: AppColors.lightGrey),
+                      .copyWith(fontSize: 26.sp, color: AppColors.lightGrey),
                 ),
                 SizedBox(width: 50.w),
                 Flexible(
                     child: TextField(
+                  style: Get.textTheme.titleLarge!.copyWith(
+                    fontSize: 24.sp,
+                  ),
                   onSubmitted: onSubmittedMax,
                   readOnly: readOnly ?? false,
                   controller: maxTextEditingController,

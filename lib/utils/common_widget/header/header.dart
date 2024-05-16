@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/services/network_request_service/api_urls.dart';
 import 'package:pverify/utils/common_widget/header/header_controller.dart';
 import 'package:pverify/utils/images.dart';
@@ -31,20 +30,20 @@ Widget baseHeaderView(String title, bool isVersionShow) {
               ),
               Text(
                 title,
-                style: GoogleFonts.poppins(
-                    fontSize: 38.sp,
-                    fontWeight: FontWeight.w600,
-                    textStyle: TextStyle(color: AppColors.white)),
+                style: Get.textTheme.titleLarge!.copyWith(
+                  fontSize: 38.sp,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const Spacer(),
               isVersionShow
                   ? Obx(
                       () => Text(
                         headerController.appVersion.value,
-                        style: GoogleFonts.poppins(
-                            fontSize: 40.sp,
-                            fontWeight: FontWeight.bold,
-                            textStyle: TextStyle(color: AppColors.white)),
+                        style: Get.textTheme.titleLarge!.copyWith(
+                          fontSize: 40.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     )
                   : Container(),
@@ -81,9 +80,9 @@ Widget getEnvText() {
   }
   return Text(
     env,
-    style: GoogleFonts.poppins(
-        fontSize: 20.sp,
-        fontWeight: FontWeight.bold,
-        textStyle: TextStyle(color: AppColors.white)),
+    style: Get.textTheme.titleLarge!.copyWith(
+      fontSize: 20.sp,
+      fontWeight: FontWeight.bold,
+    ),
   );
 }
