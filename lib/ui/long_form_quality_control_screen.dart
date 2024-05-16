@@ -53,11 +53,7 @@ class LongFormQualityControlScreen
                   }
                 },
                 onSpecAttribueClick: () {
-                  if (controller.isValidQuantityRejected.value) {
-                    Get.back();
-                  } else {
-                    controller.checkQuantityAlert();
-                  }
+                  controller.specAttributOnClick(context);
                   log("onSpecAttribueClick");
                 },
               ),

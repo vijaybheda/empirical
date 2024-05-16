@@ -11,8 +11,12 @@ import 'package:pverify/models/quality_control_item.dart';
 import 'package:pverify/models/reason_item.dart';
 import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
+import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
+import 'package:pverify/ui/spec_attributes/specification_attribute_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/const.dart';
+import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/utils.dart';
 
 class LongFormQualityControlScreenController extends GetxController {
@@ -107,7 +111,6 @@ class LongFormQualityControlScreenController extends GetxController {
       itemUniqueId,
       lotSize;
   String dateTypeDesc = '';
-
   bool? isMyInspectionScreen;
   bool? partialCompleted;
   bool? completed;
@@ -146,6 +149,7 @@ class LongFormQualityControlScreenController extends GetxController {
     lotNo = args[Consts.LOT_NO] ?? '';
     itemSKU = args[Consts.ITEM_SKU];
     dateTypeDesc = args[Consts.DATETYPE] ?? '';
+    callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
 
     if (inspectionId != null) {
       loadFiledsFromDB(args);
@@ -444,7 +448,6 @@ class LongFormQualityControlScreenController extends GetxController {
 
     log("HERE IS WORKDATE $workDateString");
     log("HERE IS PACKDATE $packDateString");
-    packDateString = qualityControlItems!.packDate!;
     if (packDateString.isNotEmpty) {
       packDate = Utils().dateFormat.parse(packDateString);
       if (packDate != null) {
@@ -818,5 +821,90 @@ class LongFormQualityControlScreenController extends GetxController {
 
   checkQuantityAlert() {
     Utils.showErrorAlertDialog("Please enter a valid quantity");
+  }
+
+  specAttributOnClick(BuildContext context) {
+    String? qtyShippedString = qtyShippedController.text;
+    if (qtyShippedString.isNotEmpty) {
+      int qtyShipped = int.tryParse(qtyShippedString) ?? 0;
+      if (qtyShipped > 3000) {
+        AppAlertDialog.confirmationAlert(
+          context,
+          "",
+          "Are you sure you want to enter $qtyShipped quantity",
+          onYesTap: () {
+            if (isValidQuantityRejected.value) {
+              saveFieldsToDB();
+              startSpecificationAttributesActivity();
+            } else {
+              Utils.showErrorAlertDialog("Please enter a valid quantity");
+            }
+          },
+          onNOTap: () {
+            Get.back();
+            qtyShippedController.text = "";
+            qtyAprrovedController.text = "";
+          },
+        );
+      } else {
+        if (isValidQuantityRejected.value) {
+          saveFieldsToDB();
+          startSpecificationAttributesActivity();
+        } else {
+          Utils.showErrorAlertDialog("Please enter a valid quantity");
+        }
+      }
+    } else {
+      if (isValidQuantityRejected.value) {
+        saveFieldsToDB();
+        startSpecificationAttributesActivity();
+      } else {
+        Utils.showErrorAlertDialog("Please enter a valid quantity");
+      }
+    }
+  }
+
+  String get lotNoString => lotNoController.text.trim();
+  startSpecificationAttributesActivity() {
+    Map<String, dynamic> passingData = {
+      Consts.SERVER_INSPECTION_ID: inspectionId,
+      Consts.COMPLETED: completed,
+      Consts.PARTNER_NAME: partnerName,
+      Consts.PARTNER_ID: partnerID,
+      Consts.CARRIER_NAME: carrierName,
+      Consts.CARRIER_ID: carrierID,
+      Consts.COMMODITY_NAME: commodityName,
+      Consts.COMMODITY_ID: commodityID,
+      Consts.SPECIFICATION_NUMBER: specificationNumber,
+      Consts.SPECIFICATION_VERSION: specificationVersion,
+      Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
+      Consts.SPECIFICATION_NAME: specificationName,
+      Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
+      Consts.ITEM_SKU: itemSKU,
+      Consts.ITEM_SKU_NAME: itemSkuName,
+      Consts.ITEM_SKU_ID: itemSkuId,
+      Consts.ITEM_UNIQUE_ID: itemUniqueId,
+      Consts.LOT_NO: lotNoString,
+      Consts.PACK_DATE: packDate?.millisecondsSinceEpoch.toString(),
+      Consts.LOT_SIZE: lotSize,
+      Consts.PO_NUMBER: poNumber,
+      Consts.PO_LINE_NO: poLineNo,
+      Consts.PRODUCT_TRANSFER: productTransfer,
+      Consts.DATETYPE: dateTypeDesc,
+    };
+
+    Get.to(() => const SpecificationAttributesScreen(), arguments: passingData);
+    /* if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+      Get.offAll(
+        () => const NewPurchaseOrderDetailsScreen(),
+        arguments: passingData,
+      );
+    } else {
+      final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+      Get.to(
+        () => PurchaseOrderDetailsScreen(tag: tag),
+        arguments: passingData,
+      );
+    } */
   }
 }

@@ -121,11 +121,8 @@ class AppAlertDialog {
   }
 
   static void confirmationAlert(
-    BuildContext context,
-    String title,
-    String message, {
-    required Function()? onYesTap,
-  }) {
+      BuildContext context, String title, String message,
+      {required Function()? onYesTap, Function()? onNOTap}) {
     AdaptiveAlert.customAlert(context,
         title: Text(
           title,
@@ -143,9 +140,10 @@ class AppAlertDialog {
         ),
         actions: [
           TextButton(
-              onPressed: () {
-                Get.back();
-              },
+              onPressed: onNOTap ??
+                  () {
+                    Get.back();
+                  },
               child: Text(
                 AppStrings.cancel,
                 style: GoogleFonts.poppins(
