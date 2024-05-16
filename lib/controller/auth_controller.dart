@@ -240,7 +240,7 @@ class AuthController extends GetxController {
     // updateWebservice.RequestUpdateInfo();
   }
 
-  Future<void> downloadCloudData(BuildContext context) async {
+  Future<void> downloadCloudData() async {
     if (appStorage.getBool(StorageKey.kIsCSVDownloaded1) == false) {
       if (await Utils.hasInternetConnection()) {
         if (globalConfigController.wifiLevel >= 2) {
@@ -253,11 +253,11 @@ class AuthController extends GetxController {
         } else {
           Utils.hideLoadingDialog();
           AppAlertDialog.validateAlerts(
-              context, AppStrings.error, AppStrings.downloadWifiError);
+              Get.context!, AppStrings.error, AppStrings.downloadWifiError);
         }
       } else {
         AppAlertDialog.validateAlerts(
-            context, AppStrings.error, AppStrings.betterWifiConnWarning);
+            Get.context!, AppStrings.error, AppStrings.betterWifiConnWarning);
       }
     } else {
       final String tag = DateTime.now().millisecondsSinceEpoch.toString();

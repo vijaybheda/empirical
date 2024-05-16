@@ -238,7 +238,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
       SizedBox(
         height: 60.h,
       ),
-       controller.activeTabIndex.value == 0
+      controller.activeTabIndex.value == 0
           ? Expanded(
               flex: 1,
               child: controller
@@ -485,25 +485,21 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                       fontSize: 35.sp,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textFieldText_Color),
-                  onClickAction: () => {
-                        if (controller.isValidDefects())
-                          {
-                            if (controller.validateSameDefects())
-                              {}
-                            else
-                              {
-                                AppAlertDialog.validateAlerts(
-                                    context,
-                                    AppStrings.error,
-                                    AppStrings.sameDefectEntryAlert)
-                              }
-                          }
-                        else
-                          {
-                            AppAlertDialog.validateAlerts(context,
-                                AppStrings.error, AppStrings.defectEntryAlert)
-                          }
-                      }),
+                  onClickAction: () async {
+                    if (controller.validateDefects()) {
+                      if (controller.validateSameDefects()) {
+                        // TODO: Save the defects
+                        await controller.saveSamplesToDB();
+                        controller.getToQCDetailShortForm();
+                      } else {
+                        AppAlertDialog.validateAlerts(context, AppStrings.error,
+                            AppStrings.sameDefectEntryAlert);
+                      }
+                    } else {
+                      AppAlertDialog.validateAlerts(context, AppStrings.error,
+                          AppStrings.defectEntryAlert);
+                    }
+                  }),
             ],
           ),
         ),
@@ -713,285 +709,273 @@ Widget defectRow({
 }) {
   return Padding(
     padding: EdgeInsets.symmetric(horizontal: 50.w),
-    child: Column(
-      children: [
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Flexible(
-              flex: 1,
-              child: InkWell(
-                onTap: () {
-                  AppAlertDialog.confirmationAlert(
-                      context, AppStrings.alert, AppStrings.removeDefect,
-                      onYesTap: () {
-                    controller.removeDefectRow(
-                      setIndex: position,
-                      rowIndex: defectItemIndex,
-                    );
-                  });
-                },
-                child: Image.asset(
-                  AppImages.ic_minus,
-                  width: 50.w,
-                  fit: BoxFit.contain,
-                ),
-              ),
+    child: Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.h),
+      child: Row(
+        children: [
+          InkWell(
+            onTap: () {
+              AppAlertDialog.confirmationAlert(
+                  context, AppStrings.alert, AppStrings.removeDefect,
+                  onYesTap: () {
+                controller.removeDefectRow(
+                  setIndex: position,
+                  rowIndex: defectItemIndex,
+                );
+              });
+            },
+            child: Image.asset(
+              AppImages.ic_minus,
+              width: 50.w,
+              fit: BoxFit.contain,
             ),
-            SizedBox(width: 10.w),
-            Flexible(
-              flex: 3,
-              child: Container(
-                width: 120,
-                padding: const EdgeInsets.only(top: 5),
-                child: Obx(
-                  () => DropdownButton<String>(
-                    isExpanded: true,
-                    dropdownColor: Theme.of(context).colorScheme.background,
-                    iconEnabledColor: AppColors.hintColor,
-                    value: controller.sampleSetObs[position]
-                            .defectItem?[defectItemIndex].name ??
-                        'Select',
-                    icon:
-                        const Icon(Icons.arrow_drop_down, color: Colors.white),
-                    items: controller.defectSpinnerNames.map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
+          ),
+          SizedBox(width: 10.w),
+          Expanded(
+            flex: 6,
+            child: Container(
+              width: 120,
+              padding: const EdgeInsets.only(top: 5),
+              child: Obx(
+                () => DropdownButton<String>(
+                  isExpanded: true,
+                  dropdownColor: Theme.of(context).colorScheme.background,
+                  iconEnabledColor: AppColors.hintColor,
+                  value: controller.sampleSetObs[position]
+                          .defectItem?[defectItemIndex].name ??
+                      'Select',
+                  icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                  items: controller.defectSpinnerNames.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Container(
+                        width: double.infinity,
                         child: Text(
                           value,
                           overflow: TextOverflow.ellipsis,
                         ),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      controller.onDropDownChange(
-                        id: controller.defectSpinnerIds[controller
-                            .defectSpinnerNames
-                            .indexWhere((obj) => obj == value)],
-                        value: value ?? "",
-                        setIndex: position,
-                        rowIndex: defectItemIndex,
-                      );
-                      controller.defectsSelect_Action(defectItem);
-                    },
-                  ),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    controller.onDropDownChange(
+                      id: controller.defectSpinnerIds[controller
+                          .defectSpinnerNames
+                          .indexWhere((obj) => obj == value)],
+                      value: value ?? "",
+                      setIndex: position,
+                      rowIndex: defectItemIndex,
+                    );
+                    controller.defectsSelect_Action(defectItem);
+                  },
                 ),
               ),
             ),
-            SizedBox(width: 20.w),
-            controller.hasSeverityInjury
-                ? Flexible(
-                    flex: 1,
-                    child: BoxTextField1(
-                      textalign: TextAlign.center,
-                      keyboardType: TextInputType.number,
-                      controller: defectItem?.injuryTextEditingController,
-                      onTap: () {
-                        defectItem?.injuryTextEditingController?.text = '';
-                      },
-                      errorText: '',
-                      onEditingCompleted: () {
-                        FocusScope.of(context).unfocus();
-                      },
-                      onChanged: (v) {
-                        controller.onTextChange(
-                          value: v,
-                          setIndex: position,
-                          rowIndex: defectItemIndex,
-                          fieldName: AppStrings.injury,
-                          context: context,
-                        );
-                      },
-                    ),
-                  )
-                : const Flexible(flex: 1, child: SizedBox()),
-            SizedBox(width: 20.w),
-            controller.hasSeverityDamage
-                ? Flexible(
-                    flex: 1,
-                    child: BoxTextField1(
-                      textalign: TextAlign.center,
-                      keyboardType: TextInputType.number,
-                      controller: defectItem?.damageTextEditingController,
-                      onTap: () {
-                        defectItem?.damageTextEditingController?.text = '';
-                      },
-                      errorText: '',
-                      onEditingCompleted: () {
-                        FocusScope.of(context).unfocus();
-                      },
-                      onChanged: (v) {
-                        controller.onTextChange(
-                          value: v,
-                          setIndex: position,
-                          rowIndex: defectItemIndex,
-                          fieldName: AppStrings.damage,
-                          context: context,
-                        );
-                      },
-                    ),
-                  )
-                : const Flexible(flex: 1, child: SizedBox()),
-            SizedBox(width: 20.w),
-            controller.hasSeveritySeriousDamage
-                ? Flexible(
-                    flex: 1,
-                    child: BoxTextField1(
-                      textalign: TextAlign.center,
-                      keyboardType: TextInputType.number,
-                      controller: defectItem?.sDamageTextEditingController,
-                      onTap: () {
-                        defectItem?.sDamageTextEditingController?.text = '';
-                      },
-                      errorText: '',
-                      onEditingCompleted: () {
-                        FocusScope.of(context).unfocus();
-                      },
-                      onChanged: (v) {
-                        controller.onTextChange(
-                          value: v,
-                          setIndex: position,
-                          rowIndex: defectItemIndex,
-                          fieldName: AppStrings.seriousDamage,
-                          context: context,
-                        );
-                      },
-                    ),
-                  )
-                : const Flexible(flex: 1, child: SizedBox()),
-            SizedBox(width: 20.w),
-            controller.hasSeverityVerySeriousDamage
-                ? Flexible(
-                    flex: 1,
-                    child: BoxTextField1(
-                      textalign: TextAlign.center,
-                      controller: defectItem?.vsDamageTextEditingController,
-                      keyboardType: TextInputType.number,
-                      onTap: () {
-                        defectItem?.vsDamageTextEditingController?.text = '';
-                      },
-                      errorText: '',
-                      onEditingCompleted: () {
-                        FocusScope.of(context).unfocus();
-                      },
-                      onChanged: (v) {
-                        controller.onTextChange(
-                          value: v,
-                          setIndex: position,
-                          rowIndex: defectItemIndex,
-                          fieldName: AppStrings.verySeriousDamage,
-                          context: context,
-                        );
-                      },
-                    ),
-                  )
-                : const Flexible(flex: 1, child: SizedBox()),
-            SizedBox(width: controller.hasSeveritySeriousDamage ? 0 : 20.w),
-            controller.hasSeverityDecay
-                ? Flexible(
-                    flex: 1,
-                    child: BoxTextField1(
-                      textalign: TextAlign.center,
-                      controller: defectItem?.decayTextEditingController,
-                      keyboardType: TextInputType.number,
-                      onTap: () {
-                        defectItem?.decayTextEditingController?.text = '';
-                      },
-                      errorText: '',
-                      onEditingCompleted: () {
-                        FocusScope.of(context).unfocus();
-                      },
-                      onChanged: (v) {
-                        controller.onTextChange(
-                          value: v,
-                          setIndex: position,
-                          rowIndex: defectItemIndex,
-                          fieldName: AppStrings.decay,
-                          context: context,
-                        );
-                      },
-                    ),
-                  )
-                : const Flexible(flex: 1, child: SizedBox()),
-            SizedBox(width: 10.w),
-            Flexible(
-              flex: 1,
-              child: GestureDetector(
-                onTap: () {
-                  controller.navigateToCameraScreen(
-                    position: position,
+          ),
+          SizedBox(width: 20.w),
+          controller.hasSeverityInjury
+              ? Expanded(
+                  flex: 1,
+                  child: BoxTextField1(
+                    textalign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    controller: defectItem?.injuryTextEditingController,
+                    onTap: () {
+                      defectItem?.injuryTextEditingController?.text = '';
+                    },
+                    errorText: '',
+                    onEditingCompleted: () {
+                      FocusScope.of(context).unfocus();
+                    },
+                    onChanged: (v) {
+                      controller.onTextChange(
+                        value: v,
+                        setIndex: position,
+                        rowIndex: defectItemIndex,
+                        fieldName: AppStrings.injury,
+                        context: context,
+                      );
+                    },
+                  ),
+                )
+              : SizedBox(),
+          SizedBox(width: 20.w),
+          controller.hasSeverityDamage
+              ? Expanded(
+                  flex: 1,
+                  child: BoxTextField1(
+                    textalign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    controller: defectItem?.damageTextEditingController,
+                    onTap: () {
+                      defectItem?.damageTextEditingController?.text = '';
+                    },
+                    errorText: '',
+                    onEditingCompleted: () {
+                      FocusScope.of(context).unfocus();
+                    },
+                    onChanged: (v) {
+                      controller.onTextChange(
+                        value: v,
+                        setIndex: position,
+                        rowIndex: defectItemIndex,
+                        fieldName: AppStrings.damage,
+                        context: context,
+                      );
+                    },
+                  ),
+                )
+              : SizedBox(),
+          SizedBox(width: 20.w),
+          controller.hasSeveritySeriousDamage
+              ? Expanded(
+                  flex: 1,
+                  child: BoxTextField1(
+                    textalign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    controller: defectItem?.sDamageTextEditingController,
+                    onTap: () {
+                      defectItem?.sDamageTextEditingController?.text = '';
+                    },
+                    errorText: '',
+                    onEditingCompleted: () {
+                      FocusScope.of(context).unfocus();
+                    },
+                    onChanged: (v) {
+                      controller.onTextChange(
+                        value: v,
+                        setIndex: position,
+                        rowIndex: defectItemIndex,
+                        fieldName: AppStrings.seriousDamage,
+                        context: context,
+                      );
+                    },
+                  ),
+                )
+              : SizedBox(),
+          SizedBox(width: 20.w),
+          controller.hasSeverityVerySeriousDamage
+              ? Expanded(
+                  flex: 1,
+                  child: BoxTextField1(
+                    textalign: TextAlign.center,
+                    controller: defectItem?.vsDamageTextEditingController,
+                    keyboardType: TextInputType.number,
+                    onTap: () {
+                      defectItem?.vsDamageTextEditingController?.text = '';
+                    },
+                    errorText: '',
+                    onEditingCompleted: () {
+                      FocusScope.of(context).unfocus();
+                    },
+                    onChanged: (v) {
+                      controller.onTextChange(
+                        value: v,
+                        setIndex: position,
+                        rowIndex: defectItemIndex,
+                        fieldName: AppStrings.verySeriousDamage,
+                        context: context,
+                      );
+                    },
+                  ),
+                )
+              : SizedBox(),
+          SizedBox(width: controller.hasSeveritySeriousDamage ? 0 : 20.w),
+          controller.hasSeverityDecay
+              ? Expanded(
+                  flex: 1,
+                  child: BoxTextField1(
+                    textalign: TextAlign.center,
+                    controller: defectItem?.decayTextEditingController,
+                    keyboardType: TextInputType.number,
+                    onTap: () {
+                      defectItem?.decayTextEditingController?.text = '';
+                    },
+                    errorText: '',
+                    onEditingCompleted: () {
+                      FocusScope.of(context).unfocus();
+                    },
+                    onChanged: (v) {
+                      controller.onTextChange(
+                        value: v,
+                        setIndex: position,
+                        rowIndex: defectItemIndex,
+                        fieldName: AppStrings.decay,
+                        context: context,
+                      );
+                    },
+                  ),
+                )
+              : SizedBox(),
+          SizedBox(width: 10.w),
+          GestureDetector(
+            onTap: () {
+              controller.navigateToCameraScreen(
+                position: position,
+                rowIndex: defectItemIndex,
+                dataName: defectItem?.name ?? '',
+              );
+            },
+            child: Icon(
+              Icons.photo_camera,
+              color: AppColors.iconBlue,
+              size: 90.w,
+            ),
+          ),
+          SizedBox(width: 10.w),
+          GestureDetector(
+            onTap: () {
+              AppAlertDialog.textfiAlert(
+                context,
+                AppStrings.enterComment,
+                '',
+                onYesTap: (value) {
+                  defectItem?.instruction = value;
+                  controller.onCommentAdd(
+                    value: value ?? "",
+                    setIndex: position,
                     rowIndex: defectItemIndex,
                   );
                 },
-                child: Icon(
-                  Icons.photo_camera,
-                  color: AppColors.iconBlue,
-                  size: 90.w,
-                ),
-              ),
+                windowWidth: MediaQuery.of(context).size.width * 0.9,
+                isMultiLine: true,
+                value: defectItem?.instruction,
+              );
+            },
+            child: Image.asset(
+              (defectItem?.instruction?.isNotEmpty ?? false)
+                  ? AppImages.ic_specCommentsAdded
+                  : AppImages.ic_specComments,
+              width: 80.w,
+              fit: BoxFit.contain,
             ),
-            SizedBox(width: 10.w),
-            Flexible(
-              flex: 1,
-              child: GestureDetector(
-                onTap: () {
-                  AppAlertDialog.textfiAlert(
-                    context,
-                    AppStrings.enterComment,
-                    '',
-                    onYesTap: (value) {
-                      defectItem?.instruction = value;
-                      controller.onCommentAdd(
-                        value: value ?? "",
-                        setIndex: position,
-                        rowIndex: defectItemIndex,
-                      );
-                    },
-                    windowWidth: MediaQuery.of(context).size.width * 0.9,
-                    isMultiLine: true,
-                    value: defectItem?.instruction,
-                  );
-                },
-                child: Image.asset(
-                  (defectItem?.instruction?.isNotEmpty ?? false)
-                      ? AppImages.ic_specCommentsAdded
-                      : AppImages.ic_specComments,
-                  width: 80.w,
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-            SizedBox(width: 10.h),
-            Flexible(
-              flex: 1,
-              child: Obx(
-                () => InkWell(
-                  onTap: () {
-                    // controller.visisblePopupIndex.value = setIndex;
-                    // controller.isVisibleInfoPopup.value = true;
+          ),
+          SizedBox(width: 10.h),
+          Obx(
+            () => InkWell(
+              onTap: () {
+                // controller.visisblePopupIndex.value = setIndex;
+                // controller.isVisibleInfoPopup.value = true;
 
-                    DefectsInfoDialog defectsInfoDialog = DefectsInfoDialog(
-                      position: position,
-                      commodityID: controller.commodityID!,
-                      commodityList: controller.appStorage.commodityList!,
-                    );
+                DefectsInfoDialog defectsInfoDialog = DefectsInfoDialog(
+                  position: position,
+                  commodityID: controller.commodityID!,
+                  commodityList: controller.appStorage.commodityList!,
+                );
 
-                    defectsInfoDialog.showDefectDialog(Get.context!);
-                  },
-                  child: Image.asset(
-                    controller.informationIconEnabled.value
-                        ? AppImages.ic_information
-                        : AppImages.ic_informationDisabled,
-                    width: 80.w,
-                    fit: BoxFit.contain,
-                  ),
-                ),
+                defectsInfoDialog.showDefectDialog(Get.context!);
+              },
+              child: Image.asset(
+                controller.informationIconEnabled.value
+                    ? AppImages.ic_information
+                    : AppImages.ic_informationDisabled,
+                width: 80.w,
+                fit: BoxFit.contain,
               ),
             ),
-          ],
-        ),
-        SizedBox(height: 10.h),
-      ],
+          ),
+        ],
+      ),
     ),
   );
 }
@@ -1005,9 +989,9 @@ Widget defectCategoryTagRow(DefectsScreenController defectsScreenController) {
     padding: EdgeInsets.symmetric(horizontal: 50.w),
     child: Row(
       children: [
-        Flexible(flex: 1, child: Container()),
+        Flexible(flex: 5, child: Container()),
         const SizedBox(width: 15),
-        Flexible(flex: 2, child: Container()),
+        Flexible(flex: 4, child: Container()),
         SizedBox(
             width: defectsScreenController.hasSeveritySeriousDamage ? 0 : 15),
         defectsScreenController.hasSeverityInjury
@@ -1064,8 +1048,6 @@ Widget defectCategoryTagRow(DefectsScreenController defectsScreenController) {
         Flexible(child: Container()),
         const SizedBox(width: 10),
         Flexible(child: Container()),
-        const SizedBox(width: 10),
-        Flexible(child: Container()),
       ],
     ),
   );
@@ -1074,15 +1056,14 @@ Widget defectCategoryTagRow(DefectsScreenController defectsScreenController) {
 Widget defectCategoryTag({required String tag, TextStyle? textStyle}) {
   return Container(
     decoration: BoxDecoration(
-      border: Border.all(color: AppColors.lightGrey), // Border color
-      borderRadius: BorderRadius.circular(15.0), // Border radius
-    ),
-    width: 72.w,
+        border: Border.all(color: AppColors.lightGrey),
+        borderRadius: BorderRadius.circular(15)),
+    width: 80.w,
     child: Text(
         textAlign: TextAlign.center,
         tag,
         style: GoogleFonts.poppins(
-          fontSize: 32.sp,
+          fontSize: 30.sp,
           fontWeight: FontWeight.w600,
           textStyle: TextStyle(
             color: AppColors.textFieldText_Color,
