@@ -40,8 +40,8 @@ class DefectsInfoDialog {
         item!.defectList!.isNotEmpty) {
       for (int i = 0; i < item!.defectList!.length; i++) {
         if (item!.defectList![i].id == defectid) {
-          if (item!.defectList![i].instruction != null) {
-            instruction = item!.defectList![i].instruction!;
+          if (item!.defectList![i].inspectionInstruction != null) {
+            instruction = item!.defectList![i].inspectionInstruction!;
           }
           if (item!.defectList![i].attachments != null) {
             attachments = item!.defectList![i].attachments!;

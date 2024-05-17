@@ -10,7 +10,6 @@ import 'package:pverify/models/commodity_item.dart';
 import 'package:pverify/models/defect_categories.dart';
 import 'package:pverify/models/defect_instruction_attachment.dart';
 import 'package:pverify/models/defect_item.dart';
-import 'package:pverify/models/defects_data.dart';
 import 'package:pverify/models/inspection_defect.dart';
 import 'package:pverify/models/inspection_sample.dart';
 import 'package:pverify/models/sample_data.dart';
@@ -40,8 +39,9 @@ class DefectsScreenController extends GetxController {
   bool isDefectEntry = true;
 
   RxInt activeTabIndex = 1.obs;
-  RxList<SampleSetsObject> sampleSetObs = <SampleSetsObject>[].obs;
-  SampleSetsObject tempSampleObj = SampleSetsObject();
+  RxList<SampleData> sampleList = <SampleData>[].obs;
+
+  // SampleData tempSampleObj = SampleData();
 
   int serverInspectionID = -1;
   String partnerName = "";
@@ -141,7 +141,8 @@ class DefectsScreenController extends GetxController {
   List<String> seriousDefectList = [];
   Map<String, int> seriousDefectCountMap = <String, int>{};
   Map<int, String>? defectCategoriesMap;
-  List<SampleData> sampleList = [];
+
+  // List<SampleData> sampleList = [];
   String poNumber = '', sealNumber = '';
 
   String? lotNo, itemSku, itemUniqueId, lotSize;
@@ -164,6 +165,7 @@ class DefectsScreenController extends GetxController {
   List<String> defectSpinnerNames = <String>[].obs;
   List<int> defectSpinnerIds = <int>[].obs;
   RxBool informationIconEnabled = false.obs;
+
   // RxBool isVisibleInfoPopup = false.obs;
   // RxInt visisblePopupIndex = 0.obs;
   RxBool isVisibleSpecificationPopup = false.obs;
@@ -291,7 +293,7 @@ class DefectsScreenController extends GetxController {
             await dao.findInspectionDefects(temp.sampleId!);
         if (defectList.isNotEmpty) {
           hasDefects = true;
-          defectDataMap[temp.name] = defectList;
+          defectDataMap.putIfAbsent(temp.name, () => defectList);
         }
         // loadDataIfNotEmpty(i, temp);
       }
@@ -313,14 +315,35 @@ class DefectsScreenController extends GetxController {
     return true;
   }
 
-  void addSample(String setsValue) {
-    int id = sampleSetObs.isNotEmpty
-        ? (int.tryParse(sampleSetObs.reversed.last.sampleId ?? "1") ?? 1) + 1
+  void addSample() {
+    int setsValue = int.tryParse(sizeOfNewSetTextController.text) ?? 0;
+    int id = sampleList.isNotEmpty
+        ? (sampleList.reversed.last.sampleId ?? 1) + 1
         : 1;
-    tempSampleObj = SampleSetsObject();
-    tempSampleObj.sampleValue = setsValue;
-    tempSampleObj.sampleId = id.toString();
-    sampleSetObs.insert(0, tempSampleObj);
+    // SampleData tempSampleObj = SampleData();
+    // tempSampleObj.sampleValue = setsValue;
+    // tempSampleObj.sampleId = id.toString();
+    // sampleSetObs.insert(0, tempSampleObj);
+
+    final int index;
+    final int pos = (sampleList.length - 1);
+    if (sampleList.isNotEmpty) {
+      index = sampleList.elementAt(pos).setNumber + 1;
+    } else {
+      index = sampleList.length + 1;
+    }
+
+    final String name = "Set #$index";
+    final int timeStamp = DateTime.now().millisecondsSinceEpoch;
+    SampleData sampleData = SampleData(
+        sampleSize: setsValue,
+        name: name,
+        setNumber: index,
+        timeCreated: timeStamp,
+        // lotNumber: 0,
+        // packDate: "",
+        complete: false);
+    sampleList.add(sampleData);
     sizeOfNewSetTextController.text = "";
 
     populateSeverityList();
@@ -343,12 +366,12 @@ class DefectsScreenController extends GetxController {
       }
     }
 
-    sampleSetObs.refresh();
+    sampleList.refresh();
     update();
   }
 
   void addDefectRow({required int setIndex}) {
-    DefectItem emptyDefectItem = DefectItem(
+    /*DefectItem emptyDefectItem = DefectItem(
       injuryTextEditingController: TextEditingController(text: '0'),
       damageTextEditingController: TextEditingController(text: '0'),
       sDamageTextEditingController: TextEditingController(text: '0'),
@@ -364,23 +387,175 @@ class DefectsScreenController extends GetxController {
       sampleSetObs[setIndex].defectItem?.add(emptyDefectItem);
     }
     sampleSetObs.refresh();
+    update();*/
+
+    String dataName = sampleList.elementAt(setIndex).name;
+    List<InspectionDefect> defectList;
+
+    if (defectDataMap.containsKey(dataName)) {
+      defectList = defectDataMap[dataName]!;
+
+      // FIXME: remove static data
+      InspectionDefect inspectionDefect = InspectionDefect(
+        createdTime: DateTime.now().millisecondsSinceEpoch,
+        comment: "",
+        attachmentIds: [],
+        defectCategory: '',
+        damageCnt: 1,
+        decayCnt: 1,
+        defectId: 1,
+        injuryCnt: 1,
+        inspectionDefectId: 1,
+        sampleId: 1,
+        seriousDamageCnt: 1,
+        severityDamageId: 1,
+        severityDecayId: 1,
+        severityInjuryId: 1,
+        severitySeriousDamageId: 1,
+        severityVerySeriousDamageId: 1,
+        verySeriousDamageCnt: 1,
+        spinnerSelection: 'Color',
+      );
+      defectList.add(inspectionDefect);
+      sampleList[setIndex] =
+          sampleList[setIndex].copyWith(defectItems: defectList);
+      defectDataMap.putIfAbsent(dataName, () => defectList);
+    } else {
+      // legendLayout.visible = true;
+      if (!hasSeverityInjury) {
+        // injuryLayout.visible = false;
+      } else {
+        // injuryLayout.visible = true;
+      }
+
+      if (!hasSeverityDamage) {
+        // damageLayout.visible = false;
+      } else {
+        // damageLayout.visible = true;
+      }
+
+      if (!hasSeveritySeriousDamage) {
+        // seriousDamageLayout.visible = false;
+      } else {
+        // seriousDamageLayout.visible = true;
+      }
+
+      if (!hasSeverityVerySeriousDamage) {
+        // verySeriousDamageLayoutVisible = false;
+      } else {
+        // verySeriousDamageLayoutVisible = true;
+      }
+
+      if (!hasSeverityDecay) {
+        // decayLayoutVisible = false;
+      } else {
+        // decayLayoutVisible = true;
+      }
+
+      // sampleLine1Visible = true;
+      // sampleLine2Visible = true;
+      // defectsListview.visible = true;
+      defectList = [];
+
+      // FIXME: remove static data
+      InspectionDefect inspectionDefect = InspectionDefect(
+        createdTime: DateTime.now().millisecondsSinceEpoch,
+        comment: "",
+        attachmentIds: [],
+        defectCategory: '',
+        damageCnt: 1,
+        decayCnt: 1,
+        defectId: 1,
+        injuryCnt: 1,
+        inspectionDefectId: 1,
+        sampleId: 1,
+        seriousDamageCnt: 1,
+        severityDamageId: 1,
+        severityDecayId: 1,
+        severityInjuryId: 1,
+        severitySeriousDamageId: 1,
+        severityVerySeriousDamageId: 1,
+        verySeriousDamageCnt: 1,
+        spinnerSelection: 'Color',
+      );
+
+      defectList.add(inspectionDefect);
+      sampleList[setIndex] =
+          sampleList[setIndex].copyWith(defectItems: defectList);
+      defectDataMap.putIfAbsent(dataName, () => defectList);
+    }
+    final int pos = (sampleList.length - 1);
+    loadDefectData((defectList.length - 1), defectList, dataName, pos);
+
+    hideKeypad();
     update();
   }
 
-  void removeDefectRow({required int setIndex, required int rowIndex}) {
-    sampleSetObs[setIndex].defectItem?.removeAt(rowIndex);
-    sampleSetObs.refresh();
-    update();
+  Future<void> removeDefectRow(
+      {required int setIndex, required int rowIndex}) async {
+    /*sampleList[setIndex].defectItem?.removeAt(rowIndex);
+    sampleList.refresh();
+    update();*/
+
+    ///
+    /*InspectionDefect inspectionDefect = defectsView.tag as InspectionDefect;
+
+    List<InspectionDefect> defectList = [];
+
+    if (defectDataMap.containsKey(dataName)) {
+      defectList = defectDataMap[dataName]!;
+
+      int? defectId = inspectionDefect.inspectionDefectId;
+      List<int>? attachmentIds = inspectionDefect.attachmentIds;
+
+      defectList.remove(inspectionDefect);
+      if (defectList.isEmpty) {
+        defectDataMap.remove(dataName);
+      }
+
+      if (defectId != null) {
+        await dao.deleteInspectionDefectByDefectId(defectId);
+        await dao.deleteDefectAttachmentsByDefectId(defectId);
+
+        if (attachmentIds != null && attachmentIds.isNotEmpty) {
+          for (int j = 0; j < attachmentIds.length; j++) {
+            dao.deleteDefectAttachmentByAttachmentId(attachmentIds[j]);
+          }
+        }
+      }
+    }
+
+    // defectsView.parent.remove(defectsView);
+
+    if (defectList.isNotEmpty) {
+      // legendLayout.visible = true;
+      if (!hasSeverityInjury) {
+        // injuryLayout.visible = false;
+      } else {
+        // injuryLayoutVisible = true;
+      }
+
+      // sampleLine1Visible = true;
+      // sampleLine2Visible = true;
+      // defectsListviewVisible = true;
+    } else {
+      // legendLayoutVisible = false;
+      // sampleLine1Visible = false;
+      // sampleLine2Visible = false;
+      // defectsListviewVisible = false;
+    }*/
   }
 
-  int getDefectItemIndex({
+  // FIXME:
+  /*int getDefectItemIndex({
     required int setIndex,
     required DefectItem defectItem,
   }) {
-    return sampleSetObs[setIndex].defectItem?.indexOf(defectItem) ?? -1;
-  }
+    return sampleList[setIndex].defectItem?.indexOf(defectItem) ?? -1;
+  }*/
 
-  void onTextChange({
+  // FIXME:
+  /*void onTextChange({
     required String value,
     required int setIndex,
     required int rowIndex,
@@ -388,10 +563,9 @@ class DefectsScreenController extends GetxController {
     required BuildContext context,
   }) {
     bool isError = false;
-    int sampleSize =
-        int.tryParse(sampleSetObs[setIndex].sampleValue ?? "0") ?? 0;
+    int sampleSize = int.tryParse(sampleList[setIndex].sampleValue ?? "0") ?? 0;
     String dropDownValue =
-        sampleSetObs[setIndex].defectItem?[rowIndex].name ?? "";
+        sampleList[setIndex].defectItem?[rowIndex].name ?? "";
     if ((int.tryParse(value) ?? 0) > sampleSize) {
       isError = true;
       AppAlertDialog.validateAlerts(
@@ -405,58 +579,58 @@ class DefectsScreenController extends GetxController {
       case AppStrings.injury:
         // do nothing
         if (isError) {
-          sampleSetObs[setIndex]
+          sampleList[setIndex]
               .defectItem?[rowIndex]
               .injuryTextEditingController
               ?.text = '0';
         }
-        sampleSetObs.refresh();
+        sampleList.refresh();
         update();
       case AppStrings.damage:
-        sampleSetObs[setIndex]
+        sampleList[setIndex]
             .defectItem?[rowIndex]
             .injuryTextEditingController
             ?.text = isError ? '0' : value;
         if (isError) {
-          sampleSetObs[setIndex]
+          sampleList[setIndex]
               .defectItem?[rowIndex]
               .damageTextEditingController
               ?.text = isError ? '0' : value;
         }
-        sampleSetObs.refresh();
+        sampleList.refresh();
         update();
       case AppStrings.seriousDamage:
-        sampleSetObs[setIndex]
+        sampleList[setIndex]
             .defectItem?[rowIndex]
             .injuryTextEditingController
             ?.text = isError ? '0' : value;
-        sampleSetObs[setIndex]
+        sampleList[setIndex]
             .defectItem?[rowIndex]
             .damageTextEditingController
             ?.text = isError ? '0' : value;
         if (isError) {
-          sampleSetObs[setIndex]
+          sampleList[setIndex]
               .defectItem?[rowIndex]
               .sDamageTextEditingController
               ?.text = isError ? '0' : value;
         }
-        sampleSetObs.refresh();
+        sampleList.refresh();
         update();
       case AppStrings.verySeriousDamage:
-        sampleSetObs[setIndex]
+        sampleList[setIndex]
             .defectItem?[rowIndex]
             .injuryTextEditingController
             ?.text = isError ? '0' : value;
-        sampleSetObs[setIndex]
+        sampleList[setIndex]
             .defectItem?[rowIndex]
             .damageTextEditingController
             ?.text = isError ? '0' : value;
-        sampleSetObs[setIndex]
+        sampleList[setIndex]
             .defectItem?[rowIndex]
             .sDamageTextEditingController
             ?.text = isError ? '0' : value;
         if (isError) {
-          sampleSetObs[setIndex]
+          sampleList[setIndex]
               .defectItem?[rowIndex]
               .vsDamageTextEditingController
               ?.text = isError ? '0' : value;
@@ -464,7 +638,7 @@ class DefectsScreenController extends GetxController {
 
       case AppStrings.decay:
         // not in current requirement
-        /* sampleSetObs[setIndex]
+        sampleSetObs[setIndex]
             .defectItem?[rowIndex]
             .injuryTextEditingController
             ?.text = isError ? '0' : value;
@@ -479,11 +653,11 @@ class DefectsScreenController extends GetxController {
         sampleSetObs[setIndex]
             .defectItem?[rowIndex]
             .vsDamageTextEditingController
-            ?.text = isError ? '0' : value; */
+            ?.text = isError ? '0' : value;
 
         // do nothing
         if (isError) {
-          sampleSetObs[setIndex]
+          sampleList[setIndex]
               .defectItem?[rowIndex]
               .decayTextEditingController
               ?.text = isError ? '0' : value;
@@ -491,7 +665,7 @@ class DefectsScreenController extends GetxController {
       default:
       // do nothing
     }
-  }
+  }*/
 
   void onDropDownChange({
     required int id,
@@ -499,20 +673,86 @@ class DefectsScreenController extends GetxController {
     required int setIndex,
     required int rowIndex,
   }) {
-    sampleSetObs[setIndex].defectItem?[rowIndex].name = value;
-    sampleSetObs[setIndex].defectItem?[rowIndex].id = id;
-    sampleSetObs.refresh();
-    update();
+    /*sampleList[setIndex].defectItem?[rowIndex].name = value;
+    sampleList[setIndex].defectItem?[rowIndex].id = id;
+    sampleList.refresh();
+    update();*/
+
+    ///
+    // TODO: uncomment this
+    /*String selected = value;
+
+    defectList[position].spinnerSelection = selected;
+    defectList[position].defectId = getDefectSpinnerId(selected);
+    defectDataMap[dataName] = defectList;*/
+    CommodityItem? item;
+    String instruction = "";
+
+    if (appStorage.commodityList != null &&
+        appStorage.commodityList!.isNotEmpty) {
+      for (int i = 0; i < appStorage.commodityList!.length; i++) {
+        if (appStorage.commodityList![i].id == commodityID) {
+          item = appStorage.commodityList![i];
+          break;
+        }
+      }
+    }
+
+    if (item != null &&
+        item.defectList != null &&
+        item.defectList!.isNotEmpty) {
+      for (int i = 0; i < item.defectList!.length; i++) {
+        // TODO: uncomment this
+        /*if (item.defectList![i].id == defectList[position].defectId) {
+          instruction = item.defectList![i].inspectionInstruction ?? '';
+          break;
+        }*/
+      }
+    }
+
+    // TODO: uncomment this
+    /*if (instruction != null && instruction.isNotEmpty) {
+      informationIcon.backgroundImage =
+          const AssetImage(AppImages.ic_information);
+      informationIcon.enabled = true;
+    } else {
+      informationIcon.backgroundImage =
+          const AssetImage(AppImages.ic_informationDisabled);
+      informationIcon.enabled = false;
+    }*/
   }
 
-  void onCommentAdd({
+  // FIXME:
+  /*void onCommentAdd({
     required String value,
     required int setIndex,
     required int rowIndex,
   }) {
-    sampleSetObs[setIndex].defectItem?[rowIndex].instruction = value;
-    sampleSetObs.refresh();
+    sampleList[setIndex].defectItem?[rowIndex].instruction = value;
+    sampleList.refresh();
     update();
+  }*/
+
+  String getCommentsForSample(String key) {
+    String allComments = "";
+    try {
+      List<InspectionDefect>? inspection = defectDataMap[key];
+      if (inspection != null && inspection.isNotEmpty) {
+        for (int i = 0; i < inspection.length; i++) {
+          String? comment = inspection[i].comment;
+          if (comment != null && comment.isNotEmpty) {
+            if (i > 0 && allComments.isNotEmpty) {
+              allComments = "$allComments\n\n";
+            }
+            allComments = allComments + comment;
+          }
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+
+    return allComments;
   }
 
   void getDropDownValues() {
@@ -521,7 +761,7 @@ class DefectsScreenController extends GetxController {
   }
 
   removeSampleSets(int index) {
-    sampleSetObs.removeAt(index);
+    sampleList.removeAt(index);
   }
 
   Future<void> _grantPermissions(Uri uri) async {
@@ -647,7 +887,7 @@ class DefectsScreenController extends GetxController {
     if (item?.defectList != null && item!.defectList!.isNotEmpty) {
       for (int i = 0; i < item.defectList!.length; i++) {
         if (item.defectList?[i].id == defectItem?.id) {
-          instruction = item.defectList?[i].instruction ?? '';
+          instruction = item.defectList?[i].inspectionInstruction ?? '';
           break;
         }
       }
@@ -768,16 +1008,16 @@ class DefectsScreenController extends GetxController {
         var defect = item.defectList!
             .firstWhereOrNull((defect) => defect.id == defectId);
         if (defect != null) {
-          instruction = defect.instruction ?? '';
+          instruction = defect.inspectionInstruction ?? '';
           attachments = defect.attachments ?? [];
         }
       }
     }
   }
 
-  bool validateDefects1() {
+  /*bool validateDefects1() {
     bool isValidValue = true;
-    for (SampleSetsObject element in sampleSetObs) {
+    for (SampleData element in sampleList) {
       bool isAnyErrorInDefect = false;
       for (DefectItem defectItem in element.defectItem ?? []) {
         bool isError = false;
@@ -817,6 +1057,25 @@ class DefectsScreenController extends GetxController {
       }
     }
     return isValidValue;
+  }*/
+
+  void checkForUnsavedData() {
+    for (var i = 0; i < sampleList.length; i++) {
+      int? sampleId = sampleList[i].sampleId;
+
+      if (sampleId == null) {
+        dataEntered = true;
+      }
+    }
+
+    for (var entry in defectDataMap.entries) {
+      for (var i = 0; i < entry.value.length; i++) {
+        int? inspectionDefectId = entry.value[i].inspectionDefectId;
+        if (inspectionDefectId == null) {
+          dataEntered = true;
+        }
+      }
+    }
   }
 
   bool validateDefects() {
@@ -828,10 +1087,10 @@ class DefectsScreenController extends GetxController {
         int? verySeriousDamageCnt = entry.value[i].verySeriousDamageCnt;
         int? decayCnt = entry.value[i].decayCnt;
 
-        if (injuryCnt == null &&
-            damageCnt == null &&
-            seriousDamageCnt == null &&
-            verySeriousDamageCnt == null &&
+        if (injuryCnt == null ||
+            damageCnt == null ||
+            seriousDamageCnt == null ||
+            verySeriousDamageCnt == null ||
             decayCnt == null) {
           return false;
         }
@@ -848,14 +1107,30 @@ class DefectsScreenController extends GetxController {
     return true;
   }
 
-  bool validateSameDefects() {
-    for (SampleSetsObject element in sampleSetObs) {
+  /*bool validateSameDefects() {
+    for (SampleData element in sampleList) {
       List<String> defectNames = [];
       for (DefectItem defectItem in element.defectItem ?? []) {
         if (defectNames.contains(defectItem.name)) {
           return false;
         }
         defectNames.add(defectItem.name ?? '');
+      }
+    }
+    return true;
+  }*/
+
+  bool validateSameDefects() {
+    for (var entry in defectDataMap.entries) {
+      List<String> defectNames = [];
+
+      for (var i = 0; i < entry.value.length; i++) {
+        if (defectNames.contains(entry.value[i].spinnerSelection)) {
+          return false;
+        }
+        if (entry.value[i].spinnerSelection != null) {
+          defectNames.add(entry.value[i].spinnerSelection!);
+        }
       }
     }
     return true;
@@ -917,9 +1192,10 @@ class DefectsScreenController extends GetxController {
     hasSeriousDamage = false;
 
     // Save all the samples
-    for (SampleSetsObject sample in sampleSetObs) {
-      var sampleId = sample.sampleId;
-      var sampleSize = ''; //sample.sampleSize;
+    for (SampleData sample in sampleList) {
+      int? sampleId = sample.sampleId;
+      // TODO:
+      var sampleSize = '1'; //sample.sampleSize;
       var sampleName = sample.name;
       var setNumber = sample.setNumber;
       var timeCreated = sample.timeCreated;
@@ -931,20 +1207,19 @@ class DefectsScreenController extends GetxController {
           sampleId = (await dao.createInspectionSample(
             inspectionId ?? 0,
             int.parse(sampleSize),
-            sampleName ?? '',
-            setNumber ?? 0,
+            sampleName,
+            setNumber,
             timeCreated?.toInt() ?? 0,
             0,
-            sampleNameUser!,
-          )) as String?;
+            sampleNameUser,
+          ));
           sample.sampleId = sampleId;
         } catch (e) {
           debugPrint(e.toString());
         }
       } else {
         try {
-          await dao.updateInspectionSample(
-              int.parse(sampleId), sampleNameUser ?? '');
+          await dao.updateInspectionSample(sampleId, sampleNameUser);
         } catch (e) {
           debugPrint(e.toString());
         }
@@ -1106,10 +1381,11 @@ class DefectsScreenController extends GetxController {
     populateDefectSpinnerList();
   }
 
-  Future<void> navigateToCameraScreen(
-      {required int position,
-      required int rowIndex,
-      required String dataName}) async {
+  Future<void> navigateToCameraScreen({
+    required int position,
+    required int rowIndex,
+    required String dataName,
+  }) async {
     Map<String, dynamic> passingData = {};
     passingData.putIfAbsent(Consts.PARTNER_NAME, () => partnerName);
     passingData.putIfAbsent(Consts.PARTNER_NAME, () => partnerName);
@@ -1122,10 +1398,10 @@ class DefectsScreenController extends GetxController {
     passingData.putIfAbsent(Consts.VARIETY_SIZE, () => varietySize);
     passingData.putIfAbsent(Consts.VARIETY_ID, () => varietyId);
     // FIXME: Implement below code
-    // int? sampleId = getSampleID(sampleDataMap[rowIndex]!.name);
-    // if (sampleId != null) {
-    //   passingData.putIfAbsent(Consts.SAMPLE_ID, () => sampleId);
-    // }
+    int? sampleId = getSampleID(sampleDataMap[rowIndex]!.name);
+    if (sampleId != null) {
+      passingData.putIfAbsent(Consts.SAMPLE_ID, () => sampleId);
+    }
 
     currentAttachPhotosDataName = dataName;
     currentAttachPhotosPosition = position;
@@ -1265,8 +1541,7 @@ class DefectsScreenController extends GetxController {
               seriousDefectList.add(defectName);
               seriousDefectCountMap[defectName] = 0;
             }
-            if (defectCategoriesHashMap != null &&
-                defectCategoriesHashMap.containsKey(defectId)) {
+            if (defectCategoriesHashMap.containsKey(defectId)) {
               if (defectCategoriesHashMap[defectId] != "Size" &&
                   defectCategoriesHashMap[defectId] != "Color") {
                 if (seriousDefectCountMap.containsKey(defectName)) {
@@ -1369,6 +1644,22 @@ class DefectsScreenController extends GetxController {
     Widget? decayColumn1;
     Widget? lableColumn2;
     Widget? picturesCommentsColumn;
+    Widget? severityWidget;
+    Widget? injuryColumn1;
+    Widget? damageColumn1;
+    Widget? seriousDamageColumn1;
+    Widget? verySeriousDamageColumn1;
+    Widget? decayColumn2;
+    Widget? injuryColumn2;
+    Widget? damageColumn2;
+    Widget? seriousDamageColumn2;
+    Widget? decayColumn3;
+    Widget? totalQualityLabelColumn;
+    Widget? totalQualityInjuryColumn;
+    Widget? totalQualityDamageColumn;
+    Widget? columnView1;
+    Widget? verySeriousDamageColumn2;
+    Widget? damageColumn3;
 
 // Injury column
     if (hasSeverityInjury) {
@@ -1436,18 +1727,20 @@ class DefectsScreenController extends GetxController {
     // Create the table row
     Row tableRow2 = const Row();
 
-// Label column
-    tableRow2.children.add(Container(
+    severityWidget = Container(
       margin: EdgeInsets.only(left: borderOutside, right: borderGrey),
       child: const Text(
         'Severity',
         style: TextStyle(fontSize: 20),
       ),
-    ));
+    );
+
+// Label column
+    tableRow2.children.add(severityWidget);
 
 // Injury column
     if (hasSeverityInjury) {
-      Widget injuryColumn = Container(
+      injuryColumn1 = Container(
         margin: EdgeInsets.only(right: borderGrey, bottom: borderOutside),
         child: Stack(
           children: [
@@ -1464,12 +1757,12 @@ class DefectsScreenController extends GetxController {
           ],
         ),
       );
-      tableRow2.children.add(injuryColumn);
+      tableRow2.children.add(injuryColumn1);
     }
 
 // Damage column
     if (hasSeverityDamage) {
-      Widget damageColumn = Container(
+      damageColumn1 = Container(
         margin: EdgeInsets.only(right: borderGrey, bottom: borderOutside),
         child: Stack(
           children: [
@@ -1486,7 +1779,7 @@ class DefectsScreenController extends GetxController {
           ],
         ),
       );
-      tableRow2.children.add(damageColumn);
+      tableRow2.children.add(damageColumn1);
     }
 
 // Add the constructed row to the table layout
@@ -1494,7 +1787,7 @@ class DefectsScreenController extends GetxController {
 
     // Serious damage column(s)
     for (int i = 0; i < numberSeriousDefects; i++) {
-      Widget seriousDamageColumn = Container(
+      seriousDamageColumn1 = Container(
         margin: EdgeInsets.only(
           left: borderGrey,
           right: i == numberSeriousDefects - 1 ? borderOutside : borderGrey,
@@ -1522,8 +1815,8 @@ class DefectsScreenController extends GetxController {
       if (numberSeriousDefects > 1) {
         // Add subscript to indicate index
         int subscriptIndex = i + 1;
-        seriousDamageColumn = GestureDetector(
-          child: seriousDamageColumn,
+        seriousDamageColumn1 = GestureDetector(
+          child: seriousDamageColumn1,
           onTap: () {
             showDialog(
               context: Get.context!,
@@ -1551,13 +1844,13 @@ class DefectsScreenController extends GetxController {
       }
 
       if (hasSeveritySeriousDamage) {
-        tableRow2.children.add(seriousDamageColumn);
+        tableRow2.children.add(seriousDamageColumn1);
       }
     }
 
 // Very serious damage column
     if (hasSeverityVerySeriousDamage) {
-      Widget verySeriousDamageColumn = Container(
+      verySeriousDamageColumn1 = Container(
         margin: EdgeInsets.only(
             left: borderGrey, right: borderGrey, bottom: borderOutside),
         child: Stack(
@@ -1578,12 +1871,12 @@ class DefectsScreenController extends GetxController {
           ],
         ),
       );
-      tableRow2.children.add(verySeriousDamageColumn);
+      tableRow2.children.add(verySeriousDamageColumn1);
     }
 
 // Decay column
     if (hasSeverityDecay) {
-      Widget decayColumn = Container(
+      decayColumn2 = Container(
         margin: EdgeInsets.only(
             left: borderGrey, right: borderGrey, bottom: borderOutside),
         child: Stack(
@@ -1604,7 +1897,7 @@ class DefectsScreenController extends GetxController {
           ],
         ),
       );
-      tableRow2.children.add(decayColumn);
+      tableRow2.children.add(decayColumn2);
     }
 
 // Add the constructed row to the table layout
@@ -1633,7 +1926,7 @@ class DefectsScreenController extends GetxController {
       // tableRow.children.add();
 
       // Injury column
-      Widget injuryColumn = Container(
+      injuryColumn2 = Container(
         margin: EdgeInsets.only(
           left: 0,
           right: j == numberSamples - 1 ? 0 : borderOutside,
@@ -1645,10 +1938,10 @@ class DefectsScreenController extends GetxController {
           style: const TextStyle(fontSize: 20),
         ),
       );
-      tableRow.children.add(injuryColumn);
+      tableRow.children.add(injuryColumn2);
 
       // Damage column
-      Widget damageColumn = Container(
+      damageColumn2 = Container(
         margin: EdgeInsets.only(
           left: 0,
           right: j == numberSamples - 1 ? 0 : borderOutside,
@@ -1660,7 +1953,7 @@ class DefectsScreenController extends GetxController {
           style: const TextStyle(fontSize: 20),
         ),
       );
-      tableRow.children.add(damageColumn);
+      tableRow.children.add(damageColumn2);
 
       // Serious damage column(s)
       for (int i = 0; i < numberSeriousDefects; i++) {
@@ -1668,13 +1961,13 @@ class DefectsScreenController extends GetxController {
         final data = defectDataMap[getKeyFromIndex(index)];
         if (data != null) {
           for (int k = 0; k < data.length; k++) {
-            if (!seriousDefectList.isEmpty &&
+            if (seriousDefectList.isNotEmpty &&
                 data[k].spinnerSelection == seriousDefectList[i]) {
               count += data[k].seriousDamageCnt!;
             }
           }
         }
-        Widget seriousDamageColumn = Container(
+        seriousDamageColumn2 = Container(
           margin: EdgeInsets.only(
             left: 0,
             right: i == numberSeriousDefects - 1 ? borderOutside : 0,
@@ -1686,11 +1979,11 @@ class DefectsScreenController extends GetxController {
             style: const TextStyle(fontSize: 20),
           ),
         );
-        tableRow.children.add(seriousDamageColumn);
+        tableRow.children.add(seriousDamageColumn2);
       }
 
       // Very serious damage column
-      Widget verySeriousDamageColumn = Container(
+      verySeriousDamageColumn2 = Container(
         margin: EdgeInsets.only(
           left: 0,
           right: 0,
@@ -1702,10 +1995,10 @@ class DefectsScreenController extends GetxController {
           style: const TextStyle(fontSize: 20),
         ),
       );
-      tableRow.children.add(verySeriousDamageColumn);
+      tableRow.children.add(verySeriousDamageColumn2);
 
       // Decay column
-      Widget decayColumn = Container(
+      decayColumn3 = Container(
         margin: EdgeInsets.only(
           left: 0,
           right: 0,
@@ -1717,7 +2010,7 @@ class DefectsScreenController extends GetxController {
           style: const TextStyle(fontSize: 20),
         ),
       );
-      tableRow.children.add(decayColumn);
+      tableRow.children.add(decayColumn3);
 
       // Pictures / Comments column
       picturesCommentsColumn = Container(
@@ -1754,7 +2047,7 @@ class DefectsScreenController extends GetxController {
     Row totalQualityRow = const Row();
 
 // Label column
-    Widget totalQualityLabelColumn = Container(
+    totalQualityLabelColumn = Container(
       margin: EdgeInsets.only(left: borderOutside),
       child: const Text(
         'Total Quality Defects',
@@ -1764,7 +2057,7 @@ class DefectsScreenController extends GetxController {
     totalQualityRow.children.add(totalQualityLabelColumn);
 
 // Injury column
-    Widget totalQualityInjuryColumn = Container(
+    totalQualityInjuryColumn = Container(
       margin: const EdgeInsets.only(left: 0),
       color: hasSeverityInjury ? Colors.blue : null,
       child: Text(
@@ -1775,7 +2068,7 @@ class DefectsScreenController extends GetxController {
     totalQualityRow.children.add(totalQualityInjuryColumn);
 
 // Damage column
-    Widget totalQualityDamageColumn = Container(
+    totalQualityDamageColumn = Container(
       margin: const EdgeInsets.only(left: 0),
       color: hasSeverityDamage ? Colors.green : null,
       child: Text(
@@ -1790,7 +2083,7 @@ class DefectsScreenController extends GetxController {
     List<Widget> columnViews = [];
     // Serious damage column(s)
     for (int i = 0; i < numberSeriousDefects; i++) {
-      Widget columnView = Container(
+      columnView1 = Container(
         margin: EdgeInsets.only(
           right: i == numberSeriousDefects - 1 ? borderOutside : 0,
         ),
@@ -1810,15 +2103,27 @@ class DefectsScreenController extends GetxController {
       );
 
       if (hasSeveritySeriousDamage) {
-        columnViews.add(columnView);
+        columnViews.add(columnView1);
       }
     }
 
-    /*Row tableRow = Row(
-      children: [...picturesCommentsColumn, ...columnViews],
-    );*/
+    List<Widget?> dataList = [
+      injuryColumn,
+      damageColumn,
+      seriousDamageColumn,
+      verySeriousDamageColumn,
+      decayColumn1,
+      lableColumn2,
+      picturesCommentsColumn,
+      severityWidget,
+      injuryColumn1,
+      damageColumn1,
+    ];
+    Row tableRow = Row(
+      children: dataList.where((element) => element != null).nonNulls.toList(),
+    );
 // Very serious damage column
-    /*Widget verySeriousDamageColumn = Container(
+    verySeriousDamageColumn2 = Container(
       margin: EdgeInsets.only(
         left: borderGrey.toDouble(),
         right: borderGrey.toDouble(),
@@ -1837,11 +2142,11 @@ class DefectsScreenController extends GetxController {
     );
 
     if (hasSeverityVerySeriousDamage) {
-      tableRow.children.add(verySeriousDamageColumn);
-    }*/
+      tableRow.children.add(verySeriousDamageColumn2);
+    }
 
 // Damage column
-    Widget damageColumn2 = Container(
+    damageColumn3 = Container(
       margin: EdgeInsets.only(
         left: borderGrey.toDouble(),
         right: borderGrey.toDouble() + borderOutside.toDouble(),
@@ -1860,10 +2165,10 @@ class DefectsScreenController extends GetxController {
     );
 
     if (hasSeverityDecay) {
-      // tableRow.children.add(damageColumn);
+      tableRow.children.add(damageColumn3);
     }
 
-    // tableLayout.children.add(tableRow);
+    tableLayout.children.add(tableRow);
 
     // Row - Total Quality Defects %
     Row tableRow1 = Row(
@@ -3042,5 +3347,14 @@ class DefectsScreenController extends GetxController {
     final String tag = DateTime.now().millisecondsSinceEpoch.toString();
     Get.off(() => QCDetailsShortFormScreen(tag: tag), arguments: args);
     return;
+  }
+
+  int getDefectSpinnerId(String name) {
+    for (int i = 0; i < defectSpinnerNames.length; i++) {
+      if (defectSpinnerNames.elementAt(i) == name) {
+        return defectSpinnerIds.elementAt(i);
+      }
+    }
+    return 0;
   }
 }

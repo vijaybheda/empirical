@@ -398,7 +398,6 @@ class AppStrings {
   static const String totalConditionDefectsPercentage = 'Condition Defects %';
   static const String noDefectAlert =
       'No defects are added. Inspection will not be saved.';
-  static const String alertSample = 'Add sample set.';
   static const String totalSizeDefects = 'Size Defects';
   static const String totalSizeDefectsPercentage = 'Size Defects %';
   static const String totalColorDefects = 'Color Defects';

@@ -4,18 +4,16 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/defects_screen_controller.dart';
 import 'package:pverify/controller/json_file_operations.dart';
-import 'package:pverify/models/defect_item.dart';
 import 'package:pverify/models/worksheet_data_table.dart';
 import 'package:pverify/ui/components/drawer_header_content_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
-import 'package:pverify/ui/defects/defects_info_dialog.dart';
+import 'package:pverify/ui/defects/sample_set_widget.dart';
 import 'package:pverify/ui/side_drawer.dart';
 import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
-import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class DefectsScreen extends GetView<DefectsScreenController> {
@@ -177,7 +175,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
             width: double.infinity,
             child: Row(
               children: [
-                controller.sampleSetObs.isNotEmpty
+                controller.sampleList.isNotEmpty
                     ? GestureDetector(
                         onTap: () {
                           controller.activeTabIndex.value = 0;
@@ -191,7 +189,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                         ),
                       )
                     : const SizedBox(),
-                controller.sampleSetObs.isNotEmpty
+                controller.sampleList.isNotEmpty
                     ? Container(
                         width: 3.w,
                         height: 100.h,
@@ -241,11 +239,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
       controller.activeTabIndex.value == 0
           ? Expanded(
               flex: 1,
-              child: controller
-                  .drawDefectsTable() /*SingleChildScrollView(
-                child: DefectsTable(),
-              )*/
-              ,
+              child: controller.drawDefectsTable(),
             )
           : Expanded(
               flex: 1,
@@ -295,8 +289,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                             child: GestureDetector(
                               onTap: () {
                                 if (controller.isValid(context)) {
-                                  controller.addSample(controller
-                                      .sizeOfNewSetTextController.value.text);
+                                  controller.addSample();
                                 }
                               },
                               child: Container(
@@ -328,18 +321,13 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                   Expanded(
                     flex: 1,
                     child: ListView.builder(
-                        itemCount: controller.sampleSetObs.length,
-                        itemBuilder: (BuildContext context, int setIndex) {
-                          return Column(
-                            children: [
-                              sampleSetsUI(
-                                context,
-                                setIndex,
-                                controller.sampleSetObs[setIndex].sampleValue
-                                    .toString(),
-                                controller,
-                              ),
-                            ],
+                        itemCount: controller.sampleList.length,
+                        itemBuilder: (BuildContext context, int sampleIndex) {
+                          return SampleSetWidget(
+                            sampleIndex: sampleIndex,
+                            sampleValue: controller
+                                .sampleList[sampleIndex].sampleNameUser,
+                            controller: controller,
                           );
                         }),
                   )
@@ -593,117 +581,10 @@ class DefectsScreen extends GetView<DefectsScreenController> {
 
 // SAMPLE SET'S LIST UI
 
-Widget sampleSetsUI(BuildContext context, int index, String sampleValue,
-    DefectsScreenController controller) {
-  return Column(
-    children: [
-      Container(
-        padding: EdgeInsets.only(left: 100.w, right: 100.w),
-        height: 100.h,
-        child: Row(
-          children: [
-            Expanded(
-              flex: 1,
-              child: InkWell(
-                onTap: () {
-                  AppAlertDialog.confirmationAlert(
-                    context,
-                    AppStrings.alert,
-                    AppStrings.removeSample,
-                    onYesTap: () {
-                      controller.removeSampleSets(index);
-                    },
-                  );
-                },
-                child: Container(
-                  color: AppColors.lightSky,
-                  child: Image.asset(
-                    AppImages.ic_minus,
-                    width: 40.w,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 8,
-              child: Container(
-                alignment: Alignment.center,
-                color: index % 2 == 0
-                    ? AppColors.orange
-                    : AppColors.textFieldText_Color,
-                child: Text(
-                  textAlign: TextAlign.center,
-                  '${sampleValue.toString()} samples   Set #${controller.sampleSetObs[index].sampleId}',
-                  style: GoogleFonts.poppins(
-                    fontSize: 30.sp,
-                    fontWeight: FontWeight.w400,
-                    textStyle: TextStyle(
-                      color: index % 2 == 0 ? AppColors.black : AppColors.white,
-                    ),
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-      controller.sampleSetObs[index].defectItem?.isNotEmpty ?? false
-          ? Column(
-              children: [
-                SizedBox(height: 50.h),
-                defectCategoryTagRow(controller),
-                SizedBox(height: 50.h),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 50.w),
-                  child: const Divider(),
-                )
-              ],
-            )
-          : const SizedBox(),
-      Column(
-        children: (controller.sampleSetObs[index].defectItem ?? [])
-            .map(
-              (e) => defectRow(
-                context: context,
-                controller: controller,
-                defectItemIndex: controller.getDefectItemIndex(
-                    setIndex: index, defectItem: e),
-                defectItem: e,
-                position: index,
-              ),
-            )
-            .toList(),
-      ),
-      SizedBox(height: 20.h),
-      controller.sampleSetObs[index].defectItem?.isNotEmpty ?? false
-          ? Padding(
-              padding: EdgeInsets.symmetric(horizontal: 50.w),
-              child: const Divider(),
-            )
-          : const SizedBox(),
-      SizedBox(height: 20.h),
-      GestureDetector(
-        onTap: () {
-          controller.addDefectRow(setIndex: index);
-        },
-        child: Text(
-          AppStrings.addDefect,
-          style: GoogleFonts.poppins(
-              fontSize: 36.sp,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primary),
-        ),
-      ),
-      SizedBox(height: 50.h),
-    ],
-  );
-}
-
-Widget defectRow({
+/*Widget defectRow({
   required BuildContext context,
   required DefectsScreenController controller,
-  required DefectItem? defectItem,
+  required SampleData? sampleData,
   required int defectItemIndex,
   required int position,
 }) {
@@ -718,10 +599,10 @@ Widget defectRow({
               AppAlertDialog.confirmationAlert(
                   context, AppStrings.alert, AppStrings.removeDefect,
                   onYesTap: () {
-                controller.removeDefectRow(
+                */ /*controller.removeDefectRow(
                   setIndex: position,
                   rowIndex: defectItemIndex,
-                );
+                );*/ /*
               });
             },
             child: Image.asset(
@@ -741,9 +622,7 @@ Widget defectRow({
                   isExpanded: true,
                   dropdownColor: Theme.of(context).colorScheme.background,
                   iconEnabledColor: AppColors.hintColor,
-                  value: controller.sampleSetObs[position]
-                          .defectItem?[defectItemIndex].name ??
-                      'Select',
+                  value: controller.sampleList[position].name,
                   icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
                   items: controller.defectSpinnerNames.map((String value) {
                     return DropdownMenuItem<String>(
@@ -758,7 +637,8 @@ Widget defectRow({
                     );
                   }).toList(),
                   onChanged: (value) {
-                    controller.onDropDownChange(
+                    // TODO: Save the defect type
+                    */ /*controller.onDropDownChange(
                       id: controller.defectSpinnerIds[controller
                           .defectSpinnerNames
                           .indexWhere((obj) => obj == value)],
@@ -766,7 +646,7 @@ Widget defectRow({
                       setIndex: position,
                       rowIndex: defectItemIndex,
                     );
-                    controller.defectsSelect_Action(defectItem);
+                    controller.defectsSelect_Action(defectItem);*/ /*
                   },
                 ),
               ),
@@ -779,26 +659,27 @@ Widget defectRow({
                   child: BoxTextField1(
                     textalign: TextAlign.center,
                     keyboardType: TextInputType.number,
-                    controller: defectItem?.injuryTextEditingController,
+                    controller: sampleData?.injuryTextEditingController,
                     onTap: () {
-                      defectItem?.injuryTextEditingController?.text = '';
+                      sampleData?.injuryTextEditingController?.text = '';
                     },
                     errorText: '',
                     onEditingCompleted: () {
                       FocusScope.of(context).unfocus();
                     },
                     onChanged: (v) {
-                      controller.onTextChange(
+                      // TODO: Save the injury value
+                      */ /*controller.onTextChange(
                         value: v,
                         setIndex: position,
                         rowIndex: defectItemIndex,
                         fieldName: AppStrings.injury,
                         context: context,
-                      );
+                      );*/ /*
                     },
                   ),
                 )
-              : SizedBox(),
+              : const SizedBox(),
           SizedBox(width: 20.w),
           controller.hasSeverityDamage
               ? Expanded(
@@ -806,26 +687,27 @@ Widget defectRow({
                   child: BoxTextField1(
                     textalign: TextAlign.center,
                     keyboardType: TextInputType.number,
-                    controller: defectItem?.damageTextEditingController,
+                    controller: sampleData?.damageTextEditingController,
                     onTap: () {
-                      defectItem?.damageTextEditingController?.text = '';
+                      sampleData?.damageTextEditingController?.text = '';
                     },
                     errorText: '',
                     onEditingCompleted: () {
                       FocusScope.of(context).unfocus();
                     },
                     onChanged: (v) {
-                      controller.onTextChange(
+                      // TODO: Save the damage value
+                      */ /*controller.onTextChange(
                         value: v,
                         setIndex: position,
                         rowIndex: defectItemIndex,
                         fieldName: AppStrings.damage,
                         context: context,
-                      );
+                      );*/ /*
                     },
                   ),
                 )
-              : SizedBox(),
+              : const SizedBox(),
           SizedBox(width: 20.w),
           controller.hasSeveritySeriousDamage
               ? Expanded(
@@ -833,87 +715,89 @@ Widget defectRow({
                   child: BoxTextField1(
                     textalign: TextAlign.center,
                     keyboardType: TextInputType.number,
-                    controller: defectItem?.sDamageTextEditingController,
+                    controller: sampleData?.sDamageTextEditingController,
                     onTap: () {
-                      defectItem?.sDamageTextEditingController?.text = '';
+                      sampleData?.sDamageTextEditingController?.text = '';
                     },
                     errorText: '',
                     onEditingCompleted: () {
                       FocusScope.of(context).unfocus();
                     },
                     onChanged: (v) {
-                      controller.onTextChange(
+                      // TODO: Save the serious damage value
+                      */ /*controller.onTextChange(
                         value: v,
                         setIndex: position,
                         rowIndex: defectItemIndex,
                         fieldName: AppStrings.seriousDamage,
                         context: context,
-                      );
+                      );*/ /*
                     },
                   ),
                 )
-              : SizedBox(),
+              : const SizedBox(),
           SizedBox(width: 20.w),
           controller.hasSeverityVerySeriousDamage
               ? Expanded(
                   flex: 1,
                   child: BoxTextField1(
                     textalign: TextAlign.center,
-                    controller: defectItem?.vsDamageTextEditingController,
+                    controller: sampleData?.vsDamageTextEditingController,
                     keyboardType: TextInputType.number,
                     onTap: () {
-                      defectItem?.vsDamageTextEditingController?.text = '';
+                      sampleData?.vsDamageTextEditingController?.text = '';
                     },
                     errorText: '',
                     onEditingCompleted: () {
                       FocusScope.of(context).unfocus();
                     },
                     onChanged: (v) {
-                      controller.onTextChange(
+                      */ /*controller.onTextChange(
                         value: v,
                         setIndex: position,
                         rowIndex: defectItemIndex,
                         fieldName: AppStrings.verySeriousDamage,
                         context: context,
-                      );
+                      );*/ /*
                     },
                   ),
                 )
-              : SizedBox(),
+              : const SizedBox(),
           SizedBox(width: controller.hasSeveritySeriousDamage ? 0 : 20.w),
           controller.hasSeverityDecay
               ? Expanded(
                   flex: 1,
                   child: BoxTextField1(
                     textalign: TextAlign.center,
-                    controller: defectItem?.decayTextEditingController,
+                    controller: sampleData?.decayTextEditingController,
                     keyboardType: TextInputType.number,
                     onTap: () {
-                      defectItem?.decayTextEditingController?.text = '';
+                      sampleData?.decayTextEditingController?.text = '';
                     },
                     errorText: '',
                     onEditingCompleted: () {
                       FocusScope.of(context).unfocus();
                     },
                     onChanged: (v) {
-                      controller.onTextChange(
+                      // TODO: Save the decay value
+                      */ /*controller.onTextChange(
                         value: v,
                         setIndex: position,
                         rowIndex: defectItemIndex,
                         fieldName: AppStrings.decay,
                         context: context,
-                      );
+                      );*/ /*
                     },
                   ),
                 )
-              : SizedBox(),
+              : const SizedBox(),
           SizedBox(width: 10.w),
           GestureDetector(
             onTap: () {
               controller.navigateToCameraScreen(
                 position: position,
                 rowIndex: defectItemIndex,
-                dataName: defectItem?.name ?? '',
+                dataName: sampleData?.name ?? '',
               );
             },
             child: Icon(
@@ -930,20 +814,22 @@ Widget defectRow({
                 AppStrings.enterComment,
                 '',
                 onYesTap: (value) {
-                  defectItem?.instruction = value;
-                  controller.onCommentAdd(
+                  // TODO: Save the comment
+                  // sampleData?.inspectionInstruction = value;
+                  */ /*controller.onCommentAdd(
                     value: value ?? "",
                     setIndex: position,
                     rowIndex: defectItemIndex,
-                  );
+                  );*/ /*
                 },
                 windowWidth: MediaQuery.of(context).size.width * 0.9,
                 isMultiLine: true,
-                value: defectItem?.instruction,
+                // TODO: Set the initial value
+                // value: sampleData?.inspectionInstruction,
               );
             },
             child: Image.asset(
-              (defectItem?.instruction?.isNotEmpty ?? false)
+              (sampleData?.inspectionInstruction?.isNotEmpty ?? false)
                   ? AppImages.ic_specCommentsAdded
                   : AppImages.ic_specComments,
               width: 80.w,
@@ -978,99 +864,7 @@ Widget defectRow({
       ),
     ),
   );
-}
-
-Widget defectCategoryTagRow(DefectsScreenController defectsScreenController) {
-  TextStyle textStyle = TextStyle(
-    color: Colors.white,
-    fontSize: 32.sp,
-  );
-  return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 50.w),
-    child: Row(
-      children: [
-        Flexible(flex: 5, child: Container()),
-        const SizedBox(width: 15),
-        Flexible(flex: 4, child: Container()),
-        SizedBox(
-            width: defectsScreenController.hasSeveritySeriousDamage ? 0 : 15),
-        defectsScreenController.hasSeverityInjury
-            ? Flexible(
-                flex: 1,
-                child: defectCategoryTag(
-                  tag: AppStrings.injuryIcon,
-                  textStyle: textStyle,
-                ),
-              )
-            : const Flexible(flex: 1, child: SizedBox()),
-        const SizedBox(width: 15),
-        defectsScreenController.hasSeverityDamage
-            ? Flexible(
-                flex: 1,
-                child: defectCategoryTag(
-                  tag: AppStrings.damageIcon,
-                  textStyle: textStyle,
-                ),
-              )
-            : const Flexible(flex: 1, child: SizedBox()),
-        const SizedBox(width: 15),
-        defectsScreenController.hasSeriousDamage
-            ? Flexible(
-                flex: 1,
-                child: defectCategoryTag(
-                  tag: AppStrings.seriousDamageIcon,
-                  textStyle: textStyle,
-                ),
-              )
-            : const Flexible(flex: 1, child: SizedBox()),
-        SizedBox(
-            width: defectsScreenController.hasSeveritySeriousDamage ? 0 : 15),
-        defectsScreenController.hasSeveritySeriousDamage
-            ? Flexible(
-                flex: 1,
-                child: defectCategoryTag(
-                  tag: AppStrings.verySeriousDamageIcon,
-                  textStyle: textStyle,
-                ),
-              )
-            : const Flexible(flex: 1, child: SizedBox()),
-        const SizedBox(width: 15),
-        defectsScreenController.hasSeverityDecay
-            ? Flexible(
-                flex: 1,
-                child: defectCategoryTag(
-                  tag: AppStrings.decayIcon,
-                  textStyle: textStyle,
-                ),
-              )
-            : const Flexible(flex: 1, child: SizedBox()),
-        const SizedBox(width: 20),
-        Flexible(child: Container()),
-        const SizedBox(width: 10),
-        Flexible(child: Container()),
-      ],
-    ),
-  );
-}
-
-Widget defectCategoryTag({required String tag, TextStyle? textStyle}) {
-  return Container(
-    decoration: BoxDecoration(
-        border: Border.all(color: AppColors.lightGrey),
-        borderRadius: BorderRadius.circular(15)),
-    width: 80.w,
-    child: Text(
-        textAlign: TextAlign.center,
-        tag,
-        style: GoogleFonts.poppins(
-          fontSize: 30.sp,
-          fontWeight: FontWeight.w600,
-          textStyle: TextStyle(
-            color: AppColors.textFieldText_Color,
-          ),
-        ).merge(textStyle)),
-  );
-}
+}*/
 
 class DefectsTable extends StatelessWidget {
   DefectsTable({super.key});
