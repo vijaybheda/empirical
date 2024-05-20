@@ -158,6 +158,7 @@ class BoxTextField1 extends StatelessWidget {
         style: Get.textTheme.titleLarge!.copyWith(
           fontSize: 32.sp,
           fontWeight: FontWeight.w400,
+          color: textColor,
         ),
         cursorColor: Theme.of(context).textSelectionTheme.cursorColor,
         decoration: InputDecoration(

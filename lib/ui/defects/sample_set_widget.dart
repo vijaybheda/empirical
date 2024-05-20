@@ -11,12 +11,12 @@ import 'package:pverify/utils/theme/colors.dart';
 
 class SampleSetWidget extends StatefulWidget {
   final int sampleIndex;
-  final String? sampleValue;
+  // final String? sampleValue;
   final DefectsScreenController controller;
   const SampleSetWidget({
     super.key,
     required this.sampleIndex,
-    required this.sampleValue,
+    // required this.sampleValue,
     required this.controller,
   });
 
@@ -26,7 +26,7 @@ class SampleSetWidget extends StatefulWidget {
 
 class _SampleSetWidgetState extends State<SampleSetWidget> {
   int get sampleIndex => widget.sampleIndex;
-  String? get sampleValue => widget.sampleValue;
+  // String? get sampleValue => widget.sampleValue;
   DefectsScreenController get controller => widget.controller;
 
   @override
@@ -70,7 +70,7 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
                       : AppColors.textFieldText_Color,
                   child: Text(
                     textAlign: TextAlign.center,
-                    '${sampleValue.toString()} samples   Set #${controller.sampleList[sampleIndex].sampleId}',
+                    '${controller.sampleList[sampleIndex].sampleSize.toString()} samples Set #${controller.sampleList[sampleIndex].setNumber}',
                     style: GoogleFonts.poppins(
                       fontSize: 30.sp,
                       fontWeight: FontWeight.w400,
@@ -86,7 +86,7 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
             ],
           ),
         ),
-        controller.sampleList.isNotEmpty
+        controller.sampleList[sampleIndex].defectItems.isNotEmpty
             ? Column(
                 children: [
                   SizedBox(height: 50.h),
@@ -118,17 +118,17 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
         ListView.separated(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
+          itemBuilder: (context, defectIndex) {
             final InspectionDefect e =
-                controller.sampleList[sampleIndex].defectItems[index];
+                controller.sampleList[sampleIndex].defectItems[defectIndex];
             return DefectItemWidget(
               controller: controller,
-              defectItemIndex: index
+              defectItemIndex: defectIndex
               /*controller.getDefectItemIndex(
                     setIndex: index, defectItem: e)*/
               ,
               inspectionDefect: e,
-              sampleIndex: index,
+              sampleIndex: sampleIndex,
             );
           },
           separatorBuilder: (context, index) => const Divider(),
@@ -145,7 +145,7 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
         SizedBox(height: 20.h),
         GestureDetector(
           onTap: () {
-            controller.addDefectRow(setIndex: sampleIndex);
+            controller.addDefectRow(sampleIndex: sampleIndex);
           },
           child: Text(
             AppStrings.addDefect,

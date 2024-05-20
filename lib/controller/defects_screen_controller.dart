@@ -37,6 +37,7 @@ class DefectsScreenController extends GetxController {
   bool isFirstTime = true;
 
   bool isDefectEntry = true;
+  bool isViewOnlyMode = false;
 
   RxInt activeTabIndex = 1.obs;
   RxList<SampleData> sampleList = <SampleData>[].obs;
@@ -370,7 +371,7 @@ class DefectsScreenController extends GetxController {
     update();
   }
 
-  void addDefectRow({required int setIndex}) {
+  void addDefectRow({required int sampleIndex}) {
     /*DefectItem emptyDefectItem = DefectItem(
       injuryTextEditingController: TextEditingController(text: '0'),
       damageTextEditingController: TextEditingController(text: '0'),
@@ -389,7 +390,7 @@ class DefectsScreenController extends GetxController {
     sampleSetObs.refresh();
     update();*/
 
-    String dataName = sampleList.elementAt(setIndex).name;
+    String dataName = sampleList.elementAt(sampleIndex).name;
     List<InspectionDefect> defectList;
 
     if (defectDataMap.containsKey(dataName)) {
@@ -414,11 +415,11 @@ class DefectsScreenController extends GetxController {
         severitySeriousDamageId: 1,
         severityVerySeriousDamageId: 1,
         verySeriousDamageCnt: 1,
-        spinnerSelection: 'Color',
+        // spinnerSelection: 'Color',
       );
       defectList.add(inspectionDefect);
-      sampleList[setIndex] =
-          sampleList[setIndex].copyWith(defectItems: defectList);
+      sampleList[sampleIndex] =
+          sampleList[sampleIndex].copyWith(defectItems: defectList);
       defectDataMap.putIfAbsent(dataName, () => defectList);
     } else {
       // legendLayout.visible = true;
@@ -476,12 +477,12 @@ class DefectsScreenController extends GetxController {
         severitySeriousDamageId: 1,
         severityVerySeriousDamageId: 1,
         verySeriousDamageCnt: 1,
-        spinnerSelection: 'Color',
+        // spinnerSelection: 'Color',
       );
 
       defectList.add(inspectionDefect);
-      sampleList[setIndex] =
-          sampleList[setIndex].copyWith(defectItems: defectList);
+      sampleList[sampleIndex] =
+          sampleList[sampleIndex].copyWith(defectItems: defectList);
       defectDataMap.putIfAbsent(dataName, () => defectList);
     }
     final int pos = (sampleList.length - 1);
@@ -491,17 +492,14 @@ class DefectsScreenController extends GetxController {
     update();
   }
 
-  Future<void> removeDefectRow(
-      {required int setIndex, required int rowIndex}) async {
-    /*sampleList[setIndex].defectItem?.removeAt(rowIndex);
-    sampleList.refresh();
-    update();*/
-
+  Future<void> removeDefectRow({
+    required InspectionDefect inspectionDefect,
+    required String dataName,
+    required int sampleIndex,
+    required int defectIndex,
+  }) async {
     ///
-    /*InspectionDefect inspectionDefect = defectsView.tag as InspectionDefect;
-
     List<InspectionDefect> defectList = [];
-
     if (defectDataMap.containsKey(dataName)) {
       defectList = defectDataMap[dataName]!;
 
@@ -519,7 +517,7 @@ class DefectsScreenController extends GetxController {
 
         if (attachmentIds != null && attachmentIds.isNotEmpty) {
           for (int j = 0; j < attachmentIds.length; j++) {
-            dao.deleteDefectAttachmentByAttachmentId(attachmentIds[j]);
+            await dao.deleteDefectAttachmentByAttachmentId(attachmentIds[j]);
           }
         }
       }
@@ -543,7 +541,12 @@ class DefectsScreenController extends GetxController {
       // sampleLine1Visible = false;
       // sampleLine2Visible = false;
       // defectsListviewVisible = false;
-    }*/
+    }
+
+    sampleList[sampleIndex].defectItems.removeAt(defectIndex);
+    sampleList.refresh();
+
+    update();
   }
 
   // FIXME:
@@ -555,23 +558,22 @@ class DefectsScreenController extends GetxController {
   }*/
 
   // FIXME:
-  /*void onTextChange({
+  void onTextChange({
     required String value,
-    required int setIndex,
-    required int rowIndex,
+    required int sampleIndex,
+    required int defectIndex,
     required String fieldName,
     required BuildContext context,
   }) {
     bool isError = false;
-    int sampleSize = int.tryParse(sampleList[setIndex].sampleValue ?? "0") ?? 0;
-    String dropDownValue =
-        sampleList[setIndex].defectItem?[rowIndex].name ?? "";
+    int sampleSize = sampleList[sampleIndex].sampleSize;
+    String dropDownValue = sampleList[sampleIndex].name;
     if ((int.tryParse(value) ?? 0) > sampleSize) {
       isError = true;
       AppAlertDialog.validateAlerts(
         context,
         AppStrings.alert,
-        '${AppStrings.defect} - $dropDownValue${AppStrings.cannotBeGreaterThenTheSampleSize} $sampleSize, ${AppStrings.pleaseEnterValidDefectCount}',
+        '$fieldName - $dropDownValue${AppStrings.cannotBeGreaterThenTheSampleSize} $sampleSize, ${AppStrings.pleaseEnterValidDefectCount}',
       );
     }
 
@@ -579,112 +581,85 @@ class DefectsScreenController extends GetxController {
       case AppStrings.injury:
         // do nothing
         if (isError) {
-          sampleList[setIndex]
-              .defectItem?[rowIndex]
-              .injuryTextEditingController
-              ?.text = '0';
+          sampleList[sampleIndex].defectItems[defectIndex].injuryCnt =
+              isError ? 0 : int.tryParse(value) ?? 0;
         }
         sampleList.refresh();
         update();
       case AppStrings.damage:
-        sampleList[setIndex]
-            .defectItem?[rowIndex]
-            .injuryTextEditingController
-            ?.text = isError ? '0' : value;
+        sampleList[sampleIndex].defectItems[defectIndex].injuryCnt =
+            isError ? 0 : int.tryParse(value) ?? 0;
         if (isError) {
-          sampleList[setIndex]
-              .defectItem?[rowIndex]
-              .damageTextEditingController
-              ?.text = isError ? '0' : value;
+          sampleList[sampleIndex].defectItems[defectIndex].damageCnt =
+              isError ? 0 : int.tryParse(value) ?? 0;
         }
         sampleList.refresh();
         update();
       case AppStrings.seriousDamage:
-        sampleList[setIndex]
-            .defectItem?[rowIndex]
-            .injuryTextEditingController
-            ?.text = isError ? '0' : value;
-        sampleList[setIndex]
-            .defectItem?[rowIndex]
-            .damageTextEditingController
-            ?.text = isError ? '0' : value;
+        sampleList[sampleIndex].defectItems[defectIndex].injuryCnt =
+            isError ? 0 : int.tryParse(value) ?? 0;
+        sampleList[sampleIndex].defectItems[defectIndex].damageCnt =
+            isError ? 0 : int.tryParse(value) ?? 0;
         if (isError) {
-          sampleList[setIndex]
-              .defectItem?[rowIndex]
-              .sDamageTextEditingController
-              ?.text = isError ? '0' : value;
+          sampleList[sampleIndex].defectItems[defectIndex].seriousDamageCnt =
+              isError ? 0 : int.tryParse(value) ?? 0;
         }
         sampleList.refresh();
         update();
       case AppStrings.verySeriousDamage:
-        sampleList[setIndex]
-            .defectItem?[rowIndex]
-            .injuryTextEditingController
-            ?.text = isError ? '0' : value;
-        sampleList[setIndex]
-            .defectItem?[rowIndex]
-            .damageTextEditingController
-            ?.text = isError ? '0' : value;
-        sampleList[setIndex]
-            .defectItem?[rowIndex]
-            .sDamageTextEditingController
-            ?.text = isError ? '0' : value;
+        sampleList[sampleIndex].defectItems[defectIndex].injuryCnt =
+            isError ? 0 : int.tryParse(value) ?? 0;
+        sampleList[sampleIndex].defectItems[defectIndex].damageCnt =
+            isError ? 0 : int.tryParse(value) ?? 0;
+        sampleList[sampleIndex].defectItems[defectIndex].seriousDamageCnt =
+            isError ? 0 : int.tryParse(value) ?? 0;
         if (isError) {
-          sampleList[setIndex]
-              .defectItem?[rowIndex]
-              .vsDamageTextEditingController
-              ?.text = isError ? '0' : value;
+          sampleList[sampleIndex]
+              .defectItems[defectIndex]
+              .verySeriousDamageCnt = isError ? 0 : int.tryParse(value) ?? 0;
         }
+        sampleList.refresh();
+        update();
 
       case AppStrings.decay:
         // not in current requirement
-        sampleSetObs[setIndex]
-            .defectItem?[rowIndex]
-            .injuryTextEditingController
-            ?.text = isError ? '0' : value;
-        sampleSetObs[setIndex]
-            .defectItem?[rowIndex]
-            .damageTextEditingController
-            ?.text = isError ? '0' : value;
-        sampleSetObs[setIndex]
-            .defectItem?[rowIndex]
-            .sDamageTextEditingController
-            ?.text = isError ? '0' : value;
-        sampleSetObs[setIndex]
-            .defectItem?[rowIndex]
-            .vsDamageTextEditingController
-            ?.text = isError ? '0' : value;
+        sampleDataMap[sampleIndex]!.defectItems[defectIndex].injuryCnt =
+            isError ? 0 : int.tryParse(value) ?? 0;
+        sampleDataMap[sampleIndex]!.defectItems[defectIndex].damageCnt =
+            isError ? 0 : int.tryParse(value) ?? 0;
+        sampleDataMap[sampleIndex]!.defectItems[defectIndex].seriousDamageCnt =
+            isError ? 0 : int.tryParse(value) ?? 0;
+        sampleDataMap[sampleIndex]!
+            .defectItems[defectIndex]
+            .verySeriousDamageCnt = isError ? 0 : int.tryParse(value) ?? 0;
 
         // do nothing
         if (isError) {
-          sampleList[setIndex]
-              .defectItem?[rowIndex]
-              .decayTextEditingController
-              ?.text = isError ? '0' : value;
+          sampleList[sampleIndex].defectItems[defectIndex].decayCnt =
+              isError ? 0 : int.tryParse(value) ?? 0;
         }
+        sampleList.refresh();
+        update();
+
       default:
       // do nothing
     }
-  }*/
+  }
 
   void onDropDownChange({
     required int id,
     required String value,
-    required int setIndex,
-    required int rowIndex,
+    required int sampleIndex,
+    required int defectItemIndex,
   }) {
-    /*sampleList[setIndex].defectItem?[rowIndex].name = value;
-    sampleList[setIndex].defectItem?[rowIndex].id = id;
-    sampleList.refresh();
-    update();*/
+    String selected = value;
 
-    ///
-    // TODO: uncomment this
-    /*String selected = value;
+    sampleList[sampleIndex].defectItems[defectItemIndex].spinnerSelection =
+        selected;
 
-    defectList[position].spinnerSelection = selected;
-    defectList[position].defectId = getDefectSpinnerId(selected);
-    defectDataMap[dataName] = defectList;*/
+    sampleList[sampleIndex].defectItems[defectItemIndex].defectId =
+        getDefectSpinnerId(selected);
+
     CommodityItem? item;
     String instruction = "";
 
@@ -702,11 +677,11 @@ class DefectsScreenController extends GetxController {
         item.defectList != null &&
         item.defectList!.isNotEmpty) {
       for (int i = 0; i < item.defectList!.length; i++) {
-        // TODO: uncomment this
-        /*if (item.defectList![i].id == defectList[position].defectId) {
+        if (item.defectList![i].id ==
+            sampleList[sampleIndex].defectItems[defectItemIndex].defectId) {
           instruction = item.defectList![i].inspectionInstruction ?? '';
           break;
-        }*/
+        }
       }
     }
 
@@ -720,18 +695,51 @@ class DefectsScreenController extends GetxController {
           const AssetImage(AppImages.ic_informationDisabled);
       informationIcon.enabled = false;
     }*/
+    update();
   }
 
-  // FIXME:
-  /*void onCommentAdd({
+  void onCommentAdd({
     required String value,
-    required int setIndex,
-    required int rowIndex,
+    required int sampleIndex,
+    required int defectItemIndex,
   }) {
-    sampleList[setIndex].defectItem?[rowIndex].instruction = value;
-    sampleList.refresh();
-    update();
-  }*/
+    if (!isViewOnlyMode) {
+      sampleList[sampleIndex].defectItems[defectItemIndex].comment = value;
+      sampleList.refresh();
+      update();
+    }
+    Get.back();
+
+    /*showDialog(
+      context: Get.context!,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(isViewOnlyMode ? 'View Defect Comment' : 'Add Comment'),
+          content: TextField(
+            controller: commentController,
+            decoration:
+                const InputDecoration(hintText: "Enter your comment here"),
+            enabled: !isViewOnlyMode,
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+
+              },
+            ),
+            if (!isViewOnlyMode)
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Get.back();
+                },
+              ),
+          ],
+        );
+      },
+    );*/
+  }
 
   String getCommentsForSample(String key) {
     String allComments = "";
@@ -870,9 +878,10 @@ class DefectsScreenController extends GetxController {
     }
   }
 
-  void defectsSelect_Action(DefectItem? defectItem) {
+  bool isInformationIconEnabled(
+      {required int sampleIndex, required int defectItemIndex}) {
     CommodityItem? item;
-    String instruction = "";
+    String? instruction;
 
     if (appStorage.getCommodityList() != null &&
         appStorage.getCommodityList()!.isNotEmpty) {
@@ -886,7 +895,8 @@ class DefectsScreenController extends GetxController {
 
     if (item?.defectList != null && item!.defectList!.isNotEmpty) {
       for (int i = 0; i < item.defectList!.length; i++) {
-        if (item.defectList?[i].id == defectItem?.id) {
+        if (item.defectList?[i].id ==
+            sampleList[sampleIndex].defectItems[defectItemIndex].defectId) {
           instruction = item.defectList?[i].inspectionInstruction ?? '';
           break;
         }
@@ -894,8 +904,10 @@ class DefectsScreenController extends GetxController {
     }
     if (instruction != null && instruction.isNotEmpty) {
       informationIconEnabled.value = true;
+      return true;
     } else {
       informationIconEnabled.value = false;
+      return false;
     }
   }
 
@@ -1825,7 +1837,7 @@ class DefectsScreenController extends GetxController {
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('Serious Defect ${subscriptIndex}'),
+                      Text('Serious Defect $subscriptIndex'),
                       const SizedBox(height: 10),
                       Text(seriousDefectList[subscriptIndex - 1]),
                     ],

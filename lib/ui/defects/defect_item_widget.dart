@@ -33,6 +33,9 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
 
   @override
   Widget build(BuildContext context) {
+    String? comment =
+        controller.sampleList[sampleIndex].defectItems[defectItemIndex].comment;
+    bool hasComment = comment != null && comment.isNotEmpty;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 50.w),
       child: Container(
@@ -43,11 +46,16 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
               onTap: () {
                 AppAlertDialog.confirmationAlert(
                     context, AppStrings.alert, AppStrings.removeDefect,
-                    onYesTap: () {
-                  /*controller.removeDefectRow(
-                  setIndex: position,
-                  rowIndex: defectItemIndex,
-                );*/
+                    onYesTap: () async {
+                  String dataName = controller.sampleDataMap.values
+                      .elementAt(sampleIndex)
+                      .name;
+                  await controller.removeDefectRow(
+                    inspectionDefect: inspectionDefect,
+                    dataName: dataName,
+                    sampleIndex: sampleIndex,
+                    defectIndex: defectItemIndex,
+                  );
                 });
               },
               child: Image.asset(
@@ -68,8 +76,8 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                     dropdownColor: Theme.of(context).colorScheme.background,
                     iconEnabledColor: AppColors.hintColor,
                     value: controller.sampleList[sampleIndex].defectItems
-                            .elementAt(defectItemIndex)
-                            .spinnerSelection ??
+                            .elementAtOrNull(defectItemIndex)
+                            ?.spinnerSelection ??
                         controller.defectSpinnerNames.first,
                     icon:
                         const Icon(Icons.arrow_drop_down, color: Colors.white),
@@ -86,16 +94,14 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                       );
                     }).toList(),
                     onChanged: (value) {
-                      // TODO: Save the defect type
-                      /*controller.onDropDownChange(
-                      id: controller.defectSpinnerIds[controller
-                          .defectSpinnerNames
-                          .indexWhere((obj) => obj == value)],
-                      value: value ?? "",
-                      setIndex: position,
-                      rowIndex: defectItemIndex,
-                    );
-                    controller.defectsSelect_Action(defectItem);*/
+                      controller.onDropDownChange(
+                        id: controller.defectSpinnerIds[controller
+                            .defectSpinnerNames
+                            .indexWhere((obj) => obj == value)],
+                        value: value ?? "",
+                        sampleIndex: sampleIndex,
+                        defectItemIndex: defectItemIndex,
+                      );
                     },
                   ),
                 ),
@@ -108,6 +114,7 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                     child: BoxTextField1(
                       textalign: TextAlign.center,
                       keyboardType: TextInputType.number,
+                      intialValue: (inspectionDefect.injuryCnt ?? 0).toString(),
                       // TODO: Add controller
                       // controller: sampleData.injuryTextEditingController,
                       onTap: () {
@@ -119,14 +126,13 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                         FocusScope.of(context).unfocus();
                       },
                       onChanged: (v) {
-                        // TODO: Save the injury value
-                        /*controller.onTextChange(
-                        value: v,
-                        setIndex: position,
-                        rowIndex: defectItemIndex,
-                        fieldName: AppStrings.injury,
-                        context: context,
-                      );*/
+                        controller.onTextChange(
+                          value: v,
+                          sampleIndex: sampleIndex,
+                          defectIndex: defectItemIndex,
+                          fieldName: AppStrings.injury,
+                          context: context,
+                        );
                       },
                     ),
                   )
@@ -138,6 +144,7 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                     child: BoxTextField1(
                       textalign: TextAlign.center,
                       keyboardType: TextInputType.number,
+                      intialValue: (inspectionDefect.damageCnt ?? 0).toString(),
                       // TODO: Add controller
                       // controller: sampleData.damageTextEditingController,
                       onTap: () {
@@ -168,6 +175,8 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                     child: BoxTextField1(
                       textalign: TextAlign.center,
                       keyboardType: TextInputType.number,
+                      intialValue:
+                          (inspectionDefect.seriousDamageCnt ?? 0).toString(),
                       // TODO: Add controller
                       // controller: sampleData.sDamageTextEditingController,
                       onTap: () {
@@ -196,6 +205,8 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                     flex: 1,
                     child: BoxTextField1(
                       textalign: TextAlign.center,
+                      intialValue: (inspectionDefect.verySeriousDamageCnt ?? 0)
+                          .toString(),
                       // TODO: Add controller
                       // controller: sampleData.vsDamageTextEditingController,
                       keyboardType: TextInputType.number,
@@ -224,6 +235,7 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                     flex: 1,
                     child: BoxTextField1(
                       textalign: TextAlign.center,
+                      intialValue: (inspectionDefect.decayCnt ?? 0).toString(),
                       // TODO: Add controller
                       // controller: sampleData.decayTextEditingController,
                       keyboardType: TextInputType.number,
@@ -266,54 +278,53 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
             SizedBox(width: 10.w),
 
             // TODO: implement
-            /*GestureDetector(
+            GestureDetector(
               onTap: () {
                 AppAlertDialog.textfiAlert(
                   context,
                   AppStrings.enterComment,
                   '',
+                  value: hasComment ? comment : null,
                   onYesTap: (value) {
-                    // TODO: Save the comment
-                    // sampleData?.inspectionInstruction = value;
-                    */ /*controller.onCommentAdd(
-                    value: value ?? "",
-                    setIndex: position,
-                    rowIndex: defectItemIndex,
-                  );*/ /*
+                    controller.onCommentAdd(
+                      value: value ?? "",
+                      sampleIndex: sampleIndex,
+                      defectItemIndex: defectItemIndex,
+                    );
                   },
                   windowWidth: MediaQuery.of(context).size.width * 0.9,
                   isMultiLine: true,
-                  // TODO:
-                  // value: inspectionDefect.inspectionInstruction,
                 );
               },
               child: Image.asset(
-                (inspectionDefect.inspectionInstruction?.isNotEmpty ?? false)
+                hasComment
                     ? AppImages.ic_specCommentsAdded
                     : AppImages.ic_specComments,
                 width: 80.w,
                 fit: BoxFit.contain,
               ),
-            ),*/
+            ),
             SizedBox(width: 10.h),
-            Obx(
-              () => InkWell(
-                onTap: () {
-                  DefectsInfoDialog defectsInfoDialog = DefectsInfoDialog(
-                    position: sampleIndex,
-                    commodityID: controller.commodityID!,
-                    commodityList: controller.appStorage.commodityList!,
-                  );
+            InkWell(
+              onTap: () {
+                DefectsInfoDialog defectsInfoDialog = DefectsInfoDialog(
+                  position: sampleIndex,
+                  commodityID: controller.commodityID!,
+                  commodityList: controller.appStorage.commodityList ?? [],
+                  defectList: controller.appStorage.defectsList ?? [],
+                );
 
-                  defectsInfoDialog.showDefectDialog(Get.context!);
-                },
-                child: Image.asset(
-                  controller.informationIconEnabled.value
-                      ? AppImages.ic_information
-                      : AppImages.ic_informationDisabled,
-                  width: 80.w,
-                  fit: BoxFit.contain,
-                ),
+                defectsInfoDialog.showDefectDialog(Get.context!);
+              },
+              child: Image.asset(
+                controller.isInformationIconEnabled(
+                  sampleIndex: sampleIndex,
+                  defectItemIndex: defectItemIndex,
+                )
+                    ? AppImages.ic_information
+                    : AppImages.ic_informationDisabled,
+                width: 80.w,
+                fit: BoxFit.contain,
               ),
             ),
           ],

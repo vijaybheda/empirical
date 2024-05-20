@@ -22,7 +22,7 @@ class DefectsInfoDialog {
     required this.position,
     required this.commodityID,
     required this.commodityList,
-    // required this.defectList,
+    required this.defectList,
   }) {
     defectid = defectList[position].id!;
 

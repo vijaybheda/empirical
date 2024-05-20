@@ -325,8 +325,8 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                         itemBuilder: (BuildContext context, int sampleIndex) {
                           return SampleSetWidget(
                             sampleIndex: sampleIndex,
-                            sampleValue: controller
-                                .sampleList[sampleIndex].sampleNameUser,
+                            // sampleValue: controller
+                            //     .sampleList[sampleIndex].sampleNameUser,
                             controller: controller,
                           );
                         }),
