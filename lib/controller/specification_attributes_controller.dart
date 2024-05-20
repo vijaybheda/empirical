@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/models/specification_analytical.dart';
 import 'package:pverify/models/specification_analytical_request_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
+import 'package:pverify/ui/defects/table_dialog.dart';
 import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
 import 'package:pverify/ui/qc_short_form/qc_details_short_form_screen.dart';
@@ -634,5 +636,17 @@ class SpecificationAttributesController extends GetxController {
     } else {
       AppSnackBar.info(message: "No Specification Instructions");
     }
+  }
+
+  //Specification
+  Future onSpecificationTap() async {
+    _appStorage.specificationGradeToleranceTable =
+        await dao.getSpecificationGradeToleranceTable(
+            specificationNumber!, specificationVersion!);
+    showDialog(
+        context: Get.context!,
+        builder: (BuildContext context) {
+          return tableDialog(context);
+        });
   }
 }

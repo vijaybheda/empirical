@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:pverify/controller/json_file_operations.dart';
 import 'package:pverify/controller/specification_attributes_controller.dart';
 import 'package:pverify/ui/components/drawer_header_content_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
@@ -47,9 +48,15 @@ class SpecificationAttributesScreen
             onSpecInstructionTap: () async {
               controller.specialInstructions();
             },
-            onSpecificationTap: () async {},
-            onGradeTap: () async {},
-            onInspectionTap: () async {},
+            onSpecificationTap: () async {
+              controller.onSpecificationTap();
+            },
+            onGradeTap: () async {
+              await JsonFileOperations.instance.viewGradePdf();
+            },
+            onInspectionTap: () async {
+              await JsonFileOperations.instance.viewSpecInsPdf();
+            },
           ),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,7 +159,7 @@ class SpecificationAttributesScreen
                             context: context,
                             controller: controller,
                             onClick: () {
-                              log("SPECIFICATION");
+                              controller.onSpecificationTap();
                             },
                             buttonTitle: AppStrings.specification,
                           ),
@@ -164,8 +171,8 @@ class SpecificationAttributesScreen
                             width: (MediaQuery.of(context).size.width / 5),
                             context: context,
                             controller: controller,
-                            onClick: () {
-                              log("GRADE");
+                            onClick: () async {
+                              await JsonFileOperations.instance.viewGradePdf();
                             },
                             buttonTitle: AppStrings.grade,
                           ),
@@ -177,8 +184,9 @@ class SpecificationAttributesScreen
                             width: (MediaQuery.of(context).size.width / 4.5),
                             context: context,
                             controller: controller,
-                            onClick: () {
-                              log("INSPECTION INSTRUCTION");
+                            onClick: () async {
+                              await JsonFileOperations.instance
+                                  .viewSpecInsPdf();
                             },
                             buttonTitle: AppStrings.specInstrunction,
                           ),
