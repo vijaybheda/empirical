@@ -573,5 +573,56 @@ class SpecificationAttributesController extends GetxController {
     }
   }
 
-  
+  //Discard Inspection
+  Future deleteInspectionAndGotoMyInspectionScreen() async {
+    if (_appStorage.currentInspection!.inspectionId != 0 ||
+        serverInspectionId! > -1) {
+      if (serverInspectionId! > -1) {
+        await dao.deleteInspection(serverInspectionId!);
+      } else {
+        await dao
+            .deleteInspection(_appStorage.currentInspection!.inspectionId!);
+      }
+
+      Map<String, dynamic> passingData = {
+        Consts.SERVER_INSPECTION_ID: -1,
+        Consts.PARTNER_NAME: partnerName,
+        Consts.PARTNER_ID: partnerID,
+        Consts.CARRIER_NAME: carrierName,
+        Consts.CARRIER_ID: carrierID,
+        Consts.COMMODITY_NAME: commodityName,
+        Consts.COMMODITY_ID: commodityID,
+        Consts.SPECIFICATION_NUMBER: specificationNumber,
+        Consts.SPECIFICATION_VERSION: specificationVersion,
+        Consts.SPECIFICATION_NAME: selectedSpecification,
+        Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
+        Consts.ITEM_SKU: itemSKU,
+        Consts.ITEM_SKU_NAME: itemSkuName,
+        Consts.ITEM_SKU_ID: itemSkuId,
+        Consts.ITEM_UNIQUE_ID: itemUniqueId,
+        Consts.LOT_NO: lotNo,
+        Consts.GTIN: gtin,
+        Consts.PACK_DATE: packDate,
+        Consts.LOT_SIZE: lotSize,
+        Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
+        Consts.PO_NUMBER: poNumber,
+        Consts.PRODUCT_TRANSFER: productTransfer,
+        Consts.DATETYPE: dateTypeDesc,
+      };
+
+      if (isMyInspectionScreen ?? false) {
+        final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+        Get.offAll(() => Home(tag: tag), arguments: passingData);
+      } else {
+        if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+          Get.offAll(() => const NewPurchaseOrderDetailsScreen(),
+              arguments: passingData);
+        } else {
+          final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+          Get.offAll(() => PurchaseOrderDetailsScreen(tag: tag),
+              arguments: passingData);
+        }
+      }
+    }
+  }
 }

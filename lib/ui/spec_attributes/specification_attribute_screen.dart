@@ -39,7 +39,9 @@ class SpecificationAttributesScreen
             onDefectSaveAndCompleteTap: () async {
               controller.saveDefectEntriesAndContinue();
             },
-            onDiscardTap: () async {},
+            onDiscardTap: () async {
+              controller.deleteInspectionAndGotoMyInspectionScreen();
+            },
             onCameraTap: () async {},
             onSpecInstructionTap: () async {},
             onSpecificationTap: () async {},
@@ -96,7 +98,10 @@ class SpecificationAttributesScreen
                           _commonFooterButtons(
                             context: context,
                             controller: controller,
-                            onClick: () {},
+                            onClick: () {
+                              controller
+                                  .deleteInspectionAndGotoMyInspectionScreen();
+                            },
                             buttonTitle: AppStrings.defectDiscard,
                           ),
                           SizedBox(
