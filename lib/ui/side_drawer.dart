@@ -16,6 +16,7 @@ class SideDrawer extends StatelessWidget {
   final Function onSpecificationTap;
   final Function onGradeTap;
   final Function onInspectionTap;
+  final bool isSpecialInstructionTextVisible;
   SideDrawer({
     super.key,
     required this.onDefectSaveAndCompleteTap,
@@ -25,6 +26,7 @@ class SideDrawer extends StatelessWidget {
     required this.onSpecificationTap,
     required this.onGradeTap,
     required this.onInspectionTap,
+    this.isSpecialInstructionTextVisible = false,
   });
 
   final GlobalConfigController globalConfigController =
@@ -127,7 +129,9 @@ class SideDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.edit_document),
             title: Text(
-              AppStrings.specInstrunction,
+              isSpecialInstructionTextVisible
+                  ? AppStrings.specException
+                  : AppStrings.specInstrunction,
               style: Get.textTheme.bodyLarge!.copyWith(
                 fontSize: 26.sp,
               ),

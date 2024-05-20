@@ -36,6 +36,7 @@ class SpecificationAttributesScreen
             title: DrawerHeaderContentView(title: AppStrings.itemAttributes),
           ),
           drawer: SideDrawer(
+            isSpecialInstructionTextVisible: true,
             onDefectSaveAndCompleteTap: () async {
               controller.saveDefectEntriesAndContinue();
             },
@@ -43,7 +44,9 @@ class SpecificationAttributesScreen
               controller.deleteInspectionAndGotoMyInspectionScreen();
             },
             onCameraTap: () async {},
-            onSpecInstructionTap: () async {},
+            onSpecInstructionTap: () async {
+              controller.specialInstructions();
+            },
             onSpecificationTap: () async {},
             onGradeTap: () async {},
             onInspectionTap: () async {},
@@ -136,7 +139,7 @@ class SpecificationAttributesScreen
                             context: context,
                             controller: controller,
                             onClick: () {
-                              log("SPECIAL INSTRUCTION");
+                              controller.specialInstructions();
                             },
                             buttonTitle: AppStrings.specException,
                           ),
