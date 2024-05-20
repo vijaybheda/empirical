@@ -89,33 +89,66 @@ class CommodityIDScreenController extends GetxController {
       commodityList.value = [];
       filteredCommodityList.value = [];
 
-      commodityList.addAll(commoditiesList);
+      if (appStorage.mainCommodityList!.isEmpty) {
+        print('Error loading Commodity List');
+        return;
+      }
 
-      commodityList.sort((a, b) => a.name!.compareTo(b.name!));
-      List<Commodity> mainCommodityList = (appStorage.mainCommodityList ?? []);
-      for (int i = 0; i < mainCommodityList.length; i++) {
-        if (mainCommodityList[i].id != null) {
-          List<CommodityKeywords> keywords =
-              await dao.getCommodityKeywordsFromTable(mainCommodityList[i].id!);
+      for (int i = 0; i < appStorage.mainCommodityList!.length; i++) {
+        List<CommodityKeywords> keywords =
+            await dao.getCommodityKeywordsFromTable(
+                appStorage.mainCommodityList![i].id!);
 
-          List<String> list = [];
-          for (int j = 0; j < keywords.length; j++) {
-            if (keywords[j].keywords != null &&
-                keywords[j].keywords!.isNotEmpty) {
-              list.add(keywords[j].keywords!);
-            }
+        List<String> list = [];
+        for (int j = 0; j < keywords.length; j++) {
+          list.add(keywords[j].keywords!);
+        }
+        String result = list.join(', ');
+
+        appStorage.mainCommodityList![i].keywords = result;
+      }
+      List<Commodity> _commodityList = appStorage.mainCommodityList ?? [];
+
+      List<Commodity> commodityList1 = [];
+
+      for (Commodity commodity in _commodityList) {
+        commodity.keywordName = commodity.name;
+        commodityList1.add(commodity);
+      }
+
+      for (Commodity commodity1 in _commodityList) {
+        List<String> keywordsArray = commodity1.keywords!.split(',');
+        for (int i = 0; i < keywordsArray.length; i++) {
+          if (keywordsArray[i] != 'null' && keywordsArray[i].isNotEmpty) {
+            Commodity newcommodity = Commodity(
+              name: commodity1.name,
+              id: commodity1.id,
+              keywords: commodity1.keywords?.trim(),
+            );
+            String upperString =
+                keywordsArray[i].trim().substring(0, 1).toUpperCase() +
+                    keywordsArray[i].trim().substring(1).toLowerCase();
+            newcommodity.keywordName = upperString;
+
+            commodityList1.add(newcommodity);
           }
-          String result = list.join(", ");
-
-          mainCommodityList[i].keywords = result;
         }
       }
+
+      commodityList1.sort((Commodity car1, Commodity car2) {
+        return car1.keywordName!
+            .toLowerCase()
+            .compareTo(car2.keywordName!.toLowerCase());
+      });
+
       commodityList.clear();
-      commodityList.addAll(mainCommodityList);
+      commodityList.addAll(commodityList1);
+      commodityList.sort((a, b) => a.keywordName!.compareTo(b.keywordName!));
 
       filteredCommodityList.clear();
       filteredCommodityList.addAll(commodityList);
-      filteredCommodityList.sort((a, b) => a.name!.compareTo(b.name!));
+      filteredCommodityList
+          .sort((a, b) => a.keywordName!.compareTo(b.keywordName!));
       listAssigned.value = true;
       update(['commodityList']);
     }
@@ -142,10 +175,12 @@ class CommodityIDScreenController extends GetxController {
   List<String> getListOfAlphabets() {
     Set<String> uniqueAlphabets = {};
 
-    for (Commodity supplier in commodityList) {
-      if (supplier.name!.isNotEmpty &&
-          supplier.name![0].toUpperCase().contains(RegExp(r'[A-Z0-9]'))) {
-        uniqueAlphabets.add(supplier.name![0].toUpperCase());
+    for (Commodity supplier in filteredCommodityList) {
+      if (supplier.keywordName!.isNotEmpty &&
+          supplier.keywordName![0]
+              .toUpperCase()
+              .contains(RegExp(r'[A-Z0-9]'))) {
+        uniqueAlphabets.add(supplier.keywordName!.trim()[0].toUpperCase());
       }
     }
 
