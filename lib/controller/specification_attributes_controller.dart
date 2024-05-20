@@ -1,9 +1,17 @@
 import 'package:get/get.dart';
+import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/models/specification_analytical.dart';
 import 'package:pverify/models/specification_analytical_request_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/ui/Home/home.dart';
+import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
+import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
+import 'package:pverify/ui/qc_short_form/qc_details_short_form_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
+import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
+import 'package:pverify/utils/dialogs/app_alerts.dart';
+import 'package:pverify/utils/utils.dart';
 
 class SpecificationAttributesController extends GetxController {
   int? partnerID;
@@ -35,8 +43,10 @@ class SpecificationAttributesController extends GetxController {
       varietyName,
       varietySize,
       itemUniqueId,
-      lotSize,
-      packDate;
+      lotSize;
+  String? resultComply;
+
+  String? packDate;
   String? footerLeftButtonText,
       footerMiddleButtonText,
       footerMiddle2ButtonText,
@@ -88,7 +98,7 @@ class SpecificationAttributesController extends GetxController {
       lotNo = args[Consts.LOT_NO] ?? '';
       itemSKU = args[Consts.ITEM_SKU];
       dateTypeDesc = args[Consts.DATETYPE] ?? '';
-      callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
+      // callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
       varietyName = args[Consts.VARIETY_NAME] ?? '';
       varietySize = args[Consts.VARIETY_SIZE] ?? '';
       varietyId = args[Consts.VARIETY_ID] ?? 0;
@@ -198,4 +208,370 @@ class SpecificationAttributesController extends GetxController {
       update();
     });
   }
+
+  // Save Inspection
+  Future<void> saveDefectEntriesAndContinue() async {
+    if (!hasError2) {
+      await saveFieldsToDB(false);
+    }
+  }
+
+  Future<void> saveAsDraftAndGotoMyInspectionScreen() async {
+    if (!hasError2) {
+      await saveFieldsToDB(false);
+    }
+  }
+
+  Future<bool> saveFieldsToDB(bool isComplete) async {
+    try {
+      // Delete existing records
+      await dao.deleteSpecAttributesByInspectionId(inspectionId!);
+
+      /// Lists to store blank names
+      List<String> blankAnalyticalNames = [];
+      List<String> blankCommentNames = [];
+
+      /// Loop through items
+      for (SpecificationAnalyticalRequest item in listSpecAnalyticalsRequest) {
+        if (item.analyticalName != null && item.analyticalName!.length > 1) {
+          if (item.analyticalName!.substring(0, 2) == "02") {
+            if (item.sampleNumValue == 0) {
+              blankAnalyticalNames.add(item.analyticalName!);
+            }
+          } else if (item.analyticalName!.substring(0, 2) == "01" ||
+              item.analyticalName!.substring(0, 2) == "03" ||
+              item.analyticalName!.substring(0, 2) == "05") {
+            if (item.sampleTextValue == "N/A") {
+              blankAnalyticalNames.add(item.analyticalName!);
+            }
+          }
+          if (item.analyticalName!.substring(0, 2) == "04" ||
+              item.analyticalName!.substring(0, 2) == "07" ||
+              item.analyticalName!.substring(0, 2) == "09" ||
+              item.analyticalName!.substring(0, 2) == "10" ||
+              item.analyticalName!.substring(0, 2) == "11" ||
+              item.analyticalName!.substring(0, 2) == "12") {
+            if (item.comment == null) {
+              blankCommentNames.add(item.analyticalName!);
+            }
+          }
+        }
+      }
+
+      /// If there are no blank analytical names
+      if (blankAnalyticalNames.isEmpty) {
+        /// If there are blank comments
+        if (blankCommentNames.isNotEmpty) {
+          String message = '';
+          for (var i = 0; i < blankCommentNames.length; i++) {
+            message += 'Please enter a comment for ${blankCommentNames[i]}\n';
+          }
+
+          AppAlertDialog.confirmationAlert(
+              Get.context!, AppStrings.alert, message, onYesTap: () async {
+            Get.back();
+
+            for (SpecificationAnalyticalRequest item2
+                in listSpecAnalyticalsRequest) {
+              if ((item2.isPictureRequired ?? false) && item2.comply == 'No') {
+                resultComply = 'No';
+              } else {
+                resultComply = 'Yes';
+              }
+              await dao.createSpecificationAttributes(
+                inspectionId!,
+                item2.analyticalID!,
+                item2.sampleTextValue!,
+                item2.sampleNumValue!,
+                item2.comply!,
+                item2.comment!,
+                item2.analyticalName!,
+                item2.isPictureRequired!,
+                item2.inspectionResult!,
+              );
+            }
+            _appStorage.resumeFromSpecificationAttributes = true;
+          });
+        } else {
+          resultComply = 'Yes';
+          for (SpecificationAnalyticalRequest item2
+              in listSpecAnalyticalsRequest) {
+            /// item2.specTypeofEntry == 1
+            if (item2.specTypeofEntry == 1) {
+              if (item2.sampleNumValue == null) {
+                hasError2 = true;
+                break;
+              }
+              if (item2.sampleNumValue == 0) {
+                hasError2 = true;
+                break;
+              } else {
+                hasError2 = false;
+
+                if ((item2.isPictureRequired ?? false) &&
+                    item2.comply == "No") {
+                  resultComply = "No";
+                }
+
+                await dao.createSpecificationAttributes(
+                  inspectionId!,
+                  item2.analyticalID!,
+                  item2.sampleTextValue ?? '',
+                  item2.sampleNumValue!,
+                  item2.comply!,
+                  item2.comment ?? '',
+                  item2.analyticalName!,
+                  item2.isPictureRequired!,
+                  item2.inspectionResult ?? '',
+                );
+
+                if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+                  if (item2.description?.contains("Quality Check") ?? false) {
+                    if (item2.sampleNumValue != null &&
+                        item2.specMin != null &&
+                        item2.specMax != null &&
+                        item2.sampleNumValue! > 0 &&
+                        item2.sampleNumValue! < item2.specMin!) {
+                      await dao.updateInspectionRating(
+                          inspectionId!, item2.sampleNumValue!);
+                      await dao.updateInspectionResult(inspectionId!, "RJ");
+                    } else if (item2.sampleNumValue! >= item2.specMin! &&
+                        item2.sampleNumValue! <= item2.specMax!) {
+                      await dao.updateInspectionRating(
+                          inspectionId!, item2.sampleNumValue!);
+                      await dao.updateInspectionResult(inspectionId!, "AC");
+                    }
+
+                    await dao.updateItemSKUInspectionComplete(
+                        inspectionId!, "true");
+                    await dao.updateInspectionComplete(inspectionId!, true);
+                    await dao.updateSelectedItemSKU(
+                      inspectionId!,
+                      partnerID!,
+                      itemSkuId!,
+                      itemSKU!,
+                      itemUniqueId!,
+                      true,
+                      false,
+                    );
+                    Utils.setInspectionUploadStatus(
+                        inspectionId!, Consts.INSPECTION_UPLOAD_READY);
+
+                    await dao.createOrUpdateInspectionSpecification(
+                      inspectionId!,
+                      specificationNumber,
+                      specificationVersion,
+                      specificationName,
+                    );
+                  }
+                }
+              }
+            }
+
+            /// item2.specTypeofEntry == 2
+            else if (item2.specTypeofEntry == 2) {
+              if (item2.sampleTextValue == "Select") {
+                hasError2 = true;
+
+                AppAlertDialog.confirmationAlert(Get.context!, AppStrings.alert,
+                    "Please enter value for spec attributes with 'Select'",
+                    onYesTap: () {
+                  hasError2 = false;
+                });
+                break;
+              } else {
+                hasError2 = false;
+                if ((item2.isPictureRequired ?? false) &&
+                    item2.comply == "No") {
+                  resultComply = "No";
+                }
+
+                await dao.createSpecificationAttributes(
+                  inspectionId!,
+                  item2.analyticalID!,
+                  item2.sampleTextValue ?? '',
+                  item2.sampleNumValue ?? 0,
+                  item2.comply ?? '',
+                  item2.comment ?? '',
+                  item2.analyticalName ?? '',
+                  item2.isPictureRequired ?? false,
+                  item2.inspectionResult ?? '',
+                );
+              }
+            }
+
+            /// item2.specTypeofEntry == 3
+            else if (item2.specTypeofEntry == 3) {
+              if (item2.sampleTextValue == "Select") {
+                hasError2 = true;
+
+                AppAlertDialog.confirmationAlert(Get.context!, AppStrings.alert,
+                    "Please enter value for spec attributes with 'Select'",
+                    onYesTap: () {
+                  hasError2 = false;
+                });
+                break;
+              } else if (item2.sampleNumValue == 0) {
+                hasError2 = true;
+              } else {
+                hasError2 = false;
+                if ((item2.isPictureRequired ?? false) &&
+                    item2.comply == "No") {
+                  resultComply = "No";
+                }
+
+                await dao.createSpecificationAttributes(
+                  inspectionId!,
+                  item2.analyticalID!,
+                  item2.sampleTextValue!,
+                  item2.sampleNumValue!,
+                  item2.comply!,
+                  item2.comment!,
+                  item2.analyticalName!,
+                  item2.isPictureRequired!,
+                  item2.inspectionResult!,
+                );
+
+                if (item2.description?.contains("Quality Check") ?? false) {
+                  await dao.updateInspectionRating(
+                      inspectionId!, item2.sampleNumValue!);
+                }
+
+                if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+                  if (item2.description?.contains("Quality Check") ?? false) {
+                    if (item2.sampleNumValue! > 0 &&
+                        item2.sampleNumValue! < item2.specMin!) {
+                      await dao.updateInspectionResult(inspectionId!, "RJ");
+                    } else if (item2.sampleNumValue! >= item2.specMin! &&
+                        item2.sampleNumValue! <= item2.specMax!) {
+                      await dao.updateInspectionResult(inspectionId!, "AC");
+                    }
+
+                    await dao.updateItemSKUInspectionComplete(
+                        inspectionId!, "true");
+                    await dao.updateInspectionComplete(inspectionId!, true);
+                    await dao.updateSelectedItemSKU(
+                      inspectionId!,
+                      partnerID!,
+                      itemSkuId!,
+                      itemSKU!,
+                      itemUniqueId!,
+                      true,
+                      false,
+                    );
+                    Utils.setInspectionUploadStatus(
+                        inspectionId!, Consts.INSPECTION_UPLOAD_READY);
+
+                    await dao.createOrUpdateInspectionSpecification(
+                      inspectionId!,
+                      specificationNumber,
+                      specificationVersion,
+                      specificationName,
+                    );
+                  }
+                }
+              }
+            }
+
+            /// item2.specTypeofEntry ?
+            else {
+              if ((item2.isPictureRequired ?? false) && item2.comply == 'No') {
+                resultComply = 'No';
+              }
+              await dao.createSpecificationAttributes(
+                inspectionId!,
+                item2.analyticalID!,
+                item2.sampleTextValue!,
+                item2.sampleNumValue!,
+                item2.comply!,
+                item2.comment!,
+                item2.analyticalName!,
+                item2.isPictureRequired!,
+                item2.inspectionResult!,
+              );
+            }
+          }
+
+          if (resultComply != null && resultComply == "No") {
+            List<InspectionAttachment> picsFromDB = [];
+            picsFromDB = await dao
+                .findInspectionAttachmentsByInspectionId(inspectionId!);
+            if (picsFromDB.isEmpty) {
+              hasError2 = true;
+
+              AppAlertDialog.confirmationAlert(Get.context!, AppStrings.alert,
+                  "At least one picture is required", onYesTap: () {
+                hasError2 = false;
+              });
+            }
+          }
+
+          if (!hasError2) {
+            _appStorage.resumeFromSpecificationAttributes = true;
+          } else {
+            _appStorage.resumeFromSpecificationAttributes = false;
+          }
+          callStartActivity(isComplete);
+        }
+      } else {
+        String message = '';
+        for (var i = 0; i < blankAnalyticalNames.length; i++) {
+          message += 'Please enter a value for ${blankAnalyticalNames[i]}\n';
+        }
+
+        AppAlertDialog.validateAlerts(Get.context!, AppStrings.alert, message);
+      }
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+
+  callStartActivity(bool isComplete) {
+    Map<String, dynamic> args = {
+      Consts.SERVER_INSPECTION_ID: inspectionId,
+      Consts.PARTNER_NAME: partnerName,
+      Consts.PARTNER_ID: partnerID,
+      Consts.CARRIER_NAME: carrierName,
+      Consts.CARRIER_ID: carrierID,
+      Consts.COMMODITY_NAME: commodityName,
+      Consts.COMMODITY_ID: commodityID,
+      Consts.COMPLETED: completed,
+      Consts.SPECIFICATION_NUMBER: specificationNumber,
+      Consts.SPECIFICATION_VERSION: specificationVersion,
+      Consts.SPECIFICATION_NAME: selectedSpecification,
+      Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
+      Consts.LOT_NO: lotNo,
+      Consts.ITEM_SKU: itemSKU,
+      Consts.ITEM_SKU_NAME: itemSkuName,
+      Consts.ITEM_SKU_ID: itemSkuId,
+      Consts.GTIN: gtin,
+      Consts.PACK_DATE: packDate,
+      Consts.QUALITY_COMPLETED: true,
+      Consts.ITEM_UNIQUE_ID: itemUniqueId,
+      Consts.LOT_SIZE: lotSize,
+      Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
+      Consts.PO_NUMBER: poNumber,
+      Consts.PRODUCT_TRANSFER: productTransfer,
+      Consts.DATETYPE: dateTypeDesc,
+    };
+
+    if (isComplete) {
+      Get.back();
+    } else {
+      Map<String, dynamic> navigationArgs = {};
+
+      String callerActivity = args["callerActivity"] ?? '';
+
+      if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+        navigationArgs["callerActivity"] = "NewPurchaseOrderDetailsActivity";
+      } else {
+        navigationArgs["callerActivity"] = "PurchaseOrderDetailsActivity";
+      }
+      final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+      Get.offAll(() => QCDetailsShortFormScreen(tag: tag), arguments: args);
+    }
+  }
+
+  
 }

@@ -36,7 +36,9 @@ class SpecificationAttributesScreen
             title: DrawerHeaderContentView(title: AppStrings.itemAttributes),
           ),
           drawer: SideDrawer(
-            onDefectSaveAndCompleteTap: () async {},
+            onDefectSaveAndCompleteTap: () async {
+              controller.saveDefectEntriesAndContinue();
+            },
             onDiscardTap: () async {},
             onCameraTap: () async {},
             onSpecInstructionTap: () async {},
@@ -94,9 +96,7 @@ class SpecificationAttributesScreen
                           _commonFooterButtons(
                             context: context,
                             controller: controller,
-                            onClick: () {
-                              log("DISCARD INSPECTION");
-                            },
+                            onClick: () {},
                             buttonTitle: AppStrings.defectDiscard,
                           ),
                           SizedBox(
@@ -106,7 +106,7 @@ class SpecificationAttributesScreen
                             context: context,
                             controller: controller,
                             onClick: () {
-                              log("SAVE INSPECTION");
+                              controller.saveDefectEntriesAndContinue();
                             },
                             buttonTitle: AppStrings.saveInspectionButton,
                           ),
