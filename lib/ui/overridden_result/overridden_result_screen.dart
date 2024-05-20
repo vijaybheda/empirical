@@ -322,13 +322,12 @@ class OverriddenResultScreen
               items: items.map((selectedType) {
                 return DropdownMenuItem<String>(
                   value: selectedType,
-                  child: Text(
-                    selectedType,
-                    style: GoogleFonts.poppins(
+                  child: Text(selectedType,
+                      style: Get.textTheme.titleLarge!.copyWith(
                         fontSize: 28.sp,
                         fontWeight: FontWeight.normal,
-                        textStyle: TextStyle(color: AppColors.hintColor)),
-                  ),
+                        color: AppColors.hintColor,
+                      )),
                 );
               }).toList(),
               value: controller.newResultAccept.value,
