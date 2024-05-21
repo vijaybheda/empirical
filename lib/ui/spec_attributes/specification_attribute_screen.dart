@@ -61,12 +61,14 @@ class SpecificationAttributesScreen
             onDiscardTap: () async {
               controller.deleteInspectionAndGotoMyInspectionScreen();
             },
-            onCameraTap: () async {},
+            onCameraTap: () async {
+              await controller.onCameraMenuTap();
+            },
             onSpecInstructionTap: () async {
-              controller.specialInstructions();
+              await controller.specialInstructions();
             },
             onSpecificationTap: () async {
-              controller.onSpecificationTap();
+              await controller.onSpecificationTap();
             },
             onGradeTap: () async {
               await JsonFileOperations.instance.viewGradePdf();

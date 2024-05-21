@@ -6,6 +6,7 @@ import 'package:pverify/models/specification_analytical_request_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
 import 'package:pverify/ui/defects/table_dialog.dart';
+import 'package:pverify/ui/inspection_photos/inspection_photos_screen.dart';
 import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
 import 'package:pverify/ui/qc_short_form/qc_details_short_form_screen.dart';
@@ -645,5 +646,21 @@ class SpecificationAttributesController extends GetxController {
         builder: (BuildContext context) {
           return tableDialog(context);
         });
+  }
+
+  Future<void> onCameraMenuTap() async {
+    Map<String, dynamic> passingData = {
+      Consts.PARTNER_NAME: partnerName,
+      Consts.PARTNER_ID: partnerID,
+      Consts.CARRIER_NAME: carrierName,
+      Consts.CARRIER_ID: carrierID,
+      Consts.COMMODITY_NAME: commodityName,
+      Consts.COMMODITY_ID: commodityID,
+      Consts.VIEW_ONLY_MODE: false,
+      Consts.INSPECTION_ID: inspectionId,
+      Consts.PO_NUMBER: poNumber,
+    };
+
+    await Get.to(() => const InspectionPhotos(), arguments: passingData);
   }
 }
