@@ -131,25 +131,22 @@ class SpecificationAttributesController extends GetxController {
     } else {
       commodityText = commodityName;
       varietyText = itemSKU;
-      getSpecTable();
     }
 
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
+      _appStorage.specificationAnalyticalList =
+          await dao.getSpecificationAnalyticalFromTable(
+        specificationNumber!,
+        specificationVersion!,
+      );
+      await setSpecAnalyticalTable();
+      hasInitialised.value = true;
+    });
     super.onInit();
-  }
-
-  Future<void> getSpecTable() async {
-    _appStorage.specificationAnalyticalList =
-        await dao.getSpecificationAnalyticalFromTable(
-      specificationNumber!,
-      specificationVersion!,
-    );
-    await setSpecAnalyticalTable();
-    hasInitialised.value = true;
   }
 
   Future<void> setSpecAnalyticalTable() async {
     if (_appStorage.specificationAnalyticalList == null) {
-      update();
       return;
     }
     listSpecAnalyticals.value = _appStorage.specificationAnalyticalList ?? [];
@@ -572,7 +569,7 @@ class SpecificationAttributesController extends GetxController {
         navigationArgs["callerActivity"] = "PurchaseOrderDetailsActivity";
       }
       final String tag = DateTime.now().millisecondsSinceEpoch.toString();
-      Get.offAll(() => QCDetailsShortFormScreen(tag: tag), arguments: args);
+      Get.to(() => QCDetailsShortFormScreen(tag: tag), arguments: args);
     }
   }
 
@@ -618,11 +615,11 @@ class SpecificationAttributesController extends GetxController {
         Get.offAll(() => Home(tag: tag), arguments: passingData);
       } else {
         if (callerActivity == "NewPurchaseOrderDetailsActivity") {
-          Get.offAll(() => const NewPurchaseOrderDetailsScreen(),
+          Get.to(() => const NewPurchaseOrderDetailsScreen(),
               arguments: passingData);
         } else {
           final String tag = DateTime.now().millisecondsSinceEpoch.toString();
-          Get.offAll(() => PurchaseOrderDetailsScreen(tag: tag),
+          Get.to(() => PurchaseOrderDetailsScreen(tag: tag),
               arguments: passingData);
         }
       }

@@ -181,7 +181,7 @@ class LongFormQualityControlScreenController extends GetxController {
     }
 
     // comments
-    String qcComments = commentsController.text ?? "";
+    String qcComments = commentsController.text;
 
     // qtyRejected
     String qtyRejectedString = qtyRejectedController.text;
@@ -316,7 +316,6 @@ class LongFormQualityControlScreenController extends GetxController {
     int brandID = 0;
     int reasonID = 0;
     int originID = 0;
-    String typeofCut = '';
 
     // uom
     if (uomList.isNotEmpty && selectedUOM != null) {
@@ -341,8 +340,7 @@ class LongFormQualityControlScreenController extends GetxController {
     }
 
     // typeofCut
-    int typeofCutIndex = rpcList.indexOf(selectedRpc.value);
-    typeofCut = rpcList[typeofCutIndex];
+    rpcList.indexOf(selectedRpc.value);
 
     String workDateS = workDateController.text.trim();
     int workDate = 0;
