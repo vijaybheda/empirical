@@ -11,8 +11,6 @@ import 'package:pverify/models/quality_control_item.dart';
 import 'package:pverify/models/reason_item.dart';
 import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
-import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
-import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
 import 'package:pverify/ui/spec_attributes/specification_attribute_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/const.dart';
@@ -894,7 +892,9 @@ class LongFormQualityControlScreenController extends GetxController {
       Consts.DATETYPE: dateTypeDesc,
     };
 
-    Get.to(() => const SpecificationAttributesScreen(), arguments: passingData);
+    final String uniqueTag = DateTime.now().millisecondsSinceEpoch.toString();
+    Get.to(() => SpecificationAttributesScreen(uniqueTag: uniqueTag),
+        arguments: passingData);
     /* if (callerActivity == "NewPurchaseOrderDetailsActivity") {
       Get.offAll(
         () => const NewPurchaseOrderDetailsScreen(),

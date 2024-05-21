@@ -119,6 +119,7 @@ class OverriddenResultScreenController extends GetxController {
     qtyShipped.value = qualityControlItems?.qtyShipped ?? 0;
     qtyRejected.value = qualityControlItems?.qtyRejected ?? 0;
     gtyRejectController.value.text = qtyRejected.value.toString();
+    log("heree is Inspection Result $inspectionResult");
     if (inspectionResult == "RJ" || inspectionResult == AppStrings.reject) {
       finalInspectionResultColor = Colors.red;
       finalInspectionResult.value = AppStrings.reject;
@@ -133,8 +134,9 @@ class OverriddenResultScreenController extends GetxController {
       finalInspectionResult.value = AppStrings.a_minus;
       layoutQtyRejectedVisibility.value = false;
     } else if (inspectionResult == "AW" ||
-        inspectionResult?.toLowerCase() == AppStrings.acceptCondition) {
-      finalInspectionResultColor = Colors.green;
+        inspectionResult?.toLowerCase() == AppStrings.acceptCondition ||
+        inspectionResult == "Accept w/Protection") {
+      finalInspectionResultColor = Colors.orange;
       finalInspectionResult.value = AppStrings.acceptCondition;
       layoutQtyRejectedVisibility.value = false;
     }
@@ -267,7 +269,7 @@ class OverriddenResultScreenController extends GetxController {
         };
         final String tag = DateTime.now().millisecondsSinceEpoch.toString();
 
-        Get.to(() => PurchaseOrderDetailsScreen(tag: tag),
+        Get.offAll(() => PurchaseOrderDetailsScreen(tag: tag),
             arguments: passingData);
       }
     }

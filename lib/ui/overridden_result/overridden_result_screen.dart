@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/overridden_result_screen_controller.dart';
 import 'package:pverify/ui/components/bottom_custom_button_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
@@ -322,13 +321,12 @@ class OverriddenResultScreen
               items: items.map((selectedType) {
                 return DropdownMenuItem<String>(
                   value: selectedType,
-                  child: Text(
-                    selectedType,
-                    style: GoogleFonts.poppins(
+                  child: Text(selectedType,
+                      style: Get.textTheme.titleLarge!.copyWith(
                         fontSize: 28.sp,
                         fontWeight: FontWeight.normal,
-                        textStyle: TextStyle(color: AppColors.hintColor)),
-                  ),
+                        color: AppColors.hintColor,
+                      )),
                 );
               }).toList(),
               value: controller.newResultAccept.value,
