@@ -349,26 +349,34 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
   }
 
   Widget _inspectionNameIdInfo() {
-    return Column(
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Text(
-          widget.goodsItem.description ?? '-',
-          style: Get.textTheme.bodyMedium?.copyWith(
-            fontSize: 28.sp,
-            color: AppColors.lightGrey,
+        Expanded(
+          flex: 3,
+          child: Text(
+            (widget.goodsItem.description ?? '-'),
+            style: Get.textTheme.bodyMedium?.copyWith(
+              fontSize: 28.sp,
+              color: AppColors.lightGrey,
+              fontWeight: FontWeight.bold,
+            ),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
           ),
-          maxLines: 3,
-          overflow: TextOverflow.ellipsis,
         ),
-        Text(
-          widget.goodsItem.sku ?? '-',
-          style: Get.textTheme.bodyMedium?.copyWith(
-            fontSize: 28.sp,
+        Expanded(
+          flex: 3,
+          child: Text(
+            (widget.goodsItem.sku ?? '-'),
+            style: Get.textTheme.bodyMedium?.copyWith(
+              fontSize: 28.sp,
+              fontWeight: FontWeight.bold,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
         ),
       ],
     );
@@ -380,7 +388,6 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // if (widget.goodsItem.lotNumber != null)
         Expanded(
           flex: 3,
           child: Row(
@@ -390,8 +397,11 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
             children: [
               Text(
                 'Lot No. ',
-                style: Get.textTheme.bodyMedium
-                    ?.copyWith(fontSize: 22.sp, color: AppColors.white),
+                style: Get.textTheme.bodyMedium?.copyWith(
+                  fontSize: 22.sp,
+                  color: AppColors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               // if (widget.goodsItem.lotNumber != null)
               Text(
@@ -402,7 +412,6 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
             ],
           ),
         ),
-        // if (widget.goodsItem.packDate != null)
         Expanded(
           flex: 3,
           child: Row(
@@ -412,14 +421,19 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
             children: [
               Text(
                 'Pack Date ',
-                style: Get.textTheme.bodyMedium
-                    ?.copyWith(fontSize: 22.sp, color: AppColors.white),
+                style: Get.textTheme.bodyMedium?.copyWith(
+                  fontSize: 22.sp,
+                  color: AppColors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               // if (widget.goodsItem.packDate != null)
               Text(
                 (widget.goodsItem.packDate ?? ''),
-                style: Get.textTheme.bodyMedium
-                    ?.copyWith(fontSize: 22.sp, color: AppColors.white),
+                style: Get.textTheme.bodyMedium?.copyWith(
+                  fontSize: 22.sp,
+                  color: AppColors.white,
+                ),
               ),
             ],
           ),
@@ -471,81 +485,88 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
   Widget _inspectionQuantity() {
     return Row(
       children: [
-        Text('Qty Shipped * ',
-            style: Get.textTheme.bodyMedium
-                ?.copyWith(fontSize: 22.sp, color: AppColors.white)),
-        // if (widget.goodsItem.quantityShipped != null)
-        SizedBox(
-          width: 80,
-          child: TextField(
-            controller: qtyShippedController,
-            textAlign: TextAlign.center,
-            style: Get.textTheme.bodyMedium?.copyWith(
-              fontSize: 22.sp,
-              color: AppColors.white,
-              fontWeight: FontWeight.normal,
-            ),
-            decoration: InputDecoration(
-              enabled: etQtyShippedEnabled,
-              isDense: true,
-              border: const UnderlineInputBorder(),
-              focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
+        Expanded(
+            flex: 3,
+            child: Row(children: [
+              Text('Qty Shipped * ',
+                  style: Get.textTheme.bodyMedium
+                      ?.copyWith(fontSize: 22.sp, color: AppColors.white)),
+              SizedBox(
+                width: 80,
+                child: TextField(
+                  controller: qtyShippedController,
+                  textAlign: TextAlign.center,
+                  style: Get.textTheme.bodyMedium?.copyWith(
+                    fontSize: 22.sp,
+                    color: AppColors.white,
+                    fontWeight: FontWeight.normal,
+                  ),
+                  decoration: InputDecoration(
+                    enabled: etQtyShippedEnabled,
+                    isDense: true,
+                    border: const UnderlineInputBorder(),
+                    focusedBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    disabledBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    enabledBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    errorBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    focusedErrorBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                  ),
+                ),
               ),
-              disabledBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-              enabledBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-              errorBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-              focusedErrorBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 10),
-        // const Spacer(),
+            ])),
         if (widget.goodsItem.packDate != null)
-          Text('Qty Rejected * ',
-              style: Get.textTheme.bodyMedium
-                  ?.copyWith(fontSize: 22.sp, color: AppColors.white)),
-        // if (qtyRejectedController.text.isNotEmpty)
-        SizedBox(
-          width: 80,
-          child: TextField(
-            controller: qtyRejectedController,
-            textAlign: TextAlign.center,
-            style: Get.textTheme.bodyMedium?.copyWith(
-              fontSize: 22.sp,
-              color: AppColors.white,
-              fontWeight: FontWeight.normal,
-            ),
-            decoration: const InputDecoration(
-              isDense: true,
-              border: UnderlineInputBorder(),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-              disabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-              errorBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-              focusedErrorBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
-              ),
+          Expanded(
+            flex: 3,
+            child: Row(
+              children: [
+                Text('Qty Rejected * ',
+                    style: Get.textTheme.bodyMedium
+                        ?.copyWith(fontSize: 22.sp, color: AppColors.white)),
+                SizedBox(
+                  width: 80,
+                  child: TextField(
+                    controller: qtyRejectedController,
+                    textAlign: TextAlign.center,
+                    style: Get.textTheme.bodyMedium?.copyWith(
+                      fontSize: 22.sp,
+                      color: AppColors.white,
+                      fontWeight: FontWeight.normal,
+                    ),
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      border: UnderlineInputBorder(),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      disabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      errorBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      focusedErrorBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-        const Spacer(),
+        // const Spacer(),
       ],
     );
   }
