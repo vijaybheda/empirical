@@ -181,7 +181,7 @@ class LongFormQualityControlScreenController extends GetxController {
     }
 
     // comments
-    String qcComments = commentsController.text ?? "";
+    String qcComments = commentsController.text;
 
     // qtyRejected
     String qtyRejectedString = qtyRejectedController.text;
@@ -316,7 +316,6 @@ class LongFormQualityControlScreenController extends GetxController {
     int brandID = 0;
     int reasonID = 0;
     int originID = 0;
-    String typeofCut = '';
 
     // uom
     if (uomList.isNotEmpty && selectedUOM != null) {
@@ -341,8 +340,7 @@ class LongFormQualityControlScreenController extends GetxController {
     }
 
     // typeofCut
-    int typeofCutIndex = rpcList.indexOf(selectedRpc.value);
-    typeofCut = rpcList[typeofCutIndex];
+    rpcList.indexOf(selectedRpc.value);
 
     String workDateS = workDateController.text.trim();
     int workDate = 0;
@@ -388,8 +386,6 @@ class LongFormQualityControlScreenController extends GetxController {
           dateType: dateTypeDesc,
         );
       } else {
-        log("here is Quanitity Rejected: $packDate");
-
         dao.updateQualityControl(
           qcID: qcID!,
           inspectionId: inspectionId!,
@@ -437,7 +433,6 @@ class LongFormQualityControlScreenController extends GetxController {
   }
 
   Future<void> loadFiledsFromDB(Map<String, dynamic> args) async {
-    qtyRejectedController.text = "0";
     recorderTempMinController.text = '0';
     recorderTempMaxController.text = '0';
     pulpTempMinController.text = '0';
@@ -495,7 +490,6 @@ class LongFormQualityControlScreenController extends GetxController {
       log("Here is QualityControlItem ${item.toJson()}");
       qcID = qualityControlItems!.qcID;
       qtyShippedController.text = qualityControlItems!.qtyShipped.toString();
-      updateQtyApproved();
 
       if (qualityControlItems!.dateType != "") {
         dateTypeDesc = getDateTypeDesc(qualityControlItems!.dateType);
@@ -519,8 +513,8 @@ class LongFormQualityControlScreenController extends GetxController {
 
       commentsController.text = qualityControlItems!.qcComments ?? '';
       qtyRejectedController.text =
-          (qualityControlItems?.qtyRejected ?? '').toString();
-
+          (qualityControlItems?.qtyRejected ?? '0').toString();
+      log("hereee is Quality COntrol ${qualityControlItems?.qtyRejected}");
       pulpTempMinController.text =
           (qualityControlItems?.pulpTempMin ?? '').toString();
       pulpTempMaxController.text =
@@ -548,6 +542,7 @@ class LongFormQualityControlScreenController extends GetxController {
       lotNoController.text = qualityControlItems!.qcdOpen2 ?? '';
       qtyInspectedOkController.text = qualityControlItems?.qcdOpen3 ?? '';
       sensitechSerialNoController.text = qualityControlItems?.qcdOpen4 ?? '';
+      updateQtyApproved();
     }
   }
 
@@ -671,7 +666,6 @@ class LongFormQualityControlScreenController extends GetxController {
 
     selectedClaimField.value = claimFieldList[selectedIndexClaimField];
 
-    log("Here ${selectedClaimField.value}");
     if (selectedClaimField.value == claimFieldList[0]) {
       selectedClaimFieldLabel.value = "NC";
     } else if (selectedClaimField.value == claimFieldList[1]) {

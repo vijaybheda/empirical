@@ -23,58 +23,50 @@ class SpecAttributeTable extends GetWidget<SpecificationAttributesController> {
     SpecificationAttributesController controller =
         Get.find<SpecificationAttributesController>(tag: uniqueTag);
 
-    return Obx(() => ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: controller.listSpecAnalyticals.length,
-          itemBuilder: (context, index) {
-            SpecificationAnalytical item =
-                controller.listSpecAnalyticals[index];
-            SpecificationAnalyticalRequest? reqobj =
-                controller.listSpecAnalyticalsRequest.elementAtOrNull(index);
-            SpecificationAnalyticalRequest? dbobj =
-                controller.dbobjList.elementAtOrNull(index);
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: controller.listSpecAnalyticals.length,
+      itemBuilder: (context, index) {
+        SpecificationAnalytical item = controller.listSpecAnalyticals[index];
+        SpecificationAnalyticalRequest reqobj =
+            controller.listSpecAnalyticalsRequest[index];
+        SpecificationAnalyticalRequest? dbobj = controller.dbobjList[index];
 
-            if (!controller.hasInitialised.value ||
-                reqobj == null ||
-                dbobj == null) {
-              return Container();
-            }
-
-            return SpecificationAnalyticalWidget(
-                controller: controller,
-                item: item,
-                index: index,
-                reqobj: reqobj,
-                dbobj: dbobj,
-                onCommentSave: (String comment) {
-                  reqobj?.comment ??= '';
-                  reqobj?.comment = comment;
-                  reqobj = reqobj?.copyWith(comment: comment);
-                  controller.listSpecAnalyticalsRequest[index] = reqobj!;
-                  if (dbobj != null) {
-                    dbobj?.comment ??= '';
-                    dbobj?.comment = comment;
-                    dbobj = dbobj?.copyWith(comment: comment);
-                  }
-                  controller.update();
-                  controller.listSpecAnalyticalsRequest[index] = reqobj!;
-                },
-                onComplySave: (String comply) {
-                  reqobj?.comply ??= '';
-                  reqobj?.comply = comply;
-                  reqobj = reqobj?.copyWith(comply: comply);
-                  controller.listSpecAnalyticalsRequest[index] = reqobj!;
-                  if (dbobj != null) {
-                    dbobj?.comply ??= '';
-                    dbobj?.comply = comply;
-                    dbobj = dbobj?.copyWith(comply: comply);
-                  }
-                  controller.update();
-                  controller.listSpecAnalyticalsRequest[index] = reqobj!;
-                });
-          },
-        ));
+        return SpecificationAnalyticalWidget(
+            controller: controller,
+            item: item,
+            index: index,
+            reqobj: reqobj,
+            dbobj: dbobj,
+            onCommentSave: (String comment) {
+              reqobj.comment ??= '';
+              reqobj.comment = comment;
+              reqobj = reqobj.copyWith(comment: comment);
+              controller.listSpecAnalyticalsRequest[index] = reqobj;
+              if (dbobj != null) {
+                dbobj?.comment ??= '';
+                dbobj?.comment = comment;
+                dbobj = dbobj?.copyWith(comment: comment);
+              }
+              controller.update();
+              controller.listSpecAnalyticalsRequest[index] = reqobj;
+            },
+            onComplySave: (String comply) {
+              reqobj.comply ??= '';
+              reqobj.comply = comply;
+              reqobj = reqobj.copyWith(comply: comply);
+              controller.listSpecAnalyticalsRequest[index] = reqobj;
+              if (dbobj != null) {
+                dbobj?.comply ??= '';
+                dbobj?.comply = comply;
+                dbobj = dbobj?.copyWith(comply: comply);
+              }
+              controller.update();
+              controller.listSpecAnalyticalsRequest[index] = reqobj;
+            });
+      },
+    );
   }
 }
 

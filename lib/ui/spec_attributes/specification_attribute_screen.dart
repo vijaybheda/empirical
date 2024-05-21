@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -7,6 +5,7 @@ import 'package:pverify/controller/json_file_operations.dart';
 import 'package:pverify/controller/specification_attributes_controller.dart';
 import 'package:pverify/ui/components/drawer_header_content_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
+import 'package:pverify/ui/components/progress_adaptive.dart';
 import 'package:pverify/ui/side_drawer.dart';
 import 'package:pverify/ui/spec_attributes/spec_attribute_table.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -24,6 +23,24 @@ class SpecificationAttributesScreen
       tag: uniqueTag,
       init: SpecificationAttributesController(),
       builder: (controller) {
+        if (!controller.hasInitialised.value) {
+          return Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.background,
+            body: const Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: SizedBox(
+                    height: 25,
+                    width: 25,
+                    child: ProgressAdaptive(),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.background,
           appBar: AppBar(
@@ -44,12 +61,14 @@ class SpecificationAttributesScreen
             onDiscardTap: () async {
               controller.deleteInspectionAndGotoMyInspectionScreen();
             },
-            onCameraTap: () async {},
+            onCameraTap: () async {
+              await controller.onCameraMenuTap();
+            },
             onSpecInstructionTap: () async {
-              controller.specialInstructions();
+              await controller.specialInstructions();
             },
             onSpecificationTap: () async {
-              controller.onSpecificationTap();
+              await controller.onSpecificationTap();
             },
             onGradeTap: () async {
               await JsonFileOperations.instance.viewGradePdf();

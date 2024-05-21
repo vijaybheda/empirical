@@ -136,7 +136,7 @@ class OverriddenResultScreenController extends GetxController {
     } else if (inspectionResult == "AW" ||
         inspectionResult?.toLowerCase() == AppStrings.acceptCondition ||
         inspectionResult == "Accept w/Protection") {
-      finalInspectionResultColor = Colors.orange;
+      finalInspectionResultColor = Colors.green;
       finalInspectionResult.value = AppStrings.acceptCondition;
       layoutQtyRejectedVisibility.value = false;
     }
