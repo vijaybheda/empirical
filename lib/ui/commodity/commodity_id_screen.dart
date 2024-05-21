@@ -187,7 +187,7 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
                         children: [
                           Expanded(
                             child: Text(
-                              partner.name ?? '-',
+                              partner.keywordName ?? '-',
                               style: Get.textTheme.titleLarge?.copyWith(
                                 fontSize: 50.h,
                               ),
@@ -228,10 +228,10 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
     Commodity itemData = allCommodities[index];
 
     if (allCommodities.isNotEmpty && index == 0) {
-      alphabet = allCommodities.first.name![0];
-    } else if (itemData.name![0] !=
-        allCommodities.elementAt(index - 1).name![0]) {
-      alphabet = itemData.name![0];
+      alphabet = allCommodities.first.keywordName![0];
+    } else if (itemData.keywordName![0] !=
+        allCommodities.elementAt(index - 1).keywordName![0]) {
+      alphabet = itemData.keywordName![0];
     }
 
     if (alphabet.isNotEmpty) {

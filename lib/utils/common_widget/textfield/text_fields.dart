@@ -22,21 +22,22 @@ class BoxTextFieldLogin extends StatelessWidget {
   final String hintText;
   final bool isPasswordField;
 
-  const BoxTextFieldLogin(
-      {super.key,
-      required this.controller,
-      this.keyboardType = TextInputType.text,
-      this.obsecure = false,
-      required this.onTap,
-      this.isMulti = false,
-      this.readOnly = false,
-      this.hintText = "",
-      this.autofocus = false,
-      required this.errorText,
-      this.enabled = true,
-      this.isPasswordField = false,
-      required this.onEditingCompleted,
-      required this.onChanged});
+  const BoxTextFieldLogin({
+    super.key,
+    required this.controller,
+    this.keyboardType = TextInputType.text,
+    this.obsecure = false,
+    required this.onTap,
+    this.isMulti = false,
+    this.readOnly = false,
+    this.hintText = "",
+    this.autofocus = false,
+    required this.errorText,
+    this.enabled = true,
+    this.isPasswordField = false,
+    required this.onEditingCompleted,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -116,25 +117,26 @@ class BoxTextField1 extends StatelessWidget {
   final String? intialValue;
   final TextAlign? textalign;
 
-  const BoxTextField1(
-      {super.key,
-      this.textColor = Colors.white,
-      this.hintColor = Colors.grey,
-      this.controller,
-      this.keyboardType = TextInputType.text,
-      this.obsecure = false,
-      required this.onTap,
-      this.isMulti = false,
-      this.readOnly = false,
-      this.hintText = "",
-      this.autofocus = false,
-      required this.errorText,
-      this.enabled = true,
-      this.isPasswordField = false,
-      required this.onEditingCompleted,
-      required this.onChanged,
-      this.intialValue,
-      this.textalign});
+  const BoxTextField1({
+    super.key,
+    this.textColor = Colors.white,
+    this.hintColor = Colors.grey,
+    this.controller,
+    this.keyboardType = TextInputType.text,
+    this.obsecure = false,
+    required this.onTap,
+    this.isMulti = false,
+    this.readOnly = false,
+    this.hintText = "",
+    this.autofocus = false,
+    required this.errorText,
+    this.enabled = true,
+    this.isPasswordField = false,
+    required this.onEditingCompleted,
+    required this.onChanged,
+    this.intialValue,
+    this.textalign,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -158,6 +160,7 @@ class BoxTextField1 extends StatelessWidget {
         style: Get.textTheme.titleLarge!.copyWith(
           fontSize: 32.sp,
           fontWeight: FontWeight.w400,
+          color: textColor,
         ),
         cursorColor: Theme.of(context).textSelectionTheme.cursorColor,
         decoration: InputDecoration(
@@ -171,6 +174,7 @@ class BoxTextField1 extends StatelessWidget {
           hintStyle: Get.textTheme.titleLarge!.copyWith(
             fontSize: 32.sp,
             fontWeight: FontWeight.w400,
+            color: hintColor,
           ),
           border: InputBorder.none,
           isDense: true,
@@ -178,49 +182,6 @@ class BoxTextField1 extends StatelessWidget {
         ),
       ),
     );
-    /*return GetBuilder(
-        init: TextFieldController(),
-        builder: (pwdController) {
-          return Container(
-            alignment: Alignment.center,
-            height: 105.h,
-            child: TextFormField(
-              textAlignVertical: TextAlignVertical.center,
-              onChanged: onChanged,
-              onEditingComplete: onEditingCompleted,
-              autofocus: autofocus,
-              minLines: isMulti ? 4 : 1,
-              maxLines: isMulti ? null : 1,
-              onTap: onTap,
-              enabled: enabled,
-              readOnly: readOnly,
-              keyboardType: keyboardType,
-              controller: controller,
-              style: GoogleFonts.poppins(
-                  fontSize: 32.sp,
-                  fontWeight: FontWeight.w400,
-                  textStyle: TextStyle(color: textColor)),
-              cursorColor: Theme.of(context).textSelectionTheme.cursorColor,
-              decoration: InputDecoration(
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.hintColor),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                ),
-                hintText: hintText,
-                hintStyle: GoogleFonts.poppins(
-                    fontSize: 32.sp,
-                    fontWeight: FontWeight.w400,
-                    textStyle: TextStyle(color: hintColor)),
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 0, vertical: 5),
-              ),
-            ),
-          );
-        });*/
   }
 
   textFieldfocused() {}

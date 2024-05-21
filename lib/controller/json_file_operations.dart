@@ -312,7 +312,7 @@ class JsonFileOperations {
         defectList.add(DefectItem(
             id: dId,
             name: dName,
-            instruction: dInstruction,
+            inspectionInstruction: dInstruction,
             attachments: attachments));
       }
 
@@ -396,7 +396,7 @@ class JsonFileOperations {
       list.add(DefectItem(
           id: id,
           name: name,
-          instruction: instruction,
+          inspectionInstruction: instruction,
           attachments: attachments));
     }
 

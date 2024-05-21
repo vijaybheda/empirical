@@ -65,8 +65,8 @@ class SpecificationGradeTolerance {
           json[SpecificationGradeToleranceColumn.GRADE_TOLERANCE_PERCENTAGE],
       specTolerancePercentage:
           json[SpecificationGradeToleranceColumn.GRADE_TOLERANCE_PERCENTAGE],
-      severityDefectID:
-          json[SpecificationGradeToleranceColumn.SEVERITY_DEFECT_ID],
+      severityDefectID: int.tryParse(
+          json[SpecificationGradeToleranceColumn.SEVERITY_DEFECT_ID]),
       defectID: json[SpecificationGradeToleranceColumn.DEFECT_ID],
       overridden: json[SpecificationGradeToleranceColumn.OVERRIDDEN],
       defectName: json[SpecificationGradeToleranceColumn.DEFECT_NAME],

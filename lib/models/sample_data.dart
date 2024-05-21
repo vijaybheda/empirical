@@ -1,3 +1,5 @@
+import 'package:pverify/models/inspection_defect.dart';
+
 class SampleData {
   int sampleSize;
   int? sampleId;
@@ -11,6 +13,8 @@ class SampleData {
   int dcCnt = 0;
   bool complete;
   String? sampleNameUser;
+  // defectItems: List<InspectionDefect> = [];
+  List<InspectionDefect> defectItems = <InspectionDefect>[];
 
   SampleData({
     required this.sampleSize,
@@ -25,6 +29,7 @@ class SampleData {
     this.dcCnt = 0,
     required this.complete,
     this.sampleNameUser,
+    this.defectItems = const <InspectionDefect>[],
   });
 
   SampleData.simple({
@@ -54,6 +59,7 @@ class SampleData {
     int? dcCnt,
     bool? complete,
     String? sampleNameUser,
+    List<InspectionDefect>? defectItems,
   }) {
     return SampleData(
       sampleSize: sampleSize ?? this.sampleSize,
@@ -68,6 +74,7 @@ class SampleData {
       dcCnt: dcCnt ?? this.dcCnt,
       complete: complete ?? this.complete,
       sampleNameUser: sampleNameUser ?? this.sampleNameUser,
+      defectItems: defectItems ?? this.defectItems,
     );
   }
 
@@ -85,6 +92,7 @@ class SampleData {
       'dcCnt': dcCnt,
       'complete': complete,
       'sampleNameUser': sampleNameUser,
+      'defectItems': defectItems,
     };
   }
 
@@ -102,6 +110,7 @@ class SampleData {
       dcCnt: map['dcCnt'],
       complete: map['complete'],
       sampleNameUser: map['sampleNameUser'],
+      defectItems: map['defectItems'],
     );
   }
 }
