@@ -221,7 +221,7 @@ class DefectsScreenController extends GetxController {
     gtin = args[Consts.GTIN] ?? '';
     String packDateString = args[Consts.PACK_DATE] ?? '';
     if (packDateString.isNotEmpty) {
-      packDate = Utils().dateFormat.parse(packDateString);
+      packDate = DateTime.fromMillisecondsSinceEpoch(int.parse(packDateString));
     }
     itemUniqueId = args[Consts.ITEM_UNIQUE_ID] ?? '';
     lotSize = args[Consts.LOT_SIZE] ?? '';
@@ -402,19 +402,19 @@ class DefectsScreenController extends GetxController {
         comment: "",
         attachmentIds: [],
         defectCategory: '',
-        damageCnt: 1,
-        decayCnt: 1,
-        defectId: 1,
-        injuryCnt: 1,
-        inspectionDefectId: 1,
-        sampleId: 1,
-        seriousDamageCnt: 1,
-        severityDamageId: 1,
-        severityDecayId: 1,
-        severityInjuryId: 1,
-        severitySeriousDamageId: 1,
-        severityVerySeriousDamageId: 1,
-        verySeriousDamageCnt: 1,
+        damageCnt: 0,
+        decayCnt: 0,
+        defectId: 0,
+        injuryCnt: 0,
+        inspectionDefectId: 0,
+        sampleId: 0,
+        seriousDamageCnt: 0,
+        severityDamageId: 0,
+        severityDecayId: 0,
+        severityInjuryId: 0,
+        severitySeriousDamageId: 0,
+        severityVerySeriousDamageId: 0,
+        verySeriousDamageCnt: 0,
         // spinnerSelection: 'Color',
       );
       defectList.add(inspectionDefect);
@@ -464,19 +464,19 @@ class DefectsScreenController extends GetxController {
         comment: "",
         attachmentIds: [],
         defectCategory: '',
-        damageCnt: 1,
-        decayCnt: 1,
-        defectId: 1,
-        injuryCnt: 1,
-        inspectionDefectId: 1,
-        sampleId: 1,
-        seriousDamageCnt: 1,
-        severityDamageId: 1,
-        severityDecayId: 1,
-        severityInjuryId: 1,
-        severitySeriousDamageId: 1,
-        severityVerySeriousDamageId: 1,
-        verySeriousDamageCnt: 1,
+        damageCnt: 0,
+        decayCnt: 0,
+        defectId: 0,
+        injuryCnt: 0,
+        inspectionDefectId: 0,
+        sampleId: 0,
+        seriousDamageCnt: 0,
+        severityDamageId: 0,
+        severityDecayId: 0,
+        severityInjuryId: 0,
+        severitySeriousDamageId: 0,
+        severityVerySeriousDamageId: 0,
+        verySeriousDamageCnt: 0,
         // spinnerSelection: 'Color',
       );
 
@@ -557,18 +557,18 @@ class DefectsScreenController extends GetxController {
     return sampleList[setIndex].defectItem?.indexOf(defectItem) ?? -1;
   }*/
 
-  // FIXME:
   void onTextChange({
-    required String value,
+    required String textData,
     required int sampleIndex,
     required int defectIndex,
     required String fieldName,
     required BuildContext context,
   }) {
     bool isError = false;
+    int value = int.tryParse(textData) ?? 0;
     int sampleSize = sampleList[sampleIndex].sampleSize;
     String dropDownValue = sampleList[sampleIndex].name;
-    if ((int.tryParse(value) ?? 0) > sampleSize) {
+    if (value > sampleSize) {
       isError = true;
       AppAlertDialog.validateAlerts(
         context,
@@ -582,72 +582,145 @@ class DefectsScreenController extends GetxController {
         // do nothing
         if (isError) {
           sampleList[sampleIndex].defectItems[defectIndex].injuryCnt =
-              isError ? 0 : int.tryParse(value) ?? 0;
+              isError ? 0 : value;
+          sampleList[sampleIndex]
+              .defectItems[defectIndex]
+              .injuryTextEditingController
+              .text = (isError ? 0 : value).toString();
         }
-        sampleList.refresh();
-        update();
+
       case AppStrings.damage:
         sampleList[sampleIndex].defectItems[defectIndex].injuryCnt =
-            isError ? 0 : int.tryParse(value) ?? 0;
+            isError ? 0 : value;
+        sampleList[sampleIndex]
+            .defectItems[defectIndex]
+            .injuryTextEditingController
+            .text = value.toString();
         if (isError) {
           sampleList[sampleIndex].defectItems[defectIndex].damageCnt =
-              isError ? 0 : int.tryParse(value) ?? 0;
+              isError ? 0 : value;
+          sampleList[sampleIndex]
+              .defectItems[defectIndex]
+              .damageTextEditingController
+              .text = value.toString();
         }
-        sampleList.refresh();
-        update();
+
       case AppStrings.seriousDamage:
         sampleList[sampleIndex].defectItems[defectIndex].injuryCnt =
-            isError ? 0 : int.tryParse(value) ?? 0;
+            isError ? 0 : value;
+
+        sampleList[sampleIndex]
+            .defectItems[defectIndex]
+            .injuryTextEditingController
+            .text = value.toString();
+
+        sampleList[sampleIndex]
+            .defectItems[defectIndex]
+            .damageTextEditingController
+            .text = value.toString();
+
         sampleList[sampleIndex].defectItems[defectIndex].damageCnt =
-            isError ? 0 : int.tryParse(value) ?? 0;
+            isError ? 0 : value;
         if (isError) {
           sampleList[sampleIndex].defectItems[defectIndex].seriousDamageCnt =
-              isError ? 0 : int.tryParse(value) ?? 0;
+              isError ? 0 : value;
+
+          sampleList[sampleIndex]
+              .defectItems[defectIndex]
+              .sDamageTextEditingController
+              .text = value.toString();
         }
-        sampleList.refresh();
-        update();
+
       case AppStrings.verySeriousDamage:
         sampleList[sampleIndex].defectItems[defectIndex].injuryCnt =
-            isError ? 0 : int.tryParse(value) ?? 0;
+            isError ? 0 : value;
         sampleList[sampleIndex].defectItems[defectIndex].damageCnt =
-            isError ? 0 : int.tryParse(value) ?? 0;
+            isError ? 0 : value;
         sampleList[sampleIndex].defectItems[defectIndex].seriousDamageCnt =
-            isError ? 0 : int.tryParse(value) ?? 0;
+            isError ? 0 : value;
+
+        sampleList[sampleIndex]
+            .defectItems[defectIndex]
+            .injuryTextEditingController
+            .text = value.toString();
+        sampleList[sampleIndex]
+            .defectItems[defectIndex]
+            .damageTextEditingController
+            .text = value.toString();
+        sampleList[sampleIndex]
+            .defectItems[defectIndex]
+            .sDamageTextEditingController
+            .text = value.toString();
         if (isError) {
           sampleList[sampleIndex]
               .defectItems[defectIndex]
-              .verySeriousDamageCnt = isError ? 0 : int.tryParse(value) ?? 0;
+              .verySeriousDamageCnt = isError ? 0 : value;
+
+          sampleList[sampleIndex]
+              .defectItems[defectIndex]
+              .vsDamageTextEditingController
+              .text = value.toString();
         }
-        sampleList.refresh();
-        update();
 
       case AppStrings.decay:
         // not in current requirement
-        sampleDataMap[sampleIndex]!.defectItems[defectIndex].injuryCnt =
-            isError ? 0 : int.tryParse(value) ?? 0;
+        /*sampleDataMap[sampleIndex]!.defectItems[defectIndex].injuryCnt =
+            isError ? 0 : value;
         sampleDataMap[sampleIndex]!.defectItems[defectIndex].damageCnt =
-            isError ? 0 : int.tryParse(value) ?? 0;
+            isError ? 0 : value;
         sampleDataMap[sampleIndex]!.defectItems[defectIndex].seriousDamageCnt =
-            isError ? 0 : int.tryParse(value) ?? 0;
+            isError ? 0 : value;
+
         sampleDataMap[sampleIndex]!
             .defectItems[defectIndex]
-            .verySeriousDamageCnt = isError ? 0 : int.tryParse(value) ?? 0;
+            .injuryTextEditingController
+            ?.text = value;
+        sampleDataMap[sampleIndex]!
+            .defectItems[defectIndex]
+            .damageTextEditingController
+            ?.text = value;
+        sampleDataMap[sampleIndex]!
+            .defectItems[defectIndex]
+            .sDamageTextEditingController
+            ?.text = value;
+
+        sampleDataMap[sampleIndex]!
+            .defectItems[defectIndex]
+            .verySeriousDamageCnt = isError ? 0 : value;
+
+        sampleDataMap[sampleIndex]!
+            .defectItems[defectIndex]
+            .vsDamageTextEditingController
+            ?.text = value;
 
         // do nothing
         if (isError) {
           sampleList[sampleIndex].defectItems[defectIndex].decayCnt =
-              isError ? 0 : int.tryParse(value) ?? 0;
+              isError ? 0 : value;
+
+          sampleList[sampleIndex]
+              .defectItems[defectIndex]
+              .decayTextEditingController
+              ?.text = value;
+        }*/
+
+        try {
+          if (value <= sampleSize) {
+            sampleList[sampleIndex].defectItems[defectIndex].decayCnt = value;
+          }
+        } catch (e) {
+          // Handle exception
         }
-        sampleList.refresh();
-        update();
 
       default:
       // do nothing
     }
+
+    sampleList.refresh();
+    update();
   }
 
   void onDropDownChange({
-    required int id,
     required String value,
     required int sampleIndex,
     required int defectItemIndex,
@@ -708,7 +781,6 @@ class DefectsScreenController extends GetxController {
       sampleList.refresh();
       update();
     }
-    Get.back();
 
     /*showDialog(
       context: Get.context!,
@@ -768,8 +840,25 @@ class DefectsScreenController extends GetxController {
     debugPrint("commodity $commodityItemsList");
   }
 
-  removeSampleSets(int index) {
-    sampleList.removeAt(index);
+  Future<void> removeSampleSets(int index) async {
+    SampleData sampleData = sampleList.elementAt(index);
+    String dataName = sampleData.name;
+    int? sampleId = sampleData.sampleId;
+
+    if (sampleId != null) {
+      await dao.deleteInspectionSamplesBySampleId(sampleId);
+      await dao.deleteInspectionDefectBySampleId(sampleId);
+      await dao.deleteDefectAttachmentsBySampleId(sampleId);
+    }
+
+    sampleList.remove(sampleData);
+
+    if (defectDataMap.containsKey(dataName)) {
+      defectDataMap.remove(dataName);
+    }
+
+    sampleList.refresh();
+    update();
   }
 
   Future<void> _grantPermissions(Uri uri) async {

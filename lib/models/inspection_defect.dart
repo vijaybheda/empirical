@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:pverify/services/database/column_names.dart';
 
 class InspectionDefect {
@@ -19,6 +20,16 @@ class InspectionDefect {
   int? severityVerySeriousDamageId;
   int? severityDecayId;
   String? defectCategory;
+  TextEditingController injuryTextEditingController =
+      TextEditingController(text: '0');
+  TextEditingController damageTextEditingController =
+      TextEditingController(text: '0');
+  TextEditingController sDamageTextEditingController =
+      TextEditingController(text: '0');
+  TextEditingController vsDamageTextEditingController =
+      TextEditingController(text: '0');
+  TextEditingController decayTextEditingController =
+      TextEditingController(text: '0');
 
   InspectionDefect({
     this.inspectionDefectId,
@@ -39,6 +50,11 @@ class InspectionDefect {
     this.severityVerySeriousDamageId,
     this.severityDecayId,
     this.defectCategory,
+    // this.injuryTextEditingController,
+    // this.damageTextEditingController,
+    // this.sDamageTextEditingController,
+    // this.vsDamageTextEditingController,
+    // this.decayTextEditingController,
   });
 
   factory InspectionDefect.fromJson(Map<String, dynamic> json) {

@@ -2624,6 +2624,7 @@ class ApplicationDao {
         debugPrint(" 🔴 getResultRejectionDetails is empty 🔴 ");
       }
     } catch (e) {
+      print('getResultRejectionDetails ${e.toString()}');
       rethrow;
     }
 
@@ -3950,5 +3951,83 @@ class ApplicationDao {
     }
 
     return attachment;
+  }
+
+  Future<void> deleteInspectionSamplesBySampleId(int sampleId) async {
+    final Database db = dbProvider.lazyDatabase;
+    try {
+      await db.transaction((txn) async {
+        String query =
+            'DELETE FROM ${DBTables.INSPECTION_SAMPLE} WHERE ${InspectionSampleColumn.ID} = ?';
+        List<dynamic> arguments = [sampleId];
+        await txn.rawDelete(query, arguments);
+      });
+    } catch (e) {
+      print('Error has occurred while deleting inspection sample entries: $e');
+    }
+  }
+
+  Future<void> deleteDefectAttachmentsBySampleId(int sampleId) async {
+    final Database db = dbProvider.lazyDatabase;
+    try {
+      await db.transaction((txn) async {
+        // delete the actual pictures from the phones memory
+        List<InspectionDefectAttachment>? attachments =
+            await findDefectAttachmentsBySampleId(sampleId);
+
+        if (attachments != null && attachments.isNotEmpty) {
+          for (var attachment in attachments) {
+            if (attachment.fileLocation != null) {
+              File file = File(attachment.fileLocation!);
+              if (file.existsSync()) {
+                file.deleteSync();
+              }
+            }
+          }
+        }
+
+        // delete the attachments from the database
+        String query =
+            'DELETE FROM ${DBTables.INSPECTION_DEFECT_ATTACHMENT} WHERE ${InspectionDefectAttachmentColumn.INSPECTION_SAMPLE_ID} = ?';
+        List<dynamic> arguments = [sampleId];
+        await txn.rawDelete(query, arguments);
+      });
+    } catch (e) {
+      print('Error has occurred while deleting a defect attachment: $e');
+    }
+  }
+
+  Future<List<InspectionDefectAttachment>?> findDefectAttachmentsBySampleId(
+      int sampleId) async {
+    final Database db = dbProvider.lazyDatabase;
+    List<InspectionDefectAttachment> attachments = [];
+
+    try {
+      String query =
+          'SELECT * FROM ${DBTables.INSPECTION_DEFECT_ATTACHMENT} WHERE ${InspectionDefectAttachmentColumn.INSPECTION_SAMPLE_ID} = ?';
+      List<Map> result = await db.rawQuery(query, [sampleId]);
+
+      if (result.isNotEmpty) {
+        for (var item in result) {
+          InspectionDefectAttachment temp = InspectionDefectAttachment(
+            attachmentId: item[InspectionDefectAttachmentColumn.ID],
+            inspectionId: item[InspectionDefectAttachmentColumn.INSPECTION_ID],
+            sampleId:
+                item[InspectionDefectAttachmentColumn.INSPECTION_SAMPLE_ID],
+            defectId:
+                item[InspectionDefectAttachmentColumn.INSPECTION_DEFECT_ID],
+            createdTime: item[InspectionDefectAttachmentColumn.CREATED_TIME],
+            fileLocation: item[InspectionDefectAttachmentColumn.FILE_LOCATION],
+          );
+          attachments.add(temp);
+        }
+      }
+    } catch (e) {
+      print(
+          'Error has occurred while finding an inspection defect attachment: $e');
+      return null;
+    }
+
+    return attachments;
   }
 }

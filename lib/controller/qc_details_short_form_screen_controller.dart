@@ -303,7 +303,7 @@ class QCDetailsShortFormScreenController extends GetxController {
     required Function(String scanResult)? onScanResult,
   }) async {
     String? res = await FlutterBarcodeScanner.scanBarcode(
-        '#ff6666', 'Cancel', true, ScanMode.DEFAULT);
+        "#ff6666", 'Cancel', true, ScanMode.DEFAULT);
     if (res.isNotEmpty && res != '-1') {
       if (onScanResult != null) {
         onScanResult(res);

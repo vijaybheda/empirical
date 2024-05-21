@@ -11,12 +11,10 @@ import 'package:pverify/utils/theme/colors.dart';
 
 class SampleSetWidget extends StatefulWidget {
   final int sampleIndex;
-  // final String? sampleValue;
   final DefectsScreenController controller;
   const SampleSetWidget({
     super.key,
     required this.sampleIndex,
-    // required this.sampleValue,
     required this.controller,
   });
 
@@ -26,7 +24,6 @@ class SampleSetWidget extends StatefulWidget {
 
 class _SampleSetWidgetState extends State<SampleSetWidget> {
   int get sampleIndex => widget.sampleIndex;
-  // String? get sampleValue => widget.sampleValue;
   DefectsScreenController get controller => widget.controller;
 
   @override
@@ -99,22 +96,6 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
                 ],
               )
             : const SizedBox(),
-        /*Column(
-        children: (controller.sampleList ?? [])
-            .map(
-              (e) => defectRow(
-                context: context,
-                controller: controller,
-                defectItemIndex:
-                    0 */ /*controller.getDefectItemIndex(
-                    setIndex: index, defectItem: e)*/ /*
-                ,
-                sampleData: e,
-                position: index,
-              ),
-            )
-            .toList(),
-      ),*/
         ListView.separated(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -123,10 +104,7 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
                 controller.sampleList[sampleIndex].defectItems[defectIndex];
             return DefectItemWidget(
               controller: controller,
-              defectItemIndex: defectIndex
-              /*controller.getDefectItemIndex(
-                    setIndex: index, defectItem: e)*/
-              ,
+              defectItemIndex: defectIndex,
               inspectionDefect: e,
               sampleIndex: sampleIndex,
             );

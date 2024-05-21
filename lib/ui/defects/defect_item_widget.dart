@@ -47,9 +47,8 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                 AppAlertDialog.confirmationAlert(
                     context, AppStrings.alert, AppStrings.removeDefect,
                     onYesTap: () async {
-                  String dataName = controller.sampleDataMap.values
-                      .elementAt(sampleIndex)
-                      .name;
+                  String dataName =
+                      controller.sampleList.elementAt(sampleIndex).name;
                   await controller.removeDefectRow(
                     inspectionDefect: inspectionDefect,
                     dataName: dataName,
@@ -95,9 +94,6 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                     }).toList(),
                     onChanged: (value) {
                       controller.onDropDownChange(
-                        id: controller.defectSpinnerIds[controller
-                            .defectSpinnerNames
-                            .indexWhere((obj) => obj == value)],
                         value: value ?? "",
                         sampleIndex: sampleIndex,
                         defectItemIndex: defectItemIndex,
@@ -114,12 +110,10 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                     child: BoxTextField1(
                       textalign: TextAlign.center,
                       keyboardType: TextInputType.number,
-                      intialValue: (inspectionDefect.injuryCnt ?? 0).toString(),
-                      // TODO: Add controller
-                      // controller: sampleData.injuryTextEditingController,
+                      // intialValue: (inspectionDefect.injuryCnt ?? 0).toString(),
+                      controller: inspectionDefect.injuryTextEditingController,
                       onTap: () {
-                        // TODO: Add controller
-                        // sampleData.injuryTextEditingController?.text = '';
+                        inspectionDefect.injuryTextEditingController.clear();
                       },
                       errorText: '',
                       onEditingCompleted: () {
@@ -127,7 +121,7 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                       },
                       onChanged: (v) {
                         controller.onTextChange(
-                          value: v,
+                          textData: v,
                           sampleIndex: sampleIndex,
                           defectIndex: defectItemIndex,
                           fieldName: AppStrings.injury,
@@ -144,26 +138,23 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                     child: BoxTextField1(
                       textalign: TextAlign.center,
                       keyboardType: TextInputType.number,
-                      intialValue: (inspectionDefect.damageCnt ?? 0).toString(),
-                      // TODO: Add controller
-                      // controller: sampleData.damageTextEditingController,
+                      // intialValue: (inspectionDefect.damageCnt ?? 0).toString(),
+                      controller: inspectionDefect.damageTextEditingController,
                       onTap: () {
-                        // TODO:
-                        // sampleData.damageTextEditingController?.text = '';
+                        inspectionDefect.damageTextEditingController.clear();
                       },
                       errorText: '',
                       onEditingCompleted: () {
                         FocusScope.of(context).unfocus();
                       },
                       onChanged: (v) {
-                        // TODO: Save the damage value
-                        /*controller.onTextChange(
-                        value: v,
-                        setIndex: position,
-                        rowIndex: defectItemIndex,
-                        fieldName: AppStrings.damage,
-                        context: context,
-                      );*/
+                        controller.onTextChange(
+                          textData: v,
+                          sampleIndex: sampleIndex,
+                          defectIndex: defectItemIndex,
+                          fieldName: AppStrings.damage,
+                          context: context,
+                        );
                       },
                     ),
                   )
@@ -175,26 +166,24 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                     child: BoxTextField1(
                       textalign: TextAlign.center,
                       keyboardType: TextInputType.number,
-                      intialValue:
-                          (inspectionDefect.seriousDamageCnt ?? 0).toString(),
-                      // TODO: Add controller
-                      // controller: sampleData.sDamageTextEditingController,
+                      // intialValue:
+                      //     (inspectionDefect.seriousDamageCnt ?? 0).toString(),
+                      controller: inspectionDefect.sDamageTextEditingController,
                       onTap: () {
-                        // sampleData.sDamageTextEditingController?.text = '';
+                        inspectionDefect.sDamageTextEditingController.clear();
                       },
                       errorText: '',
                       onEditingCompleted: () {
                         FocusScope.of(context).unfocus();
                       },
                       onChanged: (v) {
-                        // TODO: Save the serious damage value
-                        /*controller.onTextChange(
-                        value: v,
-                        setIndex: position,
-                        rowIndex: defectItemIndex,
-                        fieldName: AppStrings.seriousDamage,
-                        context: context,
-                      );*/
+                        controller.onTextChange(
+                          textData: v,
+                          sampleIndex: sampleIndex,
+                          defectIndex: defectItemIndex,
+                          fieldName: AppStrings.seriousDamage,
+                          context: context,
+                        );
                       },
                     ),
                   )
@@ -205,26 +194,26 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                     flex: 1,
                     child: BoxTextField1(
                       textalign: TextAlign.center,
-                      intialValue: (inspectionDefect.verySeriousDamageCnt ?? 0)
-                          .toString(),
-                      // TODO: Add controller
-                      // controller: sampleData.vsDamageTextEditingController,
+                      // intialValue: (inspectionDefect.verySeriousDamageCnt ?? 0)
+                      //     .toString(),
+                      controller:
+                          inspectionDefect.vsDamageTextEditingController,
                       keyboardType: TextInputType.number,
                       onTap: () {
-                        // sampleData.vsDamageTextEditingController?.text = '';
+                        inspectionDefect.vsDamageTextEditingController.clear();
                       },
                       errorText: '',
                       onEditingCompleted: () {
                         FocusScope.of(context).unfocus();
                       },
                       onChanged: (v) {
-                        /*controller.onTextChange(
-                        value: v,
-                        setIndex: position,
-                        rowIndex: defectItemIndex,
-                        fieldName: AppStrings.verySeriousDamage,
-                        context: context,
-                      );*/
+                        controller.onTextChange(
+                          textData: v,
+                          sampleIndex: sampleIndex,
+                          defectIndex: defectItemIndex,
+                          fieldName: AppStrings.verySeriousDamage,
+                          context: context,
+                        );
                       },
                     ),
                   )
@@ -235,26 +224,24 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                     flex: 1,
                     child: BoxTextField1(
                       textalign: TextAlign.center,
-                      intialValue: (inspectionDefect.decayCnt ?? 0).toString(),
-                      // TODO: Add controller
-                      // controller: sampleData.decayTextEditingController,
+                      // intialValue: (inspectionDefect.decayCnt ?? 0).toString(),
+                      controller: inspectionDefect.decayTextEditingController,
                       keyboardType: TextInputType.number,
                       onTap: () {
-                        // sampleData.decayTextEditingController?.text = '';
+                        inspectionDefect.decayTextEditingController.clear();
                       },
                       errorText: '',
                       onEditingCompleted: () {
                         FocusScope.of(context).unfocus();
                       },
                       onChanged: (v) {
-                        // TODO: Save the decay value
-                        /*controller.onTextChange(
-                        value: v,
-                        setIndex: position,
-                        rowIndex: defectItemIndex,
-                        fieldName: AppStrings.decay,
-                        context: context,
-                      );*/
+                        controller.onTextChange(
+                          textData: v,
+                          sampleIndex: sampleIndex,
+                          defectIndex: defectItemIndex,
+                          fieldName: AppStrings.decay,
+                          context: context,
+                        );
                       },
                     ),
                   )
