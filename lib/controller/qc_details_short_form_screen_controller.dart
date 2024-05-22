@@ -121,7 +121,7 @@ class QCDetailsShortFormScreenController extends GetxController {
       Get.back();
       throw Exception('Arguments required!');
     }
-
+ 
     serverInspectionID = args[Consts.SERVER_INSPECTION_ID] ?? -1;
     partnerName = args[Consts.PARTNER_NAME] ?? '';
     partnerID = args[Consts.PARTNER_ID] ?? 0;
@@ -143,9 +143,14 @@ class QCDetailsShortFormScreenController extends GetxController {
 
     String packDateString = args[Consts.PACK_DATE] ?? '';
     if (packDateString.isNotEmpty) {
-      packDate = Utils().dateFormat.parse(packDateString);
-      if (packDate != null) {
-        packDateController.text = Utils().dateFormat.format(packDate!);
+      try {
+        packDate =
+            DateTime.fromMillisecondsSinceEpoch(int.parse(packDateString));
+        if (packDate != null) {
+          packDateController.text = Utils().dateFormat.format(packDate!);
+        }
+      } catch (e) {
+        log("Error parsing packDateString: $e");
       }
     }
 
