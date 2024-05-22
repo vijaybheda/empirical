@@ -11,6 +11,7 @@ import 'package:pverify/models/quality_control_item.dart';
 import 'package:pverify/models/reason_item.dart';
 import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/ui/qc_short_form/qc_details_short_form_screen.dart';
 import 'package:pverify/ui/spec_attributes/specification_attribute_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/const.dart';
@@ -297,8 +298,6 @@ class LongFormQualityControlScreenController extends GetxController {
     if (packDateS.isNotEmpty) {
       DateTime parsedDate = Utils().dateFormat.parse(packDateS);
       packDate = parsedDate.millisecondsSinceEpoch;
-      log("hereeeeee issss $packDate");
-      log("hereeeeee issss S $packDateS");
     }
     // rpc
     int rpcIndex = rpcList.indexOf(selectedRpc.value);
@@ -374,7 +373,7 @@ class LongFormQualityControlScreenController extends GetxController {
           specificationName: specificationName ?? "",
           packDate: packDate,
           seal_no: _appStorage.currentSealNumber!,
-          lot_no: lotNo!,
+          lot_no: lotNoController.text,
           qcdOpen1: selectedTempRecorder.value,
           qcdOpen2: lotNoController.text,
           qcdOpen3: qtyInspectedOkController.text,
@@ -409,7 +408,7 @@ class LongFormQualityControlScreenController extends GetxController {
           specificationName: specificationName ?? "",
           packDate: packDate,
           seal_no: _appStorage.currentSealNumber!,
-          lot_no: lotNo!,
+          lot_no: lotNoController.text,
           qcdOpen1: selectedTempRecorder.value,
           qcdOpen2: lotNoController.text,
           qcdOpen3: qtyInspectedOkController.text,
@@ -440,14 +439,18 @@ class LongFormQualityControlScreenController extends GetxController {
     String packDateString = args[Consts.PACK_DATE] ?? '';
     String workDateString = args[Consts.WORK_DATE] ?? '';
 
-    log("HERE IS WORKDATE $workDateString");
-    log("HERE IS PACKDATE $packDateString");
     if (packDateString.isNotEmpty) {
-      packDate = Utils().dateFormat.parse(packDateString);
-      if (packDate != null) {
-        packDateController.text = Utils().dateFormat.format(packDate!);
+      try {
+        packDate =
+            DateTime.fromMillisecondsSinceEpoch(int.parse(packDateString));
+        if (packDate != null) {
+          packDateController.text = Utils().dateFormat.format(packDate!);
+        }
+      } catch (e) {
+        log("Error parsing packDateString: $e");
       }
     }
+
     if (workDateString.isNotEmpty) {
       workDate = Utils().dateFormat.parse(workDateString);
       if (workDate != null) {
@@ -496,12 +499,22 @@ class LongFormQualityControlScreenController extends GetxController {
         packDateController.text = dateTypeDesc;
         workDateController.text = dateTypeDesc;
       }
-      int packDate =
+
+      int packDateMillis =
           int.tryParse(qualityControlItems!.packDate.toString()) ?? 0;
       int workDate =
           int.tryParse(qualityControlItems!.workDate.toString()) ?? 0;
-      if (packDate > 0) {
-        packDateController.text = getDateStingFromTime(packDate);
+      // Check if packDateMillis is valid
+      if (packDateMillis > 0) {
+        try {
+          DateTime parsedDate =
+              DateTime.fromMillisecondsSinceEpoch(packDateMillis);
+          String formattedDate = Utils().dateFormat.format(parsedDate);
+          packDateController.text = formattedDate;
+        } catch (e) {
+          log("Error parsing packDateMillis: $e");
+          packDateController.text = "";
+        }
       } else {
         packDateController.text = "";
       }
@@ -539,7 +552,7 @@ class LongFormQualityControlScreenController extends GetxController {
           : qualityControlItems?.qcdOpen1 ?? "Yes";
       selectedTempRecorder.value = tempRecorderValue;
 
-      lotNoController.text = qualityControlItems!.qcdOpen2 ?? '';
+      lotNoController.text = qualityControlItems!.lot ?? '';
       qtyInspectedOkController.text = qualityControlItems?.qcdOpen3 ?? '';
       sensitechSerialNoController.text = qualityControlItems?.qcdOpen4 ?? '';
       updateQtyApproved();
@@ -901,5 +914,56 @@ class LongFormQualityControlScreenController extends GetxController {
         arguments: passingData,
       );
     } */
+  }
+
+  shortFormClick() async {
+    if (isValidQuantityRejected.value) {
+      await saveFieldsToDB();
+      startQCShortFormActivity();
+    } else {
+      Utils.showErrorAlertDialog("Please enter a valid quantity");
+    }
+  }
+
+  startQCShortFormActivity() {
+    Map<String, dynamic> passingData = {
+      Consts.SERVER_INSPECTION_ID: inspectionId,
+      Consts.COMPLETED: completed,
+      Consts.PARTNER_NAME: partnerName,
+      Consts.PARTNER_ID: partnerID,
+      Consts.CARRIER_NAME: carrierName,
+      Consts.CARRIER_ID: carrierID,
+      Consts.COMMODITY_NAME: commodityName,
+      Consts.COMMODITY_ID: commodityID,
+      Consts.SPECIFICATION_NUMBER: specificationNumber,
+      Consts.SPECIFICATION_VERSION: specificationVersion,
+      Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
+      Consts.SPECIFICATION_NAME: specificationName,
+      Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
+      Consts.ITEM_SKU: itemSKU,
+      Consts.ITEM_SKU_NAME: itemSkuName,
+      Consts.ITEM_SKU_ID: itemSkuId,
+      Consts.ITEM_UNIQUE_ID: itemUniqueId,
+      Consts.LOT_NO: lotNoString,
+      Consts.PACK_DATE: packDate?.millisecondsSinceEpoch.toString(),
+      Consts.LOT_SIZE: lotSize,
+      Consts.PO_NUMBER: poNumber,
+      Consts.PO_LINE_NO: poLineNo,
+      Consts.PRODUCT_TRANSFER: productTransfer,
+      Consts.DATETYPE: dateTypeDesc,
+    };
+
+    final String uniqueTag = DateTime.now().millisecondsSinceEpoch.toString();
+    callerActivity == "NewPurchaseOrderDetailsActivity"
+        ? "NewPurchaseOrderDetailsActivity"
+        : "PurchaseOrderDetailsActivity";
+    Get.off(() => QCDetailsShortFormScreen(tag: uniqueTag),
+        arguments: passingData);
+  }
+
+  backButtonClick() async {
+    await saveFieldsToDB();
+    Get.back();
+    Get.back();
   }
 }

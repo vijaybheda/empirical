@@ -46,7 +46,7 @@ class LongFormQualityControlScreen
                 controller: controller,
                 onShortFormClick: () {
                   if (controller.isValidQuantityRejected.value) {
-                    Get.back();
+                    controller.shortFormClick();
                   } else {
                     controller.checkQuantityAlert();
                   }
@@ -57,9 +57,8 @@ class LongFormQualityControlScreen
                 },
               ),
               FooterContentView(
-                onBackTap: () {
-                  controller.saveFieldsToDB();
-                  Get.back();
+                onBackTap: () async {
+                  controller.backButtonClick();
                 },
               )
             ],
@@ -75,7 +74,7 @@ class LongFormQualityControlScreen
     return Expanded(
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
           child: Column(
             children: [
               // 1st Row Spec Brand & Spec Origin
@@ -98,7 +97,7 @@ class LongFormQualityControlScreen
                     ),
                     "Select One",
                   ),
-                  SizedBox(width: 24.h),
+                  SizedBox(width: 74.w),
                   _commonQualityControllDropDown(
                     controller,
                     AppStrings.qcSpecOrigin,
@@ -111,23 +110,27 @@ class LongFormQualityControlScreen
                     (item) => Text(
                       item.countryName ?? '-',
                       style: Get.textTheme.titleLarge!.copyWith(
-                        fontSize: 20.sp,
+                        fontSize: 24.sp,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                     "Select One",
-                  )
+                  ),
                 ],
               ),
               // 2nd Row Quantity Shipped & UOM
-              const SizedBox(height: 20),
+              SizedBox(height: 90.h),
               Row(
                 children: [
                   _commonQualityControllTextField(
+                    onSubmitted: (p0) {
+                      controller.updateQtyApproved();
+                    },
                     controller: controller,
                     labelText: AppStrings.qcQtyShipped,
                     textEditingController: controller.qtyShippedController,
                   ),
-                  SizedBox(width: 24.h),
+                  SizedBox(width: 74.w),
                   _commonQualityControllDropDown(
                     controller,
                     AppStrings.uom,
@@ -148,7 +151,7 @@ class LongFormQualityControlScreen
                 ],
               ),
               // 3rd Row Lot No & Quantity Rejected
-              const SizedBox(height: 20),
+              SizedBox(height: 90.h),
               Row(
                 children: [
                   _commonQualityControllTextField(
@@ -156,7 +159,7 @@ class LongFormQualityControlScreen
                     labelText: AppStrings.lotnumber,
                     textEditingController: controller.lotNoController,
                   ),
-                  SizedBox(width: 24.h),
+                  SizedBox(width: 74.w),
                   _commonQualityControllTextField(
                     onSubmitted: (p0) {
                       controller.updateQtyApproved();
@@ -169,7 +172,7 @@ class LongFormQualityControlScreen
               ),
 
               // 4th row Qty inspected & Qty approved
-              const SizedBox(height: 20),
+              SizedBox(height: 90.h),
               Row(
                 children: [
                   _commonQualityControllTextField(
@@ -177,7 +180,7 @@ class LongFormQualityControlScreen
                     labelText: AppStrings.QCDOPEN5,
                     textEditingController: controller.qtyInspectedOkController,
                   ),
-                  SizedBox(width: 24.h),
+                  SizedBox(width: 74.w),
                   _commonQualityControllTextField(
                     readOnly: true,
                     controller: controller,
@@ -187,17 +190,17 @@ class LongFormQualityControlScreen
                 ],
               ),
               // 5th row Sensitech Serial No & Work Date
-              const SizedBox(height: 20),
+              SizedBox(height: 90.h),
               Row(
                 children: [
                   sensitechSerialNoWidget(controller),
-                  SizedBox(width: 24.h),
+                  SizedBox(width: 74.w),
                   workDateWidget(controller, context),
                 ],
               ),
 
               //6th row temp recorder & pack date
-              const SizedBox(height: 20),
+              SizedBox(height: 90.h),
               Row(
                 children: [
                   _staticDropDownWidget(
@@ -210,12 +213,12 @@ class LongFormQualityControlScreen
                       controller.update();
                     },
                   ),
-                  SizedBox(width: 24.h),
+                  SizedBox(width: 74.w),
                   packDateWidget(controller, context)
                 ],
               ),
               //7th row Recorder temp & Pulp temp
-              const SizedBox(height: 20),
+              SizedBox(height: 90.h),
               Row(
                 children: [
                   _minMaxTextfiledWidget(
@@ -226,7 +229,7 @@ class LongFormQualityControlScreen
                     maxTextEditingController:
                         controller.recorderTempMaxController,
                   ),
-                  SizedBox(width: 24.h),
+                  SizedBox(width: 74.w),
                   _minMaxTextfiledWidget(
                     controller: controller,
                     labelText: AppStrings.qcPulpTemperature,
@@ -236,7 +239,7 @@ class LongFormQualityControlScreen
                 ],
               ),
               //8th row RPC & claim Field Against
-              const SizedBox(height: 20),
+              SizedBox(height: 90.h),
               Row(
                 children: [
                   _staticDropDownWidget(
@@ -249,7 +252,7 @@ class LongFormQualityControlScreen
                       controller.update();
                     },
                   ),
-                  SizedBox(width: 24.h),
+                  SizedBox(width: 74.w),
                   _staticDropDownWidget(
                     context,
                     AppStrings.qcClaimfiled,
@@ -263,7 +266,7 @@ class LongFormQualityControlScreen
                 ],
               ),
               //9th row Reason & Comments
-              const SizedBox(height: 20),
+              SizedBox(height: 90.h),
               Row(
                 children: [
                   _commonQualityControllDropDown(
@@ -283,7 +286,7 @@ class LongFormQualityControlScreen
                     ),
                     "Select One",
                   ),
-                  SizedBox(width: 24.h),
+                  SizedBox(width: 74.w),
                   _commonQualityControllTextField(
                     controller: controller,
                     labelText: AppStrings.comments,
@@ -291,7 +294,7 @@ class LongFormQualityControlScreen
                   ),
                 ],
               ),
-              SizedBox(height: 50.h),
+              SizedBox(height: 40.h),
             ],
           ),
         ),
@@ -437,6 +440,7 @@ class LongFormQualityControlScreen
             ],
           ),
           DropdownButtonFormField<T>(
+            isExpanded: true,
             value: selectedItem,
             onChanged: onChanged,
             items: itemList.map((item) {
