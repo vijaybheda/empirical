@@ -372,7 +372,7 @@ class LongFormQualityControlScreenController extends GetxController {
           specificationName: specificationName ?? "",
           packDate: packDate,
           seal_no: _appStorage.currentSealNumber!,
-          lot_no: lotNo!,
+          lot_no: lotNoController.text,
           qcdOpen1: selectedTempRecorder.value,
           qcdOpen2: lotNoController.text,
           qcdOpen3: qtyInspectedOkController.text,
@@ -407,7 +407,7 @@ class LongFormQualityControlScreenController extends GetxController {
           specificationName: specificationName ?? "",
           packDate: packDate,
           seal_no: _appStorage.currentSealNumber!,
-          lot_no: lotNo!,
+          lot_no: lotNoController.text,
           qcdOpen1: selectedTempRecorder.value,
           qcdOpen2: lotNoController.text,
           qcdOpen3: qtyInspectedOkController.text,
@@ -551,7 +551,7 @@ class LongFormQualityControlScreenController extends GetxController {
           : qualityControlItems?.qcdOpen1 ?? "Yes";
       selectedTempRecorder.value = tempRecorderValue;
 
-      lotNoController.text = qualityControlItems!.qcdOpen2 ?? '';
+      lotNoController.text = qualityControlItems!.lot ?? '';
       qtyInspectedOkController.text = qualityControlItems?.qcdOpen3 ?? '';
       sensitechSerialNoController.text = qualityControlItems?.qcdOpen4 ?? '';
       updateQtyApproved();
