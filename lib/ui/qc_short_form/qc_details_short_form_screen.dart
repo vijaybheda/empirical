@@ -196,7 +196,11 @@ class QCDetailsShortFormScreen
                         ),
                       ),
                     ),
-                    FooterContentView()
+                    FooterContentView(
+                      onBackTap: () async {
+                        await controller.backToMyInspectionScreen();
+                      },
+                    )
                   ],
                 ),
               ),
@@ -428,7 +432,8 @@ class QCDetailsShortFormScreen
                 focusedErrorBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
                 ),
-                contentPadding: const EdgeInsets.all(10),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                 suffixIcon: hasValidShippedQty(controller)
                     ? IconButton(
                         icon:

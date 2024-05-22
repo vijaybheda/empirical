@@ -845,13 +845,13 @@ class _SpecificationAnalyticalWidgetState
         comply = "No";
       } else if (widget.item.specTargetTextDefault == "No" &&
           userValue == "Yes") {
-        comply = "Yes";
+        comply = "No";
       } else if (widget.item.specTargetTextDefault == "Yes" &&
           userValue == "Yes") {
         comply = "Yes";
       } else if (widget.item.specTargetTextDefault == "No" &&
           userValue == "No") {
-        comply = "No";
+        comply = "Yes";
       }
     }
 

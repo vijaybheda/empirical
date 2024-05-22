@@ -155,20 +155,20 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
       child: Obx(() {
         if (!valueAssigned.value) {
           return buildShimmer();
         }
         return Row(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-              flex: 5,
+              flex: 6,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _inspectionNameIdInfo(),
                   const SizedBox(height: 2),
@@ -239,11 +239,11 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
         Row(
           mainAxisSize: MainAxisSize.max,
           // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
@@ -354,25 +354,24 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Expanded(
-          flex: 3,
+          flex: 4,
           child: Text(
             (widget.goodsItem.description ?? '-'),
             style: Get.textTheme.bodyMedium?.copyWith(
               fontSize: 28.sp,
-              color: AppColors.lightGrey,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
             ),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),
         ),
         Expanded(
-          flex: 3,
+          flex: 2,
           child: Text(
             (widget.goodsItem.sku ?? '-'),
             style: Get.textTheme.bodyMedium?.copyWith(
               fontSize: 28.sp,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -386,21 +385,21 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
           flex: 3,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 'Lot No. ',
                 style: Get.textTheme.bodyMedium?.copyWith(
-                  fontSize: 22.sp,
+                  fontSize: 28.sp,
                   color: AppColors.white,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               // if (widget.goodsItem.lotNumber != null)
@@ -417,14 +416,14 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 'Pack Date ',
                 style: Get.textTheme.bodyMedium?.copyWith(
-                  fontSize: 22.sp,
+                  fontSize: 28.sp,
                   color: AppColors.white,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               // if (widget.goodsItem.packDate != null)
@@ -446,22 +445,24 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
     if (resultButton != null || editPencilVisibility) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
         children: [
           if (resultButton != null)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 color: resultButtonColor,
                 borderRadius: BorderRadius.circular(32),
               ),
               child: Text(
                 resultButton ?? '',
+                textAlign: TextAlign.center,
                 style: Get.textTheme.bodyMedium?.copyWith(
                   fontSize: 28.sp,
                 ),
               ),
             ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 8),
           if (editPencilVisibility)
             IconButton(
               onPressed: () {
@@ -478,7 +479,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
         ],
       );
     } else {
-      return SizedBox();
+      return const SizedBox();
     }
   }
 
@@ -489,15 +490,19 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
             flex: 3,
             child: Row(children: [
               Text('Qty Shipped * ',
-                  style: Get.textTheme.bodyMedium
-                      ?.copyWith(fontSize: 22.sp, color: AppColors.white)),
+                  style: Get.textTheme.bodyMedium?.copyWith(
+                    fontSize: 28.sp,
+                    color: AppColors.white,
+                    fontWeight: FontWeight.w600,
+                  )),
               SizedBox(
                 width: 80,
                 child: TextField(
                   controller: qtyShippedController,
                   textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
                   style: Get.textTheme.bodyMedium?.copyWith(
-                    fontSize: 22.sp,
+                    fontSize: 28.sp,
                     color: AppColors.white,
                     fontWeight: FontWeight.normal,
                   ),
@@ -515,11 +520,25 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
                       borderSide: BorderSide(color: Colors.grey),
                     ),
                     errorBorder: const UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: BorderSide(color: Colors.red),
                     ),
                     focusedErrorBorder: const UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.grey),
                     ),
+                    suffixIcon: qtyShippedController.text.trim().isEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.info_outlined,
+                                color: Colors.red),
+                            onPressed: () {
+                              Utils.showSnackBar(
+                                context: Get.overlayContext!,
+                                message: 'Please enter a valid value',
+                                backgroundColor: Colors.red,
+                                duration: const Duration(seconds: 2),
+                              );
+                            },
+                          )
+                        : null,
                   ),
                 ),
               ),
@@ -530,36 +549,59 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
             child: Row(
               children: [
                 Text('Qty Rejected * ',
-                    style: Get.textTheme.bodyMedium
-                        ?.copyWith(fontSize: 22.sp, color: AppColors.white)),
+                    style: Get.textTheme.bodyMedium?.copyWith(
+                      fontSize: 28.sp,
+                      color: AppColors.white,
+                      fontWeight: FontWeight.w600,
+                    )),
                 SizedBox(
                   width: 80,
                   child: TextField(
                     controller: qtyRejectedController,
                     textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
                     style: Get.textTheme.bodyMedium?.copyWith(
-                      fontSize: 22.sp,
+                      fontSize: 28.sp,
                       color: AppColors.white,
                       fontWeight: FontWeight.normal,
                     ),
-                    decoration: const InputDecoration(
+                    onChanged: (value) {
+                      setState(() {});
+                    },
+                    decoration: InputDecoration(
                       isDense: true,
-                      border: UnderlineInputBorder(),
-                      focusedBorder: UnderlineInputBorder(
+                      border: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.grey),
                       ),
-                      disabledBorder: UnderlineInputBorder(
+                      focusedBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.grey),
                       ),
-                      enabledBorder: UnderlineInputBorder(
+                      disabledBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.grey),
                       ),
-                      errorBorder: UnderlineInputBorder(
+                      enabledBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.grey),
                       ),
-                      focusedErrorBorder: UnderlineInputBorder(
+                      errorBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red),
+                      ),
+                      focusedErrorBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.grey),
                       ),
+                      suffixIcon: qtyRejectedController.text.trim().isEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.info_outlined,
+                                  color: Colors.red),
+                              onPressed: () {
+                                Utils.showSnackBar(
+                                  context: Get.overlayContext!,
+                                  message: 'Please enter a valid value',
+                                  backgroundColor: Colors.red,
+                                  duration: const Duration(seconds: 2),
+                                );
+                              },
+                            )
+                          : null,
                     ),
                   ),
                 ),
@@ -738,31 +780,6 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
             layoutQtyRejectedVisibility = false;
           }
         }
-
-        // String finalInspectionResult = inspectionResult;
-        // TODO: implement below
-        /*editPencil.onPressed = () {
-          // Assuming OverriddenResultActivity is a Flutter route
-          Get.to(() => const OverriddenResultScreen(), arguments: {
-            Consts.SERVER_INSPECTION_ID: inspection.inspectionId,
-            Consts.PARTNER_NAME: partnerName,
-            Consts.PARTNER_ID: partnerID,
-            Consts.CARRIER_NAME: carrierName,
-            Consts.CARRIER_ID: carrierID,
-            Consts.COMMODITY_NAME:
-                appStorage.selectedItemSKUList[widget.position].commodityName,
-            Consts.COMMODITY_ID:
-                appStorage.selectedItemSKUList[widget.position].commodityID,
-            Consts.INSPECTION_RESULT: finalInspectionResult,
-            Consts.ITEM_SKU: widget.goodsItem.sku,
-            Consts.PO_NUMBER: poNumber,
-            Consts.SPECIFICATION_NUMBER: specificationNumber,
-            Consts.SPECIFICATION_VERSION: specificationVersion,
-            Consts.SPECIFICATION_NAME: specificationName,
-            Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
-            Consts.PRODUCT_TRANSFER: productTransfer,
-          });
-        };*/
       }
 
       valueAssigned.value = true;
@@ -796,6 +813,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
       }
     }
     valueAssigned.value = true;
+    setState(() {});
   }
 
   String getPoNumber(int position) {

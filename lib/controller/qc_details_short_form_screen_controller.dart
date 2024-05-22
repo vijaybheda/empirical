@@ -121,7 +121,7 @@ class QCDetailsShortFormScreenController extends GetxController {
       Get.back();
       throw Exception('Arguments required!');
     }
- 
+
     serverInspectionID = args[Consts.SERVER_INSPECTION_ID] ?? -1;
     partnerName = args[Consts.PARTNER_NAME] ?? '';
     partnerID = args[Consts.PARTNER_ID] ?? 0;
@@ -326,7 +326,7 @@ class QCDetailsShortFormScreenController extends GetxController {
     DateTime now = DateTime.now();
     // show Adaptive Date Picker
     DateTime? selectedDate = await showDatePicker(
-      context: context,
+      context: Get.context!,
       firstDate: firstDate ?? now.subtract(const Duration(days: 365 * 2)),
       initialDate: packDate ?? now,
       currentDate: now,
@@ -1659,5 +1659,133 @@ class QCDetailsShortFormScreenController extends GetxController {
       return null;
     }
     return glnController.text;
+  }
+
+  Future<void> backToMyInspectionScreen() async {
+    if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+      if (serverInspectionID > -1) {
+        Inspection? inspection =
+            await dao.findInspectionByID(serverInspectionID);
+        if (inspection != null && inspection.rating > 0) {
+          if (await saveFieldsToDB()) {
+            await saveFieldsToDBSpecAttribute(false);
+            await dao.createPartnerItemSKU(
+                partnerID!,
+                itemSKU!,
+                lotNoString,
+                packDateController.text,
+                inspectionId!,
+                lotSize!,
+                itemUniqueId!,
+                poLineNo!,
+                poNumber!);
+            await dao
+                .copyTempTrailerTemperaturesToInspectionTrailerTemperatureTableByPartnerID(
+                    inspectionId!, carrierID!, poNumber!);
+            await dao
+                .copyTempTrailerTemperaturesDetailsToInspectionTrailerTemperatureDetailsTableByPartnerID(
+                    inspectionId!, carrierID!, poNumber!);
+            await dao.updateItemSKUInspectionComplete(inspectionId!, "false");
+            await dao.updateSelectedItemSKU(
+              inspectionId!,
+              partnerID!,
+              itemSkuId!,
+              itemSKU!,
+              itemUniqueId!,
+              false,
+              true,
+            );
+          } else {
+            AppAlertDialog.confirmationAlert(
+                Get.context!, AppStrings.alert, AppStrings.unsavedDataMessage,
+                onYesTap: () async {
+              await dao.deleteInspection(serverInspectionID);
+              Get.back();
+            });
+          }
+        } else {
+          await dao.deleteInspection(serverInspectionID);
+        }
+      }
+      Get.back();
+    } else {
+      if (await saveFieldsToDB()) {
+        await saveFieldsToDBSpecAttribute(false);
+        await dao.createPartnerItemSKU(
+            partnerID!,
+            itemSKU!,
+            lotNoString,
+            packDateController.text,
+            inspectionId!,
+            lotSize!,
+            itemUniqueId!,
+            poLineNo!,
+            poNumber!);
+        await dao
+            .copyTempTrailerTemperaturesToInspectionTrailerTemperatureTableByPartnerID(
+                inspectionId!, carrierID!, poNumber!);
+        await dao
+            .copyTempTrailerTemperaturesDetailsToInspectionTrailerTemperatureDetailsTableByPartnerID(
+                inspectionId!, carrierID!, poNumber!);
+        await dao.updateItemSKUInspectionComplete(inspectionId!, "false");
+        await dao.updateSelectedItemSKU(
+          inspectionId!,
+          partnerID!,
+          itemSkuId!,
+          itemSKU!,
+          itemUniqueId!,
+          false,
+          true,
+        );
+
+        Map<String, dynamic> passingData = {
+          Consts.SERVER_INSPECTION_ID: serverInspectionID,
+          Consts.PARTNER_NAME: partnerName,
+          Consts.PARTNER_ID: partnerID,
+          Consts.CARRIER_NAME: carrierName,
+          Consts.CARRIER_ID: carrierID,
+          Consts.COMMODITY_NAME: commodityName,
+          Consts.COMMODITY_ID: commodityID,
+          Consts.SPECIFICATION_NUMBER: specificationNumber,
+          Consts.SPECIFICATION_VERSION: specificationVersion,
+          Consts.SPECIFICATION_NAME: selectedSpecification,
+          Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
+          Consts.ITEM_SKU: itemSKU,
+          Consts.ITEM_SKU_NAME: itemSkuName,
+          Consts.ITEM_SKU_ID: itemSkuId,
+          Consts.ITEM_UNIQUE_ID: itemUniqueId,
+          Consts.LOT_NO: lotNo,
+          Consts.GTIN: gtin,
+          Consts.PACK_DATE: packDate,
+          Consts.LOT_SIZE: lotSize,
+          Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
+          Consts.PO_NUMBER: poNumber,
+          Consts.PRODUCT_TRANSFER: productTransfer,
+        };
+
+        if (isMyInspectionScreen ?? false) {
+          final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+          Get.offAll(() => Home(tag: tag));
+        } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+          Get.offAll(
+            () => const NewPurchaseOrderDetailsScreen(),
+            arguments: passingData,
+          );
+        } else {
+          final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+          Get.to(
+            () => PurchaseOrderDetailsScreen(tag: tag),
+            arguments: passingData,
+          );
+        }
+      } else {
+        AppAlertDialog.confirmationAlert(
+            Get.context!, AppStrings.alert, AppStrings.unsavedDataMessage,
+            onYesTap: () async {
+          await dao.deleteInspection(serverInspectionID);
+          Get.back();
+        });
+      }
+    }
   }
 }
