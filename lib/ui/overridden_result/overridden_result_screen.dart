@@ -5,8 +5,8 @@ import 'package:pverify/controller/overridden_result_screen_controller.dart';
 import 'package:pverify/ui/components/bottom_custom_button_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
+import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_strings.dart';
-import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class OverriddenResultScreen
@@ -260,25 +260,69 @@ class OverriddenResultScreen
           flex: 2,
           child: SizedBox(
             width: 350.w,
-            child: BoxTextField1(
-              isMulti: false,
-              controller: controller,
-              onTap: () {},
-              errorText: '',
-              readOnly: readOnly,
-              enabled: enabled,
-              onEditingCompleted: () {
-                FocusScope.of(context).unfocus();
-              },
-              onChanged: (value) {},
-              keyboardType: TextInputType.name,
-              hintText: placeHolder,
-              isPasswordField: true,
+            child: Container(
+              alignment: Alignment.center,
+              height: 105.h,
+              child: TextFormField(
+                textAlign: TextAlign.left,
+                textAlignVertical: TextAlignVertical.center,
+                onChanged: (value) {},
+                onEditingComplete: () {
+                  FocusScope.of(context).unfocus();
+                },
+                autofocus: false,
+                minLines: 1,
+                maxLines: 1,
+                onTap: () {},
+                enabled: enabled,
+                readOnly: readOnly,
+                keyboardType: TextInputType.name,
+                controller: controller,
+                style: Get.textTheme.titleLarge!.copyWith(
+                  fontSize: 32.sp,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
+                ),
+                cursorColor: Theme.of(context).textSelectionTheme.cursorColor,
+                decoration: InputDecoration(
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.hintColor),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Theme.of(context).primaryColor),
+                  ),
+                  hintText: placeHolder,
+                  hintStyle: Get.textTheme.titleLarge!.copyWith(
+                    fontSize: 32.sp,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.grey,
+                  ),
+                  suffixIcon: hasValidOrderNo(controller)
+                      ? null
+                      : IconButton(
+                          icon: const Icon(Icons.info,
+                              color: Colors.red, size: 24),
+                          onPressed: () {
+                            AppSnackBar.error(
+                                message: "Please enter a valid value");
+                          },
+                        ),
+                  border: InputBorder.none,
+                  isDense: true,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+                ),
+              ),
             ),
           ),
         ),
       ],
     );
+  }
+
+  bool hasValidOrderNo(TextEditingController controller) {
+    return controller.text.trim().isNotEmpty;
   }
 
   //DropDown
