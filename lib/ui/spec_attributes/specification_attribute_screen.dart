@@ -213,7 +213,11 @@ class SpecificationAttributesScreen
                       ),
                     ),
                   ),
-                  FooterContentView(),
+                  FooterContentView(
+                    onBackTap: () {
+                      controller.onBackButtonClick();
+                    },
+                  ),
                 ],
               ))
             ],

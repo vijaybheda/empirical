@@ -663,4 +663,10 @@ class SpecificationAttributesController extends GetxController {
 
     await Get.to(() => const InspectionPhotos(), arguments: passingData);
   }
+
+  onBackButtonClick() {
+    Get.back();
+    Get.back();
+    Get.back();
+  }
 }

@@ -46,8 +46,7 @@ class LongFormQualityControlScreen
                 controller: controller,
                 onShortFormClick: () {
                   if (controller.isValidQuantityRejected.value) {
-                    controller.saveFieldsToDB();
-                    Get.back();
+                    controller.shortFormClick();
                   } else {
                     controller.checkQuantityAlert();
                   }
@@ -58,9 +57,8 @@ class LongFormQualityControlScreen
                 },
               ),
               FooterContentView(
-                onBackTap: () {
-                  controller.saveFieldsToDB();
-                  Get.back();
+                onBackTap: () async {
+                  controller.backButtonClick();
                 },
               )
             ],
@@ -125,6 +123,9 @@ class LongFormQualityControlScreen
               Row(
                 children: [
                   _commonQualityControllTextField(
+                    onSubmitted: (p0) {
+                      controller.updateQtyApproved();
+                    },
                     controller: controller,
                     labelText: AppStrings.qcQtyShipped,
                     textEditingController: controller.qtyShippedController,
