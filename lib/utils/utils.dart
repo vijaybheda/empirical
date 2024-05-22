@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -714,6 +715,66 @@ class Utils {
       int inspectionId, int inspectionUploadReady) async {
     await _dao.updateInspectionUploadStatus(
         inspectionId, inspectionUploadReady);
+  }
+
+  static void showSnackBar({
+    required BuildContext context,
+    required String message,
+    required MaterialColor backgroundColor,
+    Duration? duration,
+  }) {
+/*
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.sp,
+          ),
+        ),
+        backgroundColor: backgroundColor,
+        duration: duration,
+      ),
+    );
+*/
+
+    showCustomSnackBar(
+        context, message, Colors.red, duration ?? const Duration(seconds: 3));
+  }
+
+  static void showCustomSnackBar(BuildContext context, String message,
+      Color backgroundColor, Duration duration) {
+    final overlay = Overlay.of(context);
+    final overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+        left: 20,
+        right: 20,
+        child: Material(
+          color: Colors.transparent,
+          child: SafeArea(
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                message,
+                style: GoogleFonts.poppins(
+                  fontSize: 16.sp,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+    Future.delayed(duration, () => overlayEntry.remove());
   }
 }
 

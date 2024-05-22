@@ -19,7 +19,7 @@ class SpecificationAttributesScreen
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder(
+    return GetBuilder<SpecificationAttributesController>(
       tag: uniqueTag,
       init: SpecificationAttributesController(),
       builder: (controller) {

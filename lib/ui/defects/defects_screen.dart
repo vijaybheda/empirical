@@ -46,7 +46,8 @@ class DefectsScreen extends GetView<DefectsScreenController> {
             ),
             drawer: SideDrawer(
               onDefectSaveAndCompleteTap: () async {
-                await controller.saveAsDraftAndGotoMyInspectionScreen();
+                // TODO: implement
+                // await controller.saveAsDraftAndGotoMyInspectionScreen();
               },
               onDiscardTap: () async {
                 await controller
@@ -179,6 +180,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                     ? GestureDetector(
                         onTap: () {
                           controller.activeTabIndex.value = 0;
+                          controller.update();
                         },
                         child: customViewDefectsView(
                           100.h,
@@ -204,6 +206,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                 GestureDetector(
                   onTap: () {
                     controller.activeTabIndex.value = 1;
+                    controller.update();
                   },
                   child: customViewDefectsView(
                     100.h,
@@ -239,7 +242,11 @@ class DefectsScreen extends GetView<DefectsScreenController> {
       controller.activeTabIndex.value == 0
           ? Expanded(
               flex: 1,
-              child: controller.drawDefectsTable(),
+              child: /*controller
+                  .drawDefectsTable()*/
+                  SingleChildScrollView(
+                child: DefectsTable(),
+              ),
             )
           : Expanded(
               flex: 1,

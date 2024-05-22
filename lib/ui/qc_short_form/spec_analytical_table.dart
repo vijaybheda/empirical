@@ -10,6 +10,7 @@ import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
+import 'package:pverify/utils/utils.dart';
 
 class SpecAnalyticalTable
     extends GetWidget<QCDetailsShortFormScreenController> {
@@ -122,40 +123,33 @@ class _SpecificationAnalyticalWidgetState
     editTextValue = TextEditingController();
     comply = "Yes";
     spinner_value = comply;
-    // saveComply(comply);
     operatorList = ['Select', 'Yes', 'No', 'N/A'];
 
     if (widget.item.specTargetTextDefault == 'Yes') {
       comply = 'Yes';
       spinner_value = comply;
-      // saveComply(comply);
     } else if (widget.item.specTargetTextDefault == 'No') {
       comply = 'No';
       spinner_value = comply;
-      // saveComply(comply);
     }
 
     if (dbobj != null) {
       reqobj = reqobj.copyWith(comply: dbobj?.comply);
       comply = dbobj?.comply ?? 'Yes';
       spinner_value = comply;
-      // saveComply(comply);
     } else {
       reqobj = reqobj.copyWith(comply: "N/A");
       comply = 'N/A';
       spinner_value = comply;
-      // saveComply(comply);
     }
     widget.controller.listSpecAnalyticalsRequest[widget.index] = reqobj;
     spinner_value = operatorList.first;
 
     if (widget.item.specTargetTextDefault == "Yes") {
       comply = "Yes";
-      // saveComply(comply);
       spinner_value = comply;
     } else if (widget.item.specTargetTextDefault == "No") {
       comply = "Yes";
-      // saveComply(comply);
       spinner_value = comply;
     }
     if (widget.item.specTypeofEntry == 1 || widget.item.specTypeofEntry == 3) {
@@ -221,22 +215,18 @@ class _SpecificationAnalyticalWidgetState
 
     if (widget.item.specTargetTextDefault == "Yes") {
       String textViewComply = "Yes";
-      // saveComply(comply);
       comply = textViewComply;
       spinner_value = comply;
     } else if (widget.item.specTargetTextDefault == "No") {
       String textViewComply = "Yes";
-      // saveComply(comply);
       comply = textViewComply;
       spinner_value = comply;
     } else if (widget.item.specTargetTextDefault == "") {
       operatorList.removeWhere((element) => ("N/A" == element));
       spinner_value = operatorList[0];
       comply = operatorList[0];
-      // saveComply(comply);
     } else if (widget.item.specTargetTextDefault == "N/A") {
       String textViewComply = "N/A";
-      // saveComply(comply);
       comply = textViewComply;
       spinner_value = comply;
     }
@@ -254,7 +244,6 @@ class _SpecificationAnalyticalWidgetState
           await dao.getBrandedFlagFromItemSku(widget.controller.itemSkuId!);
 
       String textViewComply = "Yes";
-      // saveComply(comply);
       comply = textViewComply;
       spinner_value = comply;
       if (brandedFlag == "1") {
@@ -682,7 +671,8 @@ class _SpecificationAnalyticalWidgetState
     if (value == null) {
       return false;
     }
-    return value >= widget.item.specMin! && value <= widget.item.specMax!;
+    return (editTextValue?.text ?? '').isNotEmpty;
+    // return value >= widget.item.specMin! && value <= widget.item.specMax!;
   }
 
   @override
@@ -703,31 +693,50 @@ class _SpecificationAnalyticalWidgetState
               // keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
               decoration: InputDecoration(
-                hintText: 'Enter Value',
-                // errorText: validInput() ? null : 'Invalid!',
+                // hintText: 'Enter Value',
+                errorText: validInput() ? null : '',
+                errorMaxLines: 1,
+                error: null,
                 errorStyle: Get.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w300,
                     color: Colors.red,
                     fontSize: 11),
                 isDense: true,
-                border: const UnderlineInputBorder(),
-                focusedErrorBorder: const UnderlineInputBorder(
+                enabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
                 ),
                 focusedBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
                 ),
-                errorBorder: const UnderlineInputBorder(
+                border: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
                 ),
                 disabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
                 ),
-                enabledBorder: const UnderlineInputBorder(
+                errorBorder: const UnderlineInputBorder(
+                  // borderRadius: BorderRadius.all(Radius.circular(5)),
+                  borderSide: BorderSide(color: Colors.red),
+                ),
+                focusedErrorBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
                 ),
                 hintStyle: Get.textTheme.bodyMedium
                     ?.copyWith(fontWeight: FontWeight.w300, fontSize: 12),
+                suffixIcon: !validInput()
+                    ? IconButton(
+                        icon:
+                            const Icon(Icons.info_outlined, color: Colors.red),
+                        onPressed: () {
+                          Utils.showSnackBar(
+                            context: Get.overlayContext!,
+                            message: 'Please enter a valid value',
+                            backgroundColor: Colors.red,
+                            duration: const Duration(seconds: 2),
+                          );
+                        },
+                      )
+                    : null,
               ),
               onChanged: (value) => updateCompliance(value),
               style: Get.textTheme.bodyMedium

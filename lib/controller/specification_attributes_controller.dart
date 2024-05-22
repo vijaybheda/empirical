@@ -114,7 +114,7 @@ class SpecificationAttributesController extends GetxController {
       itemUniqueId = args[Consts.ITEM_UNIQUE_ID] ?? '';
       lotSize = args[Consts.LOT_SIZE] ?? '';
       poNumber = args[Consts.PO_NUMBER] ?? '';
-      callerActivity = args["callerActivity"] ?? '';
+      callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
       poLineNo = args[Consts.PO_LINE_NO] ?? 0;
       productTransfer = args[Consts.PRODUCT_TRANSFER] ?? '';
       dateTypeDesc = args[Consts.DATETYPE] ?? '';
@@ -152,9 +152,11 @@ class SpecificationAttributesController extends GetxController {
     }
     listSpecAnalyticals.value = _appStorage.specificationAnalyticalList ?? [];
     for (var specAnalytical in listSpecAnalyticals) {
-      if (specAnalytical.specTargetTextDefault == "Y") {
+      if (specAnalytical.specTargetTextDefault == "Y" ||
+          specAnalytical.specTargetTextDefault == "Yes") {
         specAnalytical.specTargetTextDefault = "Yes";
-      } else if (specAnalytical.specTargetTextDefault == "N") {
+      } else if (specAnalytical.specTargetTextDefault == "N" ||
+          specAnalytical.specTargetTextDefault == "N0") {
         specAnalytical.specTargetTextDefault = "No";
       }
     }

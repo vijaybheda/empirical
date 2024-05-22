@@ -1043,9 +1043,6 @@ class DefectsScreenController extends GetxController {
     await Get.to(() => const InspectionPhotos(), arguments: passingData);
   }
 
-  // FIXME: Implement this method
-  Future saveAsDraftAndGotoMyInspectionScreen() async {}
-
   Future deleteInspectionAndGotoMyInspectionScreen(BuildContext context) async {
     if (serverInspectionID > -1) {
       await dao.deleteInspection(serverInspectionID);
@@ -1115,50 +1112,6 @@ class DefectsScreenController extends GetxController {
       }
     }
   }
-
-  /*bool validateDefects1() {
-    bool isValidValue = true;
-    for (SampleData element in sampleList) {
-      bool isAnyErrorInDefect = false;
-      for (DefectItem defectItem in element.defectItem ?? []) {
-        bool isError = false;
-        if ((defectItem.injuryTextEditingController?.text.trim().isNotEmpty ??
-                false) &&
-            defectItem.injuryTextEditingController?.text.trim() == "0") {
-          isError = true;
-        }
-        if ((defectItem.damageTextEditingController?.text.trim().isNotEmpty ??
-                false) &&
-            defectItem.damageTextEditingController?.text.trim() == "0") {
-          isError = true;
-        }
-        if ((defectItem.sDamageTextEditingController?.text.trim().isNotEmpty ??
-                false) &&
-            defectItem.sDamageTextEditingController?.text.trim() == "0") {
-          isError = true;
-        }
-        if ((defectItem.vsDamageTextEditingController?.text.trim().isNotEmpty ??
-                false) &&
-            defectItem.vsDamageTextEditingController?.text.trim() == "0") {
-          isError = true;
-        }
-        if ((defectItem.decayTextEditingController?.text.trim().isNotEmpty ??
-                false) &&
-            defectItem.decayTextEditingController?.text.trim() == "0") {
-          isError = true;
-        }
-        if (isError) {
-          isAnyErrorInDefect = true;
-          isValidValue = false;
-          break;
-        }
-      }
-      if (isAnyErrorInDefect) {
-        break;
-      }
-    }
-    return isValidValue;
-  }*/
 
   void checkForUnsavedData() {
     for (var i = 0; i < sampleList.length; i++) {

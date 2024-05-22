@@ -70,20 +70,28 @@ class CustomListView extends StatelessWidget {
     return AlertDialog(
       backgroundColor: Theme.of(context).colorScheme.background,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(0),
       ),
-      title: Text(
-        AppStrings.specException,
-        style: Get.textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.bold,
-          color: AppColors.white,
-        ),
-      ),
+      title: null,
+      contentPadding: const EdgeInsets.all(5),
       content: SizedBox(
         width: double.maxFinite,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Container(
+              color: AppColors.primaryColor,
+              width: double.maxFinite,
+              padding: const EdgeInsets.all(10),
+              child: Text(
+                AppStrings.specException,
+                textAlign: TextAlign.center,
+                style: Get.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.white,
+                ),
+              ),
+            ),
             SizedBox(
               height: Get.height * 0.6,
               width: Get.width,
@@ -128,41 +136,38 @@ class CustomListView extends StatelessWidget {
           ],
         ),
       ),
+      actionsPadding: const EdgeInsets.all(0),
+      titlePadding: const EdgeInsets.all(0),
+      buttonPadding: const EdgeInsets.all(0),
       actions: <Widget>[
-        Center(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  Get.back();
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(AppColors.primary),
-                  foregroundColor: MaterialStateProperty.all(AppColors.primary),
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                  ),
-                  minimumSize: MaterialStateProperty.all(const Size(100, 40)),
-                ),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  child: Text(
-                    AppStrings.ok,
-                    style: Get.textTheme.labelLarge?.copyWith(
-                      color: AppColors.white,
-                    ),
-                  ),
+        Container(
+          width: double.maxFinite,
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+          child: ElevatedButton(
+            onPressed: () {
+              Get.back();
+            },
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(AppColors.primary),
+              foregroundColor: MaterialStateProperty.all(AppColors.primary),
+              shape: MaterialStateProperty.all(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
                 ),
               ),
-            ],
+              minimumSize: MaterialStateProperty.all(const Size(100, 40)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+              child: Text(
+                AppStrings.ok,
+                style: Get.textTheme.labelLarge?.copyWith(
+                  color: AppColors.white,
+                ),
+              ),
+            ),
           ),
-        )
+        ),
       ],
     );
   }

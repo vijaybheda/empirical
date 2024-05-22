@@ -12,6 +12,7 @@ import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/theme/colors.dart';
+import 'package:pverify/utils/utils.dart';
 
 class QualityControlHeader extends StatefulWidget {
   const QualityControlHeader({super.key});
@@ -146,16 +147,101 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
       BuildContext context, QualityControlController controller) {
     return SingleChildScrollView(
       child: Padding(
-        padding: EdgeInsets.all(15),
+        padding: const EdgeInsets.all(15),
         child: Column(
           children: [
-            commonRowTextFieldView(
-              context,
-              AppStrings.purchaseOrderNumber,
-              AppStrings.orderNo,
-              controller.orderNoTextController.value,
-              enabled: controller.orderNoEnabled,
-              readOnly: !controller.orderNoEnabled,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    AppStrings.purchaseOrderNumber,
+                    style: Get.textTheme.titleLarge!.copyWith(
+                      fontSize: 31.sp,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: SizedBox(
+                    width: 350.w,
+                    child: TextFormField(
+                      textAlign: TextAlign.left,
+                      textAlignVertical: TextAlignVertical.center,
+                      onChanged: onChanged,
+                      onEditingComplete: () {
+                        FocusScope.of(context).unfocus();
+                      },
+                      minLines: 1,
+                      maxLines: 1,
+                      enabled: controller.orderNoEnabled,
+                      readOnly: !controller.orderNoEnabled,
+                      keyboardType: TextInputType.name,
+                      controller: controller.orderNoTextController.value,
+                      style: Get.textTheme.titleLarge!.copyWith(
+                        fontSize: 32.sp,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.grey,
+                      ),
+                      cursorColor:
+                          Theme.of(context).textSelectionTheme.cursorColor,
+                      decoration: InputDecoration(
+                        enabledBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                        errorMaxLines: 1,
+                        // errorText: hasValidOrderNo(
+                        //         controller.orderNoTextController.value)
+                        //     ? null
+                        //     : 'Please enter a valid value',
+                        focusedBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                        border: const UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                        disabledBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                        errorBorder: const UnderlineInputBorder(
+                          // borderRadius: BorderRadius.all(Radius.circular(5)),
+                          borderSide: BorderSide(color: Colors.red),
+                        ),
+                        focusedErrorBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                        hintText: AppStrings.orderNo,
+                        hintStyle: Get.textTheme.titleLarge!.copyWith(
+                          fontSize: 32.sp,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.grey,
+                        ),
+                        suffixIcon: hasValidOrderNo(
+                                controller.orderNoTextController.value)
+                            ? null
+                            : IconButton(
+                                icon: const Icon(Icons.info_outlined,
+                                    color: Colors.red),
+                                onPressed: () {
+                                  Utils.showSnackBar(
+                                    context: Get.overlayContext!,
+                                    message: 'Please enter a valid value',
+                                    backgroundColor: Colors.red,
+                                    duration: const Duration(seconds: 2),
+                                  );
+                                },
+                              ),
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 0, vertical: 5),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             SizedBox(
               height: controller.spacingBetweenFields.h,
@@ -341,5 +427,14 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
         ),
       ],
     );
+  }
+
+  void onChanged(String value) {
+    print(value);
+    setState(() {});
+  }
+
+  bool hasValidOrderNo(TextEditingController controller) {
+    return controller.text.trim().isNotEmpty;
   }
 }

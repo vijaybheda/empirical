@@ -115,6 +115,7 @@ class QCDetailsShortFormScreen
                               Row(
                                 children: [
                                   gtinWidget(controller),
+                                  const SizedBox(height: 10, width: 10),
                                   glnWidget(controller),
                                 ],
                               ),
@@ -122,6 +123,7 @@ class QCDetailsShortFormScreen
                               Row(
                                 children: [
                                   lotNumberWidget(controller),
+                                  const SizedBox(height: 10, width: 10),
                                   packDateWidget(controller, context),
                                 ],
                               ),
@@ -129,6 +131,7 @@ class QCDetailsShortFormScreen
                               Row(
                                 children: [
                                   qcQtyShippedWidget(controller),
+                                  const SizedBox(height: 10, width: 10),
                                   uomWidget(controller),
                                 ],
                               ),
@@ -388,43 +391,79 @@ class QCDetailsShortFormScreen
               ),
             ],
           ),
-          TextField(
-            controller: controller.qtyShippedController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              hintText: AppStrings.qcQtyShipped,
-              hintStyle: Get.textTheme.titleLarge!.copyWith(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: TextField(
+              controller: controller.qtyShippedController,
+              keyboardType: TextInputType.number,
+              onChanged: (value) {
+                controller.update();
+              },
+              decoration: InputDecoration(
+                hintText: AppStrings.qcQtyShipped,
+                errorText: hasValidShippedQty(controller) ? '' : null,
+                errorMaxLines: 1,
+                hintStyle: Get.textTheme.titleLarge!.copyWith(
                   fontSize: 26.sp,
                   fontWeight: FontWeight.normal,
-                  color: Colors.grey),
-              enabledBorder: const UnderlineInputBorder(
-                borderSide: BorderSide.none,
+                  color:
+                      hasValidShippedQty(controller) ? Colors.red : Colors.grey,
+                ),
+                enabledBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                border: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                disabledBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                errorBorder: const UnderlineInputBorder(
+                  // borderRadius: BorderRadius.all(Radius.circular(5)),
+                  borderSide: BorderSide(color: Colors.red),
+                ),
+                focusedErrorBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                contentPadding: const EdgeInsets.all(10),
+                suffixIcon: hasValidShippedQty(controller)
+                    ? IconButton(
+                        icon:
+                            const Icon(Icons.info_outlined, color: Colors.red),
+                        onPressed: () {
+                          Utils.showSnackBar(
+                            context: Get.overlayContext!,
+                            message: 'Please enter a valid value',
+                            backgroundColor: Colors.red,
+                            duration: const Duration(seconds: 2),
+                          );
+                        },
+                      )
+                    : null,
               ),
-              focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide.none,
-              ),
-              border: const UnderlineInputBorder(
-                borderSide: BorderSide.none,
-              ),
-              disabledBorder: const UnderlineInputBorder(
-                borderSide: BorderSide.none,
-              ),
-              errorBorder: const UnderlineInputBorder(
-                borderSide: BorderSide.none,
-              ),
-              focusedErrorBorder: const UnderlineInputBorder(
-                borderSide: BorderSide.none,
-              ),
-              contentPadding: const EdgeInsets.all(10),
             ),
           ),
-          Divider(
-            color: AppColors.lightGrey,
-            height: 1,
-          ),
+          // Divider(
+          //   indent: 10,
+          //   endIndent: 0,
+          //   thickness: 1,
+          //   color: AppColors.lightGrey,
+          //   height: 1,
+          // ),
         ],
       ),
     );
+  }
+
+  bool hasValidShippedQty(QCDetailsShortFormScreenController controller) {
+    int qty = 0;
+    if (controller.qtyShippedController.text.isNotEmpty) {
+      qty = int.tryParse(controller.qtyShippedController.text) ?? 0;
+    }
+    return qty <= 0;
   }
 
   Expanded packDateWidget(
