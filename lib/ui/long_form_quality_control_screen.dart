@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:pverify/controller/long_form_quality_control_screen_controller.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
+import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/images.dart';
@@ -533,6 +534,15 @@ class LongFormQualityControlScreen
                 fontWeight: FontWeight.normal,
                 color: Colors.grey,
               ),
+              suffixIcon: hasValidOrderNo(textEditingController, controller)
+                  ? null
+                  : IconButton(
+                      icon: const Icon(Icons.info, color: Colors.red),
+                      onPressed: () {
+                        AppSnackBar.error(
+                            message: "Please enter a valid value");
+                      },
+                    ),
               enabledBorder: const UnderlineInputBorder(
                 borderSide: BorderSide.none,
               ),
@@ -561,6 +571,16 @@ class LongFormQualityControlScreen
         ],
       ),
     );
+  }
+
+  bool hasValidOrderNo(TextEditingController textEditingController,
+      LongFormQualityControlScreenController controller) {
+    if (textEditingController != controller.lotNoController &&
+        textEditingController != controller.qtyInspectedOkController &&
+        textEditingController != controller.commentsController) {
+      return textEditingController.text.trim().isNotEmpty;
+    }
+    return true;
   }
 
   // Sensitech Serial No Barcode scanner widget
