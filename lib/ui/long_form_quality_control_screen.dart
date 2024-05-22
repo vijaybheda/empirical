@@ -46,6 +46,7 @@ class LongFormQualityControlScreen
                 controller: controller,
                 onShortFormClick: () {
                   if (controller.isValidQuantityRejected.value) {
+                    controller.saveFieldsToDB();
                     Get.back();
                   } else {
                     controller.checkQuantityAlert();

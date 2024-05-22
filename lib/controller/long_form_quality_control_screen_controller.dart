@@ -297,8 +297,6 @@ class LongFormQualityControlScreenController extends GetxController {
     if (packDateS.isNotEmpty) {
       DateTime parsedDate = Utils().dateFormat.parse(packDateS);
       packDate = parsedDate.millisecondsSinceEpoch;
-      log("hereeeeee issss $packDate");
-      log("hereeeeee issss S $packDateS");
     }
     // rpc
     int rpcIndex = rpcList.indexOf(selectedRpc.value);
@@ -440,14 +438,18 @@ class LongFormQualityControlScreenController extends GetxController {
     String packDateString = args[Consts.PACK_DATE] ?? '';
     String workDateString = args[Consts.WORK_DATE] ?? '';
 
-    log("HERE IS WORKDATE $workDateString");
-    log("HERE IS PACKDATE $packDateString");
     if (packDateString.isNotEmpty) {
-      packDate = Utils().dateFormat.parse(packDateString);
-      if (packDate != null) {
-        packDateController.text = Utils().dateFormat.format(packDate!);
+      try {
+        packDate =
+            DateTime.fromMillisecondsSinceEpoch(int.parse(packDateString));
+        if (packDate != null) {
+          packDateController.text = Utils().dateFormat.format(packDate!);
+        }
+      } catch (e) {
+        log("Error parsing packDateString: $e");
       }
     }
+
     if (workDateString.isNotEmpty) {
       workDate = Utils().dateFormat.parse(workDateString);
       if (workDate != null) {
@@ -496,12 +498,22 @@ class LongFormQualityControlScreenController extends GetxController {
         packDateController.text = dateTypeDesc;
         workDateController.text = dateTypeDesc;
       }
-      int packDate =
+
+      int packDateMillis =
           int.tryParse(qualityControlItems!.packDate.toString()) ?? 0;
       int workDate =
           int.tryParse(qualityControlItems!.workDate.toString()) ?? 0;
-      if (packDate > 0) {
-        packDateController.text = getDateStingFromTime(packDate);
+      // Check if packDateMillis is valid
+      if (packDateMillis > 0) {
+        try {
+          DateTime parsedDate =
+              DateTime.fromMillisecondsSinceEpoch(packDateMillis);
+          String formattedDate = Utils().dateFormat.format(parsedDate);
+          packDateController.text = formattedDate;
+        } catch (e) {
+          log("Error parsing packDateMillis: $e");
+          packDateController.text = "";
+        }
       } else {
         packDateController.text = "";
       }
