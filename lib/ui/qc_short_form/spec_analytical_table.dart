@@ -159,9 +159,9 @@ class _SpecificationAnalyticalWidgetState
     }
 
     if (widget.item.analyticalName?.contains("Quality Check") ?? false) {
-      editTextValue = TextEditingController();
+      editTextValue ??= TextEditingController();
     }
-
+    editTextValue ??= TextEditingController();
     editTextValue?.addListener(() {
       String comply = "N/A";
       saveComply(comply);
@@ -340,13 +340,13 @@ class _SpecificationAnalyticalWidgetState
           Expanded(
             flex: 3,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
               child: getContent(hasTextField, hasDropDown),
             ),
           ),
           _divider(),
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Text(
               getComply(),
               textAlign: TextAlign.center,
@@ -590,45 +590,6 @@ class _SpecificationAnalyticalWidgetState
       },
       barrierDismissible: false,
     );
-  }
-
-  void handleTextChanges(String value) {
-    int userValue = int.tryParse(value) ?? 0;
-    double specMin = widget.item.specMin ?? 0;
-    double specMax = widget.item.specMax ?? 0;
-
-    if (userValue >= specMin && userValue <= specMax) {
-      comply = "Yes";
-      saveComply(comply);
-    } else {
-      comply = "No";
-      saveComply(comply);
-    }
-
-    if (value.isEmpty) {
-      comply = "N/A";
-      saveComply(comply);
-      hasErrors = true;
-    } else {
-      hasErrors = false;
-    }
-  }
-
-  void handleComplianceChange(String value) {
-    comply = value;
-    saveComply(comply);
-    // Handle compliance changes
-    if (widget.item.specTypeofEntry == 3 && comply != "No") {
-      // int userValue = int.tryParse(textEditingController.text) ?? 0;
-
-      if (comply == "N/A") {
-        comply = "No";
-        saveComply(comply);
-      } else if (comply == "No") {
-        comply = "No";
-        saveComply(comply);
-      }
-    }
   }
 
   void updateCompliance(String value) {
