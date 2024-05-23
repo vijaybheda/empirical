@@ -346,7 +346,7 @@ class SpecificationAttributesController extends GetxController {
                     }
 
                     await dao.updateItemSKUInspectionComplete(
-                        inspectionId!, "true");
+                        inspectionId!, true);
                     await dao.updateInspectionComplete(inspectionId!, true);
                     await dao.updateSelectedItemSKU(
                       inspectionId!,
@@ -451,7 +451,7 @@ class SpecificationAttributesController extends GetxController {
                     }
 
                     await dao.updateItemSKUInspectionComplete(
-                        inspectionId!, "true");
+                        inspectionId!, true);
                     await dao.updateInspectionComplete(inspectionId!, true);
                     await dao.updateSelectedItemSKU(
                       inspectionId!,
@@ -564,12 +564,13 @@ class SpecificationAttributesController extends GetxController {
     } else {
       Map<String, dynamic> navigationArgs = {};
 
-      String callerActivity = args["callerActivity"] ?? '';
+      String callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
 
       if (callerActivity == "NewPurchaseOrderDetailsActivity") {
-        navigationArgs["callerActivity"] = "NewPurchaseOrderDetailsActivity";
+        navigationArgs[Consts.CALLER_ACTIVITY] =
+            "NewPurchaseOrderDetailsActivity";
       } else {
-        navigationArgs["callerActivity"] = "PurchaseOrderDetailsActivity";
+        navigationArgs[Consts.CALLER_ACTIVITY] = "PurchaseOrderDetailsActivity";
       }
       final String tag = DateTime.now().millisecondsSinceEpoch.toString();
       Get.to(() => QCDetailsShortFormScreen(tag: tag), arguments: args);

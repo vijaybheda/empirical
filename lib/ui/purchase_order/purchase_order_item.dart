@@ -11,7 +11,6 @@ import 'package:pverify/models/quality_control_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
-import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
 
@@ -28,6 +27,7 @@ class PurchaseOrderListViewItem extends StatefulWidget {
     required this.poNumber,
     required this.sealNumber,
   });
+
   final Function(
     Inspection? inspection,
     PartnerItemSKUInspections? partnerItemSKU,
@@ -75,7 +75,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
   bool isComplete = false;
 
   bool isPartialComplete = false;
-  Icon inspectButtonImagePath = const Icon(
+  Icon inspectButtonIcon = const Icon(
     Icons.play_circle_outline_outlined,
     size: 40,
   );
@@ -85,8 +85,12 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
   bool informationIconEnabled = true;
   String? resultButton;
   Color resultButtonColor = AppColors.white;
-  AssetImage informationImagePath =
-      const AssetImage(AppImages.ic_informationDisabled);
+
+  Icon informationIcon = Icon(
+    Icons.info_rounded,
+    color: AppColors.white,
+    size: 40,
+  );
 
   bool editPencilVisibility = false;
   bool layoutQtyRejectedVisibility = false;
@@ -107,7 +111,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
     packDateController = TextEditingController();
     packDateController.text = widget.goodsItem.packDate ?? '';
     lotNumberController.text = widget.goodsItem.lotNumber ?? '';
-    inspectButtonImagePath = const Icon(
+    inspectButtonIcon = const Icon(
       Icons.play_circle_outline_outlined,
       size: 40,
     );
@@ -171,9 +175,9 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _inspectionNameIdInfo(),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 10),
                   _inspectionStatusInfo(),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 10),
                   if (layoutQtyRejectedVisibility) _inspectionQuantity(),
                 ],
               ),
@@ -189,7 +193,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
                     children: [
                       IconButton(
                         iconSize: 40,
-                        icon: inspectButtonImagePath,
+                        icon: inspectButtonIcon,
                         onPressed: () {
                           if (widget.inspectTap != null) {
                             widget.inspectTap!(
@@ -215,11 +219,17 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
                             widget.infoTap!(inspection, partnerItemSKU);
                           }
                         },
-                        icon: Image.asset(
-                          informationImagePath.assetName,
-                          width: 40,
-                          height: 40,
-                        ),
+                        icon:
+                            informationIcon /*Image.asset(
+                                informationImagePath.assetName,
+                                width: 40,
+                                height: 40,
+                                color: informationImagePath.assetName
+                                        .contains("green")
+                                    ? null
+                                    : AppColors.white,
+                              )*/
+                        ,
                       ),
                     ],
                   ),
@@ -261,16 +271,12 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
             ),
             IconButton(
               iconSize: 40,
-              icon: inspectButtonImagePath,
+              icon: inspectButtonIcon,
               onPressed: () {},
             ),
             IconButton(
               onPressed: () {},
-              icon: Image.asset(
-                informationImagePath.assetName,
-                width: 40,
-                height: 40,
-              ),
+              icon: informationIcon,
             ),
           ],
         ),
@@ -628,12 +634,12 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
     if (partnerItemSKU == null) {
       valueAssigned.value = true;
       setState(() {});
-      return;
+      // return;
     }
     if (partnerItemSKU?.inspectionId == null) {
       valueAssigned.value = true;
       setState(() {});
-      return;
+      // return;
     }
     if (partnerItemSKU != null) {
       inspectionId = partnerItemSKU!.inspectionId;
@@ -674,20 +680,31 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
           widget.partnerID,
           widget.goodsItem.sku!,
           partnerItemSKU!.uniqueId.toString());
-      bool isC = (inspection != null && inspection!.complete == null)
-          ? false
-          : (inspection?.complete == true.toString());
-      if (isComplete || (inspection != null && isC)) {
-        inspectButtonImagePath = const Icon(
+      bool isC = (inspection?.complete == '1'.toString());
+      if ((inspection != null && isC)) {
+        inspectButtonIcon = const Icon(
           Icons.check_circle_outlined,
           size: 40,
         );
       } else if (isPartialComplete) {
-        inspectButtonImagePath = const Icon(
+        inspectButtonIcon = const Icon(
           Icons.pause_circle_outline_outlined,
           size: 40,
         );
       }
+
+      /*bool isC = (inspection?.complete == '1'.toString());
+      if ((inspection != null && isC)) {
+        inspectButtonIcon = const Icon(
+          Icons.check_circle_outlined,
+          size: 40,
+        );
+      } else if (isPartialComplete) {
+        inspectButtonIcon = const Icon(
+          Icons.pause_circle_outline_outlined,
+          size: 40,
+        );
+      }*/
 
       String inspectionResult = "";
       if (inspection != null) {
@@ -804,11 +821,18 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
 
       if (appStorage.commodityVarietyData != null &&
           (appStorage.commodityVarietyData!.exceptions.isNotEmpty)) {
-        informationImagePath = const AssetImage(AppImages.ic_information);
+        informationIcon = Icon(
+          Icons.info_rounded,
+          color: AppColors.primary,
+          size: 40,
+        );
         informationIconEnabled = true;
       } else {
-        informationImagePath =
-            const AssetImage(AppImages.ic_informationDisabled);
+        informationIcon = Icon(
+          Icons.info_rounded,
+          color: AppColors.white,
+          size: 40,
+        );
         informationIconEnabled = false;
       }
     }

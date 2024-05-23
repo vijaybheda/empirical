@@ -24,6 +24,11 @@ class AppImages {
   static const String ic_information = 'assets/images/information_icon.png';
   static const String ic_informationDisabled =
       'assets/images/information_icon_disabled.png';
+  static const String ic_normal_information = 'assets/images/information.png';
+  static const String ic_informationPurple =
+      'assets/images/information_purple.png';
+  static const String ic_informationGreen =
+      'assets/images/inspection_green.png';
   static const String ic_camera = 'assets/images/camera_icon.png';
   static const String ic_specComments = 'assets/images/spec_comment.png';
   static const String ic_specCommentsAdded =

@@ -9,7 +9,7 @@ class PurchaseOrderScreenCTE
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder(
+    return GetBuilder<PurchaseOrderScreenCTEController>(
       init: PurchaseOrderScreenCTEController(),
       builder: (controller) {
         return Scaffold(

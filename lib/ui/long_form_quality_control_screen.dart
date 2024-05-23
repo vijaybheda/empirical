@@ -19,7 +19,7 @@ class LongFormQualityControlScreen
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder(
+    return GetBuilder<LongFormQualityControlScreenController>(
       init: LongFormQualityControlScreenController(),
       builder: (controller) {
         return Scaffold(

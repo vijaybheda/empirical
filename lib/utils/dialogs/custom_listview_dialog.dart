@@ -87,43 +87,66 @@ class CustomListView extends StatelessWidget {
                 AppStrings.specException,
                 textAlign: TextAlign.center,
                 style: Get.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                   color: AppColors.white,
                 ),
               ),
             ),
             SizedBox(
-              height: Get.height * 0.6,
+              height: Get.height * 0.4,
               width: Get.width,
               child: ListView.separated(
                   shrinkWrap: true,
                   itemCount: exceptions.length,
                   itemBuilder: (context, index) {
                     final item = exceptions[index];
-                    return ListTile(
+                    return InkWell(
                       onTap: () {
-                        Get.back(result: item);
+                        // Get.back(result: item);
                       },
-                      leading: SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: Image.asset(
-                          AppImages.ic_special_instruction,
-                          width: 150.w,
-                          height: 150.h,
-                        ),
-                      ),
-                      title: Text(
-                        item.shortDescription ?? '',
-                        style: Get.textTheme.titleMedium
-                            ?.copyWith(color: AppColors.white),
-                      ),
-                      subtitle: Text(
-                        item.longDescription ?? '',
-                        style: Get.textTheme.titleSmall?.copyWith(
-                          color: AppColors.white,
-                          fontWeight: FontWeight.normal,
-                        ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: Image.asset(
+                                AppImages.ic_special_instruction,
+                                width: 150.w,
+                                height: 150.h,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                              child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 5),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.shortDescription ?? '',
+                                  style: Get.textTheme.titleMedium
+                                      ?.copyWith(color: AppColors.white),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Text(
+                                    // item.longDescription ?? '',
+                    (item.longDescription ?? '').replaceAll(RegExp(r'[â¢]+'), '•'),
+                                    style: Get.textTheme.titleSmall?.copyWith(
+                                      color: AppColors.white,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ))
+                        ],
                       ),
                     );
                   },

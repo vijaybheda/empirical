@@ -332,6 +332,10 @@ class QCDetailsShortFormScreen
                 ),
               );
             }).toList(),
+            icon: const Icon(
+              Icons.arrow_drop_down,
+              color: Colors.white,
+            ),
             decoration: InputDecoration(
               hintText: AppStrings.uom,
               hintStyle: Get.textTheme.titleLarge!.copyWith(
@@ -405,22 +409,31 @@ class QCDetailsShortFormScreen
               },
               decoration: InputDecoration(
                 hintText: AppStrings.qcQtyShipped,
-                errorText: hasValidShippedQty(controller) ? '' : null,
-                errorMaxLines: 1,
+                // errorText: hasValidShippedQty(controller) ? '' : null,
+                // errorMaxLines: 1,
                 hintStyle: Get.textTheme.titleLarge!.copyWith(
                   fontSize: 26.sp,
                   fontWeight: FontWeight.normal,
                   color:
                       hasValidShippedQty(controller) ? Colors.red : Colors.grey,
                 ),
-                enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      color: hasValidShippedQty(controller)
+                          ? Colors.red
+                          : Colors.grey),
                 ),
-                focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      color: hasValidShippedQty(controller)
+                          ? Colors.red
+                          : Colors.grey),
                 ),
-                border: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                border: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      color: hasValidShippedQty(controller)
+                          ? Colors.red
+                          : Colors.grey),
                 ),
                 disabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
@@ -429,8 +442,11 @@ class QCDetailsShortFormScreen
                   // borderRadius: BorderRadius.all(Radius.circular(5)),
                   borderSide: BorderSide(color: Colors.red),
                 ),
-                focusedErrorBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                focusedErrorBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      color: hasValidShippedQty(controller)
+                          ? Colors.red
+                          : Colors.grey),
                 ),
                 contentPadding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
@@ -580,6 +596,7 @@ class QCDetailsShortFormScreen
           ),
           TextField(
             controller: controller.lotNoController,
+            keyboardType: TextInputType.number,
             decoration: InputDecoration(
               hintText: AppStrings.lotnumber,
               hintStyle: Get.textTheme.titleLarge!.copyWith(

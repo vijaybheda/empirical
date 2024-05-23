@@ -766,6 +766,10 @@ class _SpecificationAnalyticalWidgetState
                         ),
                       );
                     }).toList(),
+                    icon: const Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.white,
+                    ),
                     onChanged: (value) {
                       comply = value!;
                       saveComply(comply);
