@@ -213,7 +213,7 @@ class PurchaseOrderDetailsController extends GetxController {
               await dao.updateInspectionComplete(
                   inspection.inspectionId!, true);
               await dao.updateItemSKUInspectionComplete(
-                  inspection.inspectionId!, "true");
+                  inspection.inspectionId!, true);
               Utils.setInspectionUploadStatus(
                   inspection.inspectionId!, Consts.INSPECTION_UPLOAD_READY);
 
@@ -393,7 +393,7 @@ class PurchaseOrderDetailsController extends GetxController {
                   inspection.inspectionId!, true);
 
               bool updateItemSKU = await dao.updateItemSKUInspectionComplete(
-                  inspection.inspectionId!, "true");
+                  inspection.inspectionId!, true);
               Utils.setInspectionUploadStatus(
                   inspection.inspectionId!, Consts.INSPECTION_UPLOAD_READY);
               update();
@@ -2790,7 +2790,7 @@ class PurchaseOrderDetailsController extends GetxController {
               await dao.updateInspectionComplete(
                   inspection.inspectionId!, true);
               await dao.updateItemSKUInspectionComplete(
-                  inspection.inspectionId!, "true");
+                  inspection.inspectionId!, true);
               Utils.setInspectionUploadStatus(
                   inspection.inspectionId!, Consts.INSPECTION_UPLOAD_READY);
 

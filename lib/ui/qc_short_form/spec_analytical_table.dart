@@ -106,7 +106,7 @@ class _SpecificationAnalyticalWidgetState
   final ApplicationDao dao = ApplicationDao();
   String spinner_value = 'Yes';
 
-  TextEditingController? editTextValue;
+  TextEditingController editTextValue = TextEditingController();
 
   bool hasErrors2 = false;
   late SpecificationAnalyticalRequest reqobj;
@@ -119,8 +119,6 @@ class _SpecificationAnalyticalWidgetState
       dbobj = widget.dbobj!.copyWith();
     }
     hasErrors = false;
-    // textEditingController = TextEditingController();
-    editTextValue = TextEditingController();
     comply = "Yes";
     spinner_value = comply;
     operatorList = ['Select', 'Yes', 'No', 'N/A'];
@@ -159,16 +157,15 @@ class _SpecificationAnalyticalWidgetState
     }
 
     if (widget.item.analyticalName?.contains("Quality Check") ?? false) {
-      editTextValue = TextEditingController();
+      // editTextValue ??= TextEditingController();
     }
-
-    editTextValue?.addListener(() {
+    /*editTextValue.addListener(() {
       String comply = "N/A";
       saveComply(comply);
-      if (editTextValue!.text.isEmpty) {
-        editTextValue!.text = "";
+      if (editTextValue.text.isEmpty) {
+        editTextValue.text = "";
       }
-      int userValue = int.tryParse(editTextValue!.text.trim()) ?? 0;
+      int userValue = int.tryParse(editTextValue.text.trim()) ?? 0;
       if (userValue >= (widget.item.specMin ?? 0) &&
           userValue <= (widget.item.specMax ?? 0)) {
         comply = "Yes";
@@ -178,7 +175,7 @@ class _SpecificationAnalyticalWidgetState
         saveComply(comply);
       }
 
-      if (editTextValue!.text.isEmpty) {
+      if (editTextValue.text.isEmpty) {
         comply = "N/A";
         saveComply(comply);
         hasErrors2 = true;
@@ -211,7 +208,7 @@ class _SpecificationAnalyticalWidgetState
       );
       widget.controller.listSpecAnalyticalsRequest[widget.index] = reqobj;
       saveComply(comply);
-    });
+    });*/
 
     if (widget.item.specTargetTextDefault == "Yes") {
       String textViewComply = "Yes";
@@ -258,7 +255,7 @@ class _SpecificationAnalyticalWidgetState
         reqobj = reqobj.copyWith(sampleNumValue: dbobj?.sampleNumValue);
         widget.controller.listSpecAnalyticalsRequest[widget.index] = reqobj;
         if (editTextValue != null && dbobj?.sampleNumValue != null) {
-          editTextValue!.text = (dbobj!.sampleNumValue!).toString();
+          editTextValue.text = (dbobj!.sampleNumValue!).toString();
         }
         if (dbobj?.comply != null) {
           comply = dbobj!.comply!;
@@ -282,7 +279,7 @@ class _SpecificationAnalyticalWidgetState
         );
         widget.controller.listSpecAnalyticalsRequest[widget.index] = reqobj;
         if (dbobj?.sampleNumValue != null) {
-          editTextValue!.text = dbobj!.sampleNumValue.toString();
+          editTextValue.text = dbobj!.sampleNumValue.toString();
         }
 
         for (int i = 0; i < operatorList.length; i++) {
@@ -301,7 +298,7 @@ class _SpecificationAnalyticalWidgetState
     }
 
     if (widget.item.specTypeofEntry == 1 || widget.item.specTypeofEntry == 3) {
-      String editfield = editTextValue!.text;
+      String editfield = editTextValue.text;
       if (editfield.isEmpty) {
         hasErrors2 = true;
       }
@@ -340,13 +337,13 @@ class _SpecificationAnalyticalWidgetState
           Expanded(
             flex: 3,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
               child: getContent(hasTextField, hasDropDown),
             ),
           ),
           _divider(),
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Text(
               getComply(),
               textAlign: TextAlign.center,
@@ -592,45 +589,6 @@ class _SpecificationAnalyticalWidgetState
     );
   }
 
-  void handleTextChanges(String value) {
-    int userValue = int.tryParse(value) ?? 0;
-    double specMin = widget.item.specMin ?? 0;
-    double specMax = widget.item.specMax ?? 0;
-
-    if (userValue >= specMin && userValue <= specMax) {
-      comply = "Yes";
-      saveComply(comply);
-    } else {
-      comply = "No";
-      saveComply(comply);
-    }
-
-    if (value.isEmpty) {
-      comply = "N/A";
-      saveComply(comply);
-      hasErrors = true;
-    } else {
-      hasErrors = false;
-    }
-  }
-
-  void handleComplianceChange(String value) {
-    comply = value;
-    saveComply(comply);
-    // Handle compliance changes
-    if (widget.item.specTypeofEntry == 3 && comply != "No") {
-      // int userValue = int.tryParse(textEditingController.text) ?? 0;
-
-      if (comply == "N/A") {
-        comply = "No";
-        saveComply(comply);
-      } else if (comply == "No") {
-        comply = "No";
-        saveComply(comply);
-      }
-    }
-  }
-
   void updateCompliance(String value) {
     String newValue = value;
     if (widget.item.analyticalName?.contains("Quality Check") ?? false) {
@@ -638,7 +596,7 @@ class _SpecificationAnalyticalWidgetState
         newValue = '';
       }
       if (newValue != value) {
-        editTextValue!.value = TextEditingValue(
+        editTextValue.value = TextEditingValue(
           text: newValue,
           selection: TextSelection.collapsed(offset: newValue.length),
         );
@@ -667,18 +625,18 @@ class _SpecificationAnalyticalWidgetState
   }
 
   bool validInput() {
-    double? value = double.tryParse(editTextValue?.text ?? '');
+    double? value = double.tryParse(editTextValue.text ?? '');
     if (value == null) {
       return false;
     }
-    return (editTextValue?.text ?? '').isNotEmpty;
+    return (editTextValue.text ?? '').isNotEmpty;
     // return value >= widget.item.specMin! && value <= widget.item.specMax!;
   }
 
   @override
   void dispose() {
     // textEditingController.dispose();
-    editTextValue?.dispose();
+    editTextValue.dispose();
     super.dispose();
   }
 
@@ -690,11 +648,14 @@ class _SpecificationAnalyticalWidgetState
           Expanded(
             child: TextField(
               controller: editTextValue,
-              // keyboardType: TextInputType.number,
+              keyboardType: TextInputType.number,
+              maxLength: 1,
               textAlign: TextAlign.center,
               decoration: InputDecoration(
                 // hintText: 'Enter Value',
                 errorText: validInput() ? null : '',
+                counter: const Offstage(),
+                counterText: '',
                 errorMaxLines: 1,
                 error: null,
                 errorStyle: Get.textTheme.bodyMedium?.copyWith(
@@ -810,9 +771,9 @@ class _SpecificationAnalyticalWidgetState
         }
 
         if (comply != "No") {
-          if (editTextValue?.text.isNotEmpty ?? false) {
+          if (editTextValue.text.isNotEmpty ?? false) {
             double userValue2 =
-                double.tryParse(editTextValue!.text.trim()) ?? 0.0;
+                double.tryParse(editTextValue.text.trim()) ?? 0.0;
             if (comply == "N/A") {
               if (userValue2 != 0.0 &&
                   userValue2 >= widget.item.specMin! &&

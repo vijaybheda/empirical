@@ -806,7 +806,7 @@ class QCDetailsShortFormScreenController extends GetxController {
                     }
 
                     await dao.updateItemSKUInspectionComplete(
-                        inspectionId!, "true");
+                        inspectionId!, true);
                     await dao.updateInspectionComplete(inspectionId!, true);
                     await dao.updateSelectedItemSKU(
                       inspectionId!,
@@ -911,7 +911,7 @@ class QCDetailsShortFormScreenController extends GetxController {
                     }
 
                     await dao.updateItemSKUInspectionComplete(
-                        inspectionId!, "true");
+                        inspectionId!, true);
                     await dao.updateInspectionComplete(inspectionId!, true);
                     await dao.updateSelectedItemSKU(
                       inspectionId!,
@@ -1009,7 +1009,7 @@ class QCDetailsShortFormScreenController extends GetxController {
             .copyTempTrailerTemperaturesDetailsToInspectionTrailerTemperatureDetailsTableByPartnerID(
                 inspectionId!, carrierID!, poNumber!);
 
-        await dao.updateItemSKUInspectionComplete(inspectionId!, "false");
+        await dao.updateItemSKUInspectionComplete(inspectionId!, false);
       }
       if (isComplete) {
         await dao.updateSelectedItemSKU(inspectionId!, partnerID!, itemSkuId!,
@@ -1049,7 +1049,7 @@ class QCDetailsShortFormScreenController extends GetxController {
                   await dao.updateInspectionComplete(
                       inspection.inspectionId!, true);
                   await dao.updateItemSKUInspectionComplete(
-                      inspection.inspectionId!, 'true');
+                      inspection.inspectionId!, true);
                   Utils.setInspectionUploadStatus(
                       inspection.inspectionId!, Consts.INSPECTION_UPLOAD_READY);
 
@@ -1092,7 +1092,7 @@ class QCDetailsShortFormScreenController extends GetxController {
       if ((isMyInspectionScreen ?? false)) {
         if (isComplete) {
           setComplete(true);
-          await dao.updateItemSKUInspectionComplete(inspectionId!, "true");
+          await dao.updateItemSKUInspectionComplete(inspectionId!, true);
         }
         passingData[Consts.IS_MY_INSPECTION_SCREEN] = true;
         passingData[Consts.CALLER_ACTIVITY] = 'QCDetailsShortForm';
@@ -1104,7 +1104,7 @@ class QCDetailsShortFormScreenController extends GetxController {
       } else {
         if (isComplete) {
           setComplete(true);
-          await dao.updateItemSKUInspectionComplete(inspectionId!, "true");
+          await dao.updateItemSKUInspectionComplete(inspectionId!, true);
           await callNextItemQCDetails();
         } else {
           passingData[Consts.CALLER_ACTIVITY] = 'GTINActivity';
@@ -1685,7 +1685,7 @@ class QCDetailsShortFormScreenController extends GetxController {
             await dao
                 .copyTempTrailerTemperaturesDetailsToInspectionTrailerTemperatureDetailsTableByPartnerID(
                     inspectionId!, carrierID!, poNumber!);
-            await dao.updateItemSKUInspectionComplete(inspectionId!, "false");
+            await dao.updateItemSKUInspectionComplete(inspectionId!, false);
             await dao.updateSelectedItemSKU(
               inspectionId!,
               partnerID!,
@@ -1727,7 +1727,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         await dao
             .copyTempTrailerTemperaturesDetailsToInspectionTrailerTemperatureDetailsTableByPartnerID(
                 inspectionId!, carrierID!, poNumber!);
-        await dao.updateItemSKUInspectionComplete(inspectionId!, "false");
+        await dao.updateItemSKUInspectionComplete(inspectionId!, false);
         await dao.updateSelectedItemSKU(
           inspectionId!,
           partnerID!,

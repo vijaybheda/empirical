@@ -9,7 +9,6 @@ import 'package:pverify/ui/defects/table_dialog.dart';
 import 'package:pverify/ui/inspection_photos/inspection_photos_screen.dart';
 import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
-import 'package:pverify/ui/qc_short_form/qc_details_short_form_screen.dart';
 import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -346,7 +345,7 @@ class SpecificationAttributesController extends GetxController {
                     }
 
                     await dao.updateItemSKUInspectionComplete(
-                        inspectionId!, "true");
+                        inspectionId!, true);
                     await dao.updateInspectionComplete(inspectionId!, true);
                     await dao.updateSelectedItemSKU(
                       inspectionId!,
@@ -451,7 +450,7 @@ class SpecificationAttributesController extends GetxController {
                     }
 
                     await dao.updateItemSKUInspectionComplete(
-                        inspectionId!, "true");
+                        inspectionId!, true);
                     await dao.updateInspectionComplete(inspectionId!, true);
                     await dao.updateSelectedItemSKU(
                       inspectionId!,
@@ -564,12 +563,13 @@ class SpecificationAttributesController extends GetxController {
     } else {
       Map<String, dynamic> navigationArgs = {};
 
-      String callerActivity = args["callerActivity"] ?? '';
+      String callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
 
       if (callerActivity == "NewPurchaseOrderDetailsActivity") {
-        navigationArgs["callerActivity"] = "NewPurchaseOrderDetailsActivity";
+        navigationArgs[Consts.CALLER_ACTIVITY] =
+            "NewPurchaseOrderDetailsActivity";
       } else {
-        navigationArgs["callerActivity"] = "PurchaseOrderDetailsActivity";
+        navigationArgs[Consts.CALLER_ACTIVITY] = "PurchaseOrderDetailsActivity";
       }
       final String tag = DateTime.now().millisecondsSinceEpoch.toString();
       Get.to(() => QCDetailsShortFormScreen(tag: tag), arguments: args);

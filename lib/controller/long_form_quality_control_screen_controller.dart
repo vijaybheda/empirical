@@ -43,7 +43,7 @@ class LongFormQualityControlScreenController extends GetxController {
   List<String> claimFieldList = <String>[
     "No Claim",
     "Partner Claim",
-    "Carrier Claimn",
+    "Carrier Claim",
   ].obs;
   RxString selectedClaimField = "No Claim".obs;
   RxString selectedClaimFieldLabel = "No Claim".obs;
@@ -385,7 +385,7 @@ class LongFormQualityControlScreenController extends GetxController {
           dateType: dateTypeDesc,
         );
       } else {
-        dao.updateQualityControl(
+        await dao.updateQualityControl(
           qcID: qcID!,
           inspectionId: inspectionId!,
           brandID: brandID,
@@ -916,7 +916,7 @@ class LongFormQualityControlScreenController extends GetxController {
     } */
   }
 
-  shortFormClick() async {
+  Future shortFormClick() async {
     if (isValidQuantityRejected.value) {
       await saveFieldsToDB();
       startQCShortFormActivity();
@@ -925,7 +925,7 @@ class LongFormQualityControlScreenController extends GetxController {
     }
   }
 
-  startQCShortFormActivity() {
+  void startQCShortFormActivity() {
     Map<String, dynamic> passingData = {
       Consts.SERVER_INSPECTION_ID: inspectionId,
       Consts.COMPLETED: completed,
@@ -961,7 +961,7 @@ class LongFormQualityControlScreenController extends GetxController {
         arguments: passingData);
   }
 
-  backButtonClick() async {
+  Future backButtonClick() async {
     await saveFieldsToDB();
     Get.back();
     Get.back();
