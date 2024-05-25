@@ -122,7 +122,8 @@ class HomeController extends GetxController {
   }
 
   Future<void> getInspectionListOnInit() async {
-    bool isOnline = await Utils.isOnline();
+    // bool isOnline = await Utils.isOnline();
+    bool isOnline = globalConfigController.hasStableInternet.value;
 
     if (isOnline) {
       itemsList = await getAllInspectionData();
@@ -185,7 +186,8 @@ class HomeController extends GetxController {
   // Clear out any downloaded inspection data
   Future<void> clearAnyDownloadedInspectionData() async {
     appStorage.downloadedInspection = null;
-    if (await Utils.isOnline() == false) {
+    bool isOnline = globalConfigController.hasStableInternet.value;
+    if (!isOnline) {
       itemsList = await getAllInspectionData();
       if (itemsList.isNotEmpty) {
         myInsp48HourList.assignAll(itemsList);
@@ -221,7 +223,7 @@ class HomeController extends GetxController {
     if (appStorage.myInsp48HourList != null) {
       List<MyInspection48HourItem> list = appStorage.myInsp48HourList!;
 
-      list.sort();
+      list.sort((a, b) => a.date!.compareTo(b.date!));
       return list;
     } else {
       log(" 🟠 create48HourInspectionsData is empty");

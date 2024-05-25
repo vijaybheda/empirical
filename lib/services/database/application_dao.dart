@@ -577,7 +577,7 @@ class ApplicationDao {
     );
 
     for (Map map in result) {
-      list.add(MyInspection48HourItem.fromMap(map as Map<String, dynamic>));
+      list.add(MyInspection48HourItem.fromJson(map as Map<String, dynamic>));
     }
 
     return list;
