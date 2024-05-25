@@ -58,6 +58,8 @@ class PurchaseOrderScreenController extends GetxController {
     assignInitialData();
   }
 
+  List<FinishedGoodsItemSKU> localItemSKUList = [];
+
   Future<void> assignInitialData() async {
     UserData? userData = appStorage.getUserData();
 
@@ -97,6 +99,8 @@ class PurchaseOrderScreenController extends GetxController {
     });
     if (partner.isSelected ?? false) {
       appStorage.selectedItemSKUList.add(partner);
+    } else {
+      appStorage.selectedItemSKUList.remove(partner);
     }
 
     debugPrint("${appStorage.selectedItemSKUList.length}");

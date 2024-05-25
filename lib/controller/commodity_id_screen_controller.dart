@@ -91,6 +91,8 @@ class CommodityIDScreenController extends GetxController {
 
       if (appStorage.mainCommodityList!.isEmpty) {
         print('Error loading Commodity List');
+        listAssigned.value = true;
+        update(['commodityList']);
         return;
       }
 
@@ -152,6 +154,8 @@ class CommodityIDScreenController extends GetxController {
       listAssigned.value = true;
       update(['commodityList']);
     }
+    listAssigned.value = true;
+    update(['commodityList']);
   }
 
   void searchAndAssignCommodity(String searchValue) {

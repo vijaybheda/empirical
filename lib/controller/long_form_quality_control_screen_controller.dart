@@ -128,6 +128,7 @@ class LongFormQualityControlScreenController extends GetxController {
       throw Exception('Arguments required!');
     }
 
+    serverInspectionID = args[Consts.SERVER_INSPECTION_ID] ?? -1;
     inspectionId = args[Consts.SERVER_INSPECTION_ID] ?? -1;
     partnerName = args[Consts.PARTNER_NAME] ?? '';
     partnerID = args[Consts.PARTNER_ID] ?? 0;
@@ -135,20 +136,31 @@ class LongFormQualityControlScreenController extends GetxController {
     carrierID = args[Consts.CARRIER_ID] ?? 0;
     commodityName = args[Consts.COMMODITY_NAME] ?? '';
     commodityID = args[Consts.COMMODITY_ID] ?? 0;
+    varietyName = args[Consts.VARIETY_NAME] ?? '';
+    varietySize = args[Consts.VARIETY_SIZE] ?? '';
+    varietyId = args[Consts.VARIETY_ID] ?? 0;
+    gradeId = args[Consts.GRADE_ID] ?? 0;
     completed = args[Consts.COMPLETED] ?? false;
-
     specificationNumber = args[Consts.SPECIFICATION_NUMBER] ?? '';
     specificationVersion = args[Consts.SPECIFICATION_VERSION] ?? '';
-
-    selectedSpecification = args[Consts.SELECTEDSPECIFICATION] ?? '';
+    selectedSpecification = args[Consts.SPECIFICATION_NAME] ?? '';
     specificationTypeName = args[Consts.SPECIFICATION_TYPE_NAME] ?? '';
-
-    poNumber = args[Consts.PO_NUMBER] ?? '';
-
     lotNo = args[Consts.LOT_NO] ?? '';
-    itemSKU = args[Consts.ITEM_SKU];
-    dateTypeDesc = args[Consts.DATETYPE] ?? '';
+    String packDateString = args[Consts.PACK_DATE] ?? '';
+    if (packDateString.isNotEmpty) {
+      packDate = DateTime.fromMillisecondsSinceEpoch(int.parse(packDateString));
+    }
+    gtin = args[Consts.GTIN] ?? '';
+    isMyInspectionScreen = args[Consts.IS_MY_INSPECTION_SCREEN] ?? false;
+    itemSKU = args[Consts.ITEM_SKU] ?? '';
+    itemSkuId = args[Consts.ITEM_SKU_ID] ?? 0;
+    itemSkuName = args[Consts.ITEM_SKU_NAME] ?? '';
+    lotSize = args[Consts.LOT_SIZE] ?? '';
+    itemUniqueId = args[Consts.ITEM_UNIQUE_ID] ?? '';
+    poNumber = args[Consts.PO_NUMBER] ?? '';
     callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
+    poLineNo = args[Consts.PO_LINE_NO] ?? 0;
+    dateTypeDesc = args[Consts.DATETYPE] ?? '';
 
     if (inspectionId != null) {
       loadFiledsFromDB(args);
@@ -482,13 +494,6 @@ class LongFormQualityControlScreenController extends GetxController {
     qualityControlItems = await dao.findQualityControlDetails(inspectionId!);
 
     if (qualityControlItems != null) {
-      setUOMSpinner();
-      setBrandSpinner();
-      setOriginSpinner();
-      setReasonSpinner();
-      setSpinnerClaimField();
-      setRpcSpinner();
-      setTempSpinner();
       QualityControlItem item = qualityControlItems!;
       log("Here is QualityControlItem ${item.toJson()}");
       qcID = qualityControlItems!.qcID;
@@ -557,6 +562,14 @@ class LongFormQualityControlScreenController extends GetxController {
       sensitechSerialNoController.text = qualityControlItems?.qcdOpen4 ?? '';
       updateQtyApproved();
     }
+
+    setUOMSpinner();
+    setBrandSpinner();
+    setOriginSpinner();
+    setReasonSpinner();
+    setSpinnerClaimField();
+    setRpcSpinner();
+    setTempSpinner();
   }
 
   // Method to set UOM spinner
@@ -662,18 +675,14 @@ class LongFormQualityControlScreenController extends GetxController {
     if (reasonListArray.isNotEmpty) {
       selectedReason = reasonList[0];
     }
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      update();
-    });
     selectedReason = reasonList.firstWhere(
       (reasonItem) => reasonItem.reasonID == qualityControlItems!.reasonID,
       orElse: () => ReasonItem(0, 'Select One'),
     );
-    update();
   }
 
   // Method to set CLAIM FIELD spinner
-  setSpinnerClaimField() {
+  void setSpinnerClaimField() {
     int selectedIndexClaimField =
         claimFieldList.indexOf(selectedClaimField.value);
 
@@ -691,13 +700,13 @@ class LongFormQualityControlScreenController extends GetxController {
   }
 
   // Method to set RPC spinner
-  setRpcSpinner() {
+  void setRpcSpinner() {
     int selectedIndexRpc = rpcList.indexOf(selectedRpc.value);
     selectedRpc.value = rpcList[selectedIndexRpc];
   }
 
   // Method to set TEMPERATURE spinner
-  setTempSpinner() {
+  void setTempSpinner() {
     int selectedIndexTemp =
         tempRecorderList.indexOf(selectedTempRecorder.value);
     selectedTempRecorder.value = tempRecorderList[selectedIndexTemp];
@@ -825,11 +834,11 @@ class LongFormQualityControlScreenController extends GetxController {
     }
   }
 
-  checkQuantityAlert() {
-    Utils.showErrorAlertDialog("Please enter a valid quantity");
+  void checkQuantityAlert() {
+    return Utils.showErrorAlertDialog("Please enter a valid quantity");
   }
 
-  specAttributOnClick(BuildContext context) {
+  Future<void> specAttributOnClick(BuildContext context) async {
     String? qtyShippedString = qtyShippedController.text;
     if (qtyShippedString.isNotEmpty) {
       int qtyShipped = int.tryParse(qtyShippedString) ?? 0;
@@ -838,9 +847,9 @@ class LongFormQualityControlScreenController extends GetxController {
           context,
           "",
           "Are you sure you want to enter $qtyShipped quantity",
-          onYesTap: () {
+          onYesTap: () async {
             if (isValidQuantityRejected.value) {
-              saveFieldsToDB();
+              await saveFieldsToDB();
               startSpecificationAttributesActivity();
             } else {
               Utils.showErrorAlertDialog("Please enter a valid quantity");
@@ -854,7 +863,7 @@ class LongFormQualityControlScreenController extends GetxController {
         );
       } else {
         if (isValidQuantityRejected.value) {
-          saveFieldsToDB();
+          await saveFieldsToDB();
           startSpecificationAttributesActivity();
         } else {
           Utils.showErrorAlertDialog("Please enter a valid quantity");
@@ -862,7 +871,7 @@ class LongFormQualityControlScreenController extends GetxController {
       }
     } else {
       if (isValidQuantityRejected.value) {
-        saveFieldsToDB();
+        await saveFieldsToDB();
         startSpecificationAttributesActivity();
       } else {
         Utils.showErrorAlertDialog("Please enter a valid quantity");
@@ -871,7 +880,8 @@ class LongFormQualityControlScreenController extends GetxController {
   }
 
   String get lotNoString => lotNoController.text.trim();
-  startSpecificationAttributesActivity() {
+
+  void startSpecificationAttributesActivity() {
     Map<String, dynamic> passingData = {
       Consts.SERVER_INSPECTION_ID: inspectionId,
       Consts.COMPLETED: completed,
@@ -957,7 +967,8 @@ class LongFormQualityControlScreenController extends GetxController {
     callerActivity == "NewPurchaseOrderDetailsActivity"
         ? "NewPurchaseOrderDetailsActivity"
         : "PurchaseOrderDetailsActivity";
-    Get.off(() => QCDetailsShortFormScreen(tag: uniqueTag),
+    passingData[Consts.CALLER_ACTIVITY] = callerActivity;
+    Get.to(() => QCDetailsShortFormScreen(tag: uniqueTag),
         arguments: passingData);
   }
 

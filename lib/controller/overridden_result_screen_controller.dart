@@ -104,7 +104,8 @@ class OverriddenResultScreenController extends GetxController {
     } else if (myInspectionResult == AppStrings.a_minus) {
       myInspectionResult = AppStrings.a_minus;
     } else if (myInspectionResult == "AW" ||
-        myInspectionResult.toLowerCase() == AppStrings.acceptCondition) {
+        myInspectionResult.toLowerCase() ==
+            AppStrings.acceptCondition.toLowerCase()) {
       myInspectionResult = AppStrings.acceptCondition;
     }
 
