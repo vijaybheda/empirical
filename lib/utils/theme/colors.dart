@@ -36,7 +36,6 @@ class AppColors {
   static Color textColor = const Color(0xffFFFFFF);
   static Color hintColor = const Color(0xffABABAB);
   static Color notificationOff = const Color.fromARGB(186, 255, 0, 0);
-
   static Color darkBlue = const Color(0xff09262D);
   static Color searchbar = const Color(0xFFE7E7E7);
 

@@ -480,10 +480,11 @@ class Home extends GetView<HomeController> {
                                 width: 2.0,
                               ))),
                       child: Text(
-                        "${myInspectionList.result}",
+                        myInspectionList.result ?? "",
                         textAlign: TextAlign.center,
                         style: Get.textTheme.titleLarge!.copyWith(
-                          color: AppColors.primary,
+                          color: controller
+                              .getResultTextColor(myInspectionList.result),
                           fontSize: 30.sp,
                           fontWeight: FontWeight.bold,
                         ),

@@ -13,6 +13,7 @@ import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/update_data_dialog.dart';
 import 'package:pverify/utils/images.dart';
+import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
 
 class HomeController extends GetxController {
@@ -241,5 +242,15 @@ class HomeController extends GetxController {
       myInsp48HourList.sort((a, b) => a.id!.compareTo(b.id!));
     }
     update(['inspectionsList']);
+  }
+
+  Color getResultTextColor(String? result) {
+    if (result == null) {
+      return Colors.transparent;
+    } else if (result == "RJ") {
+      return AppColors.notificationOff;
+    } else {
+      return AppColors.primary;
+    }
   }
 }
