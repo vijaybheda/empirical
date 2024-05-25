@@ -153,11 +153,11 @@ class SpecificationAttributesController extends GetxController {
     listSpecAnalyticals.value = _appStorage.specificationAnalyticalList ?? [];
     for (var specAnalytical in listSpecAnalyticals) {
       if (specAnalytical.specTargetTextDefault == "Y" ||
-          specAnalytical.specTargetTextDefault == "Yes") {
-        specAnalytical.specTargetTextDefault = "Yes";
+          specAnalytical.specTargetTextDefault == "Y") {
+        specAnalytical.specTargetTextDefault = "Y";
       } else if (specAnalytical.specTargetTextDefault == "N" ||
-          specAnalytical.specTargetTextDefault == "N0") {
-        specAnalytical.specTargetTextDefault = "No";
+          specAnalytical.specTargetTextDefault == "N") {
+        specAnalytical.specTargetTextDefault = "N";
       }
     }
 
@@ -276,10 +276,10 @@ class SpecificationAttributesController extends GetxController {
 
             for (SpecificationAnalyticalRequest item2
                 in listSpecAnalyticalsRequest) {
-              if ((item2.isPictureRequired ?? false) && item2.comply == 'No') {
-                resultComply = 'No';
+              if ((item2.isPictureRequired ?? false) && item2.comply == 'N') {
+                resultComply = 'N';
               } else {
-                resultComply = 'Yes';
+                resultComply = 'Y';
               }
               await dao.createSpecificationAttributes(
                 inspectionId!,
@@ -296,7 +296,7 @@ class SpecificationAttributesController extends GetxController {
             _appStorage.resumeFromSpecificationAttributes = true;
           });
         } else {
-          resultComply = 'Yes';
+          resultComply = 'Y';
           for (SpecificationAnalyticalRequest item2
               in listSpecAnalyticalsRequest) {
             /// item2.specTypeofEntry == 1
@@ -311,9 +311,8 @@ class SpecificationAttributesController extends GetxController {
               } else {
                 hasError2 = false;
 
-                if ((item2.isPictureRequired ?? false) &&
-                    item2.comply == "No") {
-                  resultComply = "No";
+                if ((item2.isPictureRequired ?? false) && item2.comply == "N") {
+                  resultComply = "N";
                 }
 
                 await dao.createSpecificationAttributes(
@@ -384,9 +383,8 @@ class SpecificationAttributesController extends GetxController {
                 break;
               } else {
                 hasError2 = false;
-                if ((item2.isPictureRequired ?? false) &&
-                    item2.comply == "No") {
-                  resultComply = "No";
+                if ((item2.isPictureRequired ?? false) && item2.comply == "N") {
+                  resultComply = "N";
                 }
 
                 await dao.createSpecificationAttributes(
@@ -418,9 +416,8 @@ class SpecificationAttributesController extends GetxController {
                 hasError2 = true;
               } else {
                 hasError2 = false;
-                if ((item2.isPictureRequired ?? false) &&
-                    item2.comply == "No") {
-                  resultComply = "No";
+                if ((item2.isPictureRequired ?? false) && item2.comply == "N") {
+                  resultComply = "N";
                 }
 
                 await dao.createSpecificationAttributes(
@@ -478,8 +475,8 @@ class SpecificationAttributesController extends GetxController {
 
             /// item2.specTypeofEntry ?
             else {
-              if ((item2.isPictureRequired ?? false) && item2.comply == 'No') {
-                resultComply = 'No';
+              if ((item2.isPictureRequired ?? false) && item2.comply == 'N') {
+                resultComply = 'N';
               }
               await dao.createSpecificationAttributes(
                 inspectionId!,
@@ -495,7 +492,7 @@ class SpecificationAttributesController extends GetxController {
             }
           }
 
-          if (resultComply != null && resultComply == "No") {
+          if (resultComply != null && resultComply == "N") {
             List<InspectionAttachment> picsFromDB = [];
             picsFromDB = await dao
                 .findInspectionAttachmentsByInspectionId(inspectionId!);

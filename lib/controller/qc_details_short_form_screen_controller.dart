@@ -441,9 +441,9 @@ class QCDetailsShortFormScreenController extends GetxController {
     listSpecAnalyticals.value = _appStorage.specificationAnalyticalList ?? [];
     for (var specAnalytical in listSpecAnalyticals) {
       if (specAnalytical.specTargetTextDefault == "Y") {
-        specAnalytical.specTargetTextDefault = "Yes";
+        specAnalytical.specTargetTextDefault = "Y";
       } else if (specAnalytical.specTargetTextDefault == "N") {
-        specAnalytical.specTargetTextDefault = "No";
+        specAnalytical.specTargetTextDefault = "N";
       }
     }
 
@@ -572,8 +572,8 @@ class QCDetailsShortFormScreenController extends GetxController {
         return false;
       }
     } else {
-      AppSnackBar.error(
-          message: '${AppStrings.errorEnterValidValue} for Shipped Quantity');
+      /*AppSnackBar.error(
+          message: '${AppStrings.errorEnterValidValue} for Shipped Quantity');*/
       return false;
     }
 
@@ -698,7 +698,7 @@ class QCDetailsShortFormScreenController extends GetxController {
       for (SpecificationAnalyticalRequest item in listSpecAnalyticalsRequest) {
         if (item.analyticalName != null && item.analyticalName!.length > 1) {
           if (item.analyticalName!.substring(0, 2) == "02") {
-            if (item.sampleNumValue == 0) {
+            if (item.sampleNumValue != null && item.sampleNumValue == 0) {
               blankAnalyticalNames.add(item.analyticalName!);
             }
           } else if (item.analyticalName!.substring(0, 2) == "01" ||
@@ -736,10 +736,10 @@ class QCDetailsShortFormScreenController extends GetxController {
 
             for (SpecificationAnalyticalRequest item2
                 in listSpecAnalyticalsRequest) {
-              if ((item2.isPictureRequired ?? false) && item2.comply == 'No') {
-                resultComply = 'No';
+              if ((item2.isPictureRequired ?? false) && item2.comply == 'N') {
+                resultComply = 'N';
               } else {
-                resultComply = 'Yes';
+                resultComply = 'Y';
               }
               await dao.createSpecificationAttributes(
                 inspectionId!,
@@ -756,7 +756,7 @@ class QCDetailsShortFormScreenController extends GetxController {
             _appStorage.resumeFromSpecificationAttributes = true;
           });
         } else {
-          resultComply = 'Yes';
+          resultComply = 'Y';
           for (SpecificationAnalyticalRequest item2
               in listSpecAnalyticalsRequest) {
             /// item2.specTypeofEntry == 1
@@ -771,9 +771,8 @@ class QCDetailsShortFormScreenController extends GetxController {
               } else {
                 hasErrors2 = false;
 
-                if ((item2.isPictureRequired ?? false) &&
-                    item2.comply == "No") {
-                  resultComply = "No";
+                if ((item2.isPictureRequired ?? false) && item2.comply == "N") {
+                  resultComply = "N";
                 }
 
                 await dao.createSpecificationAttributes(
@@ -844,9 +843,8 @@ class QCDetailsShortFormScreenController extends GetxController {
                 break;
               } else {
                 hasErrors2 = false;
-                if ((item2.isPictureRequired ?? false) &&
-                    item2.comply == "No") {
-                  resultComply = "No";
+                if ((item2.isPictureRequired ?? false) && item2.comply == "N") {
+                  resultComply = "N";
                 }
 
                 await dao.createSpecificationAttributes(
@@ -874,63 +872,70 @@ class QCDetailsShortFormScreenController extends GetxController {
                   hasErrors2 = false;
                 });
                 break;
-              } else if (item2.sampleNumValue == 0) {
-                hasErrors2 = true;
               } else {
-                hasErrors2 = false;
-                if ((item2.isPictureRequired ?? false) &&
-                    item2.comply == "No") {
-                  resultComply = "No";
+                if (item2.sampleNumValue == null) {
+                  hasErrors2 = true;
+                  break;
                 }
+                if (item2.sampleNumValue == 0) {
+                  hasErrors2 = true;
+                  break;
+                } else {
+                  hasErrors2 = false;
+                  if ((item2.isPictureRequired ?? false) &&
+                      item2.comply == "N") {
+                    resultComply = "N";
+                  }
 
-                await dao.createSpecificationAttributes(
-                  inspectionId!,
-                  item2.analyticalID!,
-                  item2.sampleTextValue!,
-                  item2.sampleNumValue!,
-                  item2.comply!,
-                  item2.comment!,
-                  item2.analyticalName!,
-                  item2.isPictureRequired!,
-                  item2.inspectionResult!,
-                );
+                  await dao.createSpecificationAttributes(
+                    inspectionId!,
+                    item2.analyticalID!,
+                    item2.sampleTextValue!,
+                    item2.sampleNumValue!,
+                    item2.comply!,
+                    item2.comment ?? '',
+                    item2.analyticalName!,
+                    item2.isPictureRequired!,
+                    item2.inspectionResult!,
+                  );
 
-                if (item2.description?.contains("Quality Check") ?? false) {
-                  await dao.updateInspectionRating(
-                      inspectionId!, item2.sampleNumValue!);
-                }
-
-                if (callerActivity == "NewPurchaseOrderDetailsActivity") {
                   if (item2.description?.contains("Quality Check") ?? false) {
-                    if (item2.sampleNumValue! > 0 &&
-                        item2.sampleNumValue! < item2.specMin!) {
-                      await dao.updateInspectionResult(inspectionId!, "RJ");
-                    } else if (item2.sampleNumValue! >= item2.specMin! &&
-                        item2.sampleNumValue! <= item2.specMax!) {
-                      await dao.updateInspectionResult(inspectionId!, "AC");
+                    await dao.updateInspectionRating(
+                        inspectionId!, item2.sampleNumValue!);
+                  }
+
+                  if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+                    if (item2.description?.contains("Quality Check") ?? false) {
+                      if (item2.sampleNumValue! > 0 &&
+                          item2.sampleNumValue! < item2.specMin!) {
+                        await dao.updateInspectionResult(inspectionId!, "RJ");
+                      } else if (item2.sampleNumValue! >= item2.specMin! &&
+                          item2.sampleNumValue! <= item2.specMax!) {
+                        await dao.updateInspectionResult(inspectionId!, "AC");
+                      }
+
+                      await dao.updateItemSKUInspectionComplete(
+                          inspectionId!, true);
+                      await dao.updateInspectionComplete(inspectionId!, true);
+                      await dao.updateSelectedItemSKU(
+                        inspectionId!,
+                        partnerID!,
+                        itemSkuId!,
+                        itemSKU!,
+                        itemUniqueId!,
+                        true,
+                        false,
+                      );
+                      Utils.setInspectionUploadStatus(
+                          inspectionId!, Consts.INSPECTION_UPLOAD_READY);
+
+                      await dao.createOrUpdateInspectionSpecification(
+                        inspectionId!,
+                        specificationNumber,
+                        specificationVersion,
+                        specificationName,
+                      );
                     }
-
-                    await dao.updateItemSKUInspectionComplete(
-                        inspectionId!, true);
-                    await dao.updateInspectionComplete(inspectionId!, true);
-                    await dao.updateSelectedItemSKU(
-                      inspectionId!,
-                      partnerID!,
-                      itemSkuId!,
-                      itemSKU!,
-                      itemUniqueId!,
-                      true,
-                      false,
-                    );
-                    Utils.setInspectionUploadStatus(
-                        inspectionId!, Consts.INSPECTION_UPLOAD_READY);
-
-                    await dao.createOrUpdateInspectionSpecification(
-                      inspectionId!,
-                      specificationNumber,
-                      specificationVersion,
-                      specificationName,
-                    );
                   }
                 }
               }
@@ -938,8 +943,8 @@ class QCDetailsShortFormScreenController extends GetxController {
 
             /// item2.specTypeofEntry ?
             else {
-              if ((item2.isPictureRequired ?? false) && item2.comply == 'No') {
-                resultComply = 'No';
+              if ((item2.isPictureRequired ?? false) && item2.comply == 'N') {
+                resultComply = 'N';
               }
               await dao.createSpecificationAttributes(
                 inspectionId!,
@@ -955,7 +960,7 @@ class QCDetailsShortFormScreenController extends GetxController {
             }
           }
 
-          if (resultComply != null && resultComply == "No") {
+          if (resultComply != null && resultComply == "N") {
             List<InspectionAttachment> picsFromDB = [];
             picsFromDB = await dao
                 .findInspectionAttachmentsByInspectionId(inspectionId!);
@@ -1032,7 +1037,7 @@ class QCDetailsShortFormScreenController extends GetxController {
                   await dao.findSpecAnalyticalObj(
                       inspection.inspectionId!, item.analyticalID!);
 
-              if (dbobj != null && dbobj.comply == "No") {
+              if (dbobj != null && dbobj.comply == "N") {
                 if (dbobj.inspectionResult != null &&
                     dbobj.inspectionResult == "No") {
                 } else {
@@ -1383,22 +1388,20 @@ class QCDetailsShortFormScreenController extends GetxController {
             Consts.DATETYPE: dateTypeDesc,
           };
 
+          final String tag = DateTime.now().millisecondsSinceEpoch.toString();
           if (callerActivity == "GTINActivity") {
             passingData[Consts.CALLER_ACTIVITY] = 'GTINActivity';
-            // TODO: Implement navigation to QualityControlScreen
-            Get.to(() => const LongFormQualityControlScreen(),
+            Get.to(() => LongFormQualityControlScreen(tag: tag),
                 arguments: passingData);
           } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
             passingData[Consts.CALLER_ACTIVITY] =
                 'NewPurchaseOrderDetailsActivity';
-            // TODO: Implement navigation to QualityControlScreen
-            Get.to(() => const LongFormQualityControlScreen(),
+            Get.to(() => LongFormQualityControlScreen(tag: tag),
                 arguments: passingData);
           } else {
             passingData[Consts.CALLER_ACTIVITY] =
                 'PurchaseOrderDetailsActivity';
-            // TODO: Implement navigation to QualityControlScreen
-            Get.to(() => const LongFormQualityControlScreen(),
+            Get.to(() => LongFormQualityControlScreen(tag: tag),
                 arguments: passingData);
           }
         }
@@ -1426,8 +1429,8 @@ class QCDetailsShortFormScreenController extends GetxController {
     } else {
       if (await saveFieldsToDB()) {
         if (!hasErrors2) {
-          await saveFieldsToDBSpecAttribute(true);
-          if (_appStorage.resumeFromSpecificationAttributes) {
+          bool hasSaved = await saveFieldsToDBSpecAttribute(true);
+          if (_appStorage.resumeFromSpecificationAttributes && hasSaved) {
             await callStartActivity(true);
           }
         } else {

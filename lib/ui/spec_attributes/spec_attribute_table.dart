@@ -97,7 +97,7 @@ class SpecificationAnalyticalWidget extends StatefulWidget {
 
 class _SpecificationAnalyticalWidgetState
     extends State<SpecificationAnalyticalWidget> {
-  String comply = 'Yes';
+  String comply = 'Y';
   // late TextEditingController textEditingController;
   late bool hasErrors;
   bool isPictureRequired = false;
@@ -120,24 +120,24 @@ class _SpecificationAnalyticalWidgetState
     hasErrors = false;
     // textEditingController = TextEditingController();
     editTextValue = TextEditingController();
-    comply = "Yes";
+    comply = "Y";
     spinner_value = comply;
     // saveComply(comply);
     operatorList = ['Select', 'Yes', 'No', 'N/A'];
 
-    if (widget.item.specTargetTextDefault == 'Yes') {
-      comply = 'Yes';
+    if (widget.item.specTargetTextDefault == 'Y') {
+      comply = 'Y';
       spinner_value = comply;
       // saveComply(comply);
-    } else if (widget.item.specTargetTextDefault == 'No') {
-      comply = 'No';
+    } else if (widget.item.specTargetTextDefault == 'N') {
+      comply = 'N';
       spinner_value = comply;
       // saveComply(comply);
     }
 
     if (dbobj != null) {
       reqobj = reqobj.copyWith(comply: dbobj?.comply);
-      comply = dbobj?.comply ?? 'Yes';
+      comply = dbobj?.comply ?? 'Y';
       spinner_value = comply;
       // saveComply(comply);
     } else {
@@ -149,12 +149,12 @@ class _SpecificationAnalyticalWidgetState
     widget.controller.listSpecAnalyticalsRequest[widget.index] = reqobj;
     spinner_value = operatorList.first;
 
-    if (widget.item.specTargetTextDefault == "Yes") {
-      comply = "Yes";
+    if (widget.item.specTargetTextDefault == "Y") {
+      comply = "Y";
       // saveComply(comply);
       spinner_value = comply;
-    } else if (widget.item.specTargetTextDefault == "No") {
-      comply = "Yes";
+    } else if (widget.item.specTargetTextDefault == "N") {
+      comply = "Y";
       // saveComply(comply);
       spinner_value = comply;
     }
@@ -177,10 +177,10 @@ class _SpecificationAnalyticalWidgetState
       int userValue = int.tryParse(editTextValue!.text.trim()) ?? 0;
       if (userValue >= (widget.item.specMin ?? 0) &&
           userValue <= (widget.item.specMax ?? 0)) {
-        comply = "Yes";
+        comply = "Y";
         saveComply(comply);
       } else {
-        comply = "No";
+        comply = "N";
         saveComply(comply);
       }
 
@@ -191,23 +191,23 @@ class _SpecificationAnalyticalWidgetState
       } else {
         hasErrors2 = false;
       }
-      if (widget.item.specTypeofEntry == 3 && comply != "No") {
+      if (widget.item.specTypeofEntry == 3 && comply != "N") {
         if (comply == "N/A") {
           if (spinner_value == "No") {
-            comply = "No";
+            comply = "N";
             saveComply(comply);
           } else if (spinner_value == "Yes") {
-            comply = "Yes";
+            comply = "Y";
             saveComply(comply);
           }
         } else if (spinner_value == "No") {
-          comply = "No";
+          comply = "N";
           saveComply(comply);
         }
       }
 
       if (widget.item.inspectionResult == "No") {
-        comply = "Yes";
+        comply = "Y";
         saveComply(comply);
       }
 
@@ -219,13 +219,13 @@ class _SpecificationAnalyticalWidgetState
       saveComply(comply);
     });
 
-    if (widget.item.specTargetTextDefault == "Yes") {
-      String textViewComply = "Yes";
+    if (widget.item.specTargetTextDefault == "Y") {
+      String textViewComply = "Y";
       // saveComply(comply);
       comply = textViewComply;
       spinner_value = comply;
-    } else if (widget.item.specTargetTextDefault == "No") {
-      String textViewComply = "Yes";
+    } else if (widget.item.specTargetTextDefault == "N") {
+      String textViewComply = "Y";
       // saveComply(comply);
       comply = textViewComply;
       spinner_value = comply;
@@ -253,7 +253,7 @@ class _SpecificationAnalyticalWidgetState
       String? brandedFlag =
           await dao.getBrandedFlagFromItemSku(widget.controller.itemSkuId!);
 
-      String textViewComply = "Yes";
+      String textViewComply = "Y";
       // saveComply(comply);
       comply = textViewComply;
       spinner_value = comply;
@@ -456,9 +456,9 @@ class _SpecificationAnalyticalWidgetState
     String _comply = comply;
     if (_comply == 'N/A') {
       return 'N/A';
-    } else if (_comply == 'Yes') {
+    } else if (_comply == 'Y') {
       return 'Y';
-    } else if (_comply == 'No') {
+    } else if (_comply == 'N') {
       return 'N';
     } else {
       return 'N/A';
@@ -622,10 +622,10 @@ class _SpecificationAnalyticalWidgetState
     double specMax = widget.item.specMax ?? 0;
 
     if (userValue >= specMin && userValue <= specMax) {
-      comply = "Yes";
+      comply = "Y";
       saveComply(comply);
     } else {
-      comply = "No";
+      comply = "N";
       saveComply(comply);
     }
 
@@ -642,14 +642,14 @@ class _SpecificationAnalyticalWidgetState
     comply = value;
     saveComply(comply);
     // Handle compliance changes
-    if (widget.item.specTypeofEntry == 3 && comply != "No") {
+    if (widget.item.specTypeofEntry == 3 && comply != "N") {
       // int userValue = int.tryParse(textEditingController.text) ?? 0;
 
       if (comply == "N/A") {
-        comply = "No";
+        comply = "N";
         saveComply(comply);
-      } else if (comply == "No") {
-        comply = "No";
+      } else if (comply == "N") {
+        comply = "N";
         saveComply(comply);
       }
     }
@@ -670,10 +670,10 @@ class _SpecificationAnalyticalWidgetState
     }
 
     if (validInput()) {
-      comply = "Yes";
+      comply = "Y";
       saveComply(comply);
     } else {
-      comply = "No";
+      comply = "N";
       saveComply(comply);
     }
 
@@ -795,9 +795,9 @@ class _SpecificationAnalyticalWidgetState
     if ((widget.item.analyticalName?.contains("Accept") ?? false) ||
         (widget.item.analyticalName?.contains("Protection") ?? false)) {
       if (userValue == "Yes") {
-        comply = "No";
+        comply = "N";
       } else if (userValue == "No") {
-        comply = "Yes";
+        comply = "Y";
       }
     } else if (widget.item.analyticalName?.contains("Branded") ?? false) {
       String brandedFlag =
@@ -805,19 +805,19 @@ class _SpecificationAnalyticalWidgetState
 
       if (widget.item.specTypeofEntry == 3) {
         if (brandedFlag == "1" && userValue == "No") {
-          comply = "No";
+          comply = "N";
         }
         if (brandedFlag == "0" && userValue == "Yes") {
-          comply = "No";
+          comply = "N";
         }
         if (brandedFlag == "1" && userValue == "Yes") {
-          comply = "Yes";
+          comply = "Y";
         }
         if (brandedFlag == "0" && userValue == "No") {
-          comply = "Yes";
+          comply = "Y";
         }
 
-        if (comply != "No") {
+        if (comply != "N") {
           if (editTextValue?.text.isNotEmpty ?? false) {
             double userValue2 =
                 double.tryParse(editTextValue!.text.trim()) ?? 0.0;
@@ -825,46 +825,46 @@ class _SpecificationAnalyticalWidgetState
               if (userValue2 != 0.0 &&
                   userValue2 >= widget.item.specMin! &&
                   userValue2 <= widget.item.specMax!) {
-                comply = "Yes";
+                comply = "Y";
               } else {
-                comply = "No";
+                comply = "N";
               }
             }
             if (userValue2 != 0.0 &&
                 (userValue2 < widget.item.specMin! ||
                     userValue2 > widget.item.specMax!)) {
-              comply = "No";
+              comply = "N";
             }
           }
         }
       } else {
         if (brandedFlag == "1" && userValue == "No") {
-          comply = "No";
+          comply = "N";
         } else if (brandedFlag == "0" && userValue == "Yes") {
-          comply = "No";
+          comply = "N";
         } else if (brandedFlag == "1" && userValue == "Yes") {
-          comply = "Yes";
+          comply = "Y";
         } else if (brandedFlag == "0" && userValue == "No") {
-          comply = "Yes";
+          comply = "Y";
         }
       }
     } else {
-      if (widget.item.specTargetTextDefault == "Yes" && userValue == "No") {
-        comply = "No";
-      } else if (widget.item.specTargetTextDefault == "No" &&
+      if (widget.item.specTargetTextDefault == "Y" && userValue == "No") {
+        comply = "N";
+      } else if (widget.item.specTargetTextDefault == "N" &&
           userValue == "Yes") {
-        comply = "No";
-      } else if (widget.item.specTargetTextDefault == "Yes" &&
+        comply = "N";
+      } else if (widget.item.specTargetTextDefault == "Y" &&
           userValue == "Yes") {
-        comply = "Yes";
-      } else if (widget.item.specTargetTextDefault == "No" &&
+        comply = "Y";
+      } else if (widget.item.specTargetTextDefault == "N" &&
           userValue == "No") {
-        comply = "Yes";
+        comply = "Y";
       }
     }
 
     if (widget.item.inspectionResult == "No") {
-      comply = "Yes";
+      comply = "Y";
     }
 
     reqobj = reqobj.copyWith(

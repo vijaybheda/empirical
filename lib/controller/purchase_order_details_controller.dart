@@ -340,7 +340,7 @@ class PurchaseOrderDetailsController extends GetxController {
                   SpecificationAnalyticalRequest? dbobj =
                       await dao.findSpecAnalyticalObj(
                           inspection.inspectionId!, item.analyticalID);
-                  if (dbobj != null && dbobj.comply == 'No') {
+                  if (dbobj != null && dbobj.comply == 'N') {
                     if (dbobj.inspectionResult != null &&
                         dbobj.inspectionResult == 'No') {
                       // Do nothing
@@ -2695,7 +2695,7 @@ class PurchaseOrderDetailsController extends GetxController {
                       dbobj = await dao.findSpecAnalyticalObj(
                           inspection.inspectionId!, item.analyticalID!);
 
-                      if (dbobj != null && dbobj.comply == "No") {
+                      if (dbobj != null && dbobj.comply == "N") {
                         if (dbobj.inspectionResult != null &&
                             dbobj.inspectionResult == "No") {
                         } else {
@@ -2731,7 +2731,7 @@ class PurchaseOrderDetailsController extends GetxController {
                       await dao.findSpecAnalyticalObj(
                           inspection.inspectionId!, item.analyticalID!);
 
-                  if (dbobj != null && dbobj.comply == "No") {
+                  if (dbobj != null && dbobj.comply == "N") {
                     if (dbobj.inspectionResult != null &&
                         dbobj.inspectionResult == "No") {
                     } else {
