@@ -1,13 +1,11 @@
 import 'dart:developer';
-import 'dart:ffi';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/my_inspection_48hour_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/cache_download_screen.dart';
+import 'package:pverify/ui/qc_short_form/qc_details_short_form_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
@@ -43,7 +41,7 @@ class HomeController extends GetxController {
 
   RxBool completeAllChecked = false.obs;
   RxMap<int, String> failedInspections = <int, String>{}.obs;
-  RxList<Long> uploadCheckedList = <Long>[].obs;
+  RxList<int> uploadCheckedList = <int>[].obs;
   final AppStorage appStorage = AppStorage.instance;
 
   RxList<MyInspection48HourItem> myInsp48HourList =
@@ -251,6 +249,49 @@ class HomeController extends GetxController {
       return AppColors.notificationOff;
     } else {
       return AppColors.primary;
+    }
+  }
+
+  void onItemTap(int position) {
+    MyInspection48HourItem selectedItem = myInsp48HourList[position];
+
+    Map<String, dynamic> passingData = {
+      Consts.SERVER_INSPECTION_ID: selectedItem.inspectionId,
+      Consts.PARTNER_NAME: selectedItem.partnerName,
+      Consts.PARTNER_ID: selectedItem.partnerId,
+      Consts.CARRIER_NAME: selectedItem.carrierName ?? "",
+      Consts.CARRIER_ID: selectedItem.carrierId,
+      Consts.COMMODITY_NAME: selectedItem.commodityName,
+      Consts.COMMODITY_ID: selectedItem.commodityId,
+      Consts.VARIETY_NAME: selectedItem.varietyName,
+      Consts.VARIETY_ID: selectedItem.varietyId,
+      'VARIETY_SIZE': '1',
+      // todo discuss this Completed with Nirali shah
+      // 'COMPLETED': selectedItem.isCompleted,
+      Consts.GRADE_ID: selectedItem.gradeId,
+      Consts.INSPECTION_RESULT: selectedItem.inspectionResult ?? "",
+      Consts.SPECIFICATION_NAME: selectedItem.specificationName,
+      Consts.SPECIFICATION_NUMBER: selectedItem.specificationNumber,
+      Consts.SPECIFICATION_VERSION: selectedItem.specificationVersion,
+      Consts.SPECIFICATION_TYPE_NAME: selectedItem.specificationTypeName,
+      Consts.LOT_NO: "123456",
+      Consts.PACK_DATE: selectedItem.packDate,
+      Consts.IS_MY_INSPECTION_SCREEN: true,
+      Consts.SAMPLE_SIZE_BY_COUNT: selectedItem.sampleSizeByCount,
+      Consts.ITEM_SKU: selectedItem.itemSKU,
+      Consts.ITEM_SKU_ID: selectedItem.itemSKUId,
+      Consts.PO_NUMBER: selectedItem.poNumber,
+      Consts.CTEType: selectedItem.cteType,
+      Consts.ITEM_SKU_NAME: selectedItem.itemSkuName,
+      Consts.CALLER_ACTIVITY: "TrendingReportActivity",
+    };
+
+    // Navigate to the details screen
+    if (selectedItem.cteType != null && selectedItem.cteType!.isNotEmpty) {
+      //todo add navigation for CTE flow.
+    } else {
+      final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+      Get.to(QCDetailsShortFormScreen(tag: tag), arguments: passingData);
     }
   }
 }

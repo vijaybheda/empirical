@@ -377,160 +377,200 @@ class Home extends GetView<HomeController> {
             physics: const ClampingScrollPhysics(),
             itemBuilder: (context, position) {
               var myInspectionList = controller.myInsp48HourList[position];
-              return IntrinsicHeight(
-                child: Row(
-                  children: [
-                    Container(
-                      alignment: Alignment.center,
-                      width: MediaQuery.of(context).size.width / 10.2,
-                      padding: EdgeInsets.symmetric(vertical: 15.h),
-                      decoration: BoxDecoration(
-                          color: position % 2 == 0
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.secondary,
-                          border: Border(
-                              right: BorderSide(
-                                color: AppColors.black,
-                                width: 2.0,
-                              ),
-                              left: BorderSide(
-                                color: AppColors.black,
-                                width: 2.0,
-                              ),
-                              bottom: BorderSide(
-                                color: AppColors.black,
-                                width: 2.0,
-                              ))),
-                      child: Text(
-                        "${myInspectionList.id}",
-                        textAlign: TextAlign.center,
-                        style: Get.textTheme.titleLarge!.copyWith(
-                          fontSize: 30.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      alignment: Alignment.center,
-                      width: MediaQuery.of(context).size.width / 7.25,
-                      padding: EdgeInsets.symmetric(vertical: 15.h),
-                      decoration: BoxDecoration(
-                          color: position % 2 == 0
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.secondary,
-                          border: Border(
-                              right: BorderSide(
-                                color: AppColors.black,
-                                width: 2.0,
-                              ),
-                              bottom: BorderSide(
-                                color: AppColors.black,
-                                width: 2.0,
-                              ))),
-                      child: Text(
-                        "${myInspectionList.poNumber}",
-                        textAlign: TextAlign.center,
-                        style: Get.textTheme.titleLarge!.copyWith(
-                          fontSize: 30.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      alignment: Alignment.center,
-                      width: MediaQuery.of(context).size.width / 6.9,
-                      padding: EdgeInsets.symmetric(vertical: 15.h),
-                      decoration: BoxDecoration(
-                          color: position % 2 == 0
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.secondary,
-                          border: Border(
-                              right: BorderSide(
-                                color: AppColors.black,
-                                width: 2.0,
-                              ),
-                              bottom: BorderSide(
-                                color: AppColors.black,
-                                width: 2.0,
-                              ))),
-                      child: Text(
-                        "${myInspectionList.itemSKU}",
-                        textAlign: TextAlign.center,
-                        style: Get.textTheme.titleLarge!.copyWith(
-                          fontSize: 30.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      alignment: Alignment.center,
-                      width: MediaQuery.of(context).size.width / 14.5,
-                      padding: EdgeInsets.symmetric(vertical: 15.h),
-                      decoration: BoxDecoration(
-                          color: position % 2 == 0
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.secondary,
-                          border: Border(
-                              right: BorderSide(
-                                color: AppColors.black,
-                                width: 2.0,
-                              ),
-                              bottom: BorderSide(
-                                color: AppColors.black,
-                                width: 2.0,
-                              ))),
-                      child: Text(
-                        myInspectionList.result ?? "",
-                        textAlign: TextAlign.center,
-                        style: Get.textTheme.titleLarge!.copyWith(
-                          color: controller
-                              .getResultTextColor(myInspectionList.result),
-                          fontSize: 30.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      alignment: Alignment.center,
-                      width: MediaQuery.of(context).size.width / 6.1,
-                      padding: EdgeInsets.symmetric(vertical: 15.h),
-                      decoration: BoxDecoration(
-                          color: position % 2 == 0
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.secondary,
-                          border: Border(
-                              right: BorderSide(
-                                color: AppColors.black,
-                                width: 2.0,
-                              ),
-                              bottom: BorderSide(
-                                color: AppColors.black,
-                                width: 2.0,
-                              ))),
-                      child: Text(
-                        "${myInspectionList.commodityName}",
-                        textAlign: TextAlign.center,
-                        style: Get.textTheme.titleLarge!.copyWith(
-                          fontSize: 30.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        if (controller.expandContents
-                            .contains(controller.itemsList[position].id)) {
-                          controller.expandContents
-                              .remove(controller.itemsList[position].id);
-                        } else {
-                          controller.expandContents
-                              .add(controller.itemsList[position].id);
-                        }
-                      },
-                      child: Container(
+              return GestureDetector(
+                onTap: () {
+                  controller.onItemTap(position);
+                },
+                child: IntrinsicHeight(
+                  child: Row(
+                    children: [
+                      Container(
                         alignment: Alignment.center,
-                        width: MediaQuery.of(context).size.width / 5.61,
+                        width: MediaQuery.of(context).size.width / 10.2,
                         padding: EdgeInsets.symmetric(vertical: 15.h),
+                        decoration: BoxDecoration(
+                            color: position % 2 == 0
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.secondary,
+                            border: Border(
+                                right: BorderSide(
+                                  color: AppColors.black,
+                                  width: 2.0,
+                                ),
+                                left: BorderSide(
+                                  color: AppColors.black,
+                                  width: 2.0,
+                                ),
+                                bottom: BorderSide(
+                                  color: AppColors.black,
+                                  width: 2.0,
+                                ))),
+                        child: Text(
+                          "${myInspectionList.id}",
+                          textAlign: TextAlign.center,
+                          style: Get.textTheme.titleLarge!.copyWith(
+                            fontSize: 30.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        alignment: Alignment.center,
+                        width: MediaQuery.of(context).size.width / 7.25,
+                        padding: EdgeInsets.symmetric(vertical: 15.h),
+                        decoration: BoxDecoration(
+                            color: position % 2 == 0
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.secondary,
+                            border: Border(
+                                right: BorderSide(
+                                  color: AppColors.black,
+                                  width: 2.0,
+                                ),
+                                bottom: BorderSide(
+                                  color: AppColors.black,
+                                  width: 2.0,
+                                ))),
+                        child: Text(
+                          "${myInspectionList.poNumber}",
+                          textAlign: TextAlign.center,
+                          style: Get.textTheme.titleLarge!.copyWith(
+                            fontSize: 30.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        alignment: Alignment.center,
+                        width: MediaQuery.of(context).size.width / 6.9,
+                        padding: EdgeInsets.symmetric(vertical: 15.h),
+                        decoration: BoxDecoration(
+                            color: position % 2 == 0
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.secondary,
+                            border: Border(
+                                right: BorderSide(
+                                  color: AppColors.black,
+                                  width: 2.0,
+                                ),
+                                bottom: BorderSide(
+                                  color: AppColors.black,
+                                  width: 2.0,
+                                ))),
+                        child: Text(
+                          "${myInspectionList.itemSKU}",
+                          textAlign: TextAlign.center,
+                          style: Get.textTheme.titleLarge!.copyWith(
+                            fontSize: 30.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        alignment: Alignment.center,
+                        width: MediaQuery.of(context).size.width / 14.5,
+                        padding: EdgeInsets.symmetric(vertical: 15.h),
+                        decoration: BoxDecoration(
+                            color: position % 2 == 0
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.secondary,
+                            border: Border(
+                                right: BorderSide(
+                                  color: AppColors.black,
+                                  width: 2.0,
+                                ),
+                                bottom: BorderSide(
+                                  color: AppColors.black,
+                                  width: 2.0,
+                                ))),
+                        child: Text(
+                          myInspectionList.result ?? "",
+                          textAlign: TextAlign.center,
+                          style: Get.textTheme.titleLarge!.copyWith(
+                            color: controller
+                                .getResultTextColor(myInspectionList.result),
+                            fontSize: 30.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        alignment: Alignment.center,
+                        width: MediaQuery.of(context).size.width / 6.1,
+                        padding: EdgeInsets.symmetric(vertical: 15.h),
+                        decoration: BoxDecoration(
+                            color: position % 2 == 0
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.secondary,
+                            border: Border(
+                                right: BorderSide(
+                                  color: AppColors.black,
+                                  width: 2.0,
+                                ),
+                                bottom: BorderSide(
+                                  color: AppColors.black,
+                                  width: 2.0,
+                                ))),
+                        child: Text(
+                          "${myInspectionList.commodityName}",
+                          textAlign: TextAlign.center,
+                          style: Get.textTheme.titleLarge!.copyWith(
+                            fontSize: 30.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          if (controller.expandContents
+                              .contains(controller.itemsList[position].id)) {
+                            controller.expandContents
+                                .remove(controller.itemsList[position].id);
+                          } else {
+                            controller.expandContents
+                                .add(controller.itemsList[position].id);
+                          }
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: MediaQuery.of(context).size.width / 5.61,
+                          padding: EdgeInsets.symmetric(vertical: 15.h),
+                          decoration: BoxDecoration(
+                            color: position % 2 == 0
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.secondary,
+                            border: Border(
+                              right: BorderSide(
+                                color: AppColors.black,
+                                width: 2.0,
+                              ),
+                              bottom: BorderSide(
+                                color: AppColors.black,
+                                width: 2.0,
+                              ),
+                            ),
+                          ),
+                          child: Obx(
+                            () => Text(
+                              controller.itemsList[position].partnerName ?? '',
+                              textAlign: TextAlign.center,
+                              overflow: controller.expandContents.contains(
+                                      controller.itemsList[position].id)
+                                  ? TextOverflow.visible
+                                  : TextOverflow.ellipsis,
+                              style: Get.textTheme.titleLarge!.copyWith(
+                                fontSize: 30.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        alignment: Alignment.center,
+                        width: MediaQuery.of(context).size.width / 6.1,
+                        padding: EdgeInsets.symmetric(
+                            vertical: 15.h, horizontal: 15.w),
                         decoration: BoxDecoration(
                           color: position % 2 == 0
                               ? Theme.of(context).colorScheme.primary
@@ -546,86 +586,52 @@ class Home extends GetView<HomeController> {
                             ),
                           ),
                         ),
-                        child: Obx(
-                          () => Text(
-                            controller.itemsList[position].partnerName ?? '',
-                            textAlign: TextAlign.center,
-                            overflow: controller.expandContents
-                                    .contains(controller.itemsList[position].id)
-                                ? TextOverflow.visible
-                                : TextOverflow.ellipsis,
-                            style: Get.textTheme.titleLarge!.copyWith(
-                              fontSize: 30.sp,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      alignment: Alignment.center,
-                      width: MediaQuery.of(context).size.width / 6.1,
-                      padding: EdgeInsets.symmetric(
-                          vertical: 15.h, horizontal: 15.w),
-                      decoration: BoxDecoration(
-                        color: position % 2 == 0
-                            ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context).colorScheme.secondary,
-                        border: Border(
-                          right: BorderSide(
-                            color: AppColors.black,
-                            width: 2.0,
-                          ),
-                          bottom: BorderSide(
-                            color: AppColors.black,
-                            width: 2.0,
-                          ),
-                        ),
-                      ),
-                      child: myInspectionList.uploadStatus == 1
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Done",
-                                  textAlign: TextAlign.center,
-                                  style: Get.textTheme.titleLarge!.copyWith(
-                                    color: AppColors.primary,
-                                    fontSize: 30.sp,
-                                    fontWeight: FontWeight.bold,
+                        child: myInspectionList.uploadStatus == 1
+                            ? Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Done",
+                                    textAlign: TextAlign.center,
+                                    style: Get.textTheme.titleLarge!.copyWith(
+                                      color: AppColors.primary,
+                                      fontSize: 30.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    controller.selectInspectionForDownload(
-                                        myInspectionList.id!, false);
-                                  },
-                                  child: Obx(() => Image.asset(
-                                        controller.selectedIDsInspection
-                                                .contains(myInspectionList.id)
-                                            ? AppImages.ic_SelectedCheckbox
-                                            : AppImages.ic_unSelectCheckbox,
-                                        width: 60.w,
-                                        height: 60.h,
-                                        color: AppColors.white,
-                                      )),
-                                ),
-                              ],
-                            )
-                          : Row(
-                              children: [
-                                Text(
-                                  "WIP",
-                                  style: Get.textTheme.titleLarge!.copyWith(
-                                    color: AppColors.primary,
-                                    fontSize: 30.sp,
-                                    fontWeight: FontWeight.bold,
+                                  InkWell(
+                                    onTap: () {
+                                      controller.selectInspectionForDownload(
+                                          myInspectionList.id!, false);
+                                    },
+                                    child: Obx(() => Image.asset(
+                                          controller.selectedIDsInspection
+                                                  .contains(myInspectionList.id)
+                                              ? AppImages.ic_SelectedCheckbox
+                                              : AppImages.ic_unSelectCheckbox,
+                                          width: 60.w,
+                                          height: 60.h,
+                                          color: AppColors.white,
+                                        )),
                                   ),
-                                ),
-                              ],
-                            ),
-                    ),
-                  ],
+                                ],
+                              )
+                            : Row(
+                                children: [
+                                  Text(
+                                    "WIP",
+                                    style: Get.textTheme.titleLarge!.copyWith(
+                                      color: AppColors.primary,
+                                      fontSize: 30.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

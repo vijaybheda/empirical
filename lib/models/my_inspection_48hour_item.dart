@@ -27,6 +27,11 @@ class MyInspection48HourItem {
   String? result;
   String? partnerName;
   int? uploadStatus;
+  int? partnerId;
+  String? carrierName;
+  String? varietyName;
+  String? varietyId;
+  String? inspectionResult;
 
   MyInspection48HourItem({
     this.id,
@@ -54,6 +59,11 @@ class MyInspection48HourItem {
     this.result,
     this.partnerName,
     this.uploadStatus,
+    this.partnerId,
+    this.carrierName,
+    this.varietyName,
+    this.varietyId,
+    this.inspectionResult,
   });
 
   // fromJson method
@@ -84,6 +94,9 @@ class MyInspection48HourItem {
       result: json[InspectionColumn.RESULT],
       partnerName: json[InspectionColumn.PARTNER_NAME],
       uploadStatus: json[InspectionColumn.UPLOAD_STATUS],
+      partnerId: json[InspectionColumn.PARTNER_ID],
+      varietyName: json[InspectionColumn.VARIETY_NAME],
+      varietyId: json[InspectionColumn.VARIETY_ID],
     );
   }
 }
