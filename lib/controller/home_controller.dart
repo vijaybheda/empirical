@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_final_fields, unused_field, non_constant_identifier_names, unnecessary_this, unrelated_type_equality_checks
-
 import 'dart:developer';
 import 'dart:ffi';
 
@@ -28,59 +26,14 @@ class HomeController extends GetxController {
     AppImages.img_banner,
   ];
 
-  List<Map<String, String>> listOfInspection = [
-    {
-      "ID": "1",
-      "PO": "ee",
-      "Item": "6443101",
-      "Res": "AC",
-      "GR": "Asparagus",
-      "Supplier": "A A Organicfsdfsfdsfsd",
-      "Status": "Done"
-    },
-    {
-      "ID": "2",
-      "PO": "ee",
-      "Item": "6443102",
-      "Res": "AC",
-      "GR": "Asparagus",
-      "Supplier": "A A Organicfsdfsfdsfsd",
-      "Status": "Done"
-    },
-    {
-      "ID": "3",
-      "PO": "ee",
-      "Item": "6443108",
-      "Res": "AC",
-      "GR": "Asparagus",
-      "Supplier": "A A Organic",
-      "Status": "Done"
-    },
-    {
-      "ID": "4",
-      "PO": "ee",
-      "Item": "6443104",
-      "Res": "AC",
-      "GR": "Asparagus",
-      "Supplier": "A A Organic",
-      "Status": "Done"
-    },
-    {
-      "ID": "5",
-      "PO": "ee",
-      "Item": "6443103",
-      "Res": "AC",
-      "GR": "Asparagus",
-      "Supplier": "A A Organic",
-      "Status": "Done"
-    },
-  ].obs;
   final ApplicationDao dao = ApplicationDao();
   List<MyInspection48HourItem> itemsList = <MyInspection48HourItem>[].obs;
   var bannersCurrentPage = 0.obs;
-  List selectedIDsInspection = [].obs;
+  List<MyInspection48HourItem> selectedIDsInspection =
+      <MyInspection48HourItem>[].obs;
+
   List expandContents = [].obs;
-  var sortType = ''.obs;
+  RxString sortType = ''.obs;
 
   var progressLayoutVisible = false.obs;
   var isInspectionFailed = false.obs;
@@ -258,33 +211,34 @@ class HomeController extends GetxController {
     }
   }
 
-  selectInspectionForDownload(String id, bool isSelectAll) {
+  void selectInspectionForDownload(int id, bool isSelectAll) {
     if (isSelectAll) {
-      if (selectedIDsInspection.length != listOfInspection.length) {
+      List<MyInspection48HourItem> selectedItems =
+          itemsList.where((item) => item.uploadStatus == 1).toList();
+      if (selectedItems.length != selectedIDsInspection.length) {
         selectedIDsInspection.clear();
-        List list1 = listOfInspection.map((array) => array['ID']).toList();
-        selectedIDsInspection.addAll(list1);
+        selectedIDsInspection.addAll(selectedItems);
       } else {
         selectedIDsInspection.clear();
       }
     } else {
-      if (selectedIDsInspection.contains(id)) {
-        selectedIDsInspection.remove(id);
+      MyInspection48HourItem selectedItem =
+          itemsList.firstWhere((item) => item.id == id);
+      if (selectedIDsInspection.contains(selectedItem)) {
+        selectedIDsInspection.remove(selectedItem);
       } else {
-        selectedIDsInspection.add(id);
+        selectedIDsInspection.add(selectedItem);
       }
     }
   }
 
-  sortArray_Item() {
-    if (sortType == 'asc') {
+  void sortArrayItem() {
+    if (sortType.value == 'asc') {
       sortType.value = 'dsc';
-      listOfInspection
-          .sort((b, a) => a['Item'].toString().compareTo(b['Item'].toString()));
+      myInsp48HourList.sort((a, b) => b.id!.compareTo(a.id!));
     } else {
       sortType.value = 'asc';
-      listOfInspection
-          .sort((a, b) => a['Item'].toString().compareTo(b['Item'].toString()));
+      myInsp48HourList.sort((a, b) => a.id!.compareTo(b.id!));
     }
     update(['inspectionsList']);
   }

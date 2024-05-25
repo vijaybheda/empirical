@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -151,7 +149,7 @@ class Home extends GetView<HomeController> {
                                 InkWell(
                                   onTap: () {
                                     controller.selectInspectionForDownload(
-                                        'id', true);
+                                        0, true);
                                   },
                                   child: Container(
                                     color: AppColors.primary,
@@ -159,8 +157,7 @@ class Home extends GetView<HomeController> {
                                     child: Obx(() => Image.asset(
                                           controller.selectedIDsInspection
                                                       .length ==
-                                                  controller
-                                                      .listOfInspection.length
+                                                  controller.itemsList.length
                                               ? AppImages.ic_SelectedCheckbox
                                               : AppImages.ic_unSelectCheckbox,
                                           width: 60.w,
@@ -171,7 +168,7 @@ class Home extends GetView<HomeController> {
                                 )
                               ],
                             ),
-                          ),
+                          )
                         ],
                       ),
                     ),
@@ -217,15 +214,16 @@ class Home extends GetView<HomeController> {
                       ),
                       InkWell(
                         onTap: () {
-                          controller.sortArray_Item();
+                          controller.sortArrayItem();
                         },
                         child: Container(
                           width: MediaQuery.of(context).size.width / 6.8,
                           padding: EdgeInsets.symmetric(vertical: 15.h),
                           decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.secondary,
-                              border: Border.all(
-                                  color: AppColors.black, width: 2.0)),
+                            color: Theme.of(context).colorScheme.secondary,
+                            border:
+                                Border.all(color: AppColors.black, width: 2.0),
+                          ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -237,19 +235,17 @@ class Home extends GetView<HomeController> {
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              const SizedBox(
-                                width: 3,
-                              ),
-                              Obx(() => Image.asset(
-                                    controller.sortType == ''
-                                        ? AppImages.ic_sortNone
-                                        : controller.sortType == 'asc'
-                                            ? AppImages.ic_sortUp
-                                            : AppImages.ic_sortDown,
-                                    width: 40.w,
-                                    height: 40.h,
-                                    color: AppColors.white,
-                                  ))
+                              const SizedBox(width: 3),
+                              Obx(() {
+                                return Image.asset(
+                                  controller.sortType.value == 'asc'
+                                      ? AppImages.ic_sortUp
+                                      : AppImages.ic_sortDown,
+                                  width: 40.w,
+                                  height: 40.h,
+                                  color: AppColors.white,
+                                );
+                              }),
                             ],
                           ),
                         ),
@@ -380,8 +376,7 @@ class Home extends GetView<HomeController> {
             itemCount: controller.myInsp48HourList.length,
             physics: const ClampingScrollPhysics(),
             itemBuilder: (context, position) {
-              debugPrint(
-                  "****************${controller.myInsp48HourList[position].inspectionId}");
+              var myInspectionList = controller.myInsp48HourList[position];
               return IntrinsicHeight(
                 child: Row(
                   children: [
@@ -407,7 +402,7 @@ class Home extends GetView<HomeController> {
                                 width: 2.0,
                               ))),
                       child: Text(
-                        "${controller.myInsp48HourList[position].carrierId}",
+                        "${myInspectionList.id}",
                         textAlign: TextAlign.center,
                         style: Get.textTheme.titleLarge!.copyWith(
                           fontSize: 30.sp,
@@ -433,7 +428,7 @@ class Home extends GetView<HomeController> {
                                 width: 2.0,
                               ))),
                       child: Text(
-                        controller.listOfInspection[position]['PO'] ?? '',
+                        "${myInspectionList.poNumber}",
                         textAlign: TextAlign.center,
                         style: Get.textTheme.titleLarge!.copyWith(
                           fontSize: 30.sp,
@@ -459,7 +454,7 @@ class Home extends GetView<HomeController> {
                                 width: 2.0,
                               ))),
                       child: Text(
-                        controller.listOfInspection[position]['Item'] ?? '',
+                        "${myInspectionList.itemSKU}",
                         textAlign: TextAlign.center,
                         style: Get.textTheme.titleLarge!.copyWith(
                           fontSize: 30.sp,
@@ -485,7 +480,7 @@ class Home extends GetView<HomeController> {
                                 width: 2.0,
                               ))),
                       child: Text(
-                        controller.listOfInspection[position]['Res'] ?? '',
+                        "${myInspectionList.result}",
                         textAlign: TextAlign.center,
                         style: Get.textTheme.titleLarge!.copyWith(
                           color: AppColors.primary,
@@ -512,7 +507,7 @@ class Home extends GetView<HomeController> {
                                 width: 2.0,
                               ))),
                       child: Text(
-                        controller.listOfInspection[position]['GR'] ?? '',
+                        "${myInspectionList.commodityName}",
                         textAlign: TextAlign.center,
                         style: Get.textTheme.titleLarge!.copyWith(
                           fontSize: 30.sp,
@@ -522,16 +517,13 @@ class Home extends GetView<HomeController> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        if (controller.expandContents.contains(
-                            controller.listOfInspection[position]['ID'] ??
-                                '')) {
-                          controller.expandContents.remove(
-                              controller.listOfInspection[position]['ID'] ??
-                                  '');
+                        if (controller.expandContents
+                            .contains(controller.itemsList[position].id)) {
+                          controller.expandContents
+                              .remove(controller.itemsList[position].id);
                         } else {
-                          controller.expandContents.add(
-                              controller.listOfInspection[position]['ID'] ??
-                                  '');
+                          controller.expandContents
+                              .add(controller.itemsList[position].id);
                         }
                       },
                       child: Container(
@@ -539,27 +531,26 @@ class Home extends GetView<HomeController> {
                         width: MediaQuery.of(context).size.width / 5.61,
                         padding: EdgeInsets.symmetric(vertical: 15.h),
                         decoration: BoxDecoration(
-                            color: position % 2 == 0
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context).colorScheme.secondary,
-                            border: Border(
-                                right: BorderSide(
-                                  color: AppColors.black,
-                                  width: 2.0,
-                                ),
-                                bottom: BorderSide(
-                                  color: AppColors.black,
-                                  width: 2.0,
-                                ))),
+                          color: position % 2 == 0
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.secondary,
+                          border: Border(
+                            right: BorderSide(
+                              color: AppColors.black,
+                              width: 2.0,
+                            ),
+                            bottom: BorderSide(
+                              color: AppColors.black,
+                              width: 2.0,
+                            ),
+                          ),
+                        ),
                         child: Obx(
                           () => Text(
-                            controller.listOfInspection[position]['Supplier'] ??
-                                '',
+                            controller.itemsList[position].partnerName ?? '',
                             textAlign: TextAlign.center,
-                            overflow: controller.expandContents.contains(
-                                    controller.listOfInspection[position]
-                                            ['ID'] ??
-                                        '')
+                            overflow: controller.expandContents
+                                    .contains(controller.itemsList[position].id)
                                 ? TextOverflow.visible
                                 : TextOverflow.ellipsis,
                             style: Get.textTheme.titleLarge!.copyWith(
@@ -576,53 +567,63 @@ class Home extends GetView<HomeController> {
                       padding: EdgeInsets.symmetric(
                           vertical: 15.h, horizontal: 15.w),
                       decoration: BoxDecoration(
-                          color: position % 2 == 0
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.secondary,
-                          border: Border(
-                              right: BorderSide(
-                                color: AppColors.black,
-                                width: 2.0,
-                              ),
-                              bottom: BorderSide(
-                                color: AppColors.black,
-                                width: 2.0,
-                              ))),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            controller.listOfInspection[position]['Status'] ??
-                                '',
-                            textAlign: TextAlign.center,
-                            style: Get.textTheme.titleLarge!.copyWith(
-                              color: AppColors.primary,
-                              fontSize: 30.sp,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        color: position % 2 == 0
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.secondary,
+                        border: Border(
+                          right: BorderSide(
+                            color: AppColors.black,
+                            width: 2.0,
                           ),
-                          InkWell(
-                            onTap: () {
-                              controller.selectInspectionForDownload(
-                                  controller.listOfInspection[position]['ID'] ??
-                                      '',
-                                  false);
-                            },
-                            child: Obx(() => Image.asset(
-                                  controller.selectedIDsInspection.contains(
-                                          controller.listOfInspection[position]
-                                                  ['ID'] ??
-                                              '')
-                                      ? AppImages.ic_SelectedCheckbox
-                                      : AppImages.ic_unSelectCheckbox,
-                                  width: 60.w,
-                                  height: 60.h,
-                                  color: AppColors.white,
-                                )),
-                          )
-                        ],
+                          bottom: BorderSide(
+                            color: AppColors.black,
+                            width: 2.0,
+                          ),
+                        ),
                       ),
-                    )
+                      child: myInspectionList.uploadStatus == 1
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Done",
+                                  textAlign: TextAlign.center,
+                                  style: Get.textTheme.titleLarge!.copyWith(
+                                    color: AppColors.primary,
+                                    fontSize: 30.sp,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    controller.selectInspectionForDownload(
+                                        myInspectionList.id!, false);
+                                  },
+                                  child: Obx(() => Image.asset(
+                                        controller.selectedIDsInspection
+                                                .contains(myInspectionList.id)
+                                            ? AppImages.ic_SelectedCheckbox
+                                            : AppImages.ic_unSelectCheckbox,
+                                        width: 60.w,
+                                        height: 60.h,
+                                        color: AppColors.white,
+                                      )),
+                                ),
+                              ],
+                            )
+                          : Row(
+                              children: [
+                                Text(
+                                  "WIP",
+                                  style: Get.textTheme.titleLarge!.copyWith(
+                                    color: AppColors.primary,
+                                    fontSize: 30.sp,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ),
                   ],
                 ),
               );
