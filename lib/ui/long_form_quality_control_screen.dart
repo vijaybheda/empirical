@@ -15,54 +15,62 @@ import 'package:pverify/utils/utils.dart';
 
 class LongFormQualityControlScreen
     extends GetWidget<LongFormQualityControlScreenController> {
-  const LongFormQualityControlScreen({super.key});
+  final String tag;
+  const LongFormQualityControlScreen({super.key, required this.tag});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<LongFormQualityControlScreenController>(
       init: LongFormQualityControlScreenController(),
+      tag: tag,
       builder: (controller) {
-        return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.background,
-          appBar: AppBar(
-            toolbarHeight: 150.h,
-            leading: const Offstage(),
-            leadingWidth: 0,
-            centerTitle: false,
-            backgroundColor: Theme.of(context).primaryColor,
-            title: HeaderContentView(
-              title: AppStrings.itemQualityControlDetails,
-            ),
-          ),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              _partnerNameWidget(controller),
-              _commodityInfoWidget(controller),
-              _bodyLongForm(controller, context),
-              _specAttributeAndShortFormButtons(
-                context,
-                controller: controller,
-                onShortFormClick: () {
-                  if (controller.isValidQuantityRejected.value) {
-                    controller.shortFormClick();
-                  } else {
-                    controller.checkQuantityAlert();
-                  }
-                },
-                onSpecAttribueClick: () {
-                  controller.specAttributOnClick(context);
-                  log("onSpecAttribueClick");
-                },
+        return WillPopScope(
+          onWillPop: () async {
+            await controller.backButtonClick();
+            return Future.value(false);
+          },
+          child: Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.background,
+            appBar: AppBar(
+              toolbarHeight: 150.h,
+              leading: const Offstage(),
+              leadingWidth: 0,
+              centerTitle: false,
+              backgroundColor: Theme.of(context).primaryColor,
+              title: HeaderContentView(
+                title: AppStrings.itemQualityControlDetails,
               ),
-              FooterContentView(
-                onBackTap: () async {
-                  controller.backButtonClick();
-                },
-              )
-            ],
+            ),
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                _partnerNameWidget(controller),
+                _commodityInfoWidget(controller),
+                _bodyLongForm(controller, context),
+                _specAttributeAndShortFormButtons(
+                  context,
+                  controller: controller,
+                  onShortFormClick: () {
+                    if (controller.isValidQuantityRejected.value) {
+                      controller.shortFormClick();
+                    } else {
+                      controller.checkQuantityAlert();
+                    }
+                  },
+                  onSpecAttribueClick: () {
+                    controller.specAttributOnClick(context);
+                    log("onSpecAttribueClick");
+                  },
+                ),
+                FooterContentView(
+                  onBackTap: () async {
+                    controller.backButtonClick();
+                  },
+                )
+              ],
+            ),
           ),
         );
       },
@@ -159,6 +167,7 @@ class LongFormQualityControlScreen
                     controller: controller,
                     labelText: AppStrings.lotnumber,
                     textEditingController: controller.lotNoController,
+                    keyboardType: TextInputType.text,
                   ),
                   SizedBox(width: 74.w),
                   _commonQualityControllTextField(
@@ -292,6 +301,7 @@ class LongFormQualityControlScreen
                     controller: controller,
                     labelText: AppStrings.comments,
                     textEditingController: controller.commentsController,
+                    keyboardType: TextInputType.text,
                   ),
                 ],
               ),
@@ -741,6 +751,9 @@ class LongFormQualityControlScreen
               contentPadding:
                   const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
             ),
+            onTap: () async {
+              await selectWorkDate(context, controller);
+            },
           ),
           Divider(
             color: AppColors.lightGrey,
@@ -791,7 +804,7 @@ class LongFormQualityControlScreen
               fontSize: 24.sp,
             ),
             controller: controller.packDateController,
-            readOnly: false,
+            readOnly: true,
             autofocus: false,
             focusNode: controller.packDateFocusNode,
             decoration: InputDecoration(
@@ -817,6 +830,9 @@ class LongFormQualityControlScreen
               contentPadding:
                   const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
             ),
+            onTap: () async {
+              await selectPackDate(context, controller);
+            },
           ),
           Divider(
             color: AppColors.lightGrey,
@@ -839,7 +855,9 @@ class LongFormQualityControlScreen
         controller.packDate = selectedDate;
         controller.update();
       },
-      firstDate: controller.packDate,
+      firstDate: DateTime(
+        2000,
+      ),
       lastDate: DateTime(
         2100,
       ),
@@ -858,7 +876,9 @@ class LongFormQualityControlScreen
         controller.workDate = selectedDate;
         controller.update();
       },
-      firstDate: controller.workDate,
+      firstDate: DateTime(
+        2000,
+      ),
       lastDate: DateTime(
         2100,
       ),

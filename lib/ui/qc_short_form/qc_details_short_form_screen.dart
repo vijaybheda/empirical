@@ -550,6 +550,9 @@ class QCDetailsShortFormScreen
               contentPadding:
                   const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
             ),
+            onTap: () async {
+              await selectPackDate(context, controller);
+            },
           ),
           Divider(
             color: AppColors.lightGrey,
@@ -596,7 +599,7 @@ class QCDetailsShortFormScreen
           ),
           TextField(
             controller: controller.lotNoController,
-            keyboardType: TextInputType.number,
+            keyboardType: TextInputType.text,
             decoration: InputDecoration(
               hintText: AppStrings.lotnumber,
               hintStyle: Get.textTheme.titleLarge!.copyWith(
@@ -757,12 +760,20 @@ class QCDetailsShortFormScreen
     BuildContext context,
     QCDetailsShortFormScreenController controller,
   ) async {
-    await controller.selectDate(context,
-        onDateSelected: (DateTime selectedDate) {
-      controller.packDateController.text = Utils.formatDate(selectedDate);
-      controller.packDate = selectedDate;
-      controller.update();
-    }, firstDate: controller.packDate, lastDate: DateTime(2100));
+    await controller.selectDate(
+      context,
+      onDateSelected: (DateTime selectedDate) {
+        controller.packDateController.text = Utils.formatDate(selectedDate);
+        controller.packDate = selectedDate;
+        controller.update();
+      },
+      firstDate: DateTime(
+        2000,
+      ),
+      lastDate: DateTime(
+        2100,
+      ),
+    );
   }
 
   GestureDetector gtinSuffix(QCDetailsShortFormScreenController controller) {
