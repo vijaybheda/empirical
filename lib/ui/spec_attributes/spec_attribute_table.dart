@@ -206,7 +206,8 @@ class _SpecificationAnalyticalWidgetState
         }
       }
 
-      if (widget.item.inspectionResult == "No") {
+      if (widget.item.inspectionResult == "No" ||
+          widget.item.inspectionResult == "N") {
         comply = "Y";
         saveComply(comply);
       }
@@ -863,7 +864,8 @@ class _SpecificationAnalyticalWidgetState
       }
     }
 
-    if (widget.item.inspectionResult == "No") {
+    if (widget.item.inspectionResult == "No" ||
+        widget.item.inspectionResult == "N") {
       comply = "Y";
     }
 

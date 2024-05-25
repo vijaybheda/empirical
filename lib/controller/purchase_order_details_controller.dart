@@ -342,7 +342,8 @@ class PurchaseOrderDetailsController extends GetxController {
                           inspection.inspectionId!, item.analyticalID);
                   if (dbobj != null && dbobj.comply == 'N') {
                     if (dbobj.inspectionResult != null &&
-                        dbobj.inspectionResult == 'No') {
+                        (dbobj.inspectionResult == 'No' ||
+                            dbobj.inspectionResult == 'N')) {
                       // Do nothing
                     } else {
                       result = "RJ";
@@ -2697,7 +2698,8 @@ class PurchaseOrderDetailsController extends GetxController {
 
                       if (dbobj != null && dbobj.comply == "N") {
                         if (dbobj.inspectionResult != null &&
-                            dbobj.inspectionResult == "No") {
+                            (dbobj.inspectionResult == "No" ||
+                                dbobj.inspectionResult == "N")) {
                         } else {
                           List<String> exceptions = [
                             "Manager Approval",
@@ -2733,7 +2735,8 @@ class PurchaseOrderDetailsController extends GetxController {
 
                   if (dbobj != null && dbobj.comply == "N") {
                     if (dbobj.inspectionResult != null &&
-                        dbobj.inspectionResult == "No") {
+                        (dbobj.inspectionResult == "No" ||
+                            dbobj.inspectionResult == "N")) {
                     } else {
                       if (rejectReason.isNotEmpty) {
                         rejectReason += ", ";

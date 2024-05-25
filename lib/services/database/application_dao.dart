@@ -3547,9 +3547,9 @@ class ApplicationDao {
     try {
       await db.transaction((txn) async {
         Map<String, dynamic> values = {
-          SelectedItemSkuListColumn.COMPLETE: isComplete ? 'true' : 'false',
+          SelectedItemSkuListColumn.COMPLETE: isComplete ? '1' : '0',
           SelectedItemSkuListColumn.PARTIAL_COMPLETE:
-              partialComplete ? 'true' : 'false',
+              partialComplete ? '1' : '0',
           SelectedItemSkuListColumn.INSPECTION_ID: inspectionId,
           SelectedItemSkuListColumn.PARTNER_ID: partnerID,
         };
@@ -3647,9 +3647,9 @@ class ApplicationDao {
       String query = "SELECT * FROM ${DBTables.SELECTED_ITEM_SKU_LIST}";
       List<Map> result = await db.rawQuery(query);
       for (Map<dynamic, dynamic> item in result) {
-        bool isComplete = item[SelectedItemSkuListColumn.COMPLETE] == 'true';
+        bool isComplete = item[SelectedItemSkuListColumn.COMPLETE] == '1';
         bool isPartialComplete =
-            item[SelectedItemSkuListColumn.PARTIAL_COMPLETE] == 'true';
+            item[SelectedItemSkuListColumn.PARTIAL_COMPLETE] == '1';
         list.add(FinishedGoodsItemSKU(
           id: item[SelectedItemSkuListColumn.SKU_ID],
           sku: item[SelectedItemSkuListColumn.SKU_CODE],
@@ -3708,8 +3708,8 @@ class ApplicationDao {
         SelectedItemSkuListColumn.COMMODITY_NAME: commodityName,
         SelectedItemSkuListColumn.COMMODITY_ID: commodityId,
         SelectedItemSkuListColumn.DESCRIPTION: description,
-        SelectedItemSkuListColumn.COMPLETE: 'false',
-        SelectedItemSkuListColumn.PARTIAL_COMPLETE: 'false',
+        SelectedItemSkuListColumn.COMPLETE: '0',
+        SelectedItemSkuListColumn.PARTIAL_COMPLETE: '0',
         SelectedItemSkuListColumn.PARTNER_ID: partnerID,
         SelectedItemSkuListColumn.PACK_DATE: packDate,
         SelectedItemSkuListColumn.GTIN: GTIN,

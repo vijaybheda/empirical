@@ -248,13 +248,9 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                 : const SizedBox(),
             SizedBox(width: 10.w),
             GestureDetector(
-              onTap: () {
-                // TODO: Navigate to camera screen
-                /*controller.navigateToCameraScreen(
-                  position: position,
-                  rowIndex: defectItemIndex,
-                  dataName: inspectionDefect.id ?? '',
-                );*/
+              onTap: () async {
+                await controller.navigateToCameraScreen(
+                    rowIndex: defectItemIndex);
               },
               child: Icon(
                 Icons.photo_camera,

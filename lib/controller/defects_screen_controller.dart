@@ -1436,10 +1436,10 @@ class DefectsScreenController extends GetxController {
   }
 
   Future<void> navigateToCameraScreen({
-    required int position,
     required int rowIndex,
-    required String dataName,
   }) async {
+    String dataName = 'Set #${rowIndex + 1}';
+
     Map<String, dynamic> passingData = {};
     passingData.putIfAbsent(Consts.PARTNER_NAME, () => partnerName);
     passingData.putIfAbsent(Consts.PARTNER_NAME, () => partnerName);
@@ -1458,7 +1458,7 @@ class DefectsScreenController extends GetxController {
     }
 
     currentAttachPhotosDataName = dataName;
-    currentAttachPhotosPosition = position;
+    currentAttachPhotosPosition = rowIndex;
     var result =
         await Get.to(() => const InspectionPhotos(), arguments: passingData);
     if (result != null) {

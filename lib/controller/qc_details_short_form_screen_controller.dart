@@ -1039,7 +1039,8 @@ class QCDetailsShortFormScreenController extends GetxController {
 
               if (dbobj != null && dbobj.comply == "N") {
                 if (dbobj.inspectionResult != null &&
-                    dbobj.inspectionResult == "No") {
+                    (dbobj.inspectionResult == "No" ||
+                        dbobj.inspectionResult == "N")) {
                 } else {
                   // TODO: check null for dbobj.analyticalName
                   result = "RJ";
@@ -1443,7 +1444,10 @@ class QCDetailsShortFormScreenController extends GetxController {
   Future<void> onInspectionWorksheetClick() async {
     if (await saveFieldsToDB()) {
       if (!hasErrors2) {
-        await saveFieldsToDBSpecAttribute(false);
+        bool saveSpecAtt = await saveFieldsToDBSpecAttribute(false);
+        if (!saveSpecAtt) {
+          return;
+        }
       }
     }
     if (_appStorage.resumeFromSpecificationAttributes) {

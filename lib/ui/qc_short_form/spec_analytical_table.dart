@@ -98,13 +98,12 @@ class SpecificationAnalyticalWidget extends StatefulWidget {
 
 class _SpecificationAnalyticalWidgetState
     extends State<SpecificationAnalyticalWidget> {
-  String comply = 'Y';
-  // late TextEditingController textEditingController;
+  String comply = '';
   late bool hasErrors;
   bool isPictureRequired = false;
   List<String> operatorList = [];
   final ApplicationDao dao = ApplicationDao();
-  String spinner_value = 'Yes';
+  String spinner_value = 'Select';
 
   TextEditingController editTextValue = TextEditingController();
 
@@ -119,8 +118,6 @@ class _SpecificationAnalyticalWidgetState
       dbobj = widget.dbobj!.copyWith();
     }
     hasErrors = false;
-    comply = "Y";
-    spinner_value = comply;
     operatorList = ['Select', 'Yes', 'No', 'N/A'];
 
     unawaited(() async {
@@ -349,9 +346,9 @@ class _SpecificationAnalyticalWidgetState
     String _comply = comply;
     if (_comply == 'N/A') {
       return 'N/A';
-    } else if (_comply == 'Y') {
+    } else if (_comply == 'Y' || _comply == 'Yes') {
       return 'Y';
-    } else if (_comply == 'N') {
+    } else if (_comply == 'N' || _comply == 'No') {
       return 'N';
     } else {
       return 'N/A';
@@ -549,7 +546,8 @@ class _SpecificationAnalyticalWidgetState
       }
     }
 
-    if (widget.item.inspectionResult == "No") {
+    if (widget.item.inspectionResult == "No" ||
+        widget.item.inspectionResult == "N") {
       comply = "Y";
     }
 
@@ -751,7 +749,8 @@ class _SpecificationAnalyticalWidgetState
         }
       }
 
-      if (widget.item.inspectionResult == "No") {
+      if (widget.item.inspectionResult == "No" ||
+          widget.item.inspectionResult == "N") {
         comply = "Y";
       }
 
@@ -765,7 +764,7 @@ class _SpecificationAnalyticalWidgetState
 
     if (widget.item.specTypeofEntry == 2) {
       // String comply = "N/A";
-      String comply = "Y";
+      comply = "Y";
       String userValue = spinner_value;
 
       if ((widget.item.analyticalName?.contains("Accept") ?? false) ||
@@ -803,11 +802,11 @@ class _SpecificationAnalyticalWidgetState
         }
       }
 
-      if (widget.item.inspectionResult == "No") {
+      if (widget.item.inspectionResult == "No" ||
+          widget.item.inspectionResult == "N") {
         comply = "Y";
       }
 
-      this.comply = comply;
       reqobj = reqobj.copyWith(
         sampleTextValue: userValue,
         comply: comply,

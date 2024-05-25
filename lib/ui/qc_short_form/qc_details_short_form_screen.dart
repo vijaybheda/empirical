@@ -279,6 +279,10 @@ class QCDetailsShortFormScreen
           fontWeight: FontWeight.w600,
         ),
         onClickAction: () async {
+          if (controller.specificationTypeName != "Finished Goods Produce" &&
+              controller.specificationTypeName != "Raw Produce") {
+            return null;
+          }
           await controller.onInspectionWorksheetClick();
         });
   }
