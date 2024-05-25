@@ -24,6 +24,9 @@ class MyInspection48HourItem {
   int? toLocationId;
   String? cteType;
   String? itemSkuName;
+  String? result;
+  String? partnerName;
+  int? uploadStatus;
 
   MyInspection48HourItem({
     this.id,
@@ -48,6 +51,9 @@ class MyInspection48HourItem {
     this.toLocationId,
     this.cteType,
     this.itemSkuName,
+    this.result,
+    this.partnerName,
+    this.uploadStatus,
   });
 
   // fromJson method
@@ -75,6 +81,9 @@ class MyInspection48HourItem {
       toLocationId: json[InspectionColumn.TO_LOCATION_ID],
       cteType: json[InspectionColumn.CTE_TYPE],
       itemSkuName: json[InspectionColumn.ITEM_SKU_NAME],
+      result: json[InspectionColumn.RESULT],
+      partnerName: json[InspectionColumn.PARTNER_NAME],
+      uploadStatus: json[InspectionColumn.UPLOAD_STATUS],
     );
   }
 }
