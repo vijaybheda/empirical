@@ -670,11 +670,11 @@ class _SpecificationAnalyticalWidgetState
                       );
                     }).toList(),
                     onChanged: (value) {
-                      comply = value!;
-                      saveComply(comply);
-                      spinner_value = comply;
-                      setState(() {});
-                      onDropdownChanged(value, hasChanged: true);
+                      if (value != null) {
+                        spinner_value = value;
+                        setState(() {});
+                        onDropdownChanged(value, hasChanged: true);
+                      }
                     },
                     dropdownColor: AppColors.grey,
                     alignment: Alignment.centerRight,
