@@ -71,6 +71,15 @@ class Utils {
     return fromDateTimeToUTCDateTime(dateFormat, timeFormat).toIso8601String();
   }
 
+  static Future<bool> isOnline() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult.contains(ConnectivityResult.mobile) ||
+        connectivityResult.contains(ConnectivityResult.wifi)) {
+      return true;
+    }
+    return false;
+  }
+
   /*static Future<XFile?> compressImage(File file,
       {int quality = 80, int minWidth = 1000, int minHeight = 1000}) async {
     final filePath = file.absolute.path;

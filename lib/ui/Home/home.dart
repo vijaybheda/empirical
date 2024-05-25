@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -30,8 +32,9 @@ class Home extends GetView<HomeController> {
               title: HeaderContentView(title: AppStrings.home),
             ),
             body: Container(
-                color: Theme.of(context).colorScheme.background,
-                child: contentView(context, controller)),
+              color: Theme.of(context).colorScheme.background,
+              child: contentView(context, controller),
+            ),
           );
         });
   }
@@ -42,7 +45,7 @@ class Home extends GetView<HomeController> {
         Expanded(
           child: Padding(
             padding: EdgeInsets.all(35.h),
-            child: Container(
+            child: SizedBox(
               width: ResponsiveHelper.getDeviceWidth(context),
               child: Column(
                 children: [
@@ -100,7 +103,8 @@ class Home extends GetView<HomeController> {
                                       width: 2.0,
                                     ))),
                             child: Padding(
-                              padding: EdgeInsets.only(left: 25, right: 25),
+                              padding:
+                                  const EdgeInsets.only(left: 25, right: 25),
                               child: Container(
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
@@ -151,7 +155,7 @@ class Home extends GetView<HomeController> {
                                   },
                                   child: Container(
                                     color: AppColors.primary,
-                                    padding: EdgeInsets.all(5),
+                                    padding: const EdgeInsets.all(5),
                                     child: Obx(() => Image.asset(
                                           controller.selectedIDsInspection
                                                       .length ==
@@ -233,7 +237,7 @@ class Home extends GetView<HomeController> {
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 3,
                               ),
                               Obx(() => Image.asset(
@@ -373,9 +377,11 @@ class Home extends GetView<HomeController> {
         tag: tag,
         builder: (controller) {
           return ListView.builder(
-            itemCount: controller.listOfInspection.length,
-            physics: ClampingScrollPhysics(),
+            itemCount: controller.myInsp48HourList.length,
+            physics: const ClampingScrollPhysics(),
             itemBuilder: (context, position) {
+              debugPrint(
+                  "****************${controller.myInsp48HourList[position].inspectionId}");
               return IntrinsicHeight(
                 child: Row(
                   children: [
@@ -401,7 +407,7 @@ class Home extends GetView<HomeController> {
                                 width: 2.0,
                               ))),
                       child: Text(
-                        controller.listOfInspection[position]['ID'] ?? '',
+                        "${controller.myInsp48HourList[position].carrierId}",
                         textAlign: TextAlign.center,
                         style: Get.textTheme.titleLarge!.copyWith(
                           fontSize: 30.sp,
@@ -650,7 +656,7 @@ class Home extends GetView<HomeController> {
             },
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         Row(
@@ -668,7 +674,7 @@ class Home extends GetView<HomeController> {
         Obx(() => Container(
               width: 25.w,
               height: 25.h,
-              margin: EdgeInsets.symmetric(horizontal: 5),
+              margin: const EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: controller.bannersCurrentPage == i
