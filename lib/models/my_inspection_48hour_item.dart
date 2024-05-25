@@ -74,6 +74,7 @@ class MyInspection48HourItem {
       inspectionId: json[InspectionColumn.INSPECTION_SERVER_ID],
       commodityId: json[InspectionColumn.COMMODITY_ID],
       carrierId: json[InspectionColumn.CARRIER_ID],
+      date: json[InspectionColumn.PACK_DATE] ?? "",
       completed: json[InspectionColumn.COMPLETED_TIME],
       status: json[InspectionColumn.STATUS],
       commodityName: json[InspectionColumn.COMMODITY_NAME],

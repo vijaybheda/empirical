@@ -73,7 +73,7 @@ class HomeController extends GetxController {
     // clearAnyDownloadedInspectionData();
   }
 
-  Future<void> getInspectionListOnInit() async {
+  /* Future<void> getInspectionListOnInit() async {
     // bool isOnline = await Utils.isOnline();
     bool isOnline = globalConfigController.hasStableInternet.value;
 
@@ -83,6 +83,25 @@ class HomeController extends GetxController {
         appStorage.myInsp48HourList!.assignAll(itemsList);
         myInsp48HourList.assignAll(itemsList);
         log("$itemsList");
+        update(['inspectionsList']);
+      }
+    } else {
+      itemsList = await getAllInspectionData();
+      if (itemsList.isNotEmpty) {
+        myInsp48HourList.assignAll(itemsList);
+      }
+    }
+    appStorage.selectedItemSKUList.clear();
+  } */
+
+  Future<void> getInspectionListOnInit() async {
+    bool isOnline = globalConfigController.hasStableInternet.value;
+
+    if (isOnline) {
+      itemsList = await getAllInspectionData();
+      if (itemsList.isNotEmpty) {
+        appStorage.myInsp48HourList ??= itemsList;
+        myInsp48HourList.assignAll(itemsList);
         update(['inspectionsList']);
       }
     } else {
@@ -274,7 +293,7 @@ class HomeController extends GetxController {
       Consts.SPECIFICATION_NUMBER: selectedItem.specificationNumber,
       Consts.SPECIFICATION_VERSION: selectedItem.specificationVersion,
       Consts.SPECIFICATION_TYPE_NAME: selectedItem.specificationTypeName,
-      Consts.LOT_NO: "123456",
+      Consts.LOT_NO: selectedItem.lotNo,
       Consts.PACK_DATE: selectedItem.packDate,
       Consts.IS_MY_INSPECTION_SCREEN: true,
       Consts.SAMPLE_SIZE_BY_COUNT: selectedItem.sampleSizeByCount,
