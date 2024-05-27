@@ -405,44 +405,6 @@ class Utils {
     );
   }
 
-  /*static void showInfoAlertDialog(String message,
-      {Widget? additionalButton, Function? onOk}) {
-    // Helly redesign this dialog based on client requirement, change text style and color
-    Get.defaultDialog(
-      title: "Info",
-      content: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          alignment: WrapAlignment.center,
-          runAlignment: WrapAlignment.center,
-          children: [
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16),
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Get.back();
-            if (onOk != null) {
-              onOk();
-            }
-          },
-          child: Text(
-            'Cancel',
-            style: TextStyle(color: AppColors.primary),
-          ),
-        ),
-        additionalButton ?? Container(),
-      ],
-    );
-  }
-*/
   static void showErrorAlertDialog(String message,
       {Widget? additionalButton, Function? onOk}) {
     // Helly redesign this dialog based on client requirement, change text style and color
@@ -479,65 +441,6 @@ class Utils {
         additionalButton ?? Container(),
       ],
     ));
-
-    /*Get.defaultDialog(
-      // title: "ERROR",
-      // titleStyle: Get.textTheme.displayMedium
-      //     ?.copyWith(fontWeight: FontWeight.bold, color: Colors.black),
-      title: '',
-      titlePadding: const EdgeInsets.all(5),
-      content: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Wrap(
-          crossAxisAlignment: WrapCrossAlignment.start,
-          alignment: WrapAlignment.start,
-          runAlignment: WrapAlignment.start,
-          children: [
-            Align(
-              alignment: Alignment.topLeft,
-              child: Text(
-                "ERROR",
-                style: Get.textTheme.displayMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30.sp,
-                    color: Colors.black),
-              ),
-            ),
-            Align(
-              alignment: Alignment.topLeft,
-              child: Text(
-                message,
-                style: Get.textTheme.displayMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 20.sp,
-                    color: Colors.black),
-              ),
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        Align(
-          alignment: Alignment.bottomRight,
-          child: TextButton(
-            onPressed: () {
-              Get.back();
-              if (onOk != null) {
-                onOk();
-              }
-            },
-            child: Text(
-              'OK',
-              style: Get.textTheme.displayMedium?.copyWith(
-                color: AppColors.textFieldText_Color,
-              ),
-            ),
-          ),
-        ),
-        additionalButton ?? Container(),
-      ],
-      buttonColor: AppColors.textFieldText_Color,
-    );*/
   }
 
   static Future<int> checkWifiLevel() async {

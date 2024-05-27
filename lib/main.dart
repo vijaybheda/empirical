@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,19 +19,19 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  await SentryFlutter.init(
-    (options) {
-      options.dsn =
-          'https://acc77a1e828b627090bc26c0c2f16b50@o4507260711403520.ingest.us.sentry.io/4507260712648704';
-      // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-      // We recommend adjusting this value in production.
-      options.tracesSampleRate = 1.0;
-      // The sampling rate for profiling is relative to tracesSampleRate
-      // Setting to 1.0 will profile 100% of sampled transactions:
-      options.profilesSampleRate = 1.0;
-    },
-    appRunner: () => runApp(const MyApp()),
-  );
+  if (kDebugMode) {
+    runApp(const MyApp());
+  } else {
+    await SentryFlutter.init(
+      (options) {
+        options.dsn =
+            'https://acc77a1e828b627090bc26c0c2f16b50@o4507260711403520.ingest.us.sentry.io/4507260712648704';
+        options.tracesSampleRate = 1.0;
+        options.profilesSampleRate = 1.0;
+      },
+      appRunner: () => runApp(const MyApp()),
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {

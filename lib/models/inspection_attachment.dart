@@ -8,7 +8,8 @@ class InspectionAttachment {
   int? Attachment_ID;
   String? Attachment_Title;
   int? CREATED_TIME;
-  String? FILE_LOCATION;
+  String? filelocation;
+  String? title;
 
   InspectionAttachment({
     this.id,
@@ -16,7 +17,8 @@ class InspectionAttachment {
     required this.Attachment_ID,
     required this.Attachment_Title,
     required this.CREATED_TIME,
-    required this.FILE_LOCATION,
+    required this.filelocation,
+    required this.title,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,7 +28,8 @@ class InspectionAttachment {
       'Attachment_ID': Attachment_ID,
       'Attachment_Title': Attachment_Title,
       'Created_Time': CREATED_TIME,
-      'File_Location': FILE_LOCATION,
+      'fileLocation': filelocation,
+      'title': title,
     };
   }
 
@@ -37,7 +40,8 @@ class InspectionAttachment {
       Attachment_ID: map['Attachment_ID'],
       Attachment_Title: map['Attachment_Title'],
       CREATED_TIME: map['Created_Time'],
-      FILE_LOCATION: map['File_Location'],
+      filelocation: map['fileLocation'],
+      title: map['title'],
     );
   }
 
@@ -48,7 +52,8 @@ class InspectionAttachment {
     int? Attachment_ID,
     String? ATTACHMENT_TITLE,
     int? CREATED_TIME,
-    String? FILE_LOCATION,
+    String? filelocation,
+    String? title,
   }) {
     return InspectionAttachment(
       id: id ?? this.id,
@@ -56,7 +61,8 @@ class InspectionAttachment {
       Attachment_ID: Attachment_ID ?? this.Attachment_ID,
       Attachment_Title: ATTACHMENT_TITLE ?? this.Attachment_Title,
       CREATED_TIME: CREATED_TIME ?? this.CREATED_TIME,
-      FILE_LOCATION: FILE_LOCATION ?? this.FILE_LOCATION,
+      filelocation: filelocation ?? this.filelocation,
+      title: title ?? this.title,
     );
   }
 }
@@ -79,9 +85,9 @@ class PictureData {
   });
 
   void setData(
-      int? attachment_id, String? file_location, bool savedInDB, File pic) {
+      int? attachment_id, String? filelocation, bool savedInDB, File pic) {
     this.pictureId = attachment_id;
-    this.pathToPhoto = file_location;
+    this.pathToPhoto = filelocation;
     this.savedInDB = savedInDB;
     this.image = pic;
   }
