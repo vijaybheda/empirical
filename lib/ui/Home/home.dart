@@ -125,16 +125,18 @@ class Home extends GetView<HomeController> {
                             padding: EdgeInsets.symmetric(
                                 vertical: 15.h, horizontal: 10),
                             decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.secondary,
-                                border: Border(
-                                    right: BorderSide(
-                                      color: AppColors.black,
-                                      width: 2.0,
-                                    ),
-                                    top: BorderSide(
-                                      color: AppColors.black,
-                                      width: 2.0,
-                                    ))),
+                              color: Theme.of(context).colorScheme.secondary,
+                              border: Border(
+                                right: BorderSide(
+                                  color: AppColors.black,
+                                  width: 2.0,
+                                ),
+                                top: BorderSide(
+                                  color: AppColors.black,
+                                  width: 2.0,
+                                ),
+                              ),
+                            ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -151,21 +153,25 @@ class Home extends GetView<HomeController> {
                                     controller.selectInspectionForDownload(
                                         0, true);
                                   },
-                                  child: Container(
-                                    color: AppColors.primary,
-                                    padding: const EdgeInsets.all(5),
-                                    child: Obx(() => Image.asset(
+                                  child: Obx(() => Container(
+                                        color: AppColors.primary,
+                                        padding: const EdgeInsets.all(5),
+                                        child: Image.asset(
                                           controller.selectedIDsInspection
                                                       .length ==
-                                                  controller.itemsList.length
+                                                  controller.itemsList
+                                                      .where((item) =>
+                                                          item.uploadStatus ==
+                                                          1)
+                                                      .length
                                               ? AppImages.ic_SelectedCheckbox
                                               : AppImages.ic_unSelectCheckbox,
                                           width: 60.w,
                                           height: 60.h,
                                           color: AppColors.white,
-                                        )),
-                                  ),
-                                )
+                                        ),
+                                      )),
+                                ),
                               ],
                             ),
                           )
@@ -607,7 +613,7 @@ class Home extends GetView<HomeController> {
                                     },
                                     child: Obx(() => Image.asset(
                                           controller.selectedIDsInspection
-                                                  .contains(myInspectionList.id)
+                                                  .contains(myInspectionList)
                                               ? AppImages.ic_SelectedCheckbox
                                               : AppImages.ic_unSelectCheckbox,
                                           width: 60.w,
@@ -629,7 +635,7 @@ class Home extends GetView<HomeController> {
                                   ),
                                 ],
                               ),
-                      ),
+                      )
                     ],
                   ),
                 ),
