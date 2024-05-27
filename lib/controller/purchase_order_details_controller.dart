@@ -213,7 +213,7 @@ class PurchaseOrderDetailsController extends GetxController {
               await dao.updateInspectionComplete(
                   inspection.inspectionId!, true);
               await dao.updateItemSKUInspectionComplete(
-                  inspection.inspectionId!, "true");
+                  inspection.inspectionId!, true);
               Utils.setInspectionUploadStatus(
                   inspection.inspectionId!, Consts.INSPECTION_UPLOAD_READY);
 
@@ -340,9 +340,10 @@ class PurchaseOrderDetailsController extends GetxController {
                   SpecificationAnalyticalRequest? dbobj =
                       await dao.findSpecAnalyticalObj(
                           inspection.inspectionId!, item.analyticalID);
-                  if (dbobj != null && dbobj.comply == 'No') {
+                  if (dbobj != null && dbobj.comply == 'N') {
                     if (dbobj.inspectionResult != null &&
-                        dbobj.inspectionResult == 'No') {
+                        (dbobj.inspectionResult == 'No' ||
+                            dbobj.inspectionResult == 'N')) {
                       // Do nothing
                     } else {
                       result = "RJ";
@@ -393,7 +394,7 @@ class PurchaseOrderDetailsController extends GetxController {
                   inspection.inspectionId!, true);
 
               bool updateItemSKU = await dao.updateItemSKUInspectionComplete(
-                  inspection.inspectionId!, "true");
+                  inspection.inspectionId!, true);
               Utils.setInspectionUploadStatus(
                   inspection.inspectionId!, Consts.INSPECTION_UPLOAD_READY);
               update();
@@ -2695,9 +2696,10 @@ class PurchaseOrderDetailsController extends GetxController {
                       dbobj = await dao.findSpecAnalyticalObj(
                           inspection.inspectionId!, item.analyticalID!);
 
-                      if (dbobj != null && dbobj.comply == "No") {
+                      if (dbobj != null && dbobj.comply == "N") {
                         if (dbobj.inspectionResult != null &&
-                            dbobj.inspectionResult == "No") {
+                            (dbobj.inspectionResult == "No" ||
+                                dbobj.inspectionResult == "N")) {
                         } else {
                           List<String> exceptions = [
                             "Manager Approval",
@@ -2731,9 +2733,10 @@ class PurchaseOrderDetailsController extends GetxController {
                       await dao.findSpecAnalyticalObj(
                           inspection.inspectionId!, item.analyticalID!);
 
-                  if (dbobj != null && dbobj.comply == "No") {
+                  if (dbobj != null && dbobj.comply == "N") {
                     if (dbobj.inspectionResult != null &&
-                        dbobj.inspectionResult == "No") {
+                        (dbobj.inspectionResult == "No" ||
+                            dbobj.inspectionResult == "N")) {
                     } else {
                       if (rejectReason.isNotEmpty) {
                         rejectReason += ", ";
@@ -2790,7 +2793,7 @@ class PurchaseOrderDetailsController extends GetxController {
               await dao.updateInspectionComplete(
                   inspection.inspectionId!, true);
               await dao.updateItemSKUInspectionComplete(
-                  inspection.inspectionId!, "true");
+                  inspection.inspectionId!, true);
               Utils.setInspectionUploadStatus(
                   inspection.inspectionId!, Consts.INSPECTION_UPLOAD_READY);
 

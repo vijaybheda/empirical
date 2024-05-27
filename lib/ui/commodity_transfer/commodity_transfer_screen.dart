@@ -8,7 +8,7 @@ class CommodityTransferScreen
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder(
+    return GetBuilder<CommodityTransferScreenController>(
       init: CommodityTransferScreenController(),
       builder: (controller) {
         return Scaffold(

@@ -591,7 +591,7 @@ class ApplicationDao {
     List<Map> result = await db.query(
       DBTables.INSPECTION,
       columns: [(BaseColumns.ID)],
-      where: 'Complete = ?',
+      where: '${InspectionColumn.COMPLETE} = ?',
       whereArgs: [0], // Assuming 'Complete' is stored as 0 for false
     );
 
@@ -645,9 +645,15 @@ class ApplicationDao {
     try {
       final Database db = dbProvider.lazyDatabase;
 
-      // Here you would call the methods to delete related entries from other tables, if necessary.
-      // For example: await deleteTrailerTemperatureEntriesByInspectionId(inspectionId);
-      print('DBRequest deleteInspection');
+      await deleteTrailerTemperatureEntriesByInspectionId(inspectionId);
+      await deleteQualityControlEntries(inspectionId);
+      await deleteSpecAttributesByInspectionId(inspectionId);
+      await deleteInspectionPicturesByInspectionId(inspectionId);
+      await deleteInspectionDefectByInspectionId(inspectionId);
+      await deleteInspectionSamples(inspectionId);
+      await deletePartnerItemSKUByInspectionId(inspectionId);
+
+      await deleteDefectAttachmentsByInspectionId(inspectionId);
       await db.delete(
         DBTables.INSPECTION,
         where: '${BaseColumns.ID} = ?',
@@ -659,9 +665,103 @@ class ApplicationDao {
     }
   }
 
+  Future<void> deleteTrailerTemperatureEntriesByInspectionId(
+      int inspectionId) async {
+    try {
+      final Database db = dbProvider.lazyDatabase;
+      await db.transaction((txn) async {
+        await txn.rawDelete(
+          'DELETE FROM ${DBTables.TRAILER_TEMPERATURE} WHERE ${TrailerTemperatureColumn.INSPECTION_ID} = ?',
+          [inspectionId],
+        );
+      });
+    } catch (e) {
+      print(
+          'Error has occurred while deleting a trailer temperature entries: $e');
+    }
+  }
+
+  Future<void> deleteQualityControlEntries(int inspectionId) async {
+    try {
+      final Database db = dbProvider.lazyDatabase;
+      await db.transaction((txn) async {
+        await txn.rawDelete(
+          'DELETE FROM ${DBTables.QUALITY_CONTROL} WHERE ${QualityControlColumn.INSPECTION_ID} = ?',
+          [inspectionId],
+        );
+      });
+    } catch (e) {
+      print('Error has occurred while deleting a quality control entries: $e');
+    }
+  }
+
+  Future<void> deleteInspectionPicturesByInspectionId(int inspectionId) async {
+    try {
+      final Database db = dbProvider.lazyDatabase;
+      await db.transaction((txn) async {
+        await txn.rawDelete(
+          'DELETE FROM ${DBTables.INSPECTION_ATTACHMENT} WHERE ${InspectionAttachmentColumn.INSPECTION_ID} = ?',
+          [inspectionId],
+        );
+      });
+    } catch (e) {
+      print('Error has occurred while deleting inspection defect entries: $e');
+    }
+  }
+
+  Future<void> deletePartnerItemSKUByInspectionId(int inspectionId) async {
+    try {
+      final Database db = dbProvider.lazyDatabase;
+      await db.transaction((txn) async {
+        await txn.rawDelete(
+          'DELETE FROM ${DBTables.PARTNER_ITEMSKU} WHERE ${PartnerItemSkuColumn.INSPECTION_ID} = ?',
+          [inspectionId],
+        );
+      });
+    } catch (e) {
+      print('Error has occurred while deleting a quality control entries: $e');
+    }
+  }
+
+  Future<void> deleteDefectAttachmentsByInspectionId(int inspectionId) async {
+    final Database db = dbProvider.lazyDatabase;
+    List<InspectionDefectAttachment>? attachments =
+        await findDefectAttachmentsByInspectionId(inspectionId);
+
+    if (attachments != null && attachments.isNotEmpty) {
+      for (var attachment in attachments) {
+        if (attachment.fileLocation != null) {
+          File file = File(attachment.fileLocation!);
+          if (file.existsSync()) {
+            file.deleteSync();
+          }
+        }
+      }
+    }
+
+    try {
+      await db.transaction((txn) async {
+        await txn.rawDelete(
+          'DELETE FROM ${DBTables.INSPECTION_DEFECT_ATTACHMENT} WHERE ${InspectionDefectAttachmentColumn.INSPECTION_ID} = ?',
+          [inspectionId],
+        );
+      });
+    } catch (e) {
+      print('Error has occurred while deleting a defect attachment: $e');
+    }
+  }
+
   // Delete an inspection after upload
   Future<void> deleteInspectionAfterUpload(int inspectionId) async {
-    // This would be similar to deleteInspection, possibly with additional steps before the deletion.
+    await deleteTrailerTemperatureEntriesByInspectionId(inspectionId);
+    await deleteQualityControlEntries(inspectionId);
+    await deleteSpecAttributesByInspectionId(inspectionId);
+    await deleteInspectionPicturesByInspectionId(inspectionId);
+    await deleteInspectionDefectByInspectionId(inspectionId);
+    await deleteInspectionSamples(inspectionId);
+
+    await deleteDefectAttachmentsByInspectionId(inspectionId);
+
     await deleteInspection(inspectionId);
   }
 
@@ -694,7 +794,7 @@ class ApplicationDao {
     final Database db = dbProvider.lazyDatabase;
     await db.delete(
       DBTables.INSPECTION_SAMPLE,
-      where: 'InspectionID = ?',
+      where: '${InspectionSampleColumn.INSPECTION_ID} = ?',
       whereArgs: [inspectionId],
     );
   }
@@ -717,9 +817,7 @@ class ApplicationDao {
     final Database db = dbProvider.lazyDatabase;
     await db.update(
       DBTables.INSPECTION_SAMPLE,
-      {
-        'SampleNameUser': sampleNameUser
-      }, // Assuming the column is named 'SampleNameUser'
+      {InspectionSampleColumn.SAMPLE_NAME: sampleNameUser},
       where: '${BaseColumns.ID} = ?',
       whereArgs: [sampleId],
     );
@@ -748,23 +846,24 @@ class ApplicationDao {
     var defectId0 = await db.insert(
       DBTables.INSPECTION_DEFECT,
       {
-        'InspectionID': inspectionId,
-        'SampleID': sampleId,
-        'DefectID': defectId,
-        'DefectName': defectName,
-        'InjuryCnt': injuryCnt,
-        'DamageCnt': damageCnt,
-        'SeriousDamageCnt': seriousDamageCnt,
-        'Comments': comments ?? '',
-        'Timestamp': timestamp,
-        'VerySeriousDamageCnt': verySeriousDamageCnt,
-        'DecayCnt': decayCnt,
-        'SeverityInjuryId': severityInjuryId,
-        'SeverityDamageId': severityDamageId,
-        'SeveritySeriousDamageId': severitySeriousDamageId,
-        'SeverityVerySeriousDamageId': severityVerySeriousDamageId,
-        'SeverityDecayId': severityDecayId,
-        'DefectCategory': defectCategory,
+        InspectionDefectColumn.INSPECTION_ID: inspectionId,
+        InspectionDefectColumn.INSPECTION_SAMPLE_ID: sampleId,
+        InspectionDefectColumn.DEFECT_ID: defectId,
+        InspectionDefectColumn.DEFECT_NAME: defectName,
+        InspectionDefectColumn.INJURY_CNT: injuryCnt,
+        InspectionDefectColumn.DAMAGE_CNT: damageCnt,
+        InspectionDefectColumn.SERIOUS_DAMAGE_CNT: seriousDamageCnt,
+        InspectionDefectColumn.COMMENTS: comments ?? '',
+        InspectionDefectColumn.CREATED_TIME: timestamp,
+        InspectionDefectColumn.VERY_SERIOUS_DAMAGE_CNT: verySeriousDamageCnt,
+        InspectionDefectColumn.DECAY_CNT: decayCnt,
+        InspectionDefectColumn.INJURY_ID: severityInjuryId,
+        InspectionDefectColumn.DAMAGE_ID: severityDamageId,
+        InspectionDefectColumn.SERIOUS_DAMAGE_ID: severitySeriousDamageId,
+        InspectionDefectColumn.VERY_SERIOUS_DAMAGE_ID:
+            severityVerySeriousDamageId,
+        InspectionDefectColumn.DECAY_ID: severityDecayId,
+        InspectionDefectColumn.DEFECT_CATEGORY: defectCategory,
       },
     );
     return defectId0;
@@ -774,7 +873,7 @@ class ApplicationDao {
     final Database db = dbProvider.lazyDatabase;
     await db.delete(
       DBTables.INSPECTION_DEFECT,
-      where: 'InspectionID = ?',
+      where: '${InspectionDefectColumn.INSPECTION_ID} = ?',
       whereArgs: [inspectionId],
     );
   }
@@ -783,7 +882,7 @@ class ApplicationDao {
     final Database db = dbProvider.lazyDatabase;
     var results = await db.query(
       DBTables.INSPECTION_DEFECT,
-      where: 'SampleID = ?',
+      where: '${InspectionDefectColumn.INSPECTION_SAMPLE_ID} = ?',
       whereArgs: [sampleId],
     );
 
@@ -871,7 +970,7 @@ class ApplicationDao {
     final Database db = dbProvider.lazyDatabase;
     await db.delete(
       DBTables.INSPECTION_DEFECT,
-      where: 'SampleID = ?',
+      where: '${InspectionDefectColumn.INSPECTION_SAMPLE_ID} = ?',
       whereArgs: [sampleId],
     );
   }
@@ -2138,7 +2237,7 @@ class ApplicationDao {
     try {
       var result = await txn.query(
         DBTables.TEMP_TRAILER_TEMPERATURE_DETAILS,
-        where: 'po_number = ?',
+        where: '${TempTrailerTemperatureDetailsColumn.PO_NUMBER} = ?',
         whereArgs: [poNumber],
       );
       if (result.isNotEmpty) {
@@ -2462,7 +2561,7 @@ class ApplicationDao {
 
   Future<bool> isInspectionComplete(
       int partnerId, String itemSKU, String? lotNo) async {
-    List<dynamic> args = ['true', partnerId.toString(), itemSKU, lotNo];
+    List<dynamic> args = ['1', partnerId.toString(), itemSKU, lotNo];
     print('DBRequest isInspectionComplete');
     try {
       final Database db = dbProvider.lazyDatabase;
@@ -2668,8 +2767,8 @@ class ApplicationDao {
       } else {
         await db.transaction((txn) async {
           var values = <String, dynamic>{
-            "Result": result,
-            "Result_Reason": resultReason,
+            ResultRejectionDetailsColumn.RESULT: result,
+            ResultRejectionDetailsColumn.RESULT_REASON: resultReason,
             // "Defect_Comments": comment,
           };
           await txn.update(DBTables.RESULT_REJECTION_DETAILS, values,
@@ -2713,7 +2812,7 @@ class ApplicationDao {
 
   Future<bool> updateItemSKUInspectionComplete(
     int inspectionID,
-    String? complete,
+    bool? complete,
   ) async {
     print('DBRequest updateItemSKUInspectionComplete');
     try {
@@ -2721,7 +2820,7 @@ class ApplicationDao {
       await db.transaction((txn) async {
         var values = <String, dynamic>{};
         if (complete != null) {
-          values[PartnerItemSkuColumn.COMPLETE] = complete;
+          values[PartnerItemSkuColumn.COMPLETE] = complete == true ? '1' : '0';
         }
 
         await txn.update(
@@ -2773,7 +2872,7 @@ class ApplicationDao {
     final Database db = dbProvider.lazyDatabase;
     print('DBRequest isInspectionPartialComplete');
     try {
-      List<dynamic> args = ["false", partnerId.toString(), itemSKU, lotNo];
+      List<dynamic> args = ["0", partnerId.toString(), itemSKU, lotNo];
 
       String query = "SELECT * FROM ${DBTables.PARTNER_ITEMSKU} WHERE " +
           "${PartnerItemSkuColumn.COMPLETE}=? AND " +
@@ -3448,9 +3547,9 @@ class ApplicationDao {
     try {
       await db.transaction((txn) async {
         Map<String, dynamic> values = {
-          SelectedItemSkuListColumn.COMPLETE: isComplete ? 'true' : 'false',
+          SelectedItemSkuListColumn.COMPLETE: isComplete ? '1' : '0',
           SelectedItemSkuListColumn.PARTIAL_COMPLETE:
-              partialComplete ? 'true' : 'false',
+              partialComplete ? '1' : '0',
           SelectedItemSkuListColumn.INSPECTION_ID: inspectionId,
           SelectedItemSkuListColumn.PARTNER_ID: partnerID,
         };
@@ -3548,9 +3647,9 @@ class ApplicationDao {
       String query = "SELECT * FROM ${DBTables.SELECTED_ITEM_SKU_LIST}";
       List<Map> result = await db.rawQuery(query);
       for (Map<dynamic, dynamic> item in result) {
-        bool isComplete = item[SelectedItemSkuListColumn.COMPLETE] == 'true';
+        bool isComplete = item[SelectedItemSkuListColumn.COMPLETE] == '1';
         bool isPartialComplete =
-            item[SelectedItemSkuListColumn.PARTIAL_COMPLETE] == 'true';
+            item[SelectedItemSkuListColumn.PARTIAL_COMPLETE] == '1';
         list.add(FinishedGoodsItemSKU(
           id: item[SelectedItemSkuListColumn.SKU_ID],
           sku: item[SelectedItemSkuListColumn.SKU_CODE],
@@ -3609,8 +3708,8 @@ class ApplicationDao {
         SelectedItemSkuListColumn.COMMODITY_NAME: commodityName,
         SelectedItemSkuListColumn.COMMODITY_ID: commodityId,
         SelectedItemSkuListColumn.DESCRIPTION: description,
-        SelectedItemSkuListColumn.COMPLETE: 'false',
-        SelectedItemSkuListColumn.PARTIAL_COMPLETE: 'false',
+        SelectedItemSkuListColumn.COMPLETE: '0',
+        SelectedItemSkuListColumn.PARTIAL_COMPLETE: '0',
         SelectedItemSkuListColumn.PARTNER_ID: partnerID,
         SelectedItemSkuListColumn.PACK_DATE: packDate,
         SelectedItemSkuListColumn.GTIN: GTIN,
@@ -3661,7 +3760,7 @@ class ApplicationDao {
         await txn.update(
           DBTables.OVERRIDDEN_RESULT,
           values,
-          where: 'Inspection_ID = ?',
+          where: '${OverriddenResultColumn.INSPECTION_ID} = ?',
           whereArgs: [inspectionID],
         );
       });
@@ -3748,45 +3847,46 @@ class ApplicationDao {
 
     try {
       String query =
-          'SELECT Inspection_ID FROM Overridden_Result WHERE Inspection_ID = ?';
+          'SELECT ${OverriddenResultColumn.INSPECTION_ID} FROM ${DBTables.OVERRIDDEN_RESULT} WHERE ${OverriddenResultColumn.INSPECTION_ID} = ?';
       List<Map<String, dynamic>> result =
           await database.rawQuery(query, [inspectionID]);
 
       if (result.isNotEmpty) {
-        inspectionId = result.first['Inspection_ID'];
+        inspectionId = result.first[OverriddenResultColumn.INSPECTION_ID];
       }
 
       if (inspectionId == null) {
         await database.transaction((txn) async {
           var values = {
-            'Inspection_ID': inspectionID,
-            'Overridden_By': overriddenBy,
-            'Overridden_Result': overriddenResult,
-            'Overridden_Timestamp': overriddenTimestamp,
-            'Overridden_Comments': overriddenComments,
-            'Old_Result': inspectionOldResult,
-            'Original_Qty_Shipped': originalQtyShipped,
-            'Original_Qty_Rejected': originalQtyRejected,
-            'New_Qty_Shipped': qtyShipped,
-            'New_Qty_Rejected': qtyRejected,
+            OverriddenResultColumn.INSPECTION_ID: inspectionID,
+            OverriddenResultColumn.OVERRIDDEN_BY: overriddenBy,
+            OverriddenResultColumn.OVERRIDDEN_RESULT: overriddenResult,
+            OverriddenResultColumn.OVERRIDDEN_TIMESTAMP: overriddenTimestamp,
+            OverriddenResultColumn.OVERRIDDEN_COMMENTS: overriddenComments,
+            OverriddenResultColumn.OLD_RESULT: inspectionOldResult,
+            OverriddenResultColumn.ORIGINAL_QTY_SHIPPED: originalQtyShipped,
+            OverriddenResultColumn.ORIGINAL_QTY_REJECTED: originalQtyRejected,
+            OverriddenResultColumn.NEW_QTY_SHIPPED: qtyShipped,
+            OverriddenResultColumn.NEW_QTY_REJECTED: qtyRejected,
           };
-          inspectionId = await txn.insert('Overridden_Result', values);
+          inspectionId = await txn.insert(DBTables.OVERRIDDEN_RESULT, values);
         });
       } else {
         await database.transaction((txn) async {
           var values = {
-            'Overridden_By': overriddenBy,
-            'Overridden_Result': overriddenResult,
-            'Overridden_Timestamp': overriddenTimestamp,
-            'Overridden_Comments': overriddenComments,
-            'Old_Result': inspectionOldResult,
-            'Original_Qty_Shipped': originalQtyShipped,
-            'Original_Qty_Rejected': originalQtyRejected,
-            'New_Qty_Shipped': qtyShipped,
-            'New_Qty_Rejected': qtyRejected,
+            OverriddenResultColumn.OVERRIDDEN_BY: overriddenBy,
+            OverriddenResultColumn.OVERRIDDEN_RESULT: overriddenResult,
+            OverriddenResultColumn.OVERRIDDEN_TIMESTAMP: overriddenTimestamp,
+            OverriddenResultColumn.OVERRIDDEN_COMMENTS: overriddenComments,
+            OverriddenResultColumn.OLD_RESULT: inspectionOldResult,
+            OverriddenResultColumn.ORIGINAL_QTY_SHIPPED: originalQtyShipped,
+            OverriddenResultColumn.ORIGINAL_QTY_REJECTED: originalQtyRejected,
+            OverriddenResultColumn.NEW_QTY_SHIPPED: qtyShipped,
+            OverriddenResultColumn.NEW_QTY_REJECTED: qtyRejected,
           };
-          await txn.update('Overridden_Result', values,
-              where: 'Inspection_ID = ?', whereArgs: [inspectionID]);
+          await txn.update(DBTables.OVERRIDDEN_RESULT, values,
+              where: '${OverriddenResultColumn.INSPECTION_ID} = ?',
+              whereArgs: [inspectionID]);
         });
       }
     } catch (e) {
@@ -3803,10 +3903,11 @@ class ApplicationDao {
     try {
       await db.transaction((txn) async {
         var values = {
-          'Result_Reason': result,
+          ResultRejectionDetailsColumn.RESULT_REASON: result,
         };
         await txn.update(DBTables.RESULT_REJECTION_DETAILS, values,
-            where: 'Inspection_ID = ?', whereArgs: [inspectionId]);
+            where: '${ResultRejectionDetailsColumn.INSPECTION_ID} = ?',
+            whereArgs: [inspectionId]);
       });
     } catch (e) {
       print('Error has occurred while updating an inspection: $e');

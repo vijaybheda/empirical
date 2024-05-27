@@ -196,7 +196,11 @@ class QCDetailsShortFormScreen
                         ),
                       ),
                     ),
-                    FooterContentView()
+                    FooterContentView(
+                      onBackTap: () async {
+                        await controller.backToMyInspectionScreen();
+                      },
+                    )
                   ],
                 ),
               ),
@@ -275,6 +279,10 @@ class QCDetailsShortFormScreen
           fontWeight: FontWeight.w600,
         ),
         onClickAction: () async {
+          if (controller.specificationTypeName != "Finished Goods Produce" &&
+              controller.specificationTypeName != "Raw Produce") {
+            return null;
+          }
           await controller.onInspectionWorksheetClick();
         });
   }
@@ -328,6 +336,10 @@ class QCDetailsShortFormScreen
                 ),
               );
             }).toList(),
+            icon: const Icon(
+              Icons.arrow_drop_down,
+              color: Colors.white,
+            ),
             decoration: InputDecoration(
               hintText: AppStrings.uom,
               hintStyle: Get.textTheme.titleLarge!.copyWith(
@@ -401,22 +413,31 @@ class QCDetailsShortFormScreen
               },
               decoration: InputDecoration(
                 hintText: AppStrings.qcQtyShipped,
-                errorText: hasValidShippedQty(controller) ? '' : null,
-                errorMaxLines: 1,
+                // errorText: hasValidShippedQty(controller) ? '' : null,
+                // errorMaxLines: 1,
                 hintStyle: Get.textTheme.titleLarge!.copyWith(
                   fontSize: 26.sp,
                   fontWeight: FontWeight.normal,
                   color:
                       hasValidShippedQty(controller) ? Colors.red : Colors.grey,
                 ),
-                enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      color: hasValidShippedQty(controller)
+                          ? Colors.red
+                          : Colors.grey),
                 ),
-                focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      color: hasValidShippedQty(controller)
+                          ? Colors.red
+                          : Colors.grey),
                 ),
-                border: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                border: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      color: hasValidShippedQty(controller)
+                          ? Colors.red
+                          : Colors.grey),
                 ),
                 disabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
@@ -425,10 +446,14 @@ class QCDetailsShortFormScreen
                   // borderRadius: BorderRadius.all(Radius.circular(5)),
                   borderSide: BorderSide(color: Colors.red),
                 ),
-                focusedErrorBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                focusedErrorBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      color: hasValidShippedQty(controller)
+                          ? Colors.red
+                          : Colors.grey),
                 ),
-                contentPadding: const EdgeInsets.all(10),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                 suffixIcon: hasValidShippedQty(controller)
                     ? IconButton(
                         icon:
@@ -529,6 +554,9 @@ class QCDetailsShortFormScreen
               contentPadding:
                   const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
             ),
+            onTap: () async {
+              await selectPackDate(context, controller);
+            },
           ),
           Divider(
             color: AppColors.lightGrey,
@@ -575,6 +603,7 @@ class QCDetailsShortFormScreen
           ),
           TextField(
             controller: controller.lotNoController,
+            keyboardType: TextInputType.text,
             decoration: InputDecoration(
               hintText: AppStrings.lotnumber,
               hintStyle: Get.textTheme.titleLarge!.copyWith(
@@ -735,12 +764,20 @@ class QCDetailsShortFormScreen
     BuildContext context,
     QCDetailsShortFormScreenController controller,
   ) async {
-    await controller.selectDate(context,
-        onDateSelected: (DateTime selectedDate) {
-      controller.packDateController.text = Utils.formatDate(selectedDate);
-      controller.packDate = selectedDate;
-      controller.update();
-    }, firstDate: controller.packDate, lastDate: DateTime(2100));
+    await controller.selectDate(
+      context,
+      onDateSelected: (DateTime selectedDate) {
+        controller.packDateController.text = Utils.formatDate(selectedDate);
+        controller.packDate = selectedDate;
+        controller.update();
+      },
+      firstDate: DateTime(
+        2000,
+      ),
+      lastDate: DateTime(
+        2100,
+      ),
+    );
   }
 
   GestureDetector gtinSuffix(QCDetailsShortFormScreenController controller) {

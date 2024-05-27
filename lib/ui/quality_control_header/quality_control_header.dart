@@ -184,7 +184,7 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
                       style: Get.textTheme.titleLarge!.copyWith(
                         fontSize: 32.sp,
                         fontWeight: FontWeight.w400,
-                        color: Colors.grey,
+                        color: Colors.white,
                       ),
                       cursorColor:
                           Theme.of(context).textSelectionTheme.cursorColor,
@@ -408,6 +408,10 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
                   ),
                 );
               }).toList(),
+              icon: const Icon(
+                Icons.arrow_drop_down,
+                color: Colors.white,
+              ),
               value: labelTitle == AppStrings.truckTempOK
                   ? controller.selectetdTruckTempOK.value
                   : labelTitle == AppStrings.dtType

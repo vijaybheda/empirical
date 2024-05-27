@@ -225,14 +225,14 @@ class PurchaseOrderScreen extends StatelessWidget {
   Future<FinishedGoodsItemSKU> onCheckboxChange(FinishedGoodsItemSKU goodsItem,
       bool? value, PurchaseOrderScreenController controller) async {
     goodsItem = goodsItem.copyWith(isSelected: (value!));
-    goodsItem.uniqueItemId = generateUUID();
+    goodsItem.uniqueItemId ??= generateUUID();
     if (value) {
-      controller.appStorage.selectedItemSKUList.add(goodsItem);
-      controller.appStorage.tempSelectedItemSKUList.add(goodsItem);
+      controller.localItemSKUList.add(goodsItem);
+      controller.localItemSKUList.add(goodsItem);
       await controller.dao.createSelectedItemSKU(
         skuId: goodsItem.id,
         itemSKUCode: goodsItem.sku,
-        poNo: "",
+        poNo: controller.poNumber,
         lotNo: "",
         itemSKUName: goodsItem.name,
         commodityName: goodsItem.commodityName,
@@ -248,8 +248,8 @@ class PurchaseOrderScreen extends StatelessWidget {
         dateType: goodsItem.dateType,
       );
     } else {
-      controller.appStorage.selectedItemSKUList.remove(goodsItem);
-      controller.appStorage.tempSelectedItemSKUList.remove(goodsItem);
+      controller.localItemSKUList.remove(goodsItem);
+      controller.localItemSKUList.remove(goodsItem);
       await controller.dao.deleteSelectedItemSKUByUniqueId(
         uniqueId: goodsItem.uniqueItemId!,
         itemId: goodsItem.id,

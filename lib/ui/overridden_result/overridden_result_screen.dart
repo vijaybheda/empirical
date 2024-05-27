@@ -78,7 +78,7 @@ class OverriddenResultScreen
                     Text(
                       AppStrings.originalResult,
                       style: Get.textTheme.titleLarge?.copyWith(
-                        fontSize: 65.h,
+                        fontSize: 32.sp,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -87,7 +87,7 @@ class OverriddenResultScreen
                       controller.myInspectionResult,
                       style: Get.textTheme.titleLarge?.copyWith(
                         color: controller.finalInspectionResultColor,
-                        fontSize: 65.h,
+                        fontSize: 32.sp,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -101,7 +101,7 @@ class OverriddenResultScreen
                           .tr,
                       style: Get.textTheme.titleLarge?.copyWith(
                         color: AppColors.white,
-                        fontSize: 55.h,
+                        fontSize: 32.sp,
                         fontWeight: FontWeight.w300,
                       ),
                     ),
@@ -142,7 +142,7 @@ class OverriddenResultScreen
                             AppStrings.rejectionDetails,
                             style: Get.textTheme.titleLarge?.copyWith(
                               color: AppColors.white,
-                              fontSize: 65.h,
+                              fontSize: 32.sp,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -152,7 +152,7 @@ class OverriddenResultScreen
                               controller.txtRejectionDetails.value,
                               style: Get.textTheme.titleLarge?.copyWith(
                                 color: AppColors.white,
-                                fontSize: 50.h,
+                                fontSize: 32.sp,
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
@@ -171,7 +171,7 @@ class OverriddenResultScreen
                             AppStrings.defectComments,
                             style: Get.textTheme.titleLarge?.copyWith(
                               color: AppColors.white,
-                              fontSize: 65.h,
+                              fontSize: 32.sp,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -181,7 +181,7 @@ class OverriddenResultScreen
                               controller.txtDefectComment.value,
                               style: Get.textTheme.titleLarge?.copyWith(
                                 color: AppColors.white,
-                                fontSize: 50.h,
+                                fontSize: 32.sp,
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
@@ -219,7 +219,7 @@ class OverriddenResultScreen
             textAlign: TextAlign.start,
             maxLines: 3,
             style: Get.textTheme.titleLarge!.copyWith(
-              fontSize: 38.sp,
+              fontSize: 32.sp,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -228,7 +228,7 @@ class OverriddenResultScreen
             textAlign: TextAlign.start,
             maxLines: 3,
             style: Get.textTheme.titleLarge!.copyWith(
-              fontSize: 38.sp,
+              fontSize: 32.sp,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -251,7 +251,7 @@ class OverriddenResultScreen
             labelTitle,
             style: Get.textTheme.titleLarge?.copyWith(
               color: AppColors.white,
-              fontSize: 65.h,
+              fontSize: 32.sp,
               fontWeight: FontWeight.w400,
             ),
           ),
@@ -342,7 +342,7 @@ class OverriddenResultScreen
             labelTitle,
             style: Get.textTheme.titleLarge?.copyWith(
               color: AppColors.white,
-              fontSize: 65.h,
+              fontSize: 32.sp,
               fontWeight: FontWeight.w400,
             ),
           ),
@@ -357,7 +357,7 @@ class OverriddenResultScreen
               hint: Text(
                 hintText,
                 style: Get.textTheme.titleLarge!.copyWith(
-                  fontSize: 28.sp,
+                  fontSize: 32.sp,
                   fontWeight: FontWeight.normal,
                   color: AppColors.hintColor,
                 ),
@@ -367,7 +367,7 @@ class OverriddenResultScreen
                   value: selectedType,
                   child: Text(selectedType,
                       style: Get.textTheme.titleLarge!.copyWith(
-                        fontSize: 28.sp,
+                        fontSize: 32.sp,
                         fontWeight: FontWeight.normal,
                         color: AppColors.hintColor,
                       )),

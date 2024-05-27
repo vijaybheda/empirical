@@ -19,7 +19,7 @@ class AppAlertDialog {
           title,
           style: Get.textTheme.titleLarge!.copyWith(
             fontSize: 28.sp,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
           ),
         ),
         content: Text(
@@ -132,7 +132,7 @@ class AppAlertDialog {
           title,
           style: Get.textTheme.titleLarge!.copyWith(
             fontSize: 28.sp,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
           ),
         ),
         content: Text(

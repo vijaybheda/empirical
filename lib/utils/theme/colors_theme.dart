@@ -104,25 +104,23 @@ class AppThemeData {
           elevation: 0,
           actionsIconTheme: IconThemeData(color: AppColors.primaryColor),
           toolbarTextStyle: TextTheme(
-                  bodyLarge: TextStyle(
+                  bodyLarge: GoogleFonts.poppins(
                     fontSize: 29.h, // 35
-                    fontFamily: GoogleFonts.poppins().fontFamily,
+                    // fontFamily: GoogleFonts.poppins().fontFamily,
                     color: isDark ? Colors.white : Colors.black,
                   ),
-                  bodyMedium: TextStyle(
-                      fontSize: 29, // 35
-                      fontFamily: GoogleFonts.poppins().fontFamily,
-                      color: Colors.grey))
+                  bodyMedium:
+                      GoogleFonts.poppins(fontSize: 29, color: Colors.grey))
               .bodyMedium,
           titleTextStyle: TextTheme(
-                  bodyLarge: TextStyle(
+                  bodyLarge: GoogleFonts.poppins(
                     fontSize: 29, // 35
-                    fontFamily: GoogleFonts.poppins().fontFamily,
+                    // fontFamily: GoogleFonts.poppins().fontFamily,
                     color: isDark ? Colors.white : Colors.black,
                   ),
-                  bodyMedium: TextStyle(
+                  bodyMedium: GoogleFonts.poppins(
                       fontSize: 29, // 35
-                      fontFamily: GoogleFonts.poppins().fontFamily,
+                      // fontFamily: GoogleFonts.poppins().fontFamily,
                       color: Colors.grey))
               .titleLarge,
         ),
@@ -214,43 +212,43 @@ class AppThemeData {
         fontWeight: FontWeight.w600,
         fontFamily: GoogleFonts.poppins().fontFamily,
       ),
-      headlineSmall: TextStyle(
+      headlineSmall: GoogleFonts.poppins(
           fontSize: 13,
-          fontFamily: GoogleFonts.poppins().fontFamily,
+          // fontFamily: GoogleFonts.poppins().fontFamily,
           height: 1.4,
           letterSpacing: 0,
           color: AppColors.grey,
           fontWeight: FontWeight.w500),
-      titleLarge: TextStyle(
+      titleLarge: GoogleFonts.poppins(
           fontSize: 40.sp,
-          fontFamily: GoogleFonts.poppins().fontFamily,
+          // fontFamily: GoogleFonts.poppins().fontFamily,
           height: 1.4,
           letterSpacing: 0,
           color: isDark ? Colors.white : AppColors.black,
           fontWeight: FontWeight.w500),
-      bodyLarge: TextStyle(
+      bodyLarge: GoogleFonts.poppins(
         fontSize: 20.sp,
-        fontFamily: GoogleFonts.poppins().fontFamily,
+        // fontFamily: GoogleFonts.poppins().fontFamily,
         letterSpacing: 0,
         fontWeight: FontWeight.w500,
         color: isDark ? Colors.white : AppColors.dark,
       ),
-      bodyMedium: TextStyle(
+      bodyMedium: GoogleFonts.poppins(
         fontSize: 15,
-        fontFamily: GoogleFonts.poppins().fontFamily,
+        // fontFamily: GoogleFonts.poppins().fontFamily,
         letterSpacing: 0,
         fontWeight: FontWeight.w500,
         color: isDark ? Colors.white : AppColors.darkPrimaryColor,
       ),
-      bodySmall: TextStyle(
+      bodySmall: GoogleFonts.poppins(
         fontSize: 12.5,
-        fontFamily: GoogleFonts.poppins().fontFamily,
+        // fontFamily: GoogleFonts.poppins().fontFamily,
         letterSpacing: 0,
         fontWeight: FontWeight.w500,
         color: isDark ? Colors.white : AppColors.grey,
       ),
-      titleMedium: TextStyle(
-        fontFamily: GoogleFonts.poppins().fontFamily,
+      titleMedium: GoogleFonts.poppins(
+        // fontFamily: GoogleFonts.poppins().fontFamily,
         fontWeight: FontWeight.w600,
         letterSpacing: 0,
         fontSize: 15,
@@ -269,9 +267,9 @@ class AppThemeData {
           fontWeight: FontWeight.w600,
           letterSpacing: 0,
           color: AppColors.grey),
-      labelLarge: TextStyle(
+      labelLarge: GoogleFonts.poppins(
         fontSize: 15.5,
-        fontFamily: GoogleFonts.poppins().fontFamily,
+        // fontFamily: GoogleFonts.poppins().fontFamily,
         fontWeight: FontWeight.w600,
         letterSpacing: 0,
         color: isDark ? Colors.white : AppColors.black,
