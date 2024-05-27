@@ -426,7 +426,7 @@ class SpecificationAttributesController extends GetxController {
                   item2.sampleTextValue!,
                   item2.sampleNumValue!,
                   item2.comply!,
-                  item2.comment!,
+                  item2.comment ?? '',
                   item2.analyticalName!,
                   item2.isPictureRequired!,
                   item2.inspectionResult!,
@@ -527,7 +527,7 @@ class SpecificationAttributesController extends GetxController {
     return true;
   }
 
-  callStartActivity(bool isComplete) {
+  void callStartActivity(bool isComplete) {
     Map<String, dynamic> args = {
       Consts.SERVER_INSPECTION_ID: inspectionId,
       Consts.PARTNER_NAME: partnerName,
@@ -664,7 +664,7 @@ class SpecificationAttributesController extends GetxController {
     await Get.to(() => const InspectionPhotos(), arguments: passingData);
   }
 
-  onBackButtonClick() {
+  void onBackButtonClick() {
     Get.back();
     Get.back();
     Get.back();

@@ -42,6 +42,7 @@ class Inspection {
   String? cteType;
   String? itemSkuName;
   String? gtin;
+  String? poCreatedDate;
 
   Inspection({
     this.inspectionId,
@@ -84,6 +85,7 @@ class Inspection {
     this.cteType,
     this.itemSkuName,
     this.gtin,
+    this.poCreatedDate,
   });
 
   // toJson

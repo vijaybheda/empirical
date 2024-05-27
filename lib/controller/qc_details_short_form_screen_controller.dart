@@ -63,6 +63,7 @@ class QCDetailsShortFormScreenController extends GetxController {
       itemUniqueId,
       lotSize;
   int? poLineNo, varietyId, gradeId, itemSkuId;
+  String? poCreatedDate;
 
   final ApplicationDao dao = ApplicationDao();
 
@@ -179,6 +180,7 @@ class QCDetailsShortFormScreenController extends GetxController {
     callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
     is1stTimeActivity = args[Consts.IS1STTIMEACTIVITY] ?? '';
     productTransfer = args[Consts.PRODUCT_TRANSFER] ?? '';
+    poCreatedDate = args[Consts.PO_CREATED_DATE] ?? '';
 
     // maybe unused in initial setter
     inspectionResult = args[Consts.INSPECTION_RESULT] ?? '';
@@ -201,19 +203,21 @@ class QCDetailsShortFormScreenController extends GetxController {
       if (serverInspectionID < 0) {
         if (!(completed ?? false) && !(partialCompleted ?? false)) {
           await createNewInspection(
-              itemSKU,
-              itemSkuId,
-              lotNoString,
-              packDate,
-              specificationNumber!,
-              specificationVersion!,
-              specificationName ?? '',
-              specificationTypeName ?? '',
-              sampleSizeByCount,
-              gtinString,
-              poNumber,
-              poLineNo,
-              itemSkuName);
+            itemSKU,
+            itemSkuId,
+            lotNoString,
+            packDate,
+            specificationNumber!,
+            specificationVersion!,
+            specificationName ?? '',
+            specificationTypeName ?? '',
+            sampleSizeByCount,
+            gtinString,
+            poNumber,
+            poLineNo,
+            itemSkuName,
+            poCreatedDate,
+          );
         }
       } else {
         if (callerActivity != "NewPurchaseOrderDetailsActivity") {
@@ -247,6 +251,9 @@ class QCDetailsShortFormScreenController extends GetxController {
               specificationNumber!, specificationVersion!);
       await setSpecAnalyticalTable();
       hasInitialised.value = true;
+      Future.delayed(const Duration(milliseconds: 100)).then((value) {
+        update();
+      });
     });
   }
 
@@ -370,6 +377,12 @@ class QCDetailsShortFormScreenController extends GetxController {
         selectedUOM = chileUOMID;
       }
     }
+    if (qualityControlItems != null) {
+      lotNoController.text = qualityControlItems!.lot ?? '';
+      gtinController.text = qualityControlItems!.gtin ?? '';
+      glnController.text = qualityControlItems!.gln ?? '';
+      glnAINumber = qualityControlItems!.glnType ?? '';
+    }
     SchedulerBinding.instance.addPostFrameCallback((_) {
       update();
     });
@@ -384,19 +397,21 @@ class QCDetailsShortFormScreenController extends GetxController {
   }
 
   Future<void> createNewInspection(
-      itemSku,
-      itemSkuId,
-      lotNo,
-      packDate,
-      String specificationNumber,
-      String specificationVersion,
-      String specificationName,
-      String specificationTypeName,
-      int sampleSizeByCount,
-      gtin,
-      poNumber,
-      poLineNo,
-      itemSkuName) async {
+    itemSku,
+    itemSkuId,
+    lotNo,
+    packDate,
+    String specificationNumber,
+    String specificationVersion,
+    String specificationName,
+    String specificationTypeName,
+    int sampleSizeByCount,
+    gtin,
+    poNumber,
+    poLineNo,
+    itemSkuName,
+    poCreatedDate,
+  ) async {
     try {
       var userId = _appStorage.getUserData()?.id;
       _appStorage.currentInspection = Inspection(
@@ -422,6 +437,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         itemSkuName: itemSkuName,
         poLineNo: poLineNo,
         rating: 0,
+        poCreatedDate: poCreatedDate,
       );
       var inspectionID =
           await dao.createInspection(_appStorage.currentInspection!);
@@ -562,9 +578,18 @@ class QCDetailsShortFormScreenController extends GetxController {
     int qtyShipped = 0;
     if (qtyShippedString.isNotEmpty) {
       try {
-        qtyShipped = int.parse(qtyShippedString);
-        if (qtyShipped < 1) {
-          return false;
+        int qtyLength = qtyShippedController.text.length;
+        if (qtyLength > 8) {
+          hasErrors2 = true;
+
+          AppAlertDialog.validateAlerts(
+              Get.context!, AppStrings.alert, AppStrings.errorQtyShippedLength);
+        } else {
+          qtyShipped = int.tryParse(qtyShippedController.text) ?? 0;
+          if (qtyShipped < 1) {
+            hasErrors2 = true;
+            return false;
+          }
         }
       } catch (e) {
         AppSnackBar.error(
@@ -647,6 +672,9 @@ class QCDetailsShortFormScreenController extends GetxController {
           lot_size: 0,
           shipDate: 0,
           dateType: dateTypeDesc,
+          // FIXME: ?? TODO: assign below
+          gln: gln ?? '',
+          glnType: glnAINumber ?? '',
         );
       } else {
         int qtyReceived = 0;
@@ -674,6 +702,9 @@ class QCDetailsShortFormScreenController extends GetxController {
           gtin: gtin,
           shipDate: 0,
           dateType: dateTypeDesc,
+          // FIXME: ?? TODO: assign below
+          gln: gln ?? '',
+          glnType: glnAINumber ?? '',
         );
       }
     } catch (e) {

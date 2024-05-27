@@ -63,14 +63,14 @@ class WSUploadMobileFiles {
       UploadResponseData uploadResponseData = parseUploadJson(response);
 
       if (uploadResponseData.inspectionServerID != 0) {
-        dao.updateInspectionServerId(
+        await dao.updateInspectionServerId(
             inspectionId, uploadResponseData.inspectionServerID);
       }
 
       if (uploadResponseData.uploaded) {
         Utils.setInspectionUploadStatus(
             inspectionId, Consts.INSPECTION_UPLOAD_IN_PROGRESS);
-        dao.deleteInspectionAfterUpload(inspectionId);
+        await dao.deleteInspectionAfterUpload(inspectionId);
       }
     }
   }

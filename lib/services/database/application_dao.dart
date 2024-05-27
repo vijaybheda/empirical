@@ -2233,27 +2233,35 @@ class ApplicationDao {
     return trailerTempMap;
   }
 
-  Future<TrailerTemperatureDetails> findTrailerTemperatureDetails(int inspectionId) async {
-  TrailerTemperatureDetails trailerTempMap = TrailerTemperatureDetails();
-  final Database db = dbProvider.lazyDatabase; // Assuming you have a dbProvider instance for database operations
+  Future<TrailerTemperatureDetails> findTrailerTemperatureDetails(
+      int inspectionId) async {
+    TrailerTemperatureDetails trailerTempMap = TrailerTemperatureDetails();
+    final Database db = dbProvider
+        .lazyDatabase; // Assuming you have a dbProvider instance for database operations
 
-  try {
-    String query = "SELECT * FROM ${DBTables.TRAILER_TEMPERATURE_DETAILS} WHERE ${TrailerTemperatureDetailsColumn.ID} = ?";
-    List<Map> result = await db.rawQuery(query, [inspectionId]);
+    try {
+      String query =
+          "SELECT * FROM ${DBTables.TRAILER_TEMPERATURE_DETAILS} WHERE ${TrailerTemperatureDetailsColumn.ID} = ?";
+      List<Map> result = await db.rawQuery(query, [inspectionId]);
 
-    if (result.isNotEmpty) {
-      trailerTempMap.tempOpen1 = result.first[TrailerTemperatureDetailsColumn.TEMP_OPEN1];
-      trailerTempMap.tempOpen2 = result.first[TrailerTemperatureDetailsColumn.TEMP_OPEN2];
-      trailerTempMap.tempOpen3 = result.first[TrailerTemperatureDetailsColumn.TEMP_OPEN3];
-      trailerTempMap.comments = result.first[TrailerTemperatureDetailsColumn.COMMENTS];
-      trailerTempMap.poNumber = result.first[TrailerTemperatureDetailsColumn.PO_NUMBER];
+      if (result.isNotEmpty) {
+        trailerTempMap.tempOpen1 =
+            result.first[TrailerTemperatureDetailsColumn.TEMP_OPEN1];
+        trailerTempMap.tempOpen2 =
+            result.first[TrailerTemperatureDetailsColumn.TEMP_OPEN2];
+        trailerTempMap.tempOpen3 =
+            result.first[TrailerTemperatureDetailsColumn.TEMP_OPEN3];
+        trailerTempMap.comments =
+            result.first[TrailerTemperatureDetailsColumn.COMMENTS];
+        trailerTempMap.poNumber =
+            result.first[TrailerTemperatureDetailsColumn.PO_NUMBER];
+      }
+    } catch (e) {
+      print('Error has occurred while finding trailer temperature items: $e');
     }
-  } catch (e) {
-    print('Error has occurred while finding trailer temperature items: $e');
-  }
 
-  return trailerTempMap;
-}
+    return trailerTempMap;
+  }
 
   Future<bool> checkDataExists(txn, String columnName, String poNumber) async {
     try {
@@ -3186,6 +3194,8 @@ class ApplicationDao {
     required int lot_size,
     required int shipDate,
     required String dateType,
+    required String? gln,
+    required String? glnType,
   }) async {
     int? qc_id;
     final Database db = dbProvider.lazyDatabase;
@@ -3225,6 +3235,9 @@ class ApplicationDao {
           QualityControlColumn.GTIN: gtin,
           QualityControlColumn.LOT_SIZE: lot_size,
           QualityControlColumn.SHIP_DATE: shipDate,
+          // FIXME: ?? TODO: assign below
+          // QualityControlColumn.GLN: gln,
+          // QualityControlColumn.GLN_TYPE: glnType,
         };
 
         qc_id = await txn.insert(DBTables.QUALITY_CONTROL, values);
@@ -3251,6 +3264,8 @@ class ApplicationDao {
     required String gtin,
     required int shipDate,
     required String dateType,
+    required String gln,
+    required String glnType,
   }) async {
     final Database db = dbProvider.lazyDatabase;
     print('DBRequest updateQualityControlShortForm');
@@ -3270,6 +3285,10 @@ class ApplicationDao {
           QualityControlColumn.GTIN: gtin,
           QualityControlColumn.SHIP_DATE: shipDate,
           QualityControlColumn.DATE_TYPE: dateType,
+
+          // FIXME: ?? TODO: assign below
+          // QualityControlColumn.GLN: gln,
+          // QualityControlColumn.GLN_TYPE: glnType,
         };
 
         await txn.update(

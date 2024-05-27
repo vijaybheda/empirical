@@ -395,6 +395,9 @@ class LongFormQualityControlScreenController extends GetxController {
           lot_size: 0,
           shipDate: 0,
           dateType: dateTypeDesc,
+          // FIXME: ?? TODO: assign below
+          gln: gln,
+          glnType: '',
         );
       } else {
         await dao.updateQualityControl(
