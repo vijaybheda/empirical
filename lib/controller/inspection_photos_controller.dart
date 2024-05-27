@@ -199,11 +199,13 @@ class InspectionPhotosController extends GetxController {
         await dao
             .createInspectionAttachment(
                 InspectionAttachment(
-                    Inspection_ID: inspectionId ?? 0,
-                    Attachment_ID: 0,
-                    Attachment_Title: imagesList[i].Attachment_Title ?? '',
-                    CREATED_TIME: imagesList[i].createdTime ?? 0,
-                    FILE_LOCATION: imagesList[i].pathToPhoto ?? ''),
+                  Inspection_ID: inspectionId ?? 0,
+                  Attachment_ID: 0,
+                  Attachment_Title: imagesList[i].Attachment_Title ?? '',
+                  CREATED_TIME: imagesList[i].createdTime ?? 0,
+                  filelocation: imagesList[i].pathToPhoto ?? '',
+                  title: imagesList[i].Attachment_Title ?? '',
+                ),
                 imagesList[i].Attachment_Title ?? '',
                 imagesList[i].createdTime ?? '',
                 imagesList[i].pathToPhoto ?? '')
@@ -298,8 +300,8 @@ class InspectionPhotosController extends GetxController {
     if (picsFromDB.isNotEmpty) {
       for (int i = 0; i < picsFromDB.length; i++) {
         PictureData temp = PictureData();
-        temp.setData(picsFromDB[i].Attachment_ID, picsFromDB[i].FILE_LOCATION,
-            true, File(picsFromDB[i].FILE_LOCATION.toString()));
+        temp.setData(picsFromDB[i].Attachment_ID, picsFromDB[i].filelocation,
+            true, File(picsFromDB[i].filelocation.toString()));
         imagesList.add(temp);
       }
     }
