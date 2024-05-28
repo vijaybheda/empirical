@@ -141,7 +141,7 @@ class QCDetailsShortFormScreenController extends GetxController {
     poNumber = args[Consts.PO_NUMBER] ?? '';
 
     lotNo = args[Consts.LOT_NO] ?? '';
-
+    lotNoController.text = lotNo ?? '';
     String packDateString = args[Consts.PACK_DATE] ?? '';
     if (packDateString.isNotEmpty) {
       try {
@@ -203,20 +203,20 @@ class QCDetailsShortFormScreenController extends GetxController {
       if (serverInspectionID < 0) {
         if (!(completed ?? false) && !(partialCompleted ?? false)) {
           await createNewInspection(
-            itemSKU,
-            itemSkuId,
+            itemSKU!,
+            itemSkuId!,
             lotNoString,
-            packDate,
+            packDate?.millisecondsSinceEpoch ?? 0,
             specificationNumber!,
             specificationVersion!,
             specificationName ?? '',
             specificationTypeName ?? '',
             sampleSizeByCount,
             gtinString,
-            poNumber,
-            poLineNo,
-            itemSkuName,
-            poCreatedDate,
+            poNumber!,
+            poLineNo!,
+            itemSkuName!,
+            poCreatedDate!,
           );
         }
       } else {
@@ -397,20 +397,20 @@ class QCDetailsShortFormScreenController extends GetxController {
   }
 
   Future<void> createNewInspection(
-    itemSku,
-    itemSkuId,
-    lotNo,
-    packDate,
+    String itemSku,
+    int itemSkuId,
+    String lotNo,
+    int packDate,
     String specificationNumber,
     String specificationVersion,
     String specificationName,
     String specificationTypeName,
     int sampleSizeByCount,
-    gtin,
-    poNumber,
-    poLineNo,
-    itemSkuName,
-    poCreatedDate,
+    String gtin,
+    String poNumber,
+    int poLineNo,
+    String itemSkuName,
+    String poCreatedDate,
   ) async {
     try {
       var userId = _appStorage.getUserData()?.id;
@@ -419,7 +419,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         partnerId: partnerID,
         carrierId: carrierID,
         createdTime: DateTime.now().millisecondsSinceEpoch,
-        complete: false.toString(),
+        complete: 0.toString(),
         downloadId: -1,
         commodityId: commodityID,
         itemSKU: itemSKU,
@@ -428,7 +428,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         specificationVersion: specificationVersion,
         specificationTypeName: specificationTypeName,
         sampleSizeByCount: sampleSizeByCount,
-        packDate: packDate,
+        packDate: packDate.toString(),
         itemSKUId: itemSkuId,
         commodityName: commodityName,
         lotNo: lotNo,

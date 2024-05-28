@@ -81,7 +81,7 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
           color: AppColors.orange,
           width: ResponsiveHelper.getDeviceWidth(context),
           child: Text(
-            controller.carrierName ?? '',
+            controller.commodityName ?? '',
             style: Get.textTheme.titleLarge!.copyWith(
               fontSize: 35.sp,
               fontWeight: FontWeight.w600,
