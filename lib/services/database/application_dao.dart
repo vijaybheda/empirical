@@ -37,6 +37,7 @@ import 'package:pverify/services/database/db_tables.dart';
 import 'package:pverify/ui/trailer_temp/trailertemprature_details.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/utils.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -577,7 +578,7 @@ class ApplicationDao {
     );
 
     for (Map map in result) {
-      list.add(MyInspection48HourItem.fromMap(map as Map<String, dynamic>));
+      list.add(MyInspection48HourItem.fromJson(map as Map<String, dynamic>));
     }
 
     return list;
@@ -625,16 +626,20 @@ class ApplicationDao {
     final Database db = dbProvider.lazyDatabase;
     List<int> ids = [];
 
-    List<Map> result = await db.query(
-      DBTables.INSPECTION,
-      columns: [(BaseColumns.ID)],
-      where: '${InspectionColumn.UPLOAD_STATUS} = ?',
-      // whereArgs: [Consts.INSPECTION_UPLOAD_READY],
-// FIXME: Uncomment the line above and replace Consts.INSPECTION_UPLOAD_READY with the actual value
-    );
+    try {
+      List<Map> result = await db.query(
+        DBTables.INSPECTION,
+        columns: [BaseColumns.ID],
+        where: '${InspectionColumn.UPLOAD_STATUS} = ?',
+        whereArgs: [Consts.INSPECTION_UPLOAD_READY],
+      );
 
-    for (Map map in result) {
-      ids.add(map[BaseColumns.ID]);
+      for (Map map in result) {
+        ids.add(map[BaseColumns.ID]);
+      }
+    } catch (e) {
+      debugPrint(
+          'Error occurred while finding ready-to-upload inspection IDs: $e');
     }
 
     return ids;

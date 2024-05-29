@@ -13,6 +13,7 @@ import 'package:pverify/models/delivery_to_item.dart';
 import 'package:pverify/models/grade_commodity_detail_item.dart';
 import 'package:pverify/models/grade_defect_detail_item.dart';
 import 'package:pverify/models/inspection.dart';
+import 'package:pverify/models/inspection_download.dart';
 import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/last_inspections_item.dart';
 import 'package:pverify/models/my_inspection_48hour_item.dart';
@@ -29,6 +30,7 @@ import 'package:pverify/models/specification_supplier_gtin.dart';
 import 'package:pverify/models/to_location_item.dart';
 import 'package:pverify/models/trending_data_item.dart';
 import 'package:pverify/models/uom_item.dart';
+import 'package:pverify/models/upload_response_data.dart';
 import 'package:pverify/models/user_data.dart';
 import 'package:pverify/models/variety_item.dart';
 
@@ -58,7 +60,7 @@ class AppStorage extends GetxController {
   List<CountryItem>? countryList;
   List<DeliveryToItem>? deliveryToList;
   List<TrendingDataItem>? trendingDataList;
-  List<MyInspection48HourItem>? myInsp48HourList;
+  List<MyInspection48HourItem>? myInsp48HourList = [];
   List<LastInspectionsItem>? lastInspectionsList;
   List<FinishedGoodsItemSKU>? finishedGoodsItemSKUList;
   List<ToLocationItem>? toLocationItemList;
@@ -82,6 +84,10 @@ class AppStorage extends GetxController {
   List<SpecificationGradeTolerance> specificationGradeToleranceTable = [];
 
   bool resumeFromSpecificationAttributes = false;
+
+  InspectionDownload? downloadedInspection;
+  UploadResponseData? uploadResponseData;
+
   // instance of this class
   static AppStorage get instance => _instance;
   static final AppStorage _instance = AppStorage._internal();

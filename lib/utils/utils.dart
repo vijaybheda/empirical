@@ -71,6 +71,15 @@ class Utils {
     return fromDateTimeToUTCDateTime(dateFormat, timeFormat).toIso8601String();
   }
 
+  static Future<bool> isOnline() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult.contains(ConnectivityResult.mobile) ||
+        connectivityResult.contains(ConnectivityResult.wifi)) {
+      return true;
+    }
+    return false;
+  }
+
   /*static Future<XFile?> compressImage(File file,
       {int quality = 80, int minWidth = 1000, int minHeight = 1000}) async {
     final filePath = file.absolute.path;
@@ -572,46 +581,44 @@ class Utils {
     await Future.delayed(const Duration(milliseconds: 10));
   }
 
-  static Future<void> showLinearProgressWithMessage(
-      {String? message, required ProgressController progressController}) async {
-    // ProgressController progressController = Get.find<ProgressController>();
+  static Future<void> showLinearProgressWithMessage({
+    String? message,
+    required ProgressController progressController,
+  }) async {
     await Future.delayed(const Duration(milliseconds: 10));
     Get.dialog(
-      Obx(() => Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+      Obx(
+        () => AlertDialog(
+          backgroundColor: Colors.black87,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Center(
-                child: SizedBox(
-                  height: 25,
-                  width: 25,
-                  child: Transform.scale(
-                    scale: 2,
-                    child: LinearProgressIndicator(
-                      valueColor:
-                          const AlwaysStoppedAnimation<Color>(Colors.white),
-                      backgroundColor: Colors.white,
-                      value: progressController.progress.value.toDouble(),
-                    ),
-                  ),
+              SizedBox(
+                width: double.infinity,
+                child: LinearProgressIndicator(
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+                  backgroundColor: Colors.grey,
+                  value: progressController.progress.value,
                 ),
               ),
+              const SizedBox(height: 20),
               Text(
                 message ?? 'Loading...',
-                style: Get.textTheme.displayMedium?.copyWith(
+                style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 30.sp,
+                  fontSize: 16,
                 ),
-              )
+                textAlign: TextAlign.center,
+              ),
             ],
-          )),
+          ),
+        ),
+      ),
       barrierDismissible: false,
       transitionCurve: Curves.easeInOut,
       navigatorKey: Get.key,
       transitionDuration: const Duration(milliseconds: 200),
     );
-
-    await Future.delayed(const Duration(milliseconds: 10));
   }
 
   static Future<void> setInspectionUploadStatus(

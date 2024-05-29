@@ -94,4 +94,5 @@ class Consts {
   static const int INSPECTION_UPLOAD_READY = 1;
   static const int INSPECTION_UPLOAD_IN_PROGRESS = 2;
   static const int INSPECTION_UPLOAD_COMPLETE = 3;
+  static const bool IS_EXIT = false;
 }

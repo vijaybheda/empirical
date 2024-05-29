@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:pverify/models/inspection_attachment.dart';
@@ -14,17 +16,21 @@ import 'package:pverify/utils/utils.dart';
 class WSUploadMobileFiles {
   String? request;
   List<InspectionDefectAttachment> attachments;
-  List<InspectionAttachment> inspectionAttachments;
+  List<InspectionAttachment>? inspectionAttachments;
   Map<String, dynamic> jsonInspection;
   int inspectionId;
   final AppStorage appStorage = AppStorage.instance;
+  Map<String, dynamic>? jsonInspection2;
 
   static const String serverUrl = String.fromEnvironment('API_HOST');
 
   final ApplicationDao dao = ApplicationDao();
 
-  WSUploadMobileFiles(this.inspectionId, this.attachments, this.jsonInspection,
-      this.request, this.inspectionAttachments);
+  WSUploadMobileFiles(
+    this.inspectionId,
+    this.attachments,
+    this.jsonInspection,
+  );
 
   Future<void> requestUploadMobileFiles(
       List<InspectionDefectAttachment> attachments,
@@ -50,14 +56,13 @@ class WSUploadMobileFiles {
     inspectionAttachments =
         await dao.findInspectionAttachmentsByInspectionId(inspectionId);
 
-    Map<String, dynamic> jsonInspection2 =
-        createInspectionAttachmentJSONRequest();
+    jsonInspection2 = createInspectionAttachmentJSONRequest();
 
     String response = await _doFileUpload();
-
+    debugPrint("HERE IS ${response.toString()}");
     if (response.isEmpty) {
-      // TODO: Handle error
-      // You can handle the error scenario here
+      debugPrint('🔴 Error: Response is empty.$response');
+      return;
     } else {
       // Parse the response and handle success scenario
       UploadResponseData uploadResponseData = parseUploadJson(response);
@@ -76,64 +81,78 @@ class WSUploadMobileFiles {
   }
 
   Future<String> _doFileUpload() async {
-    var request = http.MultipartRequest('POST', Uri.parse(this.request!));
-    final Map<String, String> headers = appStorage.read(StorageKey.kHeaderMap);
-    // Add headers
-    request.headers.addAll(headers);
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse(this.request!));
+      final Map<String, String> headers =
+          appStorage.read(StorageKey.kHeaderMap);
+      // Add headers
+      request.headers.addAll(headers);
 
-    // Add fields
-    request.fields['file'] = json.encode(jsonInspection);
+      // Add fields
+      request.fields['file'] = json.encode(jsonInspection);
 
-    String externalStoragePath = await Utils().getExternalStoragePath();
-    // Create a temporary file and write data to it
-    final file = await File('$externalStoragePath/inspection.txt').create();
-    await file.writeAsString(json.encode(jsonInspection));
+      String externalStoragePath = await Utils().getExternalStoragePath();
+      // Create a temporary file and write data to it
+      final file = await File('$externalStoragePath/inspection.txt').create();
+      await file.writeAsString(json.encode(jsonInspection));
 
-    // Add the file to the multipart request
-    request.files.add(await http.MultipartFile.fromPath(
-      'file',
-      file.path,
-      filename: basename(file.path),
-    ));
-
-    // Add files
-    for (InspectionDefectAttachment attachment in attachments) {
-      File file = File(attachment.fileLocation!);
+      // Add the file to the multipart request
       request.files.add(await http.MultipartFile.fromPath(
         'file',
         file.path,
         filename: basename(file.path),
       ));
-    }
 
-    Map<String, dynamic> jsonInspection2 =
-        createInspectionAttachmentJSONRequest();
-    final inspectionFile2 =
-        await File('${Directory.systemTemp.path}/inspection2.txt').create();
-    await inspectionFile2.writeAsString(json.encode(jsonInspection2));
+      // Add files
+      for (InspectionDefectAttachment attachment in attachments) {
+        File file = File(attachment.fileLocation!);
+        request.files.add(await http.MultipartFile.fromPath(
+          'file',
+          file.path,
+          filename: basename(file.path),
+        ));
+      }
 
-    request.files.add(await http.MultipartFile.fromPath(
-      'inspectionAttachments',
-      inspectionFile2.path,
-      filename: basename(inspectionFile2.path),
-    ));
+      /* Map<String, dynamic> jsonInspection2 =
+        createInspectionAttachmentJSONRequest(); */
+      final inspectionFile2 =
+          await File('${Directory.systemTemp.path}/inspection2.txt').create();
+      await inspectionFile2.writeAsString(json.encode(jsonInspection2));
 
-    // Add inspectionAttachment files
-    for (InspectionAttachment attachment in inspectionAttachments) {
-      File file = File(attachment.filelocation!);
       request.files.add(await http.MultipartFile.fromPath(
         'inspectionAttachments',
-        file.path,
-        filename: basename(file.path),
+        inspectionFile2.path,
+        filename: basename(inspectionFile2.path),
       ));
-    }
 
-    // Send the request
-    var response = await request.send();
+      // Add inspectionAttachment files
+      for (InspectionAttachment attachment in inspectionAttachments ?? []) {
+        File file = File(attachment.filelocation!);
+        request.files.add(await http.MultipartFile.fromPath(
+          'inspectionAttachments',
+          file.path,
+          filename: basename(file.path),
+        ));
+      }
 
-    if (response.statusCode == 200) {
-      return await response.stream.bytesToString();
-    } else {
+      // Send the request
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        debugPrint('🟢 API CALLED SUCCESSFULLY....');
+        return await response.stream.bytesToString();
+      } else if (response.statusCode == HttpStatus.unauthorized) {
+        debugPrint('🔴 Error: Unauthorized request.');
+        return '';
+      } else if (response.statusCode == HttpStatus.notFound) {
+        debugPrint('🔴 Error: Not found.');
+        return '';
+      } else {
+        debugPrint('🔴 Error: ${response.statusCode}');
+        return '';
+      }
+    } catch (e) {
+      debugPrint('🔴 Exception: $e');
       return '';
     }
   }
@@ -142,7 +161,7 @@ class WSUploadMobileFiles {
     Map<String, dynamic> jsonObj = {};
     List<Map<String, dynamic>> defectsArray = [];
 
-    for (InspectionAttachment attachment in inspectionAttachments) {
+    for (InspectionAttachment attachment in inspectionAttachments ?? []) {
       Map<String, dynamic> d_obj = {
         'inspectionId': inspectionId,
         'attachmentId': attachment.id,
@@ -166,23 +185,28 @@ class WSUploadMobileFiles {
     try {
       Map<String, dynamic> responseObj = json.decode(response);
 
-      if (responseObj.containsKey('inspectionServerID')) {
+      if (responseObj.containsKey('inspectionServerID') &&
+          responseObj['inspectionServerID'] != null) {
         inspectionServerID = responseObj['inspectionServerID'];
       }
-      if (responseObj.containsKey('uploadCompleted')) {
+      if (responseObj.containsKey('uploadCompleted') &&
+          responseObj['uploadCompleted'] != null) {
         uploaded = responseObj['uploadCompleted'];
       }
-      if (responseObj.containsKey('errorMessage')) {
+      if (responseObj.containsKey('errorMessage') &&
+          responseObj['errorMessage'] != null) {
         errorMessage = responseObj['errorMessage'];
       }
-      if (responseObj.containsKey('validationErrors')) {
+      if (responseObj.containsKey('validationErrors') &&
+          responseObj['validationErrors'] != null) {
         validationError = responseObj['validationErrors'];
       }
-      if (responseObj.containsKey('localInspectionID')) {
+      if (responseObj.containsKey('localInspectionID') &&
+          responseObj['localInspectionID'] != null) {
         localInspectionID = responseObj['localInspectionID'];
       }
     } catch (e) {
-      print('Error parsing JSON: $e');
+      debugPrint('Error parsing JSON: $e');
     }
 
     return UploadResponseData(

@@ -1,61 +1,103 @@
+import 'package:pverify/services/database/column_names.dart';
+import 'package:pverify/utils/utils.dart';
+
 class MyInspection48HourItem {
-  final String id;
-  final String title;
-  final String description;
-  final String imageUrl;
-  final String date;
-  final String time;
-  final String location;
-  final String status;
+  int? id;
+  int? inspectionId;
+  int? commodityId;
+  int? carrierId;
+  String? date = "";
+  int? completed;
+  String? status;
+  String? commodityName;
+  int? gradeId;
+  String? specificationNumber;
+  String? specificationVersion;
+  String? specificationName;
+  String? specificationTypeName;
+  String? lotNo;
+  String? packDate;
+  int? sampleSizeByCount;
+  String? itemSKU;
+  int? itemSKUId;
+  String? poNumber;
+  int? toLocationId;
+  String? cteType;
+  String? itemSkuName;
+  String? result;
+  String? partnerName;
+  int? uploadStatus;
+  int? partnerId;
+  String? carrierName;
+  String? varietyName;
+  int? varietyId;
+  String? inspectionResult;
 
   MyInspection48HourItem({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.imageUrl,
-    required this.date,
-    required this.time,
-    required this.location,
-    required this.status,
+    this.id,
+    this.inspectionId,
+    this.commodityId,
+    this.carrierId,
+    this.date,
+    this.completed,
+    this.status,
+    this.commodityName,
+    this.gradeId,
+    this.specificationNumber,
+    this.specificationVersion,
+    this.specificationName,
+    this.specificationTypeName,
+    this.lotNo,
+    this.packDate,
+    this.sampleSizeByCount,
+    this.itemSKU,
+    this.itemSKUId,
+    this.poNumber,
+    this.toLocationId,
+    this.cteType,
+    this.itemSkuName,
+    this.result,
+    this.partnerName,
+    this.uploadStatus,
+    this.partnerId,
+    this.carrierName,
+    this.varietyName,
+    this.varietyId,
+    this.inspectionResult,
   });
 
+  // fromJson method
   factory MyInspection48HourItem.fromJson(Map<String, dynamic> json) {
+    printKeysAndValueTypes(json);
     return MyInspection48HourItem(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      imageUrl: json['imageUrl'],
-      date: json['date'],
-      time: json['time'],
-      location: json['location'],
-      status: json['status'],
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'title': title,
-      'description': description,
-      'imageUrl': imageUrl,
-      'date': date,
-      'time': time,
-      'location': location,
-      'status': status,
-    };
-  }
-
-  // fromMap
-  factory MyInspection48HourItem.fromMap(Map<String, dynamic> map) {
-    return MyInspection48HourItem(
-      id: map['id'],
-      title: map['title'],
-      description: map['description'],
-      imageUrl: map['imageUrl'],
-      date: map['date'],
-      time: map['time'],
-      location: map['location'],
-      status: map['status'],
+      id: json[InspectionColumn.ID],
+      inspectionId: json[InspectionColumn.INSPECTION_SERVER_ID],
+      commodityId: json[InspectionColumn.COMMODITY_ID],
+      carrierId: json[InspectionColumn.CARRIER_ID],
+      date: json[InspectionColumn.PACK_DATE] ?? "",
+      completed: json[InspectionColumn.COMPLETED_TIME],
+      status: json[InspectionColumn.STATUS],
+      commodityName: json[InspectionColumn.COMMODITY_NAME],
+      gradeId: json[InspectionColumn.GRADE_ID],
+      specificationNumber: json[InspectionColumn.SPECIFICATION_NUMBER],
+      specificationVersion: json[InspectionColumn.SPECIFICATION_VERSION],
+      specificationName: json[InspectionColumn.SPECIFICATION_NAME],
+      specificationTypeName: json[InspectionColumn.SPECIFICATION_TYPENAME],
+      lotNo: json[InspectionColumn.LOT_NO],
+      packDate: json[InspectionColumn.PACK_DATE],
+      sampleSizeByCount: json[InspectionColumn.SAMPLE_SIZE_BY_COUNT],
+      itemSKU: json[InspectionColumn.ITEM_SKU],
+      itemSKUId: json[InspectionColumn.ITEM_SKU_ID],
+      poNumber: json[InspectionColumn.PO_NUMBER],
+      toLocationId: json[InspectionColumn.TO_LOCATION_ID],
+      cteType: json[InspectionColumn.CTE_TYPE],
+      itemSkuName: json[InspectionColumn.ITEM_SKU_NAME],
+      result: json[InspectionColumn.RESULT],
+      partnerName: json[InspectionColumn.PARTNER_NAME],
+      uploadStatus: json[InspectionColumn.UPLOAD_STATUS],
+      partnerId: json[InspectionColumn.PARTNER_ID],
+      varietyName: json[InspectionColumn.VARIETY_NAME],
+      varietyId: json[InspectionColumn.VARIETY_ID],
     );
   }
 }
