@@ -255,7 +255,7 @@ class LongFormQualityControlScreenController extends GetxController {
           "QTY Inspected OK should not exceed 20 characters");
     }
 
-    int pulpTempMin = 0,
+    double pulpTempMin = 0,
         pulpTempMax = 0,
         recorderTempMin = 0,
         recorderTempMax = 0;
@@ -263,7 +263,7 @@ class LongFormQualityControlScreenController extends GetxController {
     // pulpTempMin
     if (pulpTempMinController.text.isNotEmpty) {
       if (isValidNumber(pulpTempMinController.text)) {
-        pulpTempMin = int.parse(pulpTempMinController.text);
+        pulpTempMin = double.parse(pulpTempMinController.text);
       } else {
         hasErrors = true;
         Utils.showErrorAlertDialog(
@@ -274,7 +274,7 @@ class LongFormQualityControlScreenController extends GetxController {
     // pulpTempMax
     if (pulpTempMaxController.text.isNotEmpty) {
       if (isValidNumber(pulpTempMaxController.text)) {
-        pulpTempMax = int.parse(pulpTempMaxController.text);
+        pulpTempMax = double.parse(pulpTempMaxController.text);
       } else {
         hasErrors = true;
         Utils.showErrorAlertDialog(
@@ -285,7 +285,7 @@ class LongFormQualityControlScreenController extends GetxController {
     // recorderTempMin
     if (recorderTempMinController.text.isNotEmpty) {
       if (isValidNumber(recorderTempMinController.text)) {
-        recorderTempMin = int.parse(recorderTempMinController.text);
+        recorderTempMin = double.parse(recorderTempMinController.text);
       } else {
         hasErrors = true;
         Utils.showErrorAlertDialog(
@@ -296,7 +296,7 @@ class LongFormQualityControlScreenController extends GetxController {
     // recorderTempMax
     if (recorderTempMaxController.text.isNotEmpty) {
       if (isValidNumber(recorderTempMaxController.text)) {
-        recorderTempMax = int.parse(recorderTempMaxController.text);
+        recorderTempMax = double.parse(recorderTempMaxController.text);
       } else {
         hasErrors = true;
         Utils.showErrorAlertDialog(
@@ -395,8 +395,7 @@ class LongFormQualityControlScreenController extends GetxController {
           lot_size: 0,
           shipDate: 0,
           dateType: dateTypeDesc,
-          // FIXME: ?? TODO: assign below
-          gln: gln,
+          gln: gln ?? '',
           glnType: '',
         );
       } else {
@@ -611,11 +610,23 @@ class LongFormQualityControlScreenController extends GetxController {
   }
 
   UOMItem? getUOMID(String uomName) {
-    return uomList.firstWhereOrNull((uomItem) => uomItem.uomName == uomName);
+    for (int i = 0; i < uomList.length; i++) {
+      if (uomList.elementAt(i).uomName == uomName) {
+        return uomList.elementAt(i);
+      }
+    }
+    return null;
+    // return uomList.firstWhereOrNull((uomItem) => uomItem.uomName == uomName);
   }
 
   UOMItem? getUOMPos(int uomID) {
-    return uomList.firstWhereOrNull((uomItem) => uomItem.uomID == uomID);
+    for (int i = 0; i < uomList.length; i++) {
+      if (uomList.elementAt(i).uomID == uomID) {
+        return uomList.elementAt(i);
+      }
+    }
+    return null;
+    // return uomList.firstWhereOrNull((uomItem) => uomItem.uomID == uomID);
   }
 
   // Method to set BRAND spinner

@@ -23,9 +23,9 @@ class QualityControlController extends GetxController {
   final transportConditionTextController = TextEditingController().obs;
 
   final isShortForm = false.obs;
-  List truckTempOk = AppStrings.truckTempOk;
-  List type = AppStrings.types;
-  List loadType = AppStrings.stowage;
+  List<String> truckTempOk = AppStrings.truckTempOk;
+  List<String> type = AppStrings.types;
+  List<String> loadType = AppStrings.stowage;
 
   var selectetdloadType = 'Internal Managed'.obs;
   var selectetdTruckTempOK = 'Yes'.obs;
@@ -53,7 +53,11 @@ class QualityControlController extends GetxController {
       selectetdTruckTempOK.value = value;
     } else if (type == 'Type') {
       // Types
-      selectetdTypes.value = value;
+      if (value == 'Quality Assurance') {
+        selectetdTypes.value = 'QA';
+      } else {
+        selectetdTypes.value = value;
+      }
     } else {
       // Load Types
       selectetdloadType.value = value;
@@ -171,7 +175,7 @@ class QualityControlController extends GetxController {
           selectetdloadType.value,
           transportConditionTextController.value.text,
           commentTextController.value.text,
-          selectetdTruckTempOK.value,
+          selectetdTruckTempOK.value[0],
           selectetdTypes.value,
           cteType);
       qcHeaderDetails =
@@ -190,7 +194,7 @@ class QualityControlController extends GetxController {
           totalQuantityTextController.value.text,
           selectetdloadType.value,
           transportConditionTextController.value.text,
-          selectetdTruckTempOK.value,
+          selectetdTruckTempOK.value[0],
           selectetdTypes.value,
           cteType);
     }

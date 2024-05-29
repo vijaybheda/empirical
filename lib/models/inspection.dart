@@ -33,7 +33,7 @@ class Inspection {
   int itemSKUId;
   String? commodityName;
   String? poNumber;
-  int serverInspectionId;
+  int? serverInspectionId;
   int rating;
   int poLineNo;
   int? toLocationId;
@@ -76,7 +76,7 @@ class Inspection {
     required this.itemSKUId,
     this.commodityName,
     this.poNumber,
-    this.serverInspectionId = 0,
+    this.serverInspectionId,
     required this.rating,
     required this.poLineNo,
     this.toLocationId,
@@ -130,7 +130,8 @@ class Inspection {
       InspectionColumn.PARTNER_NAME: partnerName,
       InspectionColumn.CTE_TYPE: cteType,
       InspectionColumn.ITEM_SKU_NAME: itemSkuName,
-      // InspectionColumn.GTIN: gtin,
+      InspectionColumn.GTIN: gtin,
+      InspectionColumn.PO_CREATED_DATE: poCreatedDate,
     };
   }
 
@@ -177,6 +178,7 @@ class Inspection {
       cteType: json[InspectionColumn.CTE_TYPE],
       itemSkuName: json[InspectionColumn.ITEM_SKU_NAME],
       gtin: json[InspectionColumn.GTIN],
+      poCreatedDate: json[InspectionColumn.PO_CREATED_DATE],
     );
   }
 
@@ -221,6 +223,7 @@ class Inspection {
     String? cteType,
     String? itemSkuName,
     String? gtin,
+    String? poCreatedDate,
   }) {
     return Inspection(
       inspectionId: inspectionId ?? this.inspectionId,
@@ -266,6 +269,7 @@ class Inspection {
       cteType: cteType ?? this.cteType,
       itemSkuName: itemSkuName ?? this.itemSkuName,
       gtin: gtin ?? this.gtin,
+      poCreatedDate: poCreatedDate ?? this.poCreatedDate,
     );
   }
 }

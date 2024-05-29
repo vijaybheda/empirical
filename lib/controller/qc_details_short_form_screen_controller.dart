@@ -202,42 +202,43 @@ class QCDetailsShortFormScreenController extends GetxController {
       if (serverInspectionID < 0) {
         if (!(completed ?? false) && !(partialCompleted ?? false)) {
           await createNewInspection(
-            itemSKU!,
-            itemSkuId!,
-            lotNoString,
-            packDate?.millisecondsSinceEpoch ?? 0,
-            specificationNumber!,
-            specificationVersion!,
-            specificationName ?? '',
-            specificationTypeName ?? '',
-            sampleSizeByCount,
-            gtinString,
-            poNumber!,
-            poLineNo!,
-            itemSkuName!,
-            poCreatedDate!,
+            itemSku: itemSKU!,
+            itemSkuId: itemSkuId!,
+            lotNo: lotNoString,
+            packDate: packDate?.millisecondsSinceEpoch,
+            specificationNumber: specificationNumber!,
+            specificationVersion: specificationVersion!,
+            specificationName: specificationName ?? '',
+            specificationTypeName: specificationTypeName ?? '',
+            sampleSizeByCount: sampleSizeByCount,
+            gtin: gtinString,
+            poNumber: poNumber!,
+            poLineNo: poLineNo!,
+            itemSkuName: itemSkuName!,
+            poCreatedDate: poCreatedDate,
           );
         }
       } else {
         if (callerActivity != "NewPurchaseOrderDetailsActivity") {
           await dao.updateInspection(
-              serverInspectionID,
-              commodityID!,
-              commodityName!,
-              varietyId!,
-              varietyName!,
-              gradeId!,
-              specificationNumber!,
-              specificationVersion!,
-              specificationName ?? '',
-              specificationTypeName ?? '',
-              sampleSizeByCount,
-              itemSKU!,
-              itemSkuId!,
-              poNumber!,
-              0,
-              "",
-              itemSkuName!);
+            serverInspectionID: serverInspectionID,
+            commodityID: commodityID!,
+            commodityName: commodityName!,
+            varietyId: varietyId!,
+            varietyName: varietyName,
+            gradeId: gradeId!,
+            specificationNumber: specificationNumber!,
+            specificationVersion: specificationVersion!,
+            specificationName: specificationName ?? '',
+            specificationTypeName: specificationTypeName ?? '',
+            sampleSizeByCount: sampleSizeByCount,
+            itemSKU: itemSKU!,
+            itemSKUId: itemSkuId!,
+            po_number: poNumber!,
+            rating: 0,
+            cteType: "",
+            itemSkuName: itemSkuName!,
+          );
         }
         inspectionId = serverInspectionID;
       }
@@ -287,7 +288,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         specificationNumber = specificationByItemSKU.specificationNumber!;
         specificationVersion = specificationByItemSKU.specificationVersion!;
         specificationName = specificationByItemSKU.specificationName;
-        selectedSpecification = specificationByItemSKU.specificationNumber;
+        selectedSpecification = specificationByItemSKU.specificationName;
         specificationTypeName = specificationByItemSKU.specificationTypeName;
         sampleSizeByCount = specificationByItemSKU.sampleSizeByCount ?? 0;
 
@@ -355,7 +356,8 @@ class QCDetailsShortFormScreenController extends GetxController {
   Future<void> setUOMSpinner() async {
     _appStorage.uomList = await JsonFileOperations.parseUOMJson() ?? [];
 
-    uomList = _appStorage.uomList;
+    uomList.clear();
+    uomList.addAll(_appStorage.uomList);
     uomList.sort((a, b) => a.uomName!.compareTo(b.uomName!));
 
     UOMItem? chileUOMID = getUOMID("Case");
@@ -395,22 +397,22 @@ class QCDetailsShortFormScreenController extends GetxController {
     return uomList.firstWhereOrNull((uomItem) => uomItem.uomID == uomID);
   }
 
-  Future<void> createNewInspection(
-    String itemSku,
-    int itemSkuId,
-    String lotNo,
-    int packDate,
-    String specificationNumber,
-    String specificationVersion,
-    String specificationName,
-    String specificationTypeName,
-    int sampleSizeByCount,
-    String gtin,
-    String poNumber,
-    int poLineNo,
-    String itemSkuName,
-    String poCreatedDate,
-  ) async {
+  Future<void> createNewInspection({
+    required String itemSku,
+    required int itemSkuId,
+    required String lotNo,
+    int? packDate,
+    required String specificationNumber,
+    required String specificationVersion,
+    required String specificationName,
+    required String specificationTypeName,
+    required int sampleSizeByCount,
+    required String gtin,
+    required String poNumber,
+    required int poLineNo,
+    required String itemSkuName,
+    String? poCreatedDate,
+  }) async {
     try {
       var userId = _appStorage.getUserData()?.id;
       _appStorage.currentInspection = Inspection(
@@ -427,7 +429,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         specificationVersion: specificationVersion,
         specificationTypeName: specificationTypeName,
         sampleSizeByCount: sampleSizeByCount,
-        packDate: packDate.toString(),
+        packDate: packDate == null ? '' : packDate.toString(),
         itemSKUId: itemSkuId,
         commodityName: commodityName,
         lotNo: lotNo,
@@ -437,6 +439,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         poLineNo: poLineNo,
         rating: 0,
         poCreatedDate: poCreatedDate,
+        gtin: gtin,
       );
       var inspectionID =
           await dao.createInspection(_appStorage.currentInspection!);
@@ -671,7 +674,6 @@ class QCDetailsShortFormScreenController extends GetxController {
           lot_size: 0,
           shipDate: 0,
           dateType: dateTypeDesc,
-          // FIXME: ?? TODO: assign below
           gln: gln ?? '',
           glnType: glnAINumber ?? '',
         );
@@ -701,7 +703,6 @@ class QCDetailsShortFormScreenController extends GetxController {
           gtin: gtin,
           shipDate: 0,
           dateType: dateTypeDesc,
-          // FIXME: ?? TODO: assign below
           gln: gln ?? '',
           glnType: glnAINumber ?? '',
         );

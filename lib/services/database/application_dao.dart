@@ -71,10 +71,10 @@ class ApplicationDao {
     }
   }
 
-  Future<int> getEnterpriseIdByUserId(String userId) async {
+  Future<int?> getEnterpriseIdByUserId(String userId) async {
     final Database db = dbProvider.lazyDatabase;
 
-    int enterpriseId = 0;
+    int? enterpriseId;
     List<Map<String, dynamic>> result = await db.query(
       DBTables.USER_OFFLINE,
       where: '${UserOfflineColumn.USER_ID} = ?',
@@ -493,25 +493,25 @@ class ApplicationDao {
     );
   }*/
 
-  Future<int> updateInspection(
-    int serverInspectionID,
-    int commodityID,
-    String commodityName,
-    int varietyId,
-    String varietyName,
-    int gradeId,
-    String specificationNumber,
-    String specificationVersion,
-    String specificationName,
-    String specificationTypeName,
-    int sampleSizeByCount,
-    String itemSKU,
-    int itemSKUId,
-    String po_number,
-    int rating,
-    String cteType,
-    String itemSkuName,
-  ) async {
+  Future<int> updateInspection({
+    required int? serverInspectionID,
+    required int? commodityID,
+    required String? commodityName,
+    required int? varietyId,
+    required String? varietyName,
+    required int? gradeId,
+    required String? specificationNumber,
+    required String? specificationVersion,
+    required String? specificationName,
+    required String? specificationTypeName,
+    required int? sampleSizeByCount,
+    required String? itemSKU,
+    required int? itemSKUId,
+    required String? po_number,
+    required int? rating,
+    required String? cteType,
+    required String? itemSkuName,
+  }) async {
     final Database db = dbProvider.lazyDatabase;
     print('DBRequest updateInspection');
     try {
@@ -1772,6 +1772,10 @@ class ApplicationDao {
             PODetailColumn.PO_VERSION_SPEC: row[13],
             PODetailColumn.PO_COMMODITY_ID: Utils.parseIntDefault(row[14]),
             PODetailColumn.PO_COMMODITY_NAME: row[15],
+            PODetailColumn.PO_ORDER_TYPE: row[16],
+            PODetailColumn.PO_FTL: row[17],
+            PODetailColumn.PO_BRANDED: row[18],
+            PODetailColumn.PO_CREATED_DATE: row[19],
           };
           await txn.insert(DBTables.PO_DETAIL, itemPODetailData);
         }
@@ -3178,10 +3182,10 @@ class ApplicationDao {
     required int qtyShipped,
     required int uomQtyShippedID,
     required String poNumber,
-    required int pulpTempMin,
-    required int pulpTempMax,
-    required int recorderTempMin,
-    required int recorderTempMax,
+    required double pulpTempMin,
+    required double pulpTempMax,
+    required double recorderTempMin,
+    required double recorderTempMax,
     required String rpc,
     required String claimFiledAgainst,
     required int qtyRejected,
@@ -3244,9 +3248,8 @@ class ApplicationDao {
           QualityControlColumn.GTIN: gtin,
           QualityControlColumn.LOT_SIZE: lot_size,
           QualityControlColumn.SHIP_DATE: shipDate,
-          // FIXME: ?? TODO: assign below
-          // QualityControlColumn.GLN: gln,
-          // QualityControlColumn.GLN_TYPE: glnType,
+          QualityControlColumn.GLN: gln,
+          QualityControlColumn.GLN_TYPE: glnType,
         };
 
         qc_id = await txn.insert(DBTables.QUALITY_CONTROL, values);
@@ -3294,10 +3297,8 @@ class ApplicationDao {
           QualityControlColumn.GTIN: gtin,
           QualityControlColumn.SHIP_DATE: shipDate,
           QualityControlColumn.DATE_TYPE: dateType,
-
-          // FIXME: ?? TODO: assign below
-          // QualityControlColumn.GLN: gln,
-          // QualityControlColumn.GLN_TYPE: glnType,
+          QualityControlColumn.GLN: gln,
+          QualityControlColumn.GLN_TYPE: glnType,
         };
 
         await txn.update(
@@ -3321,10 +3322,10 @@ class ApplicationDao {
     required int qtyShipped,
     required int uomQtyShippedID,
     required String poNumber,
-    required int pulpTempMin,
-    required int pulpTempMax,
-    required int recorderTempMin,
-    required int recorderTempMax,
+    required double pulpTempMin,
+    required double pulpTempMax,
+    required double recorderTempMin,
+    required double recorderTempMax,
     required String rpc,
     required String claimFiledAgainst,
     required int qtyRejected,

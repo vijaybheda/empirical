@@ -1,4 +1,5 @@
 import 'package:pverify/services/database/column_names.dart';
+import 'package:pverify/utils/utils.dart';
 
 class QualityControlItem {
   int? qcID;
@@ -19,10 +20,10 @@ class QualityControlItem {
   String? poNumber;
   int? qtyReceived;
   int? uomQtyReceivedID;
-  int? pulpTempMin;
-  int? pulpTempMax;
-  int? recorderTempMin;
-  int? recorderTempMax;
+  double? pulpTempMin;
+  double? pulpTempMax;
+  double? recorderTempMin;
+  double? recorderTempMax;
   int? isComplete;
   String? specificationName;
   String? qcdOpen1;
@@ -95,10 +96,14 @@ class QualityControlItem {
       poNumber: json[QualityControlColumn.PO_NO],
       qtyReceived: json[QualityControlColumn.QTY_RECEIVED],
       uomQtyReceivedID: json[QualityControlColumn.UOM_QTY_RECEIVED],
-      pulpTempMin: json[QualityControlColumn.PULP_TEMP_MIN],
-      pulpTempMax: json[QualityControlColumn.PULP_TEMP_MAX],
-      recorderTempMin: json[QualityControlColumn.RECORDER_TEMP_MIN],
-      recorderTempMax: json[QualityControlColumn.RECORDER_TEMP_MAX],
+      pulpTempMin:
+          parseDoubleOrReturnNull(json[QualityControlColumn.PULP_TEMP_MIN]),
+      pulpTempMax:
+          parseDoubleOrReturnNull(json[QualityControlColumn.PULP_TEMP_MAX]),
+      recorderTempMin:
+          parseDoubleOrReturnNull(json[QualityControlColumn.RECORDER_TEMP_MIN]),
+      recorderTempMax:
+          parseDoubleOrReturnNull(json[QualityControlColumn.RECORDER_TEMP_MAX]),
       isComplete: json[QualityControlColumn.IS_COMPLETE],
       specificationName: json[QualityControlColumn.SPECIFICATION_NAME],
       qcdOpen1: json[QualityControlColumn.QCDOPEN1],

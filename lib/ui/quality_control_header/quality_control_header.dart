@@ -80,7 +80,7 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
                               //     .trim(),
                               ),
                           arguments: {
-                            Consts.ORDERNUMBER: controller
+                            Consts.PO_NUMBER: controller
                                 .orderNoTextController.value.text
                                 .trim(),
                             Consts.CARRIER_ID: controller.carrierID,
@@ -364,7 +364,7 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
       BuildContext context,
       QualityControlController controller,
       String labelTitle,
-      List items,
+      List<String> items,
       String hintText) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,

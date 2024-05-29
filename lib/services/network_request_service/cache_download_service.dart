@@ -225,14 +225,13 @@ class CacheDownloadService extends BaseRequestService {
                 supplierId,
                 headquarterSupplierId,
                 gtinScanning);
-            return true;
           }
         } catch (e) {
           log(e.toString());
           return false;
         }
       }
-      return false;
+      return true;
     } catch (e) {
       log('Error in downloadAllUsers');
       log(e.toString());

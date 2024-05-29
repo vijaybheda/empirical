@@ -71,8 +71,8 @@ class AuthController extends GetxController {
 
         if (userData != null) {
           try {
-            int userid = await dao.getEnterpriseIdByUserId(mUsername);
-            if (userid == 0) {
+            int? userid = await dao.getEnterpriseIdByUserId(mUsername);
+            if (userid == null) {
               await dao.createOrUpdateOfflineUser(
                 mUsername.toLowerCase(),
                 userData.access1!,
@@ -195,7 +195,7 @@ class AuthController extends GetxController {
 
       try {
         userData = userData.copyWith(
-          id: userData.id ?? 0,
+          id: userData.id,
           loginTime: DateTime.now().millisecondsSinceEpoch,
         );
 

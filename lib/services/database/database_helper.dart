@@ -83,7 +83,8 @@ class DatabaseHelper {
         "${InspectionColumn.SPECIFICATION_VERSION} CHAR, "
         "${InspectionColumn.SPECIFICATION_NUMBER} CHAR, "
         "${InspectionColumn.SPECIFICATION_TYPENAME} CHAR, "
-        "${InspectionColumn.LOT_NO} CHAR, PackDate CHAR, "
+        "${InspectionColumn.LOT_NO} CHAR, "
+        "${InspectionColumn.PACK_DATE} CHAR, "
         "${InspectionColumn.SAMPLE_SIZE_BY_COUNT} INTEGER, "
         "${InspectionColumn.ITEM_SKU} CHAR, "
         "${InspectionColumn.ITEM_SKU_ID} INTEGER, "
@@ -96,7 +97,10 @@ class DatabaseHelper {
         "${InspectionColumn.TO_LOCATION_ID} INTEGER, "
         "${InspectionColumn.TO_LOCATION_NAME} CHAR, "
         "${InspectionColumn.CTE_TYPE} CHAR, "
-        "${InspectionColumn.ITEM_SKU_NAME} CHAR )");
+        "${InspectionColumn.ITEM_SKU_NAME} CHAR, "
+        "${InspectionColumn.GTIN} CHAR ,"
+        "${InspectionColumn.PO_CREATED_DATE} CHAR"
+        " )");
 
     db.execute("CREATE TABLE ${DBTables.INSPECTION_ATTACHMENT} "
         "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -190,7 +194,10 @@ class DatabaseHelper {
         "${QualityControlColumn.GTIN} CHAR, "
         "${QualityControlColumn.LOT_SIZE} INTEGER, "
         "${QualityControlColumn.SHIP_DATE} CHAR, "
-        "${QualityControlColumn.DATE_TYPE} CHAR )");
+        "${QualityControlColumn.DATE_TYPE} CHAR, "
+        "${QualityControlColumn.GLN} CHAR, "
+        "${QualityControlColumn.GLN_TYPE} CHAR "
+        " )");
 
     db.execute("CREATE TABLE ${DBTables.OVERRIDDEN_RESULT} "
         "(${BaseColumns.ID} INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -503,7 +510,12 @@ class DatabaseHelper {
         "${PODetailColumn.PO_NUMBER_SPEC} CHAR, "
         "${PODetailColumn.PO_VERSION_SPEC} CHAR, "
         "${PODetailColumn.PO_COMMODITY_ID} INTEGER, "
-        "${PODetailColumn.PO_COMMODITY_NAME} CHAR )");
+        "${PODetailColumn.PO_COMMODITY_NAME} CHAR,"
+        "${PODetailColumn.PO_ORDER_TYPE} CHAR,"
+        "${PODetailColumn.PO_FTL} CHAR,"
+        "${PODetailColumn.PO_BRANDED} CHAR,"
+        "${PODetailColumn.PO_CREATED_DATE} CHAR"
+        " )");
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
