@@ -89,6 +89,7 @@ class CustomListView extends StatelessWidget {
                 style: Get.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w500,
                   color: AppColors.white,
+                  fontSize: 45.sp,
                 ),
               ),
             ),
@@ -129,14 +130,15 @@ class CustomListView extends StatelessWidget {
                               children: [
                                 Text(
                                   item.shortDescription ?? '',
-                                  style: Get.textTheme.titleMedium
-                                      ?.copyWith(color: AppColors.white),
+                                  style: Get.textTheme.titleMedium?.copyWith(
+                                      color: AppColors.white, fontSize: 22),
                                 ),
                                 Container(
                                   padding: const EdgeInsets.only(top: 8),
                                   child: Text(
                                     // item.longDescription ?? '',
-                    (item.longDescription ?? '').replaceAll(RegExp(r'[â¢]+'), '•'),
+                                    (item.longDescription ?? '')
+                                        .replaceAll(RegExp(r'[â¢]+'), '•'),
                                     style: Get.textTheme.titleSmall?.copyWith(
                                       color: AppColors.white,
                                       fontWeight: FontWeight.normal,

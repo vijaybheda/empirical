@@ -98,14 +98,13 @@ class SpecificationAnalyticalWidget extends StatefulWidget {
 class _SpecificationAnalyticalWidgetState
     extends State<SpecificationAnalyticalWidget> {
   String comply = 'Y';
-  // late TextEditingController textEditingController;
   late bool hasErrors;
   bool isPictureRequired = false;
   List<String> operatorList = [];
   final ApplicationDao dao = ApplicationDao();
   String spinner_value = 'Yes';
 
-  TextEditingController? editTextValue;
+  TextEditingController editTextValue = TextEditingController();
 
   bool hasErrors2 = false;
   late SpecificationAnalyticalRequest reqobj;
@@ -114,167 +113,59 @@ class _SpecificationAnalyticalWidgetState
   @override
   void initState() {
     reqobj = widget.reqobj.copyWith();
-    if (widget.dbobj != null) {
-      dbobj = widget.dbobj!.copyWith();
-    }
-    hasErrors = false;
-    // textEditingController = TextEditingController();
-    editTextValue = TextEditingController();
     comply = "Y";
-    spinner_value = comply;
-    // saveComply(comply);
+    spinner_value = "Yes";
     operatorList = ['Select', 'Yes', 'No', 'N/A'];
 
-    if (widget.item.specTargetTextDefault == 'Y') {
-      comply = 'Y';
-      spinner_value = comply;
-      // saveComply(comply);
-    } else if (widget.item.specTargetTextDefault == 'N') {
-      comply = 'N';
-      spinner_value = comply;
-      // saveComply(comply);
-    }
-
-    if (dbobj != null) {
-      reqobj = reqobj.copyWith(comply: dbobj?.comply);
-      comply = dbobj?.comply ?? 'Y';
-      spinner_value = comply;
-      // saveComply(comply);
+    if (widget.dbobj != null) {
+      dbobj = widget.dbobj!.copyWith();
+      reqobj.comply = dbobj?.comply;
+      comply = dbobj?.comply ?? '';
     } else {
-      reqobj = reqobj.copyWith(comply: "N/A");
-      comply = 'N/A';
-      spinner_value = comply;
-      // saveComply(comply);
+      reqobj.comply = "N/A";
+      comply = "N/A";
     }
+    hasErrors = false;
+    spinner_value = operatorList.elementAt(0);
+
     widget.controller.listSpecAnalyticalsRequest[widget.index] = reqobj;
     spinner_value = operatorList.first;
 
-    if (widget.item.specTargetTextDefault == "Y") {
-      comply = "Y";
-      // saveComply(comply);
-      spinner_value = comply;
-    } else if (widget.item.specTargetTextDefault == "N") {
-      comply = "Y";
-      // saveComply(comply);
-      spinner_value = comply;
-    }
-    if (widget.item.specTypeofEntry == 1 || widget.item.specTypeofEntry == 3) {
-      if (widget.item.isPictureRequired ?? false) {
-        isPictureRequired = true;
-      }
-    }
-
-    if (widget.item.analyticalName?.contains("Quality Check") ?? false) {
-      editTextValue = TextEditingController();
-    }
-
-    editTextValue?.addListener(() {
-      String comply = "N/A";
-      saveComply(comply);
-      if (editTextValue!.text.isEmpty) {
-        editTextValue!.text = "";
-      }
-      int userValue = int.tryParse(editTextValue!.text.trim()) ?? 0;
-      if (userValue >= (widget.item.specMin ?? 0) &&
-          userValue <= (widget.item.specMax ?? 0)) {
-        comply = "Y";
-        saveComply(comply);
-      } else {
-        comply = "N";
-        saveComply(comply);
-      }
-
-      if (editTextValue!.text.isEmpty) {
-        comply = "N/A";
-        saveComply(comply);
-        hasErrors2 = true;
-      } else {
-        hasErrors2 = false;
-      }
-      if (widget.item.specTypeofEntry == 3 && comply != "N") {
-        if (comply == "N/A") {
-          if (spinner_value == "No") {
-            comply = "N";
-            saveComply(comply);
-          } else if (spinner_value == "Yes") {
-            comply = "Y";
-            saveComply(comply);
-          }
-        } else if (spinner_value == "No") {
-          comply = "N";
-          saveComply(comply);
-        }
-      }
-
-      if (widget.item.inspectionResult == "No" ||
-          widget.item.inspectionResult == "N") {
-        comply = "Y";
-        saveComply(comply);
-      }
-
-      reqobj = reqobj.copyWith(
-        sampleNumValue: userValue,
-        comply: comply,
-      );
-      widget.controller.listSpecAnalyticalsRequest[widget.index] = reqobj;
-      saveComply(comply);
-    });
-
-    if (widget.item.specTargetTextDefault == "Y") {
-      String textViewComply = "Y";
-      // saveComply(comply);
-      comply = textViewComply;
-      spinner_value = comply;
-    } else if (widget.item.specTargetTextDefault == "N") {
-      String textViewComply = "Y";
-      // saveComply(comply);
-      comply = textViewComply;
-      spinner_value = comply;
-    } else if (widget.item.specTargetTextDefault == "") {
-      operatorList.removeWhere((element) => ("N/A" == element));
-      spinner_value = operatorList[0];
-      comply = operatorList[0];
-      // saveComply(comply);
-    } else if (widget.item.specTargetTextDefault == "N/A") {
-      String textViewComply = "N/A";
-      // saveComply(comply);
-      comply = textViewComply;
-      spinner_value = comply;
-    }
-    super.initState();
     unawaited(() async {
-      await initSetup();
-      // setState(() {});
+      initSetup();
     }());
-    onDropdownChanged(spinner_value);
+    super.initState();
   }
 
-  Future<void> initSetup() async {
-    if (widget.item.analyticalName?.contains("Branded") ?? false) {
-      String? brandedFlag =
-          await dao.getBrandedFlagFromItemSku(widget.controller.itemSkuId!);
+  void initSetup() {
+    if (widget.item.specTargetTextDefault == "Y") {
+      comply = "Y";
+      spinner_value = operatorList.elementAt(1);
+    } else if (widget.item.specTargetTextDefault == "N") {
+      comply = "Y";
+      spinner_value = operatorList.elementAt(2);
+    } else if (widget.item.specTargetTextDefault == "") {
+      operatorList.removeWhere((element) => ("N/A" == element));
+      spinner_value = operatorList.elementAt(0);
+    } else if (widget.item.specTargetTextDefault == "N/A") {
+      comply = "N/A";
+      spinner_value = operatorList.elementAt(3);
+    }
 
-      String textViewComply = "Y";
-      // saveComply(comply);
-      comply = textViewComply;
-      spinner_value = comply;
-      if (brandedFlag == "1") {
-        spinner_value = operatorList[1];
-      } else {
-        spinner_value = operatorList[2];
-      }
+    if (widget.item.analyticalName?.contains("Branded") ?? false) {
+      comply = "Y";
+      spinner_value = operatorList.elementAt(2);
     }
 
     if (widget.item.specTypeofEntry == 1) {
       if (dbobj != null) {
         reqobj = reqobj.copyWith(sampleNumValue: dbobj?.sampleNumValue);
         widget.controller.listSpecAnalyticalsRequest[widget.index] = reqobj;
-        if (editTextValue != null && dbobj?.sampleNumValue != null) {
-          editTextValue!.text = (dbobj!.sampleNumValue!).toString();
+        if (dbobj?.sampleNumValue != null) {
+          editTextValue.text = (dbobj!.sampleNumValue!).toString();
         }
         if (dbobj?.comply != null) {
           comply = dbobj!.comply!;
-          // spinner_value = comply;
         }
       }
     } else if (widget.item.specTypeofEntry == 2) {
@@ -283,6 +174,7 @@ class _SpecificationAnalyticalWidgetState
           if (dbobj?.sampleTextValue == operatorList[i]) {
             spinner_value = operatorList.elementAt(i);
             reqobj = reqobj.copyWith(sampleTextValue: operatorList[i]);
+            comply = dbobj!.comply!;
             widget.controller.listSpecAnalyticalsRequest[widget.index] = reqobj;
           }
         }
@@ -294,34 +186,33 @@ class _SpecificationAnalyticalWidgetState
         );
         widget.controller.listSpecAnalyticalsRequest[widget.index] = reqobj;
         if (dbobj?.sampleNumValue != null) {
-          editTextValue!.text = dbobj!.sampleNumValue.toString();
+          editTextValue.text = dbobj!.sampleNumValue.toString();
         }
 
         for (int i = 0; i < operatorList.length; i++) {
           if (dbobj?.sampleTextValue == operatorList[i]) {
             spinner_value = operatorList.elementAt(i);
             reqobj = reqobj.copyWith(sampleTextValue: operatorList[i]);
+            if (dbobj?.comply != null) {
+              comply = dbobj!.comply!;
+            }
             widget.controller.listSpecAnalyticalsRequest[widget.index] = reqobj;
           }
-        }
-
-        if (dbobj?.comply != null) {
-          comply = dbobj!.comply!;
-          spinner_value = comply;
         }
       }
     }
 
     if (widget.item.specTypeofEntry == 1 || widget.item.specTypeofEntry == 3) {
-      String editfield = editTextValue!.text;
+      String editfield = editTextValue.text;
       if (editfield.isEmpty) {
         hasErrors2 = true;
       }
     }
-    if (dbobj?.comply != null) {
-      comply = dbobj!.comply!;
-      spinner_value = comply;
-    }
+
+    onDropdownChanged(spinner_value, hasChanged: false);
+    Future.delayed(const Duration(milliseconds: 200)).then((value) {
+      setState(() {});
+    });
   }
 
   @override
@@ -378,9 +269,9 @@ class _SpecificationAnalyticalWidgetState
           ),
           _divider(),
           Expanded(
-            flex: 2,
+            flex: 3,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 0),
               child: getContent(hasTextField, hasDropDown),
             ),
           ),
@@ -445,7 +336,7 @@ class _SpecificationAnalyticalWidgetState
   }
 
   void saveComply(String comply) {
-    spinner_value = comply;
+    this.comply = comply;
     if (widget.onComplySave != null) {
       widget.onComplySave?.call(comply);
     }
@@ -463,56 +354,6 @@ class _SpecificationAnalyticalWidgetState
       return 'N';
     } else {
       return 'N/A';
-    }
-  }
-
-  Future<Function?> infoButtonTap() async {
-    if ((widget.item.specTypeofEntry == 3 ||
-        widget.item.specTypeofEntry == 1)) {
-      return showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: Theme.of(context).colorScheme.background,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
-          ),
-          title: Text(
-            "Min/Max",
-            style:
-                Get.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w300),
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.item.specTypeofEntry == 3
-                      ? "Min: ${widget.item.specMin}\nMax: ${widget.item.specMax}\n${AppStrings.target}: ${widget.item.specTargetNumValue}\n\n${AppStrings.target} (${AppStrings.targetText}): ${widget.item.specTargetTextValue}"
-                      : (widget.item.specTypeofEntry == 1
-                          ? "Min: ${widget.item.specMin}\nMax: ${widget.item.specMax}\n${AppStrings.target}: ${widget.item.specTargetNumValue}"
-                          : "${AppStrings.target}: ${widget.item.specTargetTextValue}"),
-                  style: Get.textTheme.bodyMedium
-                      ?.copyWith(fontWeight: FontWeight.w300),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Get.back();
-              },
-              child: Text(
-                AppStrings.ok,
-                style: Get.textTheme.bodyMedium
-                    ?.copyWith(fontWeight: FontWeight.w300),
-              ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      return null;
     }
   }
 
@@ -617,82 +458,57 @@ class _SpecificationAnalyticalWidgetState
     );
   }
 
-  void handleTextChanges(String value) {
-    int userValue = int.tryParse(value) ?? 0;
-    double specMin = widget.item.specMin ?? 0;
-    double specMax = widget.item.specMax ?? 0;
-
-    if (userValue >= specMin && userValue <= specMax) {
+  void updateCompliance(String userValue) {
+    if (isValidInput()) {
       comply = "Y";
       saveComply(comply);
     } else {
       comply = "N";
-      saveComply(comply);
     }
-
-    if (value.isEmpty) {
+    if (editTextValue.text.trim().isEmpty) {
       comply = "N/A";
-      saveComply(comply);
-      hasErrors = true;
+      hasErrors2 = true;
     } else {
-      hasErrors = false;
+      hasErrors2 = false;
     }
-  }
 
-  void handleComplianceChange(String value) {
-    comply = value;
-    saveComply(comply);
-    // Handle compliance changes
     if (widget.item.specTypeofEntry == 3 && comply != "N") {
-      // int userValue = int.tryParse(textEditingController.text) ?? 0;
-
       if (comply == "N/A") {
+        if (spinner_value == "No") {
+          comply = "N";
+        } else if (spinner_value == "Yes") {
+          comply = "Y";
+        }
+      } else if (spinner_value == "No") {
         comply = "N";
-        saveComply(comply);
-      } else if (comply == "N") {
-        comply = "N";
-        saveComply(comply);
-      }
-    }
-  }
-
-  void updateCompliance(String value) {
-    String newValue = value;
-    if (widget.item.analyticalName?.contains("Quality Check") ?? false) {
-      if (!newValue.contains(RegExp(r'[12345]'))) {
-        newValue = '';
-      }
-      if (newValue != value) {
-        editTextValue!.value = TextEditingValue(
-          text: newValue,
-          selection: TextSelection.collapsed(offset: newValue.length),
-        );
       }
     }
 
-    if (validInput()) {
+    if (widget.item.inspectionResult == "No" ||
+        widget.item.inspectionResult == "N") {
       comply = "Y";
-      saveComply(comply);
-    } else {
-      comply = "N";
-      saveComply(comply);
     }
 
-    int? p = int.tryParse(newValue);
+    int? p = int.tryParse(userValue);
     reqobj = reqobj.copyWith(
       sampleNumValue: p,
       comply: comply,
     );
 
     widget.controller.listSpecAnalyticalsRequest[widget.index] = reqobj;
-    if (p != null) {
-      hasErrors2 = false;
-    }
     setState(() {});
   }
 
+  bool isValidInput() {
+    double? value = double.tryParse(editTextValue.text ?? '');
+    if (value == null) {
+      return false;
+    }
+    return value >= widget.item.specMin! && value <= widget.item.specMax!;
+  }
+
   bool validInput() {
-    double? value = double.tryParse(editTextValue?.text ?? '');
+    double? value = double.tryParse(editTextValue.text ?? '');
     if (value == null) {
       return false;
     }
@@ -702,7 +518,7 @@ class _SpecificationAnalyticalWidgetState
   @override
   void dispose() {
     // textEditingController.dispose();
-    editTextValue?.dispose();
+    editTextValue.dispose();
     super.dispose();
   }
 
@@ -714,11 +530,14 @@ class _SpecificationAnalyticalWidgetState
           Expanded(
             child: TextField(
               controller: editTextValue,
-              // keyboardType: TextInputType.number,
+              keyboardType: TextInputType.number,
+              maxLength: getMaxLength(),
               textAlign: TextAlign.center,
               decoration: InputDecoration(
                 hintText: 'Enter Value',
                 // errorText: validInput() ? null : 'Invalid!',
+                counter: const Offstage(),
+                counterText: '',
                 errorStyle: Get.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w300,
                     color: Colors.red,
@@ -755,7 +574,7 @@ class _SpecificationAnalyticalWidgetState
               children: [
                 Expanded(
                   child: DropdownButton<String>(
-                    value: spinner_value,
+                    value: getSpinnerValue(),
                     items: operatorList.map((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
@@ -772,10 +591,11 @@ class _SpecificationAnalyticalWidgetState
                       color: Colors.white,
                     ),
                     onChanged: (value) {
-                      comply = value!;
-                      saveComply(comply);
-                      setState(() {});
-                      onDropdownChanged(value, hasChanged: true);
+                      if (value != null) {
+                        spinner_value = value;
+                        setState(() {});
+                        onDropdownChanged(value, hasChanged: true);
+                      }
                     },
                     dropdownColor: AppColors.grey,
                     alignment: Alignment.centerRight,
@@ -788,97 +608,125 @@ class _SpecificationAnalyticalWidgetState
     );
   }
 
-  Future<void> onDropdownChanged(String value,
+  Future<void> onDropdownChanged(String userValue,
       {bool hasChanged = false}) async {
-    String comply = "N/A";
-    String userValue = value;
+    if (widget.item.specTypeofEntry == 3) {
+      comply = "N/A";
 
-    if ((widget.item.analyticalName?.contains("Accept") ?? false) ||
-        (widget.item.analyticalName?.contains("Protection") ?? false)) {
       if (userValue == "Yes") {
-        comply = "N";
+        comply = "Y";
       } else if (userValue == "No") {
+        comply = "N";
+      }
+
+      if (widget.item.specTargetTextDefault == "Y" && userValue == "No") {
+        comply = "N";
+      }
+
+      if (widget.item.specTargetTextDefault == "N" && userValue == "Yes") {
+        comply = "N";
+      }
+
+      if (widget.item.specTargetTextDefault == "Y" && userValue == "Yes") {
         comply = "Y";
       }
-    } else if (widget.item.analyticalName?.contains("Branded") ?? false) {
-      String brandedFlag =
-          await dao.getBrandedFlagFromItemSku(widget.controller.itemSkuId!);
 
-      if (widget.item.specTypeofEntry == 3) {
-        if (brandedFlag == "1" && userValue == "No") {
-          comply = "N";
-        }
-        if (brandedFlag == "0" && userValue == "Yes") {
-          comply = "N";
-        }
-        if (brandedFlag == "1" && userValue == "Yes") {
-          comply = "Y";
-        }
-        if (brandedFlag == "0" && userValue == "No") {
-          comply = "Y";
-        }
+      if (widget.item.specTargetTextDefault == "N" && userValue == "No") {
+        comply = "Y";
+      }
 
-        if (comply != "N") {
-          if (editTextValue?.text.isNotEmpty ?? false) {
-            double userValue2 =
-                double.tryParse(editTextValue!.text.trim()) ?? 0.0;
-            if (comply == "N/A") {
-              if (userValue2 != 0.0 &&
-                  userValue2 >= widget.item.specMin! &&
+      if (widget.item.specTypeofEntry == 3 && comply != "N") {
+        if (editTextValue.text.isNotEmpty) {
+          double userValue2 = double.tryParse(editTextValue.text.trim()) ?? 0.0;
+          if (comply == "N/A") {
+            if (!(userValue2 == 0.0)) {
+              if (userValue2 >= widget.item.specMin! &&
                   userValue2 <= widget.item.specMax!) {
                 comply = "Y";
               } else {
                 comply = "N";
               }
             }
-            if (userValue2 != 0.0 &&
-                (userValue2 < widget.item.specMin! ||
-                    userValue2 > widget.item.specMax!)) {
-              comply = "N";
-            }
+          }
+          if (!(userValue2 == 0.0) &&
+              !(userValue2 >= widget.item.specMin! ||
+                  userValue2 <= widget.item.specMax!)) {
+            comply = "N";
           }
         }
-      } else {
-        if (brandedFlag == "1" && userValue == "No") {
-          comply = "N";
-        } else if (brandedFlag == "0" && userValue == "Yes") {
-          comply = "N";
-        } else if (brandedFlag == "1" && userValue == "Yes") {
-          comply = "Y";
-        } else if (brandedFlag == "0" && userValue == "No") {
-          comply = "Y";
-        }
       }
-    } else {
+
+      if (widget.item.inspectionResult == "No" ||
+          widget.item.inspectionResult == "N") {
+        comply = "Y";
+      }
+
+      reqobj = reqobj.copyWith(
+        sampleTextValue: userValue,
+        comply: comply,
+      );
+      widget.controller.listSpecAnalyticalsRequest[widget.index] = reqobj;
+    }
+
+    if (widget.item.specTypeofEntry == 2) {
+      String comply = "N/A";
+      if (userValue == "Yes") {
+        comply = "Y";
+      } else if (userValue == "No") {
+        comply = "N";
+      }
+
       if (widget.item.specTargetTextDefault == "Y" && userValue == "No") {
         comply = "N";
-      } else if (widget.item.specTargetTextDefault == "N" &&
-          userValue == "Yes") {
+      }
+
+      if (widget.item.specTargetTextDefault == "N" && userValue == "Yes") {
         comply = "N";
-      } else if (widget.item.specTargetTextDefault == "Y" &&
-          userValue == "Yes") {
-        comply = "Y";
-      } else if (widget.item.specTargetTextDefault == "N" &&
-          userValue == "No") {
+      }
+
+      if (widget.item.specTargetTextDefault == "Y" && userValue == "Yes") {
         comply = "Y";
       }
+
+      if (widget.item.specTargetTextDefault == "N" && userValue == "No") {
+        comply = "Y";
+      }
+
+      if (widget.item.inspectionResult == "No" ||
+          widget.item.inspectionResult == "N") {
+        comply = "Y";
+      }
+
+      reqobj = reqobj.copyWith(
+        sampleTextValue: userValue,
+        comply: comply,
+      );
+
+      widget.controller.listSpecAnalyticalsRequest[widget.index] = reqobj;
     }
-
-    if (widget.item.inspectionResult == "No" ||
-        widget.item.inspectionResult == "N") {
-      comply = "Y";
-    }
-
-    reqobj = reqobj.copyWith(
-      sampleTextValue: userValue,
-      comply: comply,
-    );
-
-    widget.controller.listSpecAnalyticalsRequest[widget.index] = reqobj;
 
     if (hasChanged) {
-      saveComply(comply);
       setState(() {});
     }
+  }
+
+  String? getSpinnerValue() {
+    if (spinner_value == 'Y' || spinner_value == 'Yes') {
+      return 'Yes';
+    }
+    if (spinner_value == 'N' || spinner_value == 'No') {
+      return 'No';
+    }
+    return spinner_value;
+  }
+
+  int getMaxLength() {
+    int specMax = (widget.item.specMax ?? 1.0).toInt().toString().length;
+    return specMax;
+  }
+
+  int getMinLength() {
+    int specMax = (widget.item.specMin ?? 1.0).toInt().toString().length;
+    return specMax;
   }
 }

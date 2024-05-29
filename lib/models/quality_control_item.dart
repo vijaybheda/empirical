@@ -34,6 +34,8 @@ class QualityControlItem {
   int? lotsize;
   String? shipDate;
   String? dateType;
+  String? gln;
+  String? glnType;
 
   QualityControlItem({
     this.qcID,
@@ -69,6 +71,8 @@ class QualityControlItem {
     this.lotsize,
     this.shipDate,
     this.dateType,
+    this.gln,
+    this.glnType,
   });
 
   factory QualityControlItem.fromJson(Map<String, dynamic> json) {
@@ -106,6 +110,8 @@ class QualityControlItem {
       lotsize: json[QualityControlColumn.LOT_SIZE],
       shipDate: json[QualityControlColumn.SHIP_DATE],
       dateType: json[QualityControlColumn.DATE_TYPE],
+      gln: json[QualityControlColumn.GLN],
+      glnType: json[QualityControlColumn.GLN_TYPE],
     );
   }
 
@@ -144,6 +150,8 @@ class QualityControlItem {
     data[QualityControlColumn.LOT_SIZE] = lotsize;
     data[QualityControlColumn.SHIP_DATE] = shipDate;
     data[QualityControlColumn.DATE_TYPE] = dateType;
+    data[QualityControlColumn.GLN] = gln;
+    data[QualityControlColumn.GLN_TYPE] = glnType;
     return data;
   }
 }

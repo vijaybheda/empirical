@@ -330,10 +330,10 @@ class PurchaseOrderDetailsController extends GetxController {
                 await dao.getSpecificationAnalyticalFromDB(
                     specificationNumber!, specificationVersion!);
 
-            if (!(specificationTypeName!.toLowerCase() ==
-                    ("Finished Goods Produce".toLowerCase()) &&
-                specificationTypeName!.toLowerCase() ==
-                    ("Raw Produce".toLowerCase()))) {
+            if ((!(specificationTypeName!.toLowerCase() ==
+                    ("Finished Goods Produce".toLowerCase())) &&
+                !(specificationTypeName!.toLowerCase() ==
+                    ("Raw Produce".toLowerCase())))) {
               if (appStorage.specificationAnalyticalList != null) {
                 for (var item
                     in (appStorage.specificationAnalyticalList ?? [])) {
@@ -357,10 +357,12 @@ class PurchaseOrderDetailsController extends GetxController {
                               dbobj.comment!);
                       int isPictureReqSpec =
                           await dao.createIsPictureReqSpecAttribute(
-                              inspection.inspectionId!,
-                              result,
-                              "${dbobj.analyticalName} = N",
-                              dbobj.isPictureRequired!);
+                        inspection.inspectionId!,
+                        result,
+                        "${dbobj.analyticalName} = N",
+                        dbobj.isPictureRequired!,
+                        dbobj.comment ?? '',
+                      );
                       break;
                     }
                   }

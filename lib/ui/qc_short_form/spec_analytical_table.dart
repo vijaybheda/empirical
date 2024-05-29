@@ -65,6 +65,9 @@ class SpecAnalyticalTable
               }
               controller.update();
               controller.listSpecAnalyticalsRequest[index] = reqobj;
+            },
+            hasErrors2: (bool hasErrors2) {
+              controller.hasErrors2 = hasErrors2;
             });
       },
     );
@@ -79,6 +82,7 @@ class SpecificationAnalyticalWidget extends StatefulWidget {
   final QCDetailsShortFormScreenController controller;
   final SpecificationAnalyticalRequest? dbobj;
   final int index;
+  final void Function(bool hasErrors2) hasErrors2;
 
   const SpecificationAnalyticalWidget({
     super.key,
@@ -89,6 +93,7 @@ class SpecificationAnalyticalWidget extends StatefulWidget {
     required this.controller,
     this.dbobj,
     required this.index,
+    required this.hasErrors2,
   });
 
   @override
@@ -116,7 +121,13 @@ class _SpecificationAnalyticalWidgetState
     reqobj = widget.reqobj.copyWith();
     if (widget.dbobj != null) {
       dbobj = widget.dbobj!.copyWith();
+      reqobj.comply = dbobj?.comply;
+      comply = dbobj?.comply ?? '';
+    } else {
+      reqobj.comply = "N/A";
+      comply = "N/A";
     }
+
     hasErrors = false;
     operatorList = ['Select', 'Yes', 'No', 'N/A'];
 
@@ -128,21 +139,24 @@ class _SpecificationAnalyticalWidgetState
     super.initState();
   }
 
-  Future<void> manageAnalyticalName() async {
+  void manageAnalyticalName() {
     if (widget.item.analyticalName?.contains("Branded") ?? false) {
-      String? brandedFlag =
-          await dao.getBrandedFlagFromItemSku(widget.controller.itemSkuId!);
+      comply = "Y";
+      spinner_value = operatorList.elementAt(0);
 
-      String textViewComply = "Y";
-      comply = textViewComply;
-      // spinner_value = comply;
-      if (brandedFlag == "0") {
-        spinner_value = operatorList.elementAt(0);
-      } else if (brandedFlag == "1") {
-        spinner_value = operatorList.elementAt(1);
-      } else {
-        spinner_value = operatorList.elementAt(2);
-      }
+      // String? brandedFlag =
+      //     await dao.getBrandedFlagFromItemSku(widget.controller.itemSkuId!);
+      //
+      // String textViewComply = "Y";
+      // comply = textViewComply;
+      // // spinner_value = comply;
+      // if (brandedFlag == "0") {
+      //   spinner_value = operatorList.elementAt(0);
+      // } else if (brandedFlag == "1") {
+      //   spinner_value = operatorList.elementAt(1);
+      // } else {
+      //   spinner_value = operatorList.elementAt(2);
+      // }
     }
   }
 
@@ -166,7 +180,7 @@ class _SpecificationAnalyticalWidgetState
       spinner_value = operatorList.elementAt(3);
     }
 
-    await manageAnalyticalName();
+    manageAnalyticalName();
 
     if (widget.item.specTypeofEntry == 1) {
       if (dbobj != null) {
@@ -218,6 +232,7 @@ class _SpecificationAnalyticalWidgetState
       String editfield = editTextValue.text;
       if (editfield.isEmpty) {
         hasErrors2 = true;
+        widget.hasErrors2(hasErrors2);
       }
     }
     if (dbobj?.comply != null) {
@@ -507,31 +522,19 @@ class _SpecificationAnalyticalWidgetState
   }
 
   void updateCompliance(String userValue) {
-    /// Check
-    /*if (widget.item.analyticalName?.contains("Quality Check") ?? false) {
-      if (!userValue.contains(RegExp(r'[12345]'))) {
-        userValue = '';
-      }
-      if (userValue != value) {
-        editTextValue.value = TextEditingValue(
-          text: userValue,
-          selection: TextSelection.collapsed(offset: userValue.length),
-        );
-      }
-    }*/
-
     if (isValidInput()) {
       comply = "Y";
       saveComply(comply);
     } else {
       comply = "N";
-      // saveComply(comply);
     }
     if (editTextValue.text.trim().isEmpty) {
       comply = "N/A";
       hasErrors2 = true;
+      widget.hasErrors2(hasErrors2);
     } else {
       hasErrors2 = false;
+      widget.hasErrors2(hasErrors2);
     }
 
     if (widget.item.specTypeofEntry == 3 && comply != "N") {
@@ -593,7 +596,7 @@ class _SpecificationAnalyticalWidgetState
             child: TextField(
               controller: editTextValue,
               keyboardType: TextInputType.number,
-              maxLength: 1,
+              maxLength: getMaxLength(),
               textAlign: TextAlign.center,
               decoration: InputDecoration(
                 // hintText: 'Enter Value',
@@ -699,7 +702,9 @@ class _SpecificationAnalyticalWidgetState
           comply = "Y";
         }
       } else if (widget.item.analyticalName?.contains("Branded") ?? false) {
-        String brandedFlag =
+        comply = "Y";
+        this.comply = "Y";
+        /*String brandedFlag =
             await dao.getBrandedFlagFromItemSku(widget.controller.itemSkuId!);
 
         if (brandedFlag == "1" && userValue == "No") {
@@ -710,7 +715,7 @@ class _SpecificationAnalyticalWidgetState
           comply = "Y";
         } else if (brandedFlag == "0" && userValue == "No") {
           comply = "Y";
-        }
+        }*/
       } else {
         if ((widget.item.specTargetTextDefault == "Y") && userValue == "No") {
           comply = "N";
@@ -775,7 +780,9 @@ class _SpecificationAnalyticalWidgetState
           comply = "Y";
         }
       } else if ((widget.item.analyticalName?.contains("Branded") ?? false)) {
-        String brandedFlag =
+        comply = "Y";
+
+        /*String brandedFlag =
             await dao.getBrandedFlagFromItemSku(widget.controller.itemSkuId!);
 
         if (brandedFlag == "1" && userValue == "No") {
@@ -786,7 +793,7 @@ class _SpecificationAnalyticalWidgetState
           comply = "Y";
         } else if (brandedFlag == "0" && userValue == "No") {
           comply = "Y";
-        }
+        }*/
       } else {
         if ((widget.item.specTargetTextDefault == "Y") && userValue == "No") {
           comply = "N";
@@ -818,5 +825,15 @@ class _SpecificationAnalyticalWidgetState
     if (hasChanged) {
       setState(() {});
     }
+  }
+
+  int getMaxLength() {
+    int specMax = (widget.item.specMax ?? 1.0).toInt().toString().length;
+    return specMax;
+  }
+
+  int getMinLength() {
+    int specMax = (widget.item.specMin ?? 1.0).toInt().toString().length;
+    return specMax;
   }
 }

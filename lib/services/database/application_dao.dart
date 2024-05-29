@@ -113,8 +113,8 @@ class ApplicationDao {
         UserOfflineColumn.SUPPLIER_ID: supplierId,
         UserOfflineColumn.HEADQUATER_SUPPLIER_ID: headquarterSupplierId,
         UserOfflineColumn.IS_SUBSCRIPTION_EXPIRED:
-            isSubscriptionExpired ? 'true' : 'false',
-        UserOfflineColumn.GTIN_SCANNING: gtinScanning ? 'true' : 'false'
+            isSubscriptionExpired ? '1' : '0',
+        UserOfflineColumn.GTIN_SCANNING: gtinScanning ? '1' : '0'
       };
       if (userIdExists == 0) {
         result = await txn.insert(DBTables.USER_OFFLINE, data);
@@ -2743,7 +2743,8 @@ class ApplicationDao {
     final Database db = dbProvider.lazyDatabase;
 
     try {
-      String query = 'SELECT Result, Result_Reason, Defect_Comments '
+      String query =
+          'SELECT ${ResultRejectionDetailsColumn.RESULT}, ${ResultRejectionDetailsColumn.RESULT_REASON}, ${ResultRejectionDetailsColumn.DEFECT_COMMENTS} '
           'FROM ${DBTables.RESULT_REJECTION_DETAILS} '
           'WHERE Inspection_ID = ?';
 
@@ -2751,9 +2752,11 @@ class ApplicationDao {
           await db.rawQuery(query, [inspectionId]);
       if (result.isNotEmpty) {
         details = ResultRejectionDetail(
-            result: result.first['Result'],
-            resultReason: result.first['Result_Reason'],
-            defectComments: result.first['Defect_Comments']);
+            result: result.first[ResultRejectionDetailsColumn.RESULT],
+            resultReason:
+                result.first[ResultRejectionDetailsColumn.RESULT_REASON],
+            defectComments:
+                result.first[ResultRejectionDetailsColumn.DEFECT_COMMENTS]);
       } else {
         debugPrint(" 🔴 getResultRejectionDetails is empty 🔴 ");
       }
@@ -2770,6 +2773,7 @@ class ApplicationDao {
     String result,
     String resultReason,
     bool isPictureRequired,
+    String comment,
   ) async {
     final Database db = dbProvider.lazyDatabase;
     int? inspectionId;
@@ -2792,9 +2796,9 @@ class ApplicationDao {
         await db.transaction((txn) async {
           var values = <String, dynamic>{
             ResultRejectionDetailsColumn.INSPECTION_ID: inspectionID,
-            "Result": result,
-            "Result_Reason": resultReason,
-            // "Defect_Comments": comment,
+            ResultRejectionDetailsColumn.RESULT: result,
+            ResultRejectionDetailsColumn.RESULT_REASON: resultReason,
+            ResultRejectionDetailsColumn.DEFECT_COMMENTS: comment,
           };
           inspectionId =
               await txn.insert(DBTables.RESULT_REJECTION_DETAILS, values);
@@ -2804,7 +2808,7 @@ class ApplicationDao {
           var values = <String, dynamic>{
             ResultRejectionDetailsColumn.RESULT: result,
             ResultRejectionDetailsColumn.RESULT_REASON: resultReason,
-            // "Defect_Comments": comment,
+            ResultRejectionDetailsColumn.DEFECT_COMMENTS: comment,
           };
           await txn.update(DBTables.RESULT_REJECTION_DETAILS, values,
               where: "${ResultRejectionDetailsColumn.INSPECTION_ID} = ?",
@@ -2855,7 +2859,7 @@ class ApplicationDao {
       await db.transaction((txn) async {
         var values = <String, dynamic>{};
         if (complete != null) {
-          values[PartnerItemSkuColumn.COMPLETE] = complete == true ? '1' : '0';
+          values[PartnerItemSkuColumn.COMPLETE] = complete ? '1' : '0';
         }
 
         await txn.update(
@@ -3199,6 +3203,8 @@ class ApplicationDao {
     required int lot_size,
     required int shipDate,
     required String dateType,
+    required String? gln,
+    required String? glnType,
   }) async {
     int? qc_id;
     final Database db = dbProvider.lazyDatabase;
@@ -3238,6 +3244,9 @@ class ApplicationDao {
           QualityControlColumn.GTIN: gtin,
           QualityControlColumn.LOT_SIZE: lot_size,
           QualityControlColumn.SHIP_DATE: shipDate,
+          // FIXME: ?? TODO: assign below
+          // QualityControlColumn.GLN: gln,
+          // QualityControlColumn.GLN_TYPE: glnType,
         };
 
         qc_id = await txn.insert(DBTables.QUALITY_CONTROL, values);
@@ -3264,6 +3273,8 @@ class ApplicationDao {
     required String gtin,
     required int shipDate,
     required String dateType,
+    required String gln,
+    required String glnType,
   }) async {
     final Database db = dbProvider.lazyDatabase;
     print('DBRequest updateQualityControlShortForm');
@@ -3283,6 +3294,10 @@ class ApplicationDao {
           QualityControlColumn.GTIN: gtin,
           QualityControlColumn.SHIP_DATE: shipDate,
           QualityControlColumn.DATE_TYPE: dateType,
+
+          // FIXME: ?? TODO: assign below
+          // QualityControlColumn.GLN: gln,
+          // QualityControlColumn.GLN_TYPE: glnType,
         };
 
         await txn.update(

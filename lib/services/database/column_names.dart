@@ -166,6 +166,8 @@ class QualityControlColumn {
   static const String QCDOPEN4 = 'QCDOPEN4';
   static const String QCDOPEN5 = 'QCDOPEN5';
   static const String GTIN = 'GTIN';
+  static const String GLN = 'GLN';
+  static const String GLN_TYPE = 'GLN_TYPE';
   static const String LOT_SIZE = 'Lot_Size';
   static const String SHIP_DATE = 'Ship_Date';
   static const String DATE_TYPE = 'Date_Type';

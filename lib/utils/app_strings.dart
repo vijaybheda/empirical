@@ -257,6 +257,9 @@ class AppStrings {
 
   static String noItemsCompleted = 'No Items are complete for calculation';
 
+  static String errorQtyShippedLength =
+      'Qty Shipped should not exceed 8 digits';
+
   static String downloadingList(String placeholder) =>
       'Downloading $placeholder list.';
 
