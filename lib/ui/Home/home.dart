@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/home_controller.dart';
@@ -86,34 +89,42 @@ class Home extends GetView<HomeController> {
                               ),
                             ),
                           ),
-                          Container(
-                            width: (MediaQuery.of(context).size.width / 4.3),
-                            padding: EdgeInsets.symmetric(vertical: 15.h),
-                            decoration: BoxDecoration(
-                                color: AppColors.white,
-                                border: Border(
-                                    right: BorderSide(
-                                      color: AppColors.black,
-                                      width: 2.0,
+                          GestureDetector(
+                            onTap: () {
+                              log("Upload Button tapped");
+                              controller
+                                  .onUploadAllInspectionButtonClick(context);
+                            },
+                            child: Container(
+                              width: (MediaQuery.of(context).size.width / 4.3),
+                              padding: EdgeInsets.symmetric(vertical: 15.h),
+                              decoration: BoxDecoration(
+                                  color: AppColors.white,
+                                  border: Border(
+                                      right: BorderSide(
+                                        color: AppColors.black,
+                                        width: 2.0,
+                                      ),
+                                      top: BorderSide(
+                                        color: AppColors.black,
+                                        width: 2.0,
+                                      ))),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 25, right: 25),
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                      color: AppColors.primary,
+                                      borderRadius:
+                                          BorderRadius.circular(20.0)),
+                                  child: Text(
+                                    AppStrings.upload,
+                                    textAlign: TextAlign.center,
+                                    style: Get.textTheme.titleLarge!.copyWith(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    top: BorderSide(
-                                      color: AppColors.black,
-                                      width: 2.0,
-                                    ))),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 25, right: 25),
-                              child: Container(
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                    color: AppColors.primary,
-                                    borderRadius: BorderRadius.circular(20.0)),
-                                child: Text(
-                                  AppStrings.upload,
-                                  textAlign: TextAlign.center,
-                                  style: Get.textTheme.titleLarge!.copyWith(
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),

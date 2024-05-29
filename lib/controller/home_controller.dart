@@ -1,14 +1,22 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pverify/controller/dialog_progress_controller.dart';
 import 'package:pverify/controller/global_config_controller.dart';
+import 'package:pverify/models/inspection.dart';
+import 'package:pverify/models/inspection_defect_attachment.dart';
 import 'package:pverify/models/my_inspection_48hour_item.dart';
+import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/services/network_request_service/ws_upload_inspection.dart';
+import 'package:pverify/services/network_request_service/ws_upload_mobile_files.dart';
 import 'package:pverify/ui/cache_download_screen.dart';
 import 'package:pverify/ui/qc_short_form/qc_details_short_form_screen.dart';
+import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
+import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/dialogs/update_data_dialog.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -47,6 +55,7 @@ class HomeController extends GetxController {
   RxList<MyInspection48HourItem> myInsp48HourList =
       <MyInspection48HourItem>[].obs;
 
+  RxBool completeAllCheckbox = false.obs;
   @override
   void onInit() {
     // Get.put(() => InspectionController(), permanent: true);
@@ -67,32 +76,11 @@ class HomeController extends GetxController {
             }, message: AppStrings().getDayMessage1(days)));
       }
     }
-
+    uploadCheckedList.value = [];
     getInspectionListOnInit();
     // simulateEvents();
     // clearAnyDownloadedInspectionData();
   }
-
-  /* Future<void> getInspectionListOnInit() async {
-    // bool isOnline = await Utils.isOnline();
-    bool isOnline = globalConfigController.hasStableInternet.value;
-
-    if (isOnline) {
-      itemsList = await getAllInspectionData();
-      if (itemsList.isNotEmpty) {
-        appStorage.myInsp48HourList!.assignAll(itemsList);
-        myInsp48HourList.assignAll(itemsList);
-        log("$itemsList");
-        update(['inspectionsList']);
-      }
-    } else {
-      itemsList = await getAllInspectionData();
-      if (itemsList.isNotEmpty) {
-        myInsp48HourList.assignAll(itemsList);
-      }
-    }
-    appStorage.selectedItemSKUList.clear();
-  } */
 
   Future<void> getInspectionListOnInit() async {
     bool isOnline = globalConfigController.hasStableInternet.value;
@@ -229,7 +217,7 @@ class HomeController extends GetxController {
     }
   }
 
-  void selectInspectionForDownload(int id, bool isSelectAll) {
+  /*  void selectInspectionForDownload(int id, bool isSelectAll) {
     if (isSelectAll) {
       List<MyInspection48HourItem> selectedItems =
           itemsList.where((item) => item.uploadStatus == 1).toList();
@@ -239,6 +227,8 @@ class HomeController extends GetxController {
       } else {
         selectedIDsInspection.clear();
       }
+      completeAllCheckbox.value = selectedIDsInspection.length ==
+          itemsList.where((item) => item.uploadStatus == 1).length;
     } else {
       MyInspection48HourItem selectedItem =
           itemsList.firstWhere((item) => item.id == id);
@@ -247,6 +237,37 @@ class HomeController extends GetxController {
       } else {
         selectedIDsInspection.add(selectedItem);
       }
+      completeAllCheckbox.value = selectedIDsInspection.length ==
+          itemsList.where((item) => item.uploadStatus == 1).length;
+    }
+  } */
+  void selectInspectionForDownload(int id, bool isSelectAll) {
+    if (isSelectAll) {
+      List<MyInspection48HourItem> selectedItems =
+          itemsList.where((item) => item.uploadStatus == 1).toList();
+      if (selectedItems.length != selectedIDsInspection.length) {
+        selectedIDsInspection.clear();
+        selectedIDsInspection.addAll(selectedItems);
+        uploadCheckedList.clear();
+        uploadCheckedList.addAll(selectedItems.map((item) => item.id!));
+      } else {
+        selectedIDsInspection.clear();
+        uploadCheckedList.clear();
+      }
+      completeAllCheckbox.value = selectedIDsInspection.length ==
+          itemsList.where((item) => item.uploadStatus == 1).length;
+    } else {
+      MyInspection48HourItem selectedItem =
+          itemsList.firstWhere((item) => item.id == id);
+      if (selectedIDsInspection.contains(selectedItem)) {
+        selectedIDsInspection.remove(selectedItem);
+        uploadCheckedList.remove(selectedItem.id);
+      } else {
+        selectedIDsInspection.add(selectedItem);
+        uploadCheckedList.add(selectedItem.id!);
+      }
+      completeAllCheckbox.value = selectedIDsInspection.length ==
+          itemsList.where((item) => item.uploadStatus == 1).length;
     }
   }
 
@@ -311,6 +332,152 @@ class HomeController extends GetxController {
     } else {
       final String tag = DateTime.now().millisecondsSinceEpoch.toString();
       Get.to(QCDetailsShortFormScreen(tag: tag), arguments: passingData);
+    }
+  }
+
+  Future<void> uploadAllInspections() async {
+    List<int> uploadList = await dao.findReadyToUploadInspectionIDs();
+
+    if (completeAllCheckbox.isTrue) {
+      uploadCheckedList.addAll(uploadList);
+    }
+
+    log("hereee is $uploadCheckedList");
+    if (uploadCheckedList.isEmpty) {
+      Utils.showErrorAlertDialog("No inspections to upload");
+      return;
+    } else {
+      List<int> failedList = [];
+      for (int i = 0; i < uploadCheckedList.length; i++) {
+        Inspection? inspection =
+            await dao.findInspectionByID(uploadCheckedList[i]);
+        if (inspection?.commodityId == 0) {
+          uploadCheckedList.removeAt(i);
+          failedList.add(uploadCheckedList[i]);
+
+          i--;
+        }
+      }
+    }
+
+    final progressController = Get.put(ProgressController());
+    Utils.showLinearProgressWithMessage(
+        message: AppStrings.uploadMessage,
+        progressController: progressController);
+
+    int numberOfInspections = uploadCheckedList.length;
+    int listIndex = 0;
+    progressDialogStatus.value = 0;
+
+    while (progressDialogStatus.value < numberOfInspections) {
+      try {
+        log("INSPECTION ID ${uploadCheckedList[listIndex]}");
+        await uploadInspection(uploadCheckedList[listIndex]);
+      } catch (e) {
+        AppSnackBar.error(message: AppStrings.uploadError);
+        Utils.hideLoadingDialog();
+        break;
+      }
+      listIndex++;
+      progressDialogStatus.value++;
+      // Update the progress bar
+      progressController.updateProgress(progressDialogStatus.value.toDouble());
+
+      if (progressDialogStatus.value >= numberOfInspections) {
+        await Future.delayed(const Duration(seconds: 1));
+        Utils.hideLoadingDialog();
+      }
+    }
+    String failedInspection = '';
+
+    for (int j = 0; j < failedInspections.length; j++) {
+      failedInspection += '${failedInspections[j]}\n';
+    }
+
+    if (failedInspection.isNotEmpty) {
+      AppSnackBar.error(
+          message:
+              "ID - \n$failedInspection\nMissing Grading Standard; please contact Service@Share-ify.com");
+    }
+  }
+
+  Future<void> uploadInspection(int inspectionId) async {
+    Inspection? inspection = await dao.findInspectionByID(inspectionId);
+    log(" 🟡 Utils.uploadInspection ${inspection?.toJson()}");
+    if (inspection != null) {
+      QCHeaderDetails? qcHeaderDetails =
+          await dao.findTempQCHeaderDetails(inspection.poNumber!);
+      if (qcHeaderDetails != null &&
+          qcHeaderDetails.cteType != null &&
+          qcHeaderDetails.cteType != "") {
+        // TODO: Implement CTE flow
+      } else {
+        Map<String, dynamic>? jsonObject =
+            await WSUploadInspection().requestUpload(inspectionId);
+
+        if (jsonObject.isNotEmpty) {
+          List<InspectionDefectAttachment>? attachments =
+              await dao.findDefectAttachmentsByInspectionId(inspectionId);
+
+          await WSUploadMobileFiles(
+            inspectionId,
+            attachments ?? [],
+            jsonObject,
+          ).requestUploadMobileFiles(
+            attachments ?? [],
+            jsonObject,
+            inspectionId,
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> onUploadAllInspectionButtonClick(BuildContext context) async {
+    bool isOnline = globalConfigController.hasStableInternet.value;
+    if (isOnline) {
+      int wifiLevel = globalConfigController.wifiLevel.value;
+
+      if (wifiLevel < 2) {
+        AppAlertDialog.confirmationAlert(
+          context,
+          AppStrings.alert,
+          "Please go to your hotspot to upload",
+          onYesTap: () {
+            int wifiLevel2 = globalConfigController.wifiLevel.value;
+            if (wifiLevel2 >= 2) {
+              AppAlertDialog.confirmationAlert(
+                context,
+                AppStrings.alert,
+                AppStrings.inspectionUploadMessage,
+                onYesTap: () {
+                  isInspectionFailed.value = false;
+                  uploadAllInspections();
+                },
+              );
+            }
+          },
+        );
+      } else {
+        AppAlertDialog.confirmationAlert(
+          context,
+          AppStrings.alert,
+          AppStrings.inspectionUploadMessage,
+          onYesTap: () {
+            isInspectionFailed.value = false;
+            uploadAllInspections();
+          },
+        );
+      }
+    } else {
+      AppAlertDialog.confirmationAlert(
+        context,
+        AppStrings.alert,
+        AppStrings.turnWifiMessage,
+        onYesTap: () {
+          Get.back();
+        },
+      );
     }
   }
 }

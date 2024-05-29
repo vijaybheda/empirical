@@ -37,6 +37,7 @@ import 'package:pverify/services/database/db_tables.dart';
 import 'package:pverify/ui/trailer_temp/trailertemprature_details.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/utils.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -625,16 +626,20 @@ class ApplicationDao {
     final Database db = dbProvider.lazyDatabase;
     List<int> ids = [];
 
-    List<Map> result = await db.query(
-      DBTables.INSPECTION,
-      columns: [(BaseColumns.ID)],
-      where: '${InspectionColumn.UPLOAD_STATUS} = ?',
-      // whereArgs: [Consts.INSPECTION_UPLOAD_READY],
-// FIXME: Uncomment the line above and replace Consts.INSPECTION_UPLOAD_READY with the actual value
-    );
+    try {
+      List<Map> result = await db.query(
+        DBTables.INSPECTION,
+        columns: [BaseColumns.ID],
+        where: '${InspectionColumn.UPLOAD_STATUS} = ?',
+        whereArgs: [Consts.INSPECTION_UPLOAD_READY],
+      );
 
-    for (Map map in result) {
-      ids.add(map[BaseColumns.ID]);
+      for (Map map in result) {
+        ids.add(map[BaseColumns.ID]);
+      }
+    } catch (e) {
+      debugPrint(
+          'Error occurred while finding ready-to-upload inspection IDs: $e');
     }
 
     return ids;
@@ -2233,27 +2238,35 @@ class ApplicationDao {
     return trailerTempMap;
   }
 
-  Future<TrailerTemperatureDetails> findTrailerTemperatureDetails(int inspectionId) async {
-  TrailerTemperatureDetails trailerTempMap = TrailerTemperatureDetails();
-  final Database db = dbProvider.lazyDatabase; // Assuming you have a dbProvider instance for database operations
+  Future<TrailerTemperatureDetails> findTrailerTemperatureDetails(
+      int inspectionId) async {
+    TrailerTemperatureDetails trailerTempMap = TrailerTemperatureDetails();
+    final Database db = dbProvider
+        .lazyDatabase; // Assuming you have a dbProvider instance for database operations
 
-  try {
-    String query = "SELECT * FROM ${DBTables.TRAILER_TEMPERATURE_DETAILS} WHERE ${TrailerTemperatureDetailsColumn.ID} = ?";
-    List<Map> result = await db.rawQuery(query, [inspectionId]);
+    try {
+      String query =
+          "SELECT * FROM ${DBTables.TRAILER_TEMPERATURE_DETAILS} WHERE ${TrailerTemperatureDetailsColumn.ID} = ?";
+      List<Map> result = await db.rawQuery(query, [inspectionId]);
 
-    if (result.isNotEmpty) {
-      trailerTempMap.tempOpen1 = result.first[TrailerTemperatureDetailsColumn.TEMP_OPEN1];
-      trailerTempMap.tempOpen2 = result.first[TrailerTemperatureDetailsColumn.TEMP_OPEN2];
-      trailerTempMap.tempOpen3 = result.first[TrailerTemperatureDetailsColumn.TEMP_OPEN3];
-      trailerTempMap.comments = result.first[TrailerTemperatureDetailsColumn.COMMENTS];
-      trailerTempMap.poNumber = result.first[TrailerTemperatureDetailsColumn.PO_NUMBER];
+      if (result.isNotEmpty) {
+        trailerTempMap.tempOpen1 =
+            result.first[TrailerTemperatureDetailsColumn.TEMP_OPEN1];
+        trailerTempMap.tempOpen2 =
+            result.first[TrailerTemperatureDetailsColumn.TEMP_OPEN2];
+        trailerTempMap.tempOpen3 =
+            result.first[TrailerTemperatureDetailsColumn.TEMP_OPEN3];
+        trailerTempMap.comments =
+            result.first[TrailerTemperatureDetailsColumn.COMMENTS];
+        trailerTempMap.poNumber =
+            result.first[TrailerTemperatureDetailsColumn.PO_NUMBER];
+      }
+    } catch (e) {
+      print('Error has occurred while finding trailer temperature items: $e');
     }
-  } catch (e) {
-    print('Error has occurred while finding trailer temperature items: $e');
-  }
 
-  return trailerTempMap;
-}
+    return trailerTempMap;
+  }
 
   Future<bool> checkDataExists(txn, String columnName, String poNumber) async {
     try {

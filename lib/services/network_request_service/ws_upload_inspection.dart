@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/inspection.dart';
@@ -326,9 +328,9 @@ class WSUploadInspection {
       jsonObj['trailerTemp'] = trailerTempObj;
       jsonObj['qualityControl'] = qcObj;
     } catch (e) {
-      print('Error creating JSON request: $e');
+      debugPrint('🔴 Error creating JSON request WsUploadInspection : $e');
     }
-
+    log('🟢 JSON CREATED WsUploadInspection ${json.encode(jsonObj)}');
     return jsonObj;
   }
 }

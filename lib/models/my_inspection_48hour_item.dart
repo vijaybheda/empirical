@@ -30,7 +30,7 @@ class MyInspection48HourItem {
   int? partnerId;
   String? carrierName;
   String? varietyName;
-  String? varietyId;
+  int? varietyId;
   String? inspectionResult;
 
   MyInspection48HourItem({
