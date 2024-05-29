@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
 
 class ProgressController extends GetxController {
-  RxInt progress = 0.obs;
+  RxDouble progress = 0.0.obs;
 
-  void updateProgress(int value) {
+  void updateProgress(double value) {
     progress.value = value;
   }
 }

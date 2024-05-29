@@ -277,7 +277,7 @@ class CommodityIDScreenController extends GetxController {
         progressDialogStatus = ++listIndex;
 
         // Update the progress bar
-        progressController.updateProgress(progressDialogStatus);
+        progressController.updateProgress(progressDialogStatus.toDouble());
 
         if (progressDialogStatus >= numberOfInspections) {
           await Future.delayed(const Duration(seconds: 1));
