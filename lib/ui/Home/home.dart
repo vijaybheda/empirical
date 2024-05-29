@@ -168,13 +168,7 @@ class Home extends GetView<HomeController> {
                                         color: AppColors.primary,
                                         padding: const EdgeInsets.all(5),
                                         child: Image.asset(
-                                          controller.selectedIDsInspection
-                                                      .length ==
-                                                  controller.itemsList
-                                                      .where((item) =>
-                                                          item.uploadStatus ==
-                                                          1)
-                                                      .length
+                                          controller.completeAllCheckbox.value
                                               ? AppImages.ic_SelectedCheckbox
                                               : AppImages.ic_unSelectCheckbox,
                                           width: 60.w,
