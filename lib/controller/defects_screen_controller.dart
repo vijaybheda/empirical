@@ -341,6 +341,7 @@ class DefectsScreenController extends GetxController {
         name: name,
         setNumber: index,
         timeCreated: timeStamp,
+        sampleId: id,
         // lotNumber: 0,
         // packDate: "",
         complete: false);
@@ -1452,10 +1453,10 @@ class DefectsScreenController extends GetxController {
     passingData.putIfAbsent(Consts.VARIETY_SIZE, () => varietySize);
     passingData.putIfAbsent(Consts.VARIETY_ID, () => varietyId);
     // FIXME: Implement below code
-    int? sampleId = getSampleID(sampleDataMap[rowIndex]!.name);
-    if (sampleId != null) {
-      passingData.putIfAbsent(Consts.SAMPLE_ID, () => sampleId);
-    }
+    // int? sampleId = getSampleID(sampleDataMap[rowIndex]!.name);
+    // if (sampleId != null) {
+    //   passingData.putIfAbsent(Consts.SAMPLE_ID, () => sampleId);
+    // }
 
     currentAttachPhotosDataName = dataName;
     currentAttachPhotosPosition = rowIndex;

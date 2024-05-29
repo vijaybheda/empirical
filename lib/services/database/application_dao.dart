@@ -476,7 +476,7 @@ class ApplicationDao {
     final Database db = dbProvider.lazyDatabase;
     await db.update(
       DBTables.INSPECTION,
-      {'ServerID': serverID},
+      {InspectionColumn.INSPECTION_SERVER_ID: serverID},
       where: '${BaseColumns.ID} = ?',
       whereArgs: [inspectionID],
     );

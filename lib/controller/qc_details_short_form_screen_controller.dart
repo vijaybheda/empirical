@@ -145,8 +145,7 @@ class QCDetailsShortFormScreenController extends GetxController {
     String packDateString = args[Consts.PACK_DATE] ?? '';
     if (packDateString.isNotEmpty) {
       try {
-        packDate =
-            DateTime.fromMillisecondsSinceEpoch(int.parse(packDateString));
+        packDate = Utils.parseDate(packDateString);
         if (packDate != null) {
           packDateController.text = Utils().dateFormat.format(packDate!);
         }
@@ -1794,7 +1793,7 @@ class QCDetailsShortFormScreenController extends GetxController {
           Consts.ITEM_UNIQUE_ID: itemUniqueId,
           Consts.LOT_NO: lotNo,
           Consts.GTIN: gtin,
-          Consts.PACK_DATE: packDate,
+          Consts.PACK_DATE: packDate?.millisecondsSinceEpoch.toString(),
           Consts.LOT_SIZE: lotSize,
           Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
           Consts.PO_NUMBER: poNumber,
