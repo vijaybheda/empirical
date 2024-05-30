@@ -45,10 +45,16 @@ class UserService extends BaseRequestService {
       final Map<String, dynamic> data =
           await errorHandlerDynamicResponse(result);
       UserData currentUser = UserData.fromJson(data);
+      String userName = data['userName'];
+      String language = data['language'];
+      UserData? savedUserData = appStorage.getUserData();
+      // if (savedUserData != null && currentUser.userName == userName) {
       currentUser = currentUser.copyWith(
-        userName: data['userName'],
-        language: data['language'],
+        id: savedUserData?.id,
+        userName: userName,
+        language: language,
       );
+      // }
       await AppStorage.instance.setUserData(currentUser);
       await AppStorage.instance.setHeaderMap({
         'username': mUsername,

@@ -107,17 +107,17 @@ class TrailerTemp extends GetView<TrailerTempController> {
                     } else {
                       await controller.saveTemperatureData(
                           'N',
-                          controller.orderNumber1!,
+                          controller.poNumber!,
                           controller.carrierId,
                           controller.tailerTempData);
                       await controller.saveTemperatureData(
                           'M',
-                          controller.orderNumber1!,
+                          controller.poNumber!,
                           controller.carrierId,
                           controller.tailerTempData);
                       await controller.saveTemperatureData(
                           'B',
-                          controller.orderNumber1!,
+                          controller.poNumber!,
                           controller.carrierId,
                           controller.tailerTempData);
                       Get.back();

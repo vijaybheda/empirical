@@ -235,6 +235,7 @@ class QCDetailsShortFormScreenController extends GetxController {
             itemSKU: itemSKU!,
             itemSKUId: itemSkuId!,
             po_number: poNumber!,
+            lotNo: lotNoString,
             rating: 0,
             cteType: "",
             itemSkuName: itemSkuName!,

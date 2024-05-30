@@ -46,7 +46,7 @@ class TrailerTempController extends GetxController {
   final ApplicationDao dao = ApplicationDao();
 
   // CarrierItem? carrier1;
-  String? orderNumber1;
+  String? poNumber;
   int carrierId = 0;
   String carrierName = '';
 
@@ -58,7 +58,7 @@ class TrailerTempController extends GetxController {
 
     Map<String, dynamic>? args = Get.arguments;
     if (args != null) {
-      orderNumber1 = args[Consts.PO_NUMBER] ?? '';
+      poNumber = args[Consts.PO_NUMBER] ?? '';
       carrierId = args[Consts.CARRIER_ID] ?? 0;
       carrierName = args[Consts.CARRIER_NAME] ?? '';
     }
@@ -119,7 +119,7 @@ class TrailerTempController extends GetxController {
     });
 
     debugPrint('carrier ID ${carrierId}');
-    debugPrint('orderNumber1${orderNumber1 ?? ''}');
+    debugPrint('orderNumber1${poNumber ?? ''}');
     isOrderNumberAvailable = false;
   }
 
@@ -193,7 +193,7 @@ class TrailerTempController extends GetxController {
 
   void loadDataFromDB() async {
     List? trailerTempMap = await dao.findTempTrailerTemperatureItems(
-        carrierId, orderNumber1.toString());
+        carrierId, poNumber.toString());
 
     if (trailerTempMap != null) {
       for (var element in trailerTempMap) {
@@ -203,7 +203,7 @@ class TrailerTempController extends GetxController {
     }
 
     TrailerTemperatureDetails? temperatureDetails = await dao
-        .findTempTrailerTemperatureDetails(carrierId, orderNumber1.toString());
+        .findTempTrailerTemperatureDetails(carrierId, poNumber.toString());
 
     if (temperatureDetails != null) {
       commentTextController.value.text = temperatureDetails.comments ?? '';
@@ -540,8 +540,9 @@ class TrailerTempController extends GetxController {
                   ? tempData.nose?.pallet2?.bottom ?? ''
                   : tempData.nose?.pallet3?.bottom ?? '';
         }
-        if (level.trim().isNotEmpty) {
-          await saveOrUpdateTempDataFromLayouts('N', poNumber, partnerID, level, value);
+        if (value.trim().isNotEmpty) {
+          await saveOrUpdateTempDataFromLayouts(
+              'N', poNumber, partnerID, level, value);
         }
       }
     } else if (location == 'M') {
@@ -582,8 +583,9 @@ class TrailerTempController extends GetxController {
                   ? tempData.middle?.pallet2?.bottom ?? ''
                   : tempData.middle?.pallet3?.bottom ?? '';
         }
-        if (level.trim().isNotEmpty) {
-          await saveOrUpdateTempDataFromLayouts('M', poNumber, partnerID, level, value);
+        if (value.trim().isNotEmpty) {
+          await saveOrUpdateTempDataFromLayouts(
+              'M', poNumber, partnerID, level, value);
         }
       }
     } else {
@@ -624,13 +626,29 @@ class TrailerTempController extends GetxController {
                   ? tempData.tail?.pallet2?.bottom ?? ''
                   : tempData.tail?.pallet3?.bottom ?? '';
         }
-        if (level.trim().isNotEmpty) {
-          await saveOrUpdateTempDataFromLayouts('B', poNumber, partnerID, level, value);
+        if (value.trim().isNotEmpty) {
+          await saveOrUpdateTempDataFromLayouts(
+              'B', poNumber, partnerID, level, value);
         }
       }
     }
     await dao.createTempTrailerTemperatureDetails(partnerID.toString(), "", "",
         "", commentTextController.value.text, poNumber);
+    List<int> inspectionIds =
+        await dao.findInspectionsByPartner(carrierId, poNumber);
+    for (int i = 0; i < inspectionIds.length; i++) {
+      await dao.deleteTrailerTemperatureEntriesByInspectionId(
+          inspectionIds.elementAt(i));
+      await dao.deleteTrailerTemperatureDetailsByInspectionId(
+          inspectionIds.elementAt(i));
+      await dao
+          .copyTempTrailerTemperaturesToInspectionTrailerTemperatureTableByPartnerID(
+              inspectionIds.elementAt(i), carrierId, poNumber);
+      await dao
+          .copyTempTrailerTemperaturesDetailsToInspectionTrailerTemperatureDetailsTableByPartnerID(
+              inspectionIds.elementAt(i), carrierId, poNumber);
+    }
+    return;
   }
 
   Future<void> saveOrUpdateTempDataFromLayouts(String location, String poNumber,
@@ -651,8 +669,8 @@ class TrailerTempController extends GetxController {
     //   dao.createTempTrailerTemperature(
     //       carrierID, location, level, int.parse(value), po_number);
     // }
-    if (level.contains(CELSIUS_SYMBOL)) {
-      level = level.replaceAll(CELSIUS_SYMBOL, '');
+    if (value.contains(CELSIUS_SYMBOL)) {
+      value = value.replaceAll(CELSIUS_SYMBOL, '');
     }
     await dao.createTempTrailerTemperature(
         partnerID, location, level, value, poNumber);

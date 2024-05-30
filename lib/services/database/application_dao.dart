@@ -53,7 +53,7 @@ class ApplicationDao {
   Future<int> createOrUpdateUser(UserData user) async {
     try {
       final Database db = dbProvider.lazyDatabase;
-      if (user.id == null) {
+      if (user.id == 0) {
         // Insert
         return await db.insert(DBTables.USER, user.toUserDBJson());
       } else {
@@ -508,6 +508,7 @@ class ApplicationDao {
     required String? itemSKU,
     required int? itemSKUId,
     required String? po_number,
+    required String? lotNo,
     required int? rating,
     required String? cteType,
     required String? itemSkuName,
@@ -535,6 +536,7 @@ class ApplicationDao {
             InspectionColumn.RATING: rating,
             InspectionColumn.CTE_TYPE: cteType,
             InspectionColumn.ITEM_SKU_NAME: itemSkuName,
+            InspectionColumn.LOT_NO: lotNo,
           },
           where: '${InspectionColumn.ID} = ?',
           whereArgs: [serverInspectionID],
@@ -1954,7 +1956,7 @@ class ApplicationDao {
       ''', [poNumber]);
 
       for (var result in results) {
-        inspIDs.add(result['inspection_id']);
+        inspIDs.add(result[PartnerItemSkuColumn.INSPECTION_ID]);
       }
     } catch (e) {
       log('Error has occurred while finding partner sku inspection ids: $e');
@@ -2168,11 +2170,11 @@ class ApplicationDao {
       await db.transaction((txn) async {
         ttId = await txn.insert(DBTables.TEMP_TRAILER_TEMPERATURE, {
           TrailerTemperatureDetailsColumn.PARTNER_ID: partnerID,
-          'location': location,
-          'level': level,
-          'value': value,
-          'complete': 1,
-          'po_number': poNumber,
+          TempTrailerTemperatureColumn.LOCATION: location,
+          TempTrailerTemperatureColumn.LEVEL: level,
+          TempTrailerTemperatureColumn.VALUE: value,
+          TempTrailerTemperatureColumn.COMPLETE: 1,
+          TempTrailerTemperatureColumn.PO_NUMBER: poNumber,
         });
       });
     } catch (e) {
@@ -2428,6 +2430,9 @@ class ApplicationDao {
           commodityName: commodityName,
           partnerId: supplierId,
           partnerName: partnerName,
+          commodityID: commodityId,
+          FTLflag: row['FTL'],
+          Branded: row['Branded'],
         );
 
         itemSKUList.add(item);
@@ -3571,6 +3576,8 @@ class ApplicationDao {
                   row[TempTrailerTemperatureDetailsColumn.COMMENTS],
               TempTrailerTemperatureDetailsColumn.PO_NUMBER:
                   row[TempTrailerTemperatureDetailsColumn.PO_NUMBER],
+              TempTrailerTemperatureDetailsColumn.PARTNER_ID:
+                  row[TempTrailerTemperatureDetailsColumn.PARTNER_ID],
             };
 
             await txn.insert(DBTables.TRAILER_TEMPERATURE_DETAILS, values);
@@ -4181,5 +4188,45 @@ class ApplicationDao {
     }
 
     return attachments;
+  }
+
+  Future<List<int>> findInspectionsByPartner(
+      int partnerID, String poNumber) async {
+    List<int> inspectionIds = [];
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      List<Map> result = await db.rawQuery(
+        'SELECT * FROM ${DBTables.INSPECTION} WHERE ${InspectionColumn.CARRIER_ID} = ? AND ${InspectionColumn.PO_NUMBER} = ?',
+        [partnerID, poNumber],
+      );
+
+      for (Map map in result) {
+        int inspectionId = map[InspectionColumn.ID];
+        inspectionIds.add(inspectionId);
+      }
+    } catch (e) {
+      print('Error has occurred while finding trailer temperature items: $e');
+    }
+
+    return inspectionIds;
+  }
+
+  Future<void> deleteTrailerTemperatureDetailsByInspectionId(
+      int inspectionId) async {
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      await db.transaction((txn) async {
+        String query =
+            'DELETE FROM ${DBTables.TRAILER_TEMPERATURE_DETAILS} WHERE ${TrailerTemperatureDetailsColumn.ID} = ?';
+        List<dynamic> arguments = [inspectionId];
+
+        await txn.rawDelete(query, arguments);
+      });
+    } catch (e) {
+      print(
+          'Error has occurred while deleting a trailer temperature entries: $e');
+    }
   }
 }
