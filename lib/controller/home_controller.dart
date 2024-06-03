@@ -1,4 +1,5 @@
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/dialog_progress_controller.dart';
@@ -249,7 +250,8 @@ class HomeController extends GetxController {
         selectedIDsInspection.clear();
         selectedIDsInspection.addAll(selectedItems);
         uploadCheckedList.clear();
-        uploadCheckedList.addAll(selectedItems.map((item) => item.id!));
+        uploadCheckedList
+            .addAll(selectedItems.map((item) => item.inspectionId!));
       } else {
         selectedIDsInspection.clear();
         uploadCheckedList.clear();
@@ -258,13 +260,13 @@ class HomeController extends GetxController {
           itemsList.where((item) => item.uploadStatus == 1).length;
     } else {
       MyInspection48HourItem selectedItem =
-          itemsList.firstWhere((item) => item.id == id);
+          itemsList.firstWhere((item) => item.inspectionId == id);
       if (selectedIDsInspection.contains(selectedItem)) {
         selectedIDsInspection.remove(selectedItem);
-        uploadCheckedList.remove(selectedItem.id);
+        uploadCheckedList.remove(selectedItem.inspectionId);
       } else {
         selectedIDsInspection.add(selectedItem);
-        uploadCheckedList.add(selectedItem.id!);
+        uploadCheckedList.add(selectedItem.inspectionId!);
       }
       completeAllCheckbox.value = selectedIDsInspection.length ==
           itemsList.where((item) => item.uploadStatus == 1).length;
@@ -274,10 +276,12 @@ class HomeController extends GetxController {
   void sortArrayItem() {
     if (sortType.value == 'asc') {
       sortType.value = 'dsc';
-      myInsp48HourList.sort((a, b) => b.id!.compareTo(a.id!));
+      myInsp48HourList
+          .sort((a, b) => b.inspectionId!.compareTo(a.inspectionId!));
     } else {
       sortType.value = 'asc';
-      myInsp48HourList.sort((a, b) => a.id!.compareTo(b.id!));
+      myInsp48HourList
+          .sort((a, b) => a.inspectionId!.compareTo(b.inspectionId!));
     }
     update(['inspectionsList']);
   }

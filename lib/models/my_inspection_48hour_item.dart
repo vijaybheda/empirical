@@ -2,7 +2,6 @@ import 'package:pverify/services/database/column_names.dart';
 import 'package:pverify/utils/utils.dart';
 
 class MyInspection48HourItem {
-  int? id;
   int? inspectionId;
   int? commodityId;
   int? carrierId;
@@ -34,7 +33,6 @@ class MyInspection48HourItem {
   String? inspectionResult;
 
   MyInspection48HourItem({
-    this.id,
     this.inspectionId,
     this.commodityId,
     this.carrierId,
@@ -70,7 +68,6 @@ class MyInspection48HourItem {
   factory MyInspection48HourItem.fromJson(Map<String, dynamic> json) {
     printKeysAndValueTypes(json);
     return MyInspection48HourItem(
-      id: json[InspectionColumn.ID],
       inspectionId: json[InspectionColumn.INSPECTION_SERVER_ID],
       commodityId: json[InspectionColumn.COMMODITY_ID],
       carrierId: json[InspectionColumn.CARRIER_ID],

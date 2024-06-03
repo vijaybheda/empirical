@@ -1231,6 +1231,134 @@ class DefectsScreenController extends GetxController {
   List<DefectCategories> get defectCategoriesList =>
       appStorage.defectCategoriesList ?? [];
 
+  Future<void> saveDefectEntriesAndContinue() async {
+    if (sampleList.isEmpty) {
+      AppAlertDialog.validateAlerts(
+        Get.context!,
+        AppStrings.alert,
+        AppStrings.alertSample,
+      );
+    } else {
+      if (validateDefects()) {
+        if (validateSameDefects()) {
+          await saveSamplesToDB();
+          Map<String, dynamic> bundle = {
+            Consts.SERVER_INSPECTION_ID: serverInspectionID,
+            Consts.SEAL_NUMBER: sealNumber,
+            Consts.PO_NUMBER: poNumber,
+            Consts.COMPLETED: completed,
+            Consts.PARTNER_NAME: partnerName,
+            Consts.PARTNER_ID: partnerID,
+            Consts.CARRIER_NAME: carrierName,
+            Consts.CARRIER_ID: carrierID,
+            Consts.COMMODITY_NAME: commodityName,
+            Consts.COMMODITY_ID: commodityID,
+            Consts.VARIETY_NAME: varietyName,
+            Consts.VARIETY_SIZE: varietySize,
+            Consts.VARIETY_ID: varietyId,
+            Consts.GRADE_ID: gradeId,
+            Consts.SPECIFICATION_NUMBER: specificationNumber,
+            Consts.SPECIFICATION_VERSION: specificationVersion,
+            Consts.SPECIFICATION_NAME: selectedSpecification,
+            Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
+            Consts.LOT_NO: lotNo,
+            Consts.GTIN: gtin,
+            Consts.PACK_DATE: packDate,
+            Consts.LOT_SIZE: lotSize,
+            Consts.ITEM_UNIQUE_ID: itemUniqueId,
+            Consts.ITEM_SKU: itemSku,
+            Consts.ITEM_SKU_ID: itemSkuId,
+            Consts.ITEM_SKU_NAME: itemSkuName,
+            Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
+            Consts.PO_LINE_NO: poLineNo,
+            Consts.PRODUCT_TRANSFER: productTransfer,
+          };
+
+          if (callerActivity == 'NewPurchaseOrderDetailsActivity') {
+            bundle['callerActivity'] = 'NewPurchaseOrderDetailsActivity';
+          } else {
+            bundle['callerActivity'] = 'PurchaseOrderDetailsActivity';
+          }
+
+          final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+          Get.to(() => QCDetailsShortFormScreen(tag: tag), arguments: bundle);
+        } else {
+          AppAlertDialog.validateAlerts(
+            Get.context!,
+            AppStrings.alert,
+            AppStrings.sameDefectEntryAlert,
+          );
+        }
+      } else {
+        AppAlertDialog.validateAlerts(
+          Get.context!,
+          AppStrings.alert,
+          AppStrings.defectEntryAlert,
+        );
+      }
+    }
+    hideKeypad();
+  }
+
+  void saveAsDraftAndGotoMyInspectionScreen() {
+    if (sampleList.isEmpty) {
+      AppAlertDialog.validateAlerts(
+        Get.context!,
+        AppStrings.alert,
+        AppStrings.alertSample,
+      );
+    } else {
+      if (validateDefects()) {
+        if (validateSameDefects()) {
+          saveSamplesToDB();
+          Map<String, dynamic> bundle = {
+            Consts.SERVER_INSPECTION_ID: serverInspectionID,
+            Consts.PARTNER_NAME: partnerName,
+            Consts.PARTNER_ID: partnerID,
+            Consts.CARRIER_NAME: carrierName,
+            Consts.CARRIER_ID: carrierID,
+            Consts.PO_NUMBER: poNumber,
+            Consts.COMMODITY_NAME: commodityName,
+            Consts.COMMODITY_ID: commodityID,
+            Consts.VARIETY_NAME: varietyName,
+            Consts.VARIETY_ID: varietyId,
+            Consts.GRADE_ID: gradeId,
+            Consts.SPECIFICATION_NUMBER: specificationNumber,
+            Consts.SPECIFICATION_VERSION: specificationVersion,
+            Consts.SPECIFICATION_NAME: selectedSpecification,
+            Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
+            Consts.ITEM_SKU: itemSku,
+            Consts.ITEM_SKU_ID: itemSkuId,
+            Consts.LOT_NO: lotNo,
+            Consts.GTIN: gtin,
+            Consts.PACK_DATE: packDate,
+            Consts.ITEM_UNIQUE_ID: itemUniqueId,
+            Consts.LOT_SIZE: lotSize,
+            Consts.ITEM_SKU_NAME: itemSkuName,
+            Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
+            Consts.PRODUCT_TRANSFER: productTransfer,
+          };
+
+          final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+          Get.off(() => PurchaseOrderDetailsScreen(tag: tag),
+              arguments: bundle);
+        } else {
+          AppAlertDialog.validateAlerts(
+            Get.context!,
+            AppStrings.alert,
+            AppStrings.sameDefectEntryAlert,
+          );
+        }
+      } else {
+        AppAlertDialog.validateAlerts(
+          Get.context!,
+          AppStrings.alert,
+          AppStrings.defectEntryAlert,
+        );
+      }
+    }
+  }
+
   Future<void> saveSamplesToDB() async {
     hasDamage = false;
     hasSeriousDamage = false;
@@ -1666,19 +1794,20 @@ class DefectsScreenController extends GetxController {
     double borderBlack = 3;
     double borderGrey = 3;
     double borderOutside = 6;
-    Column tableLayout = const Column(
-        // borderBlack: borderBlack,
-        // borderGrey: borderGrey,
-        // borderOutside: borderOutside,
-        );
+    Column tableLayout = Column(
+      // borderBlack: borderBlack,
+      // borderGrey: borderGrey,
+      // borderOutside: borderOutside,
+      children: [],
+    );
 
     // Create the table row
-    // Row tableRow = const Row();
+    // Row tableRow = Row(children: []);
 
 // Label column
     Widget labelContainer = Container(
       margin: EdgeInsets.only(left: borderOutside, top: borderOutside),
-      child: const Text(
+      child: Text(
         'Type',
         style: TextStyle(fontSize: 20),
       ),
@@ -1712,7 +1841,7 @@ class DefectsScreenController extends GetxController {
       injuryColumn = Container(
         margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
         color: Colors.blue,
-        child: const Text(
+        child: Text(
           'Defects',
           style: TextStyle(fontSize: 16),
         ), // or use your color from resources
@@ -1724,7 +1853,7 @@ class DefectsScreenController extends GetxController {
       damageColumn = Container(
         margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
         color: Colors.green,
-        child: const Text(
+        child: Text(
           'Defects',
           style: TextStyle(fontSize: 16),
         ), // or use your color from resources
@@ -1736,7 +1865,7 @@ class DefectsScreenController extends GetxController {
       seriousDamageColumn = Container(
         margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
         color: Colors.orange,
-        child: const Text(
+        child: Text(
           'Defects',
           style: TextStyle(fontSize: 16),
         ), // or use your color from resources
@@ -1748,7 +1877,7 @@ class DefectsScreenController extends GetxController {
       verySeriousDamageColumn = Container(
         margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
         color: Colors.blue,
-        child: const Text(
+        child: Text(
           'Defects',
           style: TextStyle(fontSize: 16),
         ), // or use your color from resources
@@ -1760,7 +1889,7 @@ class DefectsScreenController extends GetxController {
       decayColumn1 = Container(
         margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
         color: Colors.green,
-        child: const Text(
+        child: Text(
           'Defects',
           style: TextStyle(fontSize: 16),
         ), // or use your color from resources
@@ -1771,11 +1900,11 @@ class DefectsScreenController extends GetxController {
 //     tableLayout.children.add(tableRow);
 
     // Create the table row
-    Row tableRow2 = const Row();
+    Row tableRow2 = Row(children: []);
 
     severityWidget = Container(
       margin: EdgeInsets.only(left: borderOutside, right: borderGrey),
-      child: const Text(
+      child: Text(
         'Severity',
         style: TextStyle(fontSize: 20),
       ),
@@ -1793,9 +1922,9 @@ class DefectsScreenController extends GetxController {
             Container(
               margin: EdgeInsets.all(borderGrey),
               color: Colors.blue, // or use your color from resources
-              child: const Icon(Icons.circle, color: Colors.red),
+              child: Icon(Icons.circle, color: Colors.red),
             ),
-            const Positioned.fill(
+            Positioned.fill(
               child: Center(
                 child: Text('I', style: TextStyle(color: Colors.white)),
               ),
@@ -1815,9 +1944,9 @@ class DefectsScreenController extends GetxController {
             Container(
               margin: EdgeInsets.all(borderGrey),
               color: Colors.green, // or use your color from resources
-              child: const Icon(Icons.circle, color: Colors.red),
+              child: Icon(Icons.circle, color: Colors.red),
             ),
-            const Positioned.fill(
+            Positioned.fill(
               child: Center(
                 child: Text('D', style: TextStyle(color: Colors.white)),
               ),
@@ -1844,9 +1973,9 @@ class DefectsScreenController extends GetxController {
             Container(
               margin: EdgeInsets.all(borderGrey),
               color: Colors.orange, // or use your color from resources
-              child: const Icon(Icons.circle, color: Colors.red),
+              child: Icon(Icons.circle, color: Colors.red),
             ),
-            const Positioned.fill(
+            Positioned.fill(
               child: Center(
                 child: Text(
                   'SD',
@@ -1872,14 +2001,14 @@ class DefectsScreenController extends GetxController {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text('Serious Defect $subscriptIndex'),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10),
                       Text(seriousDefectList[subscriptIndex - 1]),
                     ],
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('OK'),
+                      child: Text('OK'),
                     ),
                   ],
                 );
@@ -1904,9 +2033,9 @@ class DefectsScreenController extends GetxController {
             Container(
               margin: EdgeInsets.all(borderGrey),
               color: Colors.blue, // or use your color from resources
-              child: const Icon(Icons.circle, color: Colors.red),
+              child: Icon(Icons.circle, color: Colors.red),
             ),
-            const Positioned.fill(
+            Positioned.fill(
               child: Center(
                 child: Text(
                   'VSD',
@@ -1930,9 +2059,9 @@ class DefectsScreenController extends GetxController {
             Container(
               margin: EdgeInsets.all(borderGrey),
               color: Colors.green, // or use your color from resources
-              child: const Icon(Icons.circle, color: Colors.red),
+              child: Icon(Icons.circle, color: Colors.red),
             ),
-            const Positioned.fill(
+            Positioned.fill(
               child: Center(
                 child: Text(
                   'DC',
@@ -1953,7 +2082,7 @@ class DefectsScreenController extends GetxController {
 // Row - Sample(s)
 // **************************
     for (int j = 0; j < numberSamples; j++) {
-      Row tableRow = const Row();
+      Row tableRow = Row(children: []);
 
       final int index = sampleDataMapIndexList[j];
 
@@ -1966,7 +2095,7 @@ class DefectsScreenController extends GetxController {
         ),
         child: Text(
           sampleDataMap[index]!.sampleSize.toString(),
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20),
         ),
       );
       // tableRow.children.add();
@@ -1981,7 +2110,7 @@ class DefectsScreenController extends GetxController {
         color: hasSeverityInjury ? Colors.blue : null,
         child: Text(
           sampleDataMap[index]!.iCnt.toString(),
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20),
         ),
       );
       tableRow.children.add(injuryColumn2);
@@ -1996,7 +2125,7 @@ class DefectsScreenController extends GetxController {
         color: hasSeverityDamage ? Colors.green : null,
         child: Text(
           sampleDataMap[index]!.dCnt.toString(),
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20),
         ),
       );
       tableRow.children.add(damageColumn2);
@@ -2022,7 +2151,7 @@ class DefectsScreenController extends GetxController {
           color: hasSeveritySeriousDamage ? Colors.orange : null,
           child: Text(
             count.toString(),
-            style: const TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20),
           ),
         );
         tableRow.children.add(seriousDamageColumn2);
@@ -2038,7 +2167,7 @@ class DefectsScreenController extends GetxController {
         color: hasSeverityVerySeriousDamage ? Colors.blue : null,
         child: Text(
           sampleDataMap[index]!.vsdCnt.toString(),
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20),
         ),
       );
       tableRow.children.add(verySeriousDamageColumn2);
@@ -2053,7 +2182,7 @@ class DefectsScreenController extends GetxController {
         color: hasSeverityDecay ? Colors.green : null,
         child: Text(
           sampleDataMap[index]!.dcCnt.toString(),
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20),
         ),
       );
       tableRow.children.add(decayColumn3);
@@ -2068,13 +2197,13 @@ class DefectsScreenController extends GetxController {
         child: Row(
           children: [
             IconButton(
-              icon: const Icon(Icons.camera),
+              icon: Icon(Icons.camera),
               onPressed: () {
                 // Your onPressed function for camera button
               },
             ),
             IconButton(
-              icon: const Icon(Icons.comment),
+              icon: Icon(Icons.comment),
               onPressed: () {
                 // Your onPressed function for comment button
               },
@@ -2090,12 +2219,12 @@ class DefectsScreenController extends GetxController {
 // **********************************************************************************
 // Row - Total Quality Defects
 // ***********************************************************************************
-    Row totalQualityRow = const Row();
+    Row totalQualityRow = Row(children: []);
 
 // Label column
     totalQualityLabelColumn = Container(
       margin: EdgeInsets.only(left: borderOutside),
-      child: const Text(
+      child: Text(
         'Total Quality Defects',
         style: TextStyle(fontSize: 20),
       ),
@@ -2104,22 +2233,22 @@ class DefectsScreenController extends GetxController {
 
 // Injury column
     totalQualityInjuryColumn = Container(
-      margin: const EdgeInsets.only(left: 0),
+      margin: EdgeInsets.only(left: 0),
       color: hasSeverityInjury ? Colors.blue : null,
       child: Text(
         totalQualityInjury.toString(),
-        style: const TextStyle(fontSize: 20),
+        style: TextStyle(fontSize: 20),
       ),
     );
     totalQualityRow.children.add(totalQualityInjuryColumn);
 
 // Damage column
     totalQualityDamageColumn = Container(
-      margin: const EdgeInsets.only(left: 0),
+      margin: EdgeInsets.only(left: 0),
       color: hasSeverityDamage ? Colors.green : null,
       child: Text(
         totalQualityDamage.toString(),
-        style: const TextStyle(fontSize: 20),
+        style: TextStyle(fontSize: 20),
       ),
     );
     totalQualityRow.children.add(totalQualityDamageColumn);
@@ -2144,7 +2273,7 @@ class DefectsScreenController extends GetxController {
         ),
         child: Text(
           i == 0 ? totalQualitySeriousDamage.toString() : '',
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20),
         ),
       );
 
@@ -2183,7 +2312,7 @@ class DefectsScreenController extends GetxController {
       ),
       child: Text(
         totalQualityVerySeriousDamage.toString(),
-        style: const TextStyle(fontSize: 20),
+        style: TextStyle(fontSize: 20),
       ),
     );
 
@@ -2206,7 +2335,7 @@ class DefectsScreenController extends GetxController {
       ),
       child: Text(
         totalQualityDecay.toString(),
-        style: const TextStyle(fontSize: 20),
+        style: TextStyle(fontSize: 20),
       ),
     );
 
@@ -2223,13 +2352,13 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(
               borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(color: Colors.black),
               right: BorderSide(color: Colors.grey),
             ),
           ),
-          child: const Text(
+          child: Text(
             "Total Quality Defects %",
             style: TextStyle(fontSize: 20),
           ),
@@ -2237,7 +2366,7 @@ class DefectsScreenController extends GetxController {
         // injury column
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.blue,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2245,7 +2374,7 @@ class DefectsScreenController extends GetxController {
             ),
           ),
           child: Text(
-            "${((totalQualityInjury / totalSamples) * 100).round()}%",
+            getTotalQualityInjury(),
             style: TextStyle(
                 fontSize: 20,
                 color: (injuryQualitySpec != null &&
@@ -2258,7 +2387,7 @@ class DefectsScreenController extends GetxController {
         // damage column
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.green,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2266,7 +2395,7 @@ class DefectsScreenController extends GetxController {
             ),
           ),
           child: Text(
-            "${((totalQualityDamage / totalSamples) * 100).round()}%",
+            getTotalQualityDamage(),
             style: TextStyle(
                 fontSize: 20,
                 color: (damageQualitySpec != null &&
@@ -2285,7 +2414,7 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
               i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.orange,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2293,9 +2422,7 @@ class DefectsScreenController extends GetxController {
             ),
           ),
           child: Text(
-            i == 0
-                ? "${((totalQualitySeriousDamage / totalSamples) * 100).round()}%"
-                : "",
+            getTotalQualitySeriousDamage(i),
             style: TextStyle(
                 fontSize: 20,
                 color: (seriousDamageQualitySpec != null &&
@@ -2312,7 +2439,7 @@ class DefectsScreenController extends GetxController {
     tableRow1.children.add(
       Container(
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.blue,
           border: Border(
             bottom: BorderSide(color: Colors.black),
@@ -2320,7 +2447,7 @@ class DefectsScreenController extends GetxController {
           ),
         ),
         child: Text(
-          "${((totalQualityVerySeriousDamage / totalSamples) * 100).round()}%",
+          getTotalQualityVerySeriousDamage(),
           style: TextStyle(
               fontSize: 20,
               color: (verySeriousDamageQualitySpec != null &&
@@ -2341,13 +2468,13 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(
               borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(color: Colors.black),
               right: BorderSide(color: Colors.grey),
             ),
           ),
-          child: const Text(
+          child: Text(
             "Total Condition Defects",
             style: TextStyle(fontSize: 20),
           ),
@@ -2355,7 +2482,7 @@ class DefectsScreenController extends GetxController {
         // injury column
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.blue,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2364,13 +2491,13 @@ class DefectsScreenController extends GetxController {
           ),
           child: Text(
             "$totalConditionInjury",
-            style: const TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20),
           ),
         ),
         // damage column
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.green,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2379,7 +2506,7 @@ class DefectsScreenController extends GetxController {
           ),
           child: Text(
             "$totalConditionDamage",
-            style: const TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20),
           ),
         ),
       ],
@@ -2391,7 +2518,7 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
               i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.orange,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2400,7 +2527,7 @@ class DefectsScreenController extends GetxController {
           ),
           child: Text(
             i == 0 ? "$totalConditionSeriousDamage" : "",
-            style: const TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20),
           ),
         ),
       );
@@ -2410,7 +2537,7 @@ class DefectsScreenController extends GetxController {
     conditionTableRow.children.add(
       Container(
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.blue,
           border: Border(
             bottom: BorderSide(color: Colors.black),
@@ -2419,7 +2546,7 @@ class DefectsScreenController extends GetxController {
         ),
         child: Text(
           "$totalConditionVerySeriousDamage",
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20),
         ),
       ),
     );
@@ -2428,7 +2555,7 @@ class DefectsScreenController extends GetxController {
     conditionTableRow.children.add(
       Container(
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.green,
           border: Border(
             bottom: BorderSide(color: Colors.black),
@@ -2437,7 +2564,7 @@ class DefectsScreenController extends GetxController {
         ),
         child: Text(
           "$totalConditionDecay",
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20),
         ),
       ),
     );
@@ -2454,13 +2581,13 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(
               borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(color: Colors.black),
               right: BorderSide(color: Colors.grey),
             ),
           ),
-          child: const Text(
+          child: Text(
             "Total Condition Defects %",
             style: TextStyle(fontSize: 20),
           ),
@@ -2468,7 +2595,7 @@ class DefectsScreenController extends GetxController {
         // injury column
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.blue,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2476,14 +2603,14 @@ class DefectsScreenController extends GetxController {
             ),
           ),
           child: Text(
-            "${((totalConditionInjury / totalSamples) * 100).round()}%",
-            style: const TextStyle(fontSize: 20),
+            getTotalConditionInjury(),
+            style: TextStyle(fontSize: 20),
           ),
         ),
         // damage column
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.green,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2491,8 +2618,8 @@ class DefectsScreenController extends GetxController {
             ),
           ),
           child: Text(
-            "${((totalConditionDamage / totalSamples) * 100).round()}%",
-            style: const TextStyle(fontSize: 20),
+            getTotalConditionDamage(),
+            style: TextStyle(fontSize: 20),
           ),
         ),
       ],
@@ -2504,7 +2631,7 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
               i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.orange,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2512,10 +2639,8 @@ class DefectsScreenController extends GetxController {
             ),
           ),
           child: Text(
-            i == 0
-                ? "${((totalConditionSeriousDamage / totalSamples) * 100).round()}%"
-                : "",
-            style: const TextStyle(fontSize: 20),
+            getTotalConditionSeriousDamage(i),
+            style: TextStyle(fontSize: 20),
           ),
         ),
       );
@@ -2525,7 +2650,7 @@ class DefectsScreenController extends GetxController {
     conditionPercentageRow.children.add(
       Container(
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.blue,
           border: Border(
             bottom: BorderSide(color: Colors.black),
@@ -2533,8 +2658,8 @@ class DefectsScreenController extends GetxController {
           ),
         ),
         child: Text(
-          "${((totalConditionVerySeriousDamage / totalSamples) * 100).round()}%",
-          style: const TextStyle(fontSize: 20),
+          getTotalConditionVerySeriousDamage(),
+          style: TextStyle(fontSize: 20),
         ),
       ),
     );
@@ -2543,7 +2668,7 @@ class DefectsScreenController extends GetxController {
     conditionPercentageRow.children.add(
       Container(
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.green,
           border: Border(
             bottom: BorderSide(color: Colors.black),
@@ -2551,8 +2676,8 @@ class DefectsScreenController extends GetxController {
           ),
         ),
         child: Text(
-          "${((totalConditionDecay / totalSamples) * 100).round()}%",
-          style: const TextStyle(fontSize: 20),
+          getTotalConditionDecay(),
+          style: TextStyle(fontSize: 20),
         ),
       ),
     );
@@ -2569,13 +2694,13 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(
               borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(color: Colors.black),
               right: BorderSide(color: Colors.grey),
             ),
           ),
-          child: const Text(
+          child: Text(
             "Total Severity by Defect Type",
             style: TextStyle(fontSize: 20),
           ),
@@ -2583,7 +2708,7 @@ class DefectsScreenController extends GetxController {
         // injury column
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.blue,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2592,13 +2717,13 @@ class DefectsScreenController extends GetxController {
           ),
           child: Text(
             "$totalInjury",
-            style: const TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20),
           ),
         ),
         // damage column
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.green,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2607,7 +2732,7 @@ class DefectsScreenController extends GetxController {
           ),
           child: Text(
             "$totalDamage",
-            style: const TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20),
           ),
         ),
       ],
@@ -2627,7 +2752,7 @@ class DefectsScreenController extends GetxController {
                   ? borderOutside.toDouble()
                   : borderGrey.toDouble(),
               0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.orange,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2636,7 +2761,7 @@ class DefectsScreenController extends GetxController {
           ),
           child: Text(
             "$sdcount",
-            style: const TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20),
           ),
         ),
       );
@@ -2646,7 +2771,7 @@ class DefectsScreenController extends GetxController {
     severityTableRow.children.add(
       Container(
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.blue,
           border: Border(
             bottom: BorderSide(color: Colors.black),
@@ -2655,7 +2780,7 @@ class DefectsScreenController extends GetxController {
         ),
         child: Text(
           "$totalVerySeriousDamage",
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20),
         ),
       ),
     );
@@ -2664,7 +2789,7 @@ class DefectsScreenController extends GetxController {
     severityTableRow.children.add(
       Container(
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.green,
           border: Border(
             bottom: BorderSide(color: Colors.black),
@@ -2673,7 +2798,7 @@ class DefectsScreenController extends GetxController {
         ),
         child: Text(
           "$totalDecay",
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20),
         ),
       ),
     );
@@ -2688,13 +2813,13 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(borderOutside.toDouble(),
               borderBlack.toDouble(), 0, borderBlack.toDouble()),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(color: Colors.black),
               right: BorderSide(color: Colors.grey),
             ),
           ),
-          child: const Text(
+          child: Text(
             "Total Severity by Defect Type %",
             style: TextStyle(fontSize: 20),
           ),
@@ -2703,7 +2828,7 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(
               0, borderBlack.toDouble(), 0, borderBlack.toDouble()),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.blue,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2711,7 +2836,7 @@ class DefectsScreenController extends GetxController {
             ),
           ),
           child: Text(
-            "${((totalInjury / totalSamples) * 100).round()}%",
+            getTotalInjury(),
             style: TextStyle(
                 fontSize: 20,
                 color: injurySpec != null &&
@@ -2724,7 +2849,7 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(
               0, borderBlack.toDouble(), 0, borderBlack.toDouble()),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.green,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2732,7 +2857,7 @@ class DefectsScreenController extends GetxController {
             ),
           ),
           child: Text(
-            "${((totalDamage / totalSamples) * 100).round()}%",
+            getTotalDamage(),
             style: TextStyle(
                 fontSize: 20,
                 color: damageSpec != null &&
@@ -2749,7 +2874,7 @@ class DefectsScreenController extends GetxController {
       int sdcount = seriousDefectList.isEmpty
           ? 0
           : seriousDefectCountMap[seriousDefectList[i]] ?? 0;
-      double percent = (sdcount / totalSamples) * 100;
+      double percent = (sdcount == 0) ? 0.0 : (sdcount / totalSamples) * 100;
       defectTypePercentRow.children.add(
         Container(
           margin: EdgeInsets.fromLTRB(
@@ -2759,7 +2884,7 @@ class DefectsScreenController extends GetxController {
                   ? borderOutside.toDouble()
                   : borderGrey.toDouble(),
               borderBlack.toDouble()),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.orange,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2783,7 +2908,7 @@ class DefectsScreenController extends GetxController {
       Container(
         margin: EdgeInsets.fromLTRB(
             0, borderBlack.toDouble(), 0, borderBlack.toDouble()),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.blue,
           border: Border(
             bottom: BorderSide(color: Colors.black),
@@ -2791,7 +2916,7 @@ class DefectsScreenController extends GetxController {
           ),
         ),
         child: Text(
-          "${((totalVerySeriousDamage / totalSamples) * 100).round()}%",
+          getTotalVerySeriousDamage(),
           style: TextStyle(
               fontSize: 20,
               color: verySeriousDamageSpec != null &&
@@ -2808,7 +2933,7 @@ class DefectsScreenController extends GetxController {
       Container(
         margin: EdgeInsets.fromLTRB(
             0, borderBlack.toDouble(), 0, borderBlack.toDouble()),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.green,
           border: Border(
             bottom: BorderSide(color: Colors.black),
@@ -2816,7 +2941,7 @@ class DefectsScreenController extends GetxController {
           ),
         ),
         child: Text(
-          "${((totalDecay / totalSamples) * 100).round()}%",
+          getTotalDecay(),
           style: TextStyle(
               fontSize: 20,
               color: decaySpec != null &&
@@ -2837,13 +2962,13 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(borderOutside.toDouble(),
               borderOutside.toDouble(), 0, borderOutside.toDouble()),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(color: Colors.black),
               right: BorderSide(color: Colors.grey),
             ),
           ),
-          child: const Text(
+          child: Text(
             "Percent by Severity Level",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
@@ -2852,7 +2977,7 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(
               0, borderOutside.toDouble(), 0, borderOutside.toDouble()),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.blue,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2860,15 +2985,15 @@ class DefectsScreenController extends GetxController {
             ),
           ),
           child: Text(
-            "${((totalInjury / totalSamples) * 100).round()}%",
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            getTotalInjury(),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
         // damage column
         Container(
           margin: EdgeInsets.fromLTRB(
               0, borderOutside.toDouble(), 0, borderOutside.toDouble()),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.green,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2876,8 +3001,8 @@ class DefectsScreenController extends GetxController {
             ),
           ),
           child: Text(
-            "${((totalDamage / totalSamples) * 100).round()}%",
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            getTotalDamage(),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
       ],
@@ -2893,13 +3018,13 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(
               borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(color: Colors.black),
               right: BorderSide(color: Colors.grey),
             ),
           ),
-          child: const Text(
+          child: Text(
             "Total Size Defects",
             style: TextStyle(fontSize: 20),
           ),
@@ -2907,7 +3032,7 @@ class DefectsScreenController extends GetxController {
         // injury column
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.blue,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2916,13 +3041,13 @@ class DefectsScreenController extends GetxController {
           ),
           child: Text(
             totalSizeInjury.toString(),
-            style: const TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20),
           ),
         ),
         // damage column
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.green,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2931,7 +3056,7 @@ class DefectsScreenController extends GetxController {
           ),
           child: Text(
             totalSizeDamage.toString(),
-            style: const TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20),
           ),
         ),
       ],
@@ -2943,7 +3068,7 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
               i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.orange,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -2952,7 +3077,7 @@ class DefectsScreenController extends GetxController {
           ),
           child: Text(
             i == 0 ? totalSizeSeriousDamage.toString() : '',
-            style: const TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20),
           ),
         ),
       );
@@ -2962,7 +3087,7 @@ class DefectsScreenController extends GetxController {
     totalSizeDefectsRow.children.add(
       Container(
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.blue,
           border: Border(
             bottom: BorderSide(color: Colors.black),
@@ -2971,7 +3096,7 @@ class DefectsScreenController extends GetxController {
         ),
         child: Text(
           totalSizeVerySeriousDamage.toString(),
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20),
         ),
       ),
     );
@@ -2980,7 +3105,7 @@ class DefectsScreenController extends GetxController {
     totalSizeDefectsRow.children.add(
       Container(
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.green,
           border: Border(
             bottom: BorderSide(color: Colors.black),
@@ -2989,7 +3114,7 @@ class DefectsScreenController extends GetxController {
         ),
         child: Text(
           totalSizeDecay.toString(),
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20),
         ),
       ),
     );
@@ -3006,13 +3131,13 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(
               borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(color: Colors.black),
               right: BorderSide(color: Colors.grey),
             ),
           ),
-          child: const Text(
+          child: Text(
             "Total Size Defects Percentage",
             style: TextStyle(fontSize: 20),
           ),
@@ -3020,7 +3145,7 @@ class DefectsScreenController extends GetxController {
         // injury column
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.blue,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -3028,14 +3153,14 @@ class DefectsScreenController extends GetxController {
             ),
           ),
           child: Text(
-            "${((totalSizeInjury / totalSamples) * 100).toStringAsFixed(2)}%",
-            style: const TextStyle(fontSize: 20),
+            getTotalSizeInjury(),
+            style: TextStyle(fontSize: 20),
           ),
         ),
         // damage column
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.green,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -3043,8 +3168,8 @@ class DefectsScreenController extends GetxController {
             ),
           ),
           child: Text(
-            "${((totalSizeDamage / totalSamples) * 100).toStringAsFixed(2)}%",
-            style: const TextStyle(fontSize: 20),
+            getTotalSizeDamage(),
+            style: TextStyle(fontSize: 20),
           ),
         ),
       ],
@@ -3056,7 +3181,7 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
               i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.orange,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -3064,10 +3189,8 @@ class DefectsScreenController extends GetxController {
             ),
           ),
           child: Text(
-            i == 0
-                ? "${((totalSizeSeriousDamage / totalSamples) * 100).toStringAsFixed(2)}%"
-                : '',
-            style: const TextStyle(fontSize: 20),
+            getTotalSizeSeriousDamage(i),
+            style: TextStyle(fontSize: 20),
           ),
         ),
       );
@@ -3077,7 +3200,7 @@ class DefectsScreenController extends GetxController {
     totalSizeDefectsPercentageRow.children.add(
       Container(
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.blue,
           border: Border(
             bottom: BorderSide(color: Colors.black),
@@ -3085,8 +3208,8 @@ class DefectsScreenController extends GetxController {
           ),
         ),
         child: Text(
-          "${((totalSizeVerySeriousDamage / totalSamples) * 100).toStringAsFixed(2)}%",
-          style: const TextStyle(fontSize: 20),
+          getTotalSizeVerySeriousDamage(),
+          style: TextStyle(fontSize: 20),
         ),
       ),
     );
@@ -3095,7 +3218,7 @@ class DefectsScreenController extends GetxController {
     totalSizeDefectsPercentageRow.children.add(
       Container(
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.green,
           border: Border(
             bottom: BorderSide(color: Colors.black),
@@ -3103,8 +3226,8 @@ class DefectsScreenController extends GetxController {
           ),
         ),
         child: Text(
-          "${((totalSizeDecay / totalSamples) * 100).toStringAsFixed(2)}%",
-          style: const TextStyle(fontSize: 20),
+          getTotalSizeDecay(),
+          style: TextStyle(fontSize: 20),
         ),
       ),
     );
@@ -3121,13 +3244,13 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(
               borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(color: Colors.black),
               right: BorderSide(color: Colors.grey),
             ),
           ),
-          child: const Text(
+          child: Text(
             "Total Color Defects",
             style: TextStyle(fontSize: 20),
           ),
@@ -3135,7 +3258,7 @@ class DefectsScreenController extends GetxController {
         // injury column
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.blue,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -3144,13 +3267,13 @@ class DefectsScreenController extends GetxController {
           ),
           child: Text(
             totalColorInjury.toString(),
-            style: const TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20),
           ),
         ),
         // damage column
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.green,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -3159,7 +3282,7 @@ class DefectsScreenController extends GetxController {
           ),
           child: Text(
             totalColorDamage.toString(),
-            style: const TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20),
           ),
         ),
       ],
@@ -3171,7 +3294,7 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
               i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.orange,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -3180,7 +3303,7 @@ class DefectsScreenController extends GetxController {
           ),
           child: Text(
             i == 0 ? totalColorSeriousDamage.toString() : '',
-            style: const TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20),
           ),
         ),
       );
@@ -3190,7 +3313,7 @@ class DefectsScreenController extends GetxController {
     totalColorDefectsRow.children.add(
       Container(
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.blue,
           border: Border(
             bottom: BorderSide(color: Colors.black),
@@ -3199,7 +3322,7 @@ class DefectsScreenController extends GetxController {
         ),
         child: Text(
           totalColorVerySeriousDamage.toString(),
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20),
         ),
       ),
     );
@@ -3208,7 +3331,7 @@ class DefectsScreenController extends GetxController {
     totalColorDefectsRow.children.add(
       Container(
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.green,
           border: Border(
             bottom: BorderSide(color: Colors.black),
@@ -3217,7 +3340,7 @@ class DefectsScreenController extends GetxController {
         ),
         child: Text(
           totalColorDecay.toString(),
-          style: const TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20),
         ),
       ),
     );
@@ -3234,13 +3357,13 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(borderOutside.toDouble(),
               borderBlack.toDouble(), 0, borderOutside.toDouble()),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(color: Colors.black),
               right: BorderSide(color: Colors.grey),
             ),
           ),
-          child: const Text(
+          child: Text(
             "Total Color Defects Percentage",
             style: TextStyle(fontSize: 20),
           ),
@@ -3249,7 +3372,7 @@ class DefectsScreenController extends GetxController {
         Container(
           margin: EdgeInsets.fromLTRB(
               0, borderBlack.toDouble(), 0, borderOutside.toDouble()),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.blue,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -3257,15 +3380,15 @@ class DefectsScreenController extends GetxController {
             ),
           ),
           child: Text(
-            "${((totalColorInjury / totalSamples) * 100).toStringAsFixed(2)}%",
-            style: const TextStyle(fontSize: 20),
+            getTotalColorInjury(),
+            style: TextStyle(fontSize: 20),
           ),
         ),
         // damage column
         Container(
           margin: EdgeInsets.fromLTRB(
               0, borderBlack.toDouble(), 0, borderOutside.toDouble()),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.green,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -3273,8 +3396,8 @@ class DefectsScreenController extends GetxController {
             ),
           ),
           child: Text(
-            "${((totalColorDamage / totalSamples) * 100).toStringAsFixed(2)}%",
-            style: const TextStyle(fontSize: 20),
+            getTotalColorDamage(),
+            style: TextStyle(fontSize: 20),
           ),
         ),
       ],
@@ -3289,7 +3412,7 @@ class DefectsScreenController extends GetxController {
               borderBlack.toDouble(),
               i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0,
               borderOutside.toDouble()),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.orange,
             border: Border(
               bottom: BorderSide(color: Colors.black),
@@ -3297,10 +3420,8 @@ class DefectsScreenController extends GetxController {
             ),
           ),
           child: Text(
-            i == 0
-                ? "${((totalColorSeriousDamage / totalSamples) * 100).toStringAsFixed(2)}%"
-                : '',
-            style: const TextStyle(fontSize: 20),
+            getTotalColorSeriousDamage(i),
+            style: TextStyle(fontSize: 20),
           ),
         ),
       );
@@ -3311,7 +3432,7 @@ class DefectsScreenController extends GetxController {
       Container(
         margin: EdgeInsets.fromLTRB(
             0, borderBlack.toDouble(), 0, borderOutside.toDouble()),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.blue,
           border: Border(
             bottom: BorderSide(color: Colors.black),
@@ -3319,8 +3440,8 @@ class DefectsScreenController extends GetxController {
           ),
         ),
         child: Text(
-          "${((totalColorVerySeriousDamage / totalSamples) * 100).toStringAsFixed(2)}%",
-          style: const TextStyle(fontSize: 20),
+          getTotalColorVerySeriousDamage(),
+          style: TextStyle(fontSize: 20),
         ),
       ),
     );
@@ -3330,7 +3451,7 @@ class DefectsScreenController extends GetxController {
       Container(
         margin: EdgeInsets.fromLTRB(
             0, borderBlack.toDouble(), 0, borderOutside.toDouble()),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.green,
           border: Border(
             bottom: BorderSide(color: Colors.black),
@@ -3338,8 +3459,8 @@ class DefectsScreenController extends GetxController {
           ),
         ),
         child: Text(
-          "${((totalColorDecay / totalSamples) * 100).toStringAsFixed(2)}%",
-          style: const TextStyle(fontSize: 20),
+          getTotalColorDecay(),
+          style: TextStyle(fontSize: 20),
         ),
       ),
     );
@@ -3351,6 +3472,176 @@ class DefectsScreenController extends GetxController {
       child: tableLayout,
     );
     return defectsTableContainer;
+  }
+
+  String getTotalColorDecay() {
+    if (totalColorDecay == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalColorDecay / totalSamples) * 100).toStringAsFixed(2)}%";
+  }
+
+  String getTotalColorVerySeriousDamage() {
+    if (totalColorVerySeriousDamage == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalColorVerySeriousDamage / totalSamples) * 100).toStringAsFixed(2)}%";
+  }
+
+  String getTotalColorSeriousDamage(int i) {
+    if (totalColorSeriousDamage == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return i == 0
+        ? "${((totalColorSeriousDamage / totalSamples) * 100).toStringAsFixed(2)}%"
+        : '';
+  }
+
+  String getTotalColorDamage() {
+    if (totalColorDamage == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalColorDamage / totalSamples) * 100).toStringAsFixed(2)}%";
+  }
+
+  String getTotalColorInjury() {
+    if (totalColorInjury == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalColorInjury / totalSamples) * 100).toStringAsFixed(2)}%";
+  }
+
+  String getTotalSizeDecay() {
+    if (totalSizeDecay == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalSizeDecay / totalSamples) * 100).toStringAsFixed(2)}%";
+  }
+
+  String getTotalSizeVerySeriousDamage() {
+    if (totalSizeVerySeriousDamage == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalSizeVerySeriousDamage / totalSamples) * 100).toStringAsFixed(2)}%";
+  }
+
+  String getTotalSizeSeriousDamage(int i) {
+    if (totalSizeSeriousDamage == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return i == 0
+        ? "${((totalSizeSeriousDamage / totalSamples) * 100).toStringAsFixed(2)}%"
+        : '';
+  }
+
+  String getTotalSizeDamage() {
+    if (totalSizeDamage == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalSizeDamage / totalSamples) * 100).toStringAsFixed(2)}%";
+  }
+
+  String getTotalSizeInjury() {
+    if (totalSizeInjury == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalSizeInjury / totalSamples) * 100).toStringAsFixed(2)}%";
+  }
+
+  String getTotalDecay() {
+    if (totalDecay == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalDecay / totalSamples) * 100).round()}%";
+  }
+
+  String getTotalVerySeriousDamage() {
+    if (totalVerySeriousDamage == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalVerySeriousDamage / totalSamples) * 100).round()}%";
+  }
+
+  String getTotalDamage() {
+    if (totalDamage == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalDamage / totalSamples) * 100).round()}%";
+  }
+
+  String getTotalInjury() {
+    if (totalInjury == 0 || totalSamples == 0) {
+      return '0';
+    }
+
+    return "${((totalInjury / totalSamples) * 100).round()}%";
+  }
+
+  String getTotalConditionDecay() {
+    if (totalConditionDecay == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalConditionDecay / totalSamples) * 100).round()}%";
+  }
+
+  String getTotalConditionVerySeriousDamage() {
+    if (totalConditionVerySeriousDamage == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalConditionVerySeriousDamage / totalSamples) * 100).round()}%";
+  }
+
+  String getTotalConditionSeriousDamage(int i) {
+    if (totalConditionSeriousDamage == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return i == 0
+        ? "${((totalConditionSeriousDamage / totalSamples) * 100).round()}%"
+        : "";
+  }
+
+  String getTotalConditionDamage() {
+    if (totalConditionDamage == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalConditionDamage / totalSamples) * 100).round()}%";
+  }
+
+  String getTotalConditionInjury() {
+    if (totalConditionInjury == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalConditionInjury / totalSamples) * 100).round()}%";
+  }
+
+  String getTotalQualityVerySeriousDamage() {
+    if (totalQualityVerySeriousDamage == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalQualityVerySeriousDamage / totalSamples) * 100).round()}%";
+  }
+
+  String getTotalQualityInjury() {
+    if (totalQualityInjury == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalQualityInjury / totalSamples) * 100).round()}%";
+  }
+
+  String getTotalQualityDamage() {
+    if (totalQualityDamage == 0 || totalSamples == 0) {
+      return '0';
+    }
+    return "${((totalQualityDamage / totalSamples) * 100).round()}%";
+  }
+
+  String getTotalQualitySeriousDamage(int i) {
+    if ((i != 0) || (totalQualitySeriousDamage == 0 || totalSamples == 0)) {
+      return "";
+    }
+    return i == 0
+        ? "${((totalQualitySeriousDamage / totalSamples) * 100).round()}%"
+        : "";
   }
 
   void getToQCDetailShortForm() {

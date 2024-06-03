@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/home_controller.dart';
@@ -417,7 +416,7 @@ class Home extends GetView<HomeController> {
                                   width: 2.0,
                                 ))),
                         child: Text(
-                          "${myInspectionList.id}",
+                          "${myInspectionList.inspectionId}",
                           textAlign: TextAlign.center,
                           style: Get.textTheme.titleLarge!.copyWith(
                             fontSize: 30.sp,
@@ -533,13 +532,13 @@ class Home extends GetView<HomeController> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          if (controller.expandContents
-                              .contains(controller.itemsList[position].id)) {
-                            controller.expandContents
-                                .remove(controller.itemsList[position].id);
+                          if (controller.expandContents.contains(
+                              controller.itemsList[position].inspectionId)) {
+                            controller.expandContents.remove(
+                                controller.itemsList[position].inspectionId);
                           } else {
-                            controller.expandContents
-                                .add(controller.itemsList[position].id);
+                            controller.expandContents.add(
+                                controller.itemsList[position].inspectionId);
                           }
                         },
                         child: Container(
@@ -566,7 +565,8 @@ class Home extends GetView<HomeController> {
                               controller.itemsList[position].partnerName ?? '',
                               textAlign: TextAlign.center,
                               overflow: controller.expandContents.contains(
-                                      controller.itemsList[position].id)
+                                      controller
+                                          .itemsList[position].inspectionId)
                                   ? TextOverflow.visible
                                   : TextOverflow.ellipsis,
                               style: Get.textTheme.titleLarge!.copyWith(
@@ -614,7 +614,8 @@ class Home extends GetView<HomeController> {
                                   InkWell(
                                     onTap: () {
                                       controller.selectInspectionForDownload(
-                                          myInspectionList.id!, false);
+                                          myInspectionList.inspectionId!,
+                                          false);
                                     },
                                     child: Obx(() => Image.asset(
                                           controller.selectedIDsInspection
@@ -696,7 +697,7 @@ class Home extends GetView<HomeController> {
               margin: const EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: controller.bannersCurrentPage == i
+                color: controller.bannersCurrentPage.value == i
                     ? AppColors.primary
                     : AppColors.brightGrey,
               ),
