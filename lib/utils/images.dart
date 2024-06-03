@@ -14,7 +14,9 @@ class AppImages {
   static const String img_banner = 'assets/images/banner_image.jpg';
 
   static const String ic_sortNone = 'assets/images/sort_none_selected.png';
+
   static const String ic_sortUp = 'assets/images/sort_up_selected.png';
+  
   static const String ic_sortDown = 'assets/images/sort_down_selected.png';
 
   static const String ic_trailerMiddle = 'assets/images/trailer_middle.png';
