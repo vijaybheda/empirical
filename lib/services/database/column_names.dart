@@ -67,6 +67,7 @@ class InspectionColumn {
   static const String CTE_TYPE = 'Cte_Type';
   static const String ITEM_SKU_NAME = 'Item_Sku_Name';
   static const String GTIN = 'GTIN';
+  static const String PO_CREATED_DATE = 'POCreatedDate';
 }
 
 class InspectionAttachmentColumn {
@@ -167,7 +168,7 @@ class QualityControlColumn {
   static const String QCDOPEN5 = 'QCDOPEN5';
   static const String GTIN = 'GTIN';
   static const String GLN = 'GLN';
-  static const String GLN_TYPE = 'GLN_TYPE';
+  static const String GLN_TYPE = 'GLNType';
   static const String LOT_SIZE = 'Lot_Size';
   static const String SHIP_DATE = 'Ship_Date';
   static const String DATE_TYPE = 'Date_Type';
@@ -517,4 +518,8 @@ class PODetailColumn {
   static const String PO_VERSION_SPEC = 'PO_Version_Spec';
   static const String PO_COMMODITY_ID = 'PO_Commodity_Id';
   static const String PO_COMMODITY_NAME = 'PO_Commodity_Name';
+  static const String PO_ORDER_TYPE = 'Order_type';
+  static const String PO_FTL = 'FTL';
+  static const String PO_BRANDED = 'Branded';
+  static const String PO_CREATED_DATE = 'Created_Date';
 }

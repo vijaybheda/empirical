@@ -42,8 +42,6 @@ class DefectsScreenController extends GetxController {
   RxInt activeTabIndex = 1.obs;
   RxList<SampleData> sampleList = <SampleData>[].obs;
 
-  // SampleData tempSampleObj = SampleData();
-
   int serverInspectionID = -1;
   String partnerName = "";
   int? partnerID;
@@ -341,6 +339,7 @@ class DefectsScreenController extends GetxController {
         name: name,
         setNumber: index,
         timeCreated: timeStamp,
+        sampleId: id,
         // lotNumber: 0,
         // packDate: "",
         complete: false);
@@ -372,25 +371,8 @@ class DefectsScreenController extends GetxController {
   }
 
   void addDefectRow({required int sampleIndex}) {
-    /*DefectItem emptyDefectItem = DefectItem(
-      injuryTextEditingController: TextEditingController(text: '0'),
-      damageTextEditingController: TextEditingController(text: '0'),
-      sDamageTextEditingController: TextEditingController(text: '0'),
-      vsDamageTextEditingController: TextEditingController(text: '0'),
-      decayTextEditingController: TextEditingController(text: '0'),
-      name: defectSpinnerNames[0],
-      attachments: [],
-    );
-
-    if (sampleSetObs[setIndex].defectItem == null) {
-      sampleSetObs[setIndex].defectItem = [emptyDefectItem];
-    } else {
-      sampleSetObs[setIndex].defectItem?.add(emptyDefectItem);
-    }
-    sampleSetObs.refresh();
-    update();*/
-
-    String dataName = sampleList.elementAt(sampleIndex).name;
+    SampleData sampleData = sampleList.elementAt(sampleIndex);
+    String dataName = sampleData.name;
     List<InspectionDefect> defectList;
 
     if (defectDataMap.containsKey(dataName)) {
@@ -400,21 +382,22 @@ class DefectsScreenController extends GetxController {
       InspectionDefect inspectionDefect = InspectionDefect(
         createdTime: DateTime.now().millisecondsSinceEpoch,
         comment: "",
-        attachmentIds: [],
+        attachmentIds:
+            sampleData.defectItems.elementAt(sampleIndex).attachmentIds,
         defectCategory: '',
         damageCnt: 0,
-        decayCnt: 0,
+        decayCnt: sampleData.dCnt,
         defectId: 0,
-        injuryCnt: 0,
+        injuryCnt: sampleData.iCnt,
         inspectionDefectId: 0,
-        sampleId: 0,
-        seriousDamageCnt: 0,
+        sampleId: sampleData.defectItems.length,
+        seriousDamageCnt: sampleData.sdCnt,
         severityDamageId: 0,
         severityDecayId: 0,
         severityInjuryId: 0,
         severitySeriousDamageId: 0,
         severityVerySeriousDamageId: 0,
-        verySeriousDamageCnt: 0,
+        verySeriousDamageCnt: sampleData.vsdCnt,
         // spinnerSelection: 'Color',
       );
       defectList.add(inspectionDefect);
@@ -469,7 +452,7 @@ class DefectsScreenController extends GetxController {
         defectId: 0,
         injuryCnt: 0,
         inspectionDefectId: 0,
-        sampleId: 0,
+        sampleId: sampleData.defectItems.length,
         seriousDamageCnt: 0,
         severityDamageId: 0,
         severityDecayId: 0,
@@ -487,6 +470,8 @@ class DefectsScreenController extends GetxController {
     }
     final int pos = (sampleList.length - 1);
     loadDefectData((defectList.length - 1), defectList, dataName, pos);
+
+    sampleDataMap[sampleIndex]?.defectItems = defectList;
 
     hideKeypad();
     update();
@@ -567,13 +552,18 @@ class DefectsScreenController extends GetxController {
     bool isError = false;
     int value = int.tryParse(textData) ?? 0;
     int sampleSize = sampleList[sampleIndex].sampleSize;
-    String dropDownValue = sampleList[sampleIndex].name;
+    String dropDownValue = sampleList[sampleIndex]
+            .defectItems
+            .elementAtOrNull(defectIndex)
+            ?.spinnerSelection ??
+        defectSpinnerNames.first;
+
     if (value > sampleSize) {
       isError = true;
       AppAlertDialog.validateAlerts(
         context,
         AppStrings.alert,
-        '$fieldName - $dropDownValue${AppStrings.cannotBeGreaterThenTheSampleSize} $sampleSize, ${AppStrings.pleaseEnterValidDefectCount}',
+        '$fieldName - $dropDownValue ${AppStrings.cannotBeGreaterThenTheSampleSize} $sampleSize, ${AppStrings.pleaseEnterValidDefectCount}',
       );
     }
 
@@ -1436,9 +1426,10 @@ class DefectsScreenController extends GetxController {
   }
 
   Future<void> navigateToCameraScreen({
-    required int rowIndex,
+    required int sampleIndex,
+    required int defectItemIndex,
   }) async {
-    String dataName = 'Set #${rowIndex + 1}';
+    String dataName = 'Set #${sampleIndex + 1}';
 
     Map<String, dynamic> passingData = {};
     passingData.putIfAbsent(Consts.PARTNER_NAME, () => partnerName);
@@ -1451,14 +1442,15 @@ class DefectsScreenController extends GetxController {
     passingData.putIfAbsent(Consts.VARIETY_NAME, () => varietyName);
     passingData.putIfAbsent(Consts.VARIETY_SIZE, () => varietySize);
     passingData.putIfAbsent(Consts.VARIETY_ID, () => varietyId);
-    // FIXME: Implement below code
-    int? sampleId = getSampleID(sampleDataMap[rowIndex]!.name);
+    int? sampleId =
+        sampleDataMap[sampleIndex]?.defectItems[defectItemIndex].sampleId;
+    // int? sampleId = getSampleID(sampleDataMap[sampleIndex]!.name);
     if (sampleId != null) {
       passingData.putIfAbsent(Consts.SAMPLE_ID, () => sampleId);
     }
 
     currentAttachPhotosDataName = dataName;
-    currentAttachPhotosPosition = rowIndex;
+    currentAttachPhotosPosition = sampleIndex;
     var result =
         await Get.to(() => const InspectionPhotos(), arguments: passingData);
     if (result != null) {

@@ -357,7 +357,7 @@ class CacheDownloadController extends GetxController {
       return await CacheDownloadService.instance
           .downloadAllUsers(requestUrl, headerMap);
     } catch (e) {
-      log('Error in downloadZipFile');
+      log('Error in downloadAllUsers');
       log(e.toString());
       return false;
     }

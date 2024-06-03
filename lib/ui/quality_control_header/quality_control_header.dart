@@ -71,7 +71,7 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
                     color: AppColors.textFieldText_Color,
                   ),
                   onClickAction: () {
-                    if (controller.isQualityControlFields_Validate(context)) {
+                    if (controller.isQualityControlFieldsValidate(context)) {
                       Get.to(
                           () => const TrailerTemp(
                               // carrier: carrier,
@@ -80,9 +80,7 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
                               //     .trim(),
                               ),
                           arguments: {
-                            Consts.ORDERNUMBER: controller
-                                .orderNoTextController.value.text
-                                .trim(),
+                            Consts.PO_NUMBER: getPoNumber(controller),
                             Consts.CARRIER_ID: controller.carrierID,
                             Consts.CARRIER_NAME: controller.carrierName,
                             // Consts.CARRIER: carrier,
@@ -95,7 +93,7 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
               Obx(
                 () => customButton(
                     backgroundColor: AppColors.white,
-                    title: controller.isShortForm == true
+                    title: controller.isShortForm.value == true
                         ? AppStrings.shortForm
                         : AppStrings.detailedForm,
                     width: (MediaQuery.of(context).size.width / 2.3),
@@ -104,12 +102,13 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
                         color: AppColors.textFieldText_Color,
                         fontSize: 35.sp,
                         fontWeight: FontWeight.w600),
-                    onClickAction: () => {
-                          if (controller.isShortForm == true)
-                            {controller.isShortForm.value = false}
-                          else
-                            {controller.isShortForm.value = true}
-                        }),
+                    onClickAction: () {
+                      if (controller.isShortForm.value == true) {
+                        controller.isShortForm.value = false;
+                      } else {
+                        controller.isShortForm.value = true;
+                      }
+                    }),
               ),
             ],
           ),
@@ -129,7 +128,7 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
                   fontSize: 35.sp,
                   fontWeight: FontWeight.w600),
               onClickAction: () async {
-                if (controller.isQualityControlFields_Validate(context)) {
+                if (controller.isQualityControlFieldsValidate(context)) {
                   await controller.saveAction();
                 }
               }),
@@ -140,6 +139,10 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
         FooterContentView(leftText: AppStrings.cancel)
       ],
     );
+  }
+
+  String getPoNumber(QualityControlController controller) {
+    return controller.orderNoTextController.value.text.trim();
   }
 
   // MAIN CONTENT VIEW
@@ -364,7 +367,7 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
       BuildContext context,
       QualityControlController controller,
       String labelTitle,
-      List items,
+      List<String> items,
       String hintText) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -413,10 +416,10 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
                 color: Colors.white,
               ),
               value: labelTitle == AppStrings.truckTempOK
-                  ? controller.selectetdTruckTempOK.value
+                  ? controller.selectedTruckTempOK.value
                   : labelTitle == AppStrings.dtType
-                      ? controller.selectetdTypes.value
-                      : controller.selectetdloadType.value,
+                      ? controller.selectedTypes.value
+                      : controller.selectedLoadType.value,
               onChanged: (newValue) {
                 controller.setSelected(
                     newValue ?? '',

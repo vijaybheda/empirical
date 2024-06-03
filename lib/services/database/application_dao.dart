@@ -53,7 +53,7 @@ class ApplicationDao {
   Future<int> createOrUpdateUser(UserData user) async {
     try {
       final Database db = dbProvider.lazyDatabase;
-      if (user.id == null) {
+      if (user.id == 0) {
         // Insert
         return await db.insert(DBTables.USER, user.toUserDBJson());
       } else {
@@ -71,10 +71,10 @@ class ApplicationDao {
     }
   }
 
-  Future<int> getEnterpriseIdByUserId(String userId) async {
+  Future<int?> getEnterpriseIdByUserId(String userId) async {
     final Database db = dbProvider.lazyDatabase;
 
-    int enterpriseId = 0;
+    int? enterpriseId;
     List<Map<String, dynamic>> result = await db.query(
       DBTables.USER_OFFLINE,
       where: '${UserOfflineColumn.USER_ID} = ?',
@@ -476,7 +476,7 @@ class ApplicationDao {
     final Database db = dbProvider.lazyDatabase;
     await db.update(
       DBTables.INSPECTION,
-      {'ServerID': serverID},
+      {InspectionColumn.INSPECTION_SERVER_ID: serverID},
       where: '${BaseColumns.ID} = ?',
       whereArgs: [inspectionID],
     );
@@ -493,25 +493,26 @@ class ApplicationDao {
     );
   }*/
 
-  Future<int> updateInspection(
-    int serverInspectionID,
-    int commodityID,
-    String commodityName,
-    int varietyId,
-    String varietyName,
-    int gradeId,
-    String specificationNumber,
-    String specificationVersion,
-    String specificationName,
-    String specificationTypeName,
-    int sampleSizeByCount,
-    String itemSKU,
-    int itemSKUId,
-    String po_number,
-    int rating,
-    String cteType,
-    String itemSkuName,
-  ) async {
+  Future<int> updateInspection({
+    required int? serverInspectionID,
+    required int? commodityID,
+    required String? commodityName,
+    required int? varietyId,
+    required String? varietyName,
+    required int? gradeId,
+    required String? specificationNumber,
+    required String? specificationVersion,
+    required String? specificationName,
+    required String? specificationTypeName,
+    required int? sampleSizeByCount,
+    required String? itemSKU,
+    required int? itemSKUId,
+    required String? po_number,
+    required String? lotNo,
+    required int? rating,
+    required String? cteType,
+    required String? itemSkuName,
+  }) async {
     final Database db = dbProvider.lazyDatabase;
     print('DBRequest updateInspection');
     try {
@@ -535,6 +536,7 @@ class ApplicationDao {
             InspectionColumn.RATING: rating,
             InspectionColumn.CTE_TYPE: cteType,
             InspectionColumn.ITEM_SKU_NAME: itemSkuName,
+            InspectionColumn.LOT_NO: lotNo,
           },
           where: '${InspectionColumn.ID} = ?',
           whereArgs: [serverInspectionID],
@@ -1772,6 +1774,10 @@ class ApplicationDao {
             PODetailColumn.PO_VERSION_SPEC: row[13],
             PODetailColumn.PO_COMMODITY_ID: Utils.parseIntDefault(row[14]),
             PODetailColumn.PO_COMMODITY_NAME: row[15],
+            PODetailColumn.PO_ORDER_TYPE: row[16],
+            PODetailColumn.PO_FTL: row[17],
+            PODetailColumn.PO_BRANDED: row[18],
+            PODetailColumn.PO_CREATED_DATE: row[19],
           };
           await txn.insert(DBTables.PO_DETAIL, itemPODetailData);
         }
@@ -1950,7 +1956,7 @@ class ApplicationDao {
       ''', [poNumber]);
 
       for (var result in results) {
-        inspIDs.add(result['inspection_id']);
+        inspIDs.add(result[PartnerItemSkuColumn.INSPECTION_ID]);
       }
     } catch (e) {
       log('Error has occurred while finding partner sku inspection ids: $e');
@@ -2164,11 +2170,11 @@ class ApplicationDao {
       await db.transaction((txn) async {
         ttId = await txn.insert(DBTables.TEMP_TRAILER_TEMPERATURE, {
           TrailerTemperatureDetailsColumn.PARTNER_ID: partnerID,
-          'location': location,
-          'level': level,
-          'value': value,
-          'complete': 1,
-          'po_number': poNumber,
+          TempTrailerTemperatureColumn.LOCATION: location,
+          TempTrailerTemperatureColumn.LEVEL: level,
+          TempTrailerTemperatureColumn.VALUE: value,
+          TempTrailerTemperatureColumn.COMPLETE: 1,
+          TempTrailerTemperatureColumn.PO_NUMBER: poNumber,
         });
       });
     } catch (e) {
@@ -2424,6 +2430,9 @@ class ApplicationDao {
           commodityName: commodityName,
           partnerId: supplierId,
           partnerName: partnerName,
+          commodityID: commodityId,
+          FTLflag: row['FTL'],
+          Branded: row['Branded'],
         );
 
         itemSKUList.add(item);
@@ -3178,10 +3187,10 @@ class ApplicationDao {
     required int qtyShipped,
     required int uomQtyShippedID,
     required String poNumber,
-    required int pulpTempMin,
-    required int pulpTempMax,
-    required int recorderTempMin,
-    required int recorderTempMax,
+    required double pulpTempMin,
+    required double pulpTempMax,
+    required double recorderTempMin,
+    required double recorderTempMax,
     required String rpc,
     required String claimFiledAgainst,
     required int qtyRejected,
@@ -3244,9 +3253,8 @@ class ApplicationDao {
           QualityControlColumn.GTIN: gtin,
           QualityControlColumn.LOT_SIZE: lot_size,
           QualityControlColumn.SHIP_DATE: shipDate,
-          // FIXME: ?? TODO: assign below
-          // QualityControlColumn.GLN: gln,
-          // QualityControlColumn.GLN_TYPE: glnType,
+          QualityControlColumn.GLN: gln,
+          QualityControlColumn.GLN_TYPE: glnType,
         };
 
         qc_id = await txn.insert(DBTables.QUALITY_CONTROL, values);
@@ -3294,10 +3302,8 @@ class ApplicationDao {
           QualityControlColumn.GTIN: gtin,
           QualityControlColumn.SHIP_DATE: shipDate,
           QualityControlColumn.DATE_TYPE: dateType,
-
-          // FIXME: ?? TODO: assign below
-          // QualityControlColumn.GLN: gln,
-          // QualityControlColumn.GLN_TYPE: glnType,
+          QualityControlColumn.GLN: gln,
+          QualityControlColumn.GLN_TYPE: glnType,
         };
 
         await txn.update(
@@ -3321,10 +3327,10 @@ class ApplicationDao {
     required int qtyShipped,
     required int uomQtyShippedID,
     required String poNumber,
-    required int pulpTempMin,
-    required int pulpTempMax,
-    required int recorderTempMin,
-    required int recorderTempMax,
+    required double pulpTempMin,
+    required double pulpTempMax,
+    required double recorderTempMin,
+    required double recorderTempMax,
     required String rpc,
     required String claimFiledAgainst,
     required int qtyRejected,
@@ -3570,6 +3576,8 @@ class ApplicationDao {
                   row[TempTrailerTemperatureDetailsColumn.COMMENTS],
               TempTrailerTemperatureDetailsColumn.PO_NUMBER:
                   row[TempTrailerTemperatureDetailsColumn.PO_NUMBER],
+              TempTrailerTemperatureDetailsColumn.PARTNER_ID:
+                  row[TempTrailerTemperatureDetailsColumn.PARTNER_ID],
             };
 
             await txn.insert(DBTables.TRAILER_TEMPERATURE_DETAILS, values);
@@ -4180,5 +4188,45 @@ class ApplicationDao {
     }
 
     return attachments;
+  }
+
+  Future<List<int>> findInspectionsByPartner(
+      int partnerID, String poNumber) async {
+    List<int> inspectionIds = [];
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      List<Map> result = await db.rawQuery(
+        'SELECT * FROM ${DBTables.INSPECTION} WHERE ${InspectionColumn.CARRIER_ID} = ? AND ${InspectionColumn.PO_NUMBER} = ?',
+        [partnerID, poNumber],
+      );
+
+      for (Map map in result) {
+        int inspectionId = map[InspectionColumn.ID];
+        inspectionIds.add(inspectionId);
+      }
+    } catch (e) {
+      print('Error has occurred while finding trailer temperature items: $e');
+    }
+
+    return inspectionIds;
+  }
+
+  Future<void> deleteTrailerTemperatureDetailsByInspectionId(
+      int inspectionId) async {
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      await db.transaction((txn) async {
+        String query =
+            'DELETE FROM ${DBTables.TRAILER_TEMPERATURE_DETAILS} WHERE ${TrailerTemperatureDetailsColumn.ID} = ?';
+        List<dynamic> arguments = [inspectionId];
+
+        await txn.rawDelete(query, arguments);
+      });
+    } catch (e) {
+      print(
+          'Error has occurred while deleting a trailer temperature entries: $e');
+    }
   }
 }

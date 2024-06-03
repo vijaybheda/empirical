@@ -263,6 +263,7 @@ class BoxTextField2 extends StatelessWidget {
                 hintStyle: Get.textTheme.titleLarge!.copyWith(
                   fontSize: 28.sp,
                   fontWeight: FontWeight.normal,
+                  color: AppColors.hintColor,
                 ),
                 border: InputBorder.none,
                 isDense: true,

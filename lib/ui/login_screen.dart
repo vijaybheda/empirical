@@ -172,9 +172,9 @@ class LoginScreen extends GetView<AuthController> {
             await authController.persistUserName();
 
             // unnecessary
-            // await authController.jsonFileOperations.offlineLoadSuppliersData();
-            // await authController.jsonFileOperations.offlineLoadCarriersData();
-            // await authController.jsonFileOperations.offlineLoadCommodityData();
+            await authController.jsonFileOperations.offlineLoadSuppliersData();
+            await authController.jsonFileOperations.offlineLoadCarriersData();
+            await authController.jsonFileOperations.offlineLoadCommodityData();
 
             await authController.downloadCloudData();
           }

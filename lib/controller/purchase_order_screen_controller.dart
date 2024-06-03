@@ -65,12 +65,12 @@ class PurchaseOrderScreenController extends GetxController {
 
     if (userData != null) {
       if (filteredItemSkuList.isEmpty) {
-        int enterpriseId =
+        int? enterpriseId =
             await dao.getEnterpriseIdByUserId(userData.userName!.toLowerCase());
         List<FinishedGoodsItemSKU>? finishedGoodItems =
             await dao.getFinishedGoodItemSkuFromTable(
           partnerID,
-          enterpriseId,
+          enterpriseId!,
           commodityID,
           commodityName,
           userData.supplierId!,

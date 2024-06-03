@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/models/inspection_defect_attachment.dart';
+import 'package:pverify/models/upload_response_data.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/services/network_request_service/api_urls.dart';
 import 'package:pverify/utils/app_storage.dart';
@@ -19,6 +20,7 @@ class WSUploadMobileFiles {
   List<InspectionAttachment>? inspectionAttachments;
   Map<String, dynamic> jsonInspection;
   int inspectionId;
+  int? serverInspectionId;
   final AppStorage appStorage = AppStorage.instance;
   Map<String, dynamic>? jsonInspection2;
 
@@ -48,7 +50,9 @@ class WSUploadMobileFiles {
     }
     for (int i = 0; i < attachments.length; i++) {
       requestString += "localPictureId=${attachments[i].attachmentId}";
-      if (i < (attachments.length - 1)) requestString += "&";
+      if (i < (attachments.length - 1)) {
+        requestString += "&";
+      }
     }
 
     request = "$serverUrl${ApiUrls.UPLOAD_MOBILE_FILES_REQUEST}$requestString";
@@ -58,21 +62,22 @@ class WSUploadMobileFiles {
 
     jsonInspection2 = createInspectionAttachmentJSONRequest();
 
-    String response = await _doFileUpload();
+    String? response = await _doFileUpload();
     debugPrint("HERE IS ${response.toString()}");
-    if (response.isEmpty) {
+    if (response != null && response.isEmpty) {
       debugPrint('🔴 Error: Response is empty.$response');
       return;
     } else {
       // Parse the response and handle success scenario
-      UploadResponseData uploadResponseData = parseUploadJson(response);
+      UploadResponseData uploadResponseData = parseUploadJson(response!);
+      appStorage.uploadResponseData = uploadResponseData;
 
-      if (uploadResponseData.inspectionServerID != 0) {
+      if (appStorage.uploadResponseData!.inspectionServerID != 0) {
         await dao.updateInspectionServerId(
-            inspectionId, uploadResponseData.inspectionServerID);
+            inspectionId, appStorage.uploadResponseData!.inspectionServerID!);
       }
 
-      if (uploadResponseData.uploaded) {
+      if (appStorage.uploadResponseData!.uploaded!) {
         Utils.setInspectionUploadStatus(
             inspectionId, Consts.INSPECTION_UPLOAD_IN_PROGRESS);
         await dao.deleteInspectionAfterUpload(inspectionId);
@@ -80,7 +85,7 @@ class WSUploadMobileFiles {
     }
   }
 
-  Future<String> _doFileUpload() async {
+  Future<String?> _doFileUpload() async {
     try {
       var request = http.MultipartRequest('POST', Uri.parse(this.request!));
       final Map<String, String> headers =
@@ -106,11 +111,16 @@ class WSUploadMobileFiles {
       // Add files
       for (InspectionDefectAttachment attachment in attachments) {
         File file = File(attachment.fileLocation!);
-        request.files.add(await http.MultipartFile.fromPath(
-          'file',
-          file.path,
-          filename: basename(file.path),
-        ));
+        if (await file.exists()) {
+          XFile? compressedImage = await Utils.compressImage(file);
+          if (compressedImage != null) {
+            request.files.add(await http.MultipartFile.fromPath(
+              'file',
+              compressedImage.path,
+              filename: basename(compressedImage.path),
+            ));
+          }
+        }
       }
 
       /* Map<String, dynamic> jsonInspection2 =
@@ -128,11 +138,16 @@ class WSUploadMobileFiles {
       // Add inspectionAttachment files
       for (InspectionAttachment attachment in inspectionAttachments ?? []) {
         File file = File(attachment.filelocation!);
-        request.files.add(await http.MultipartFile.fromPath(
-          'inspectionAttachments',
-          file.path,
-          filename: basename(file.path),
-        ));
+        if (await file.exists()) {
+          XFile? compressedImage = await Utils.compressImage(file);
+          if (compressedImage != null) {
+            request.files.add(await http.MultipartFile.fromPath(
+              'inspectionAttachments',
+              compressedImage.path,
+              filename: basename(compressedImage.path),
+            ));
+          }
+        }
       }
 
       // Send the request
@@ -140,20 +155,21 @@ class WSUploadMobileFiles {
 
       if (response.statusCode == 200) {
         debugPrint('🟢 API CALLED SUCCESSFULLY....');
-        return await response.stream.bytesToString();
+        String res = await response.stream.bytesToString();
+        return res;
       } else if (response.statusCode == HttpStatus.unauthorized) {
         debugPrint('🔴 Error: Unauthorized request.');
-        return '';
+        return null;
       } else if (response.statusCode == HttpStatus.notFound) {
         debugPrint('🔴 Error: Not found.');
-        return '';
+        return null;
       } else {
         debugPrint('🔴 Error: ${response.statusCode}');
-        return '';
+        return null;
       }
     } catch (e) {
       debugPrint('🔴 Exception: $e');
-      return '';
+      return null;
     }
   }
 
@@ -163,7 +179,7 @@ class WSUploadMobileFiles {
 
     for (InspectionAttachment attachment in inspectionAttachments ?? []) {
       Map<String, dynamic> d_obj = {
-        'inspectionId': inspectionId,
+        'inspectionId': serverInspectionId,
         'attachmentId': attachment.id,
         'attachmentTitle': attachment.title,
       };
@@ -210,27 +226,27 @@ class WSUploadMobileFiles {
     }
 
     return UploadResponseData(
-      inspectionServerID,
-      errorMessage,
-      validationError,
-      localInspectionID,
-      uploaded,
+      inspectionServerID: inspectionServerID,
+      errorMessage: errorMessage,
+      validationErrors: validationError,
+      localInspectionID: localInspectionID,
+      uploaded: uploaded,
     );
   }
 }
 
-class UploadResponseData {
-  final int inspectionServerID;
-  final String errorMessage;
-  final String validationError;
-  final int localInspectionID;
-  final bool uploaded;
-
-  UploadResponseData(
-    this.inspectionServerID,
-    this.errorMessage,
-    this.validationError,
-    this.localInspectionID,
-    this.uploaded,
-  );
-}
+// class UploadResponseData {
+//   final int inspectionServerID;
+//   final String errorMessage;
+//   final String validationError;
+//   final int localInspectionID;
+//   final bool uploaded;
+//
+//   UploadResponseData(
+//     this.inspectionServerID,
+//     this.errorMessage,
+//     this.validationError,
+//     this.localInspectionID,
+//     this.uploaded,
+//   );
+// }

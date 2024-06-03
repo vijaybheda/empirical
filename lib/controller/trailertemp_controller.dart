@@ -46,7 +46,7 @@ class TrailerTempController extends GetxController {
   final ApplicationDao dao = ApplicationDao();
 
   // CarrierItem? carrier1;
-  String? orderNumber1;
+  String? poNumber;
   int carrierId = 0;
   String carrierName = '';
 
@@ -58,7 +58,7 @@ class TrailerTempController extends GetxController {
 
     Map<String, dynamic>? args = Get.arguments;
     if (args != null) {
-      orderNumber1 = args[Consts.PO_NUMBER] ?? '';
+      poNumber = args[Consts.PO_NUMBER] ?? '';
       carrierId = args[Consts.CARRIER_ID] ?? 0;
       carrierName = args[Consts.CARRIER_NAME] ?? '';
     }
@@ -119,7 +119,7 @@ class TrailerTempController extends GetxController {
     });
 
     debugPrint('carrier ID ${carrierId}');
-    debugPrint('orderNumber1${orderNumber1 ?? ''}');
+    debugPrint('orderNumber1${poNumber ?? ''}');
     isOrderNumberAvailable = false;
   }
 
@@ -193,7 +193,7 @@ class TrailerTempController extends GetxController {
 
   void loadDataFromDB() async {
     List? trailerTempMap = await dao.findTempTrailerTemperatureItems(
-        carrierId, orderNumber1.toString());
+        carrierId, poNumber.toString());
 
     if (trailerTempMap != null) {
       for (var element in trailerTempMap) {
@@ -203,7 +203,7 @@ class TrailerTempController extends GetxController {
     }
 
     TrailerTemperatureDetails? temperatureDetails = await dao
-        .findTempTrailerTemperatureDetails(carrierId, orderNumber1.toString());
+        .findTempTrailerTemperatureDetails(carrierId, poNumber.toString());
 
     if (temperatureDetails != null) {
       commentTextController.value.text = temperatureDetails.comments ?? '';
@@ -507,80 +507,86 @@ class TrailerTempController extends GetxController {
         String level;
         String value;
         if (i < 3) {
-          level = i == 0
+          level = (i == 0)
               ? 'T1'
-              : i == 1
+              : (i == 1)
                   ? 'T2'
                   : 'T3';
-          value = i == 0
+          value = (i == 0)
               ? (tempData.nose?.pallet1?.top ?? '')
-              : i == 1
+              : (i == 1)
                   ? tempData.nose?.pallet2?.top ?? ''
                   : tempData.nose?.pallet3?.top ?? '';
         } else if (i < 6) {
-          level = i == 3
+          level = (i == 3)
               ? 'M1'
-              : i == 4
+              : (i == 4)
                   ? 'M2'
                   : 'M3';
-          value = i == 3
+          value = (i == 3)
               ? tempData.nose?.pallet1?.middle ?? ''
-              : i == 4
+              : (i == 4)
                   ? tempData.nose?.pallet2?.middle ?? ''
                   : tempData.nose?.pallet3?.middle ?? '';
         } else {
-          level = i == 6
+          level = (i == 6)
               ? 'B1'
-              : i == 7
+              : (i == 7)
                   ? 'B2'
                   : 'B3';
-          value = i == 6
+          value = (i == 6)
               ? tempData.nose?.pallet1?.bottom ?? ''
-              : i == 7
+              : (i == 7)
                   ? tempData.nose?.pallet2?.bottom ?? ''
                   : tempData.nose?.pallet3?.bottom ?? '';
         }
-        saveOrUpdateTempDataFromLayouts('N', poNumber, partnerID, level, value);
+        if (value.trim().isNotEmpty) {
+          await saveOrUpdateTempDataFromLayouts(
+              'N', poNumber, partnerID, level, value);
+        }
       }
     } else if (location == 'M') {
       for (int i = 0; i < 9; i++) {
         String level;
         String value;
         if (i < 3) {
-          level = i == 0
+          level = (i == 0)
               ? 'T1'
-              : i == 1
+              : (i == 1)
                   ? 'T2'
                   : 'T3';
-          value = i == 0
+          value = (i == 0)
               ? (tempData.middle?.pallet1?.top ?? '')
-              : i == 1
+              : (i == 1)
                   ? tempData.middle?.pallet2?.top ?? ''
                   : tempData.middle?.pallet3?.top ?? '';
         } else if (i < 6) {
-          level = i == 3
+          level = (i == 3)
               ? 'M1'
-              : i == 4
+              : (i == 4)
                   ? 'M2'
                   : 'M3';
-          value = i == 3
+          value = (i == 3)
               ? tempData.middle?.pallet1?.middle ?? ''
-              : i == 4
+              : (i == 4)
                   ? tempData.middle?.pallet2?.middle ?? ''
                   : tempData.middle?.pallet3?.middle ?? '';
         } else {
-          level = i == 6
+          level = (i == 6)
               ? 'B1'
-              : i == 7
+              : (i == 7)
                   ? 'B2'
                   : 'B3';
-          value = i == 6
+          value = (i == 6)
               ? tempData.middle?.pallet1?.bottom ?? ''
-              : i == 7
+              : (i == 7)
                   ? tempData.middle?.pallet2?.bottom ?? ''
                   : tempData.middle?.pallet3?.bottom ?? '';
         }
-        saveOrUpdateTempDataFromLayouts('M', poNumber, partnerID, level, value);
+        if (value.trim().isNotEmpty) {
+          await saveOrUpdateTempDataFromLayouts(
+              'M', poNumber, partnerID, level, value);
+        }
       }
     } else {
       for (int i = 0; i < 9; i++) {
@@ -620,15 +626,33 @@ class TrailerTempController extends GetxController {
                   ? tempData.tail?.pallet2?.bottom ?? ''
                   : tempData.tail?.pallet3?.bottom ?? '';
         }
-        saveOrUpdateTempDataFromLayouts('B', poNumber, partnerID, level, value);
+        if (value.trim().isNotEmpty) {
+          await saveOrUpdateTempDataFromLayouts(
+              'B', poNumber, partnerID, level, value);
+        }
       }
     }
     await dao.createTempTrailerTemperatureDetails(partnerID.toString(), "", "",
         "", commentTextController.value.text, poNumber);
+    List<int> inspectionIds =
+        await dao.findInspectionsByPartner(carrierId, poNumber);
+    for (int i = 0; i < inspectionIds.length; i++) {
+      await dao.deleteTrailerTemperatureEntriesByInspectionId(
+          inspectionIds.elementAt(i));
+      await dao.deleteTrailerTemperatureDetailsByInspectionId(
+          inspectionIds.elementAt(i));
+      await dao
+          .copyTempTrailerTemperaturesToInspectionTrailerTemperatureTableByPartnerID(
+              inspectionIds.elementAt(i), carrierId, poNumber);
+      await dao
+          .copyTempTrailerTemperaturesDetailsToInspectionTrailerTemperatureDetailsTableByPartnerID(
+              inspectionIds.elementAt(i), carrierId, poNumber);
+    }
+    return;
   }
 
-  void saveOrUpdateTempDataFromLayouts(String location, String poNumber,
-      int partnerID, String level, String value) {
+  Future<void> saveOrUpdateTempDataFromLayouts(String location, String poNumber,
+      int partnerID, String level, String value) async {
     // if (trailerTempMap.containsKey(key)) {
     //   long trailerTemperatureId = trailerTempMap[key].trailerTemperatureId;
     //   if (value == null || value.isEmpty) {
@@ -645,7 +669,10 @@ class TrailerTempController extends GetxController {
     //   dao.createTempTrailerTemperature(
     //       carrierID, location, level, int.parse(value), po_number);
     // }
-    dao.createTempTrailerTemperature(
+    if (value.contains(CELSIUS_SYMBOL)) {
+      value = value.replaceAll(CELSIUS_SYMBOL, '');
+    }
+    await dao.createTempTrailerTemperature(
         partnerID, location, level, value, poNumber);
   }
 }

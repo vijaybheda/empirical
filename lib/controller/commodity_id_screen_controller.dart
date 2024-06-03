@@ -70,12 +70,12 @@ class CommodityIDScreenController extends GetxController {
     if (currentUser == null) {
       return;
     }
-    int enterpriseId =
+    int? enterpriseId =
         await dao.getEnterpriseIdByUserId(currentUser.userName!.toLowerCase());
 
     List<Commodity>? commoditiesList = await dao.getCommodityByPartnerFromTable(
         partnerID,
-        enterpriseId,
+        enterpriseId!,
         currentUser.supplierId!,
         currentUser.headquarterSupplierId!);
     appStorage.saveMainCommodityList(commoditiesList ?? []);

@@ -51,8 +51,6 @@ class Consts {
   static const String PACK_DATE = "PACK_DATE";
   static const String WORK_DATE = "WORK_DATE";
   static const String SEAL_NUMBER = "SEAL_NUMBER";
-  static const String ORDERNUMBER = "ORDERNUMBER";
-  // static const String CARRIER = "CARRIER";
   static const String PARTIAL_COMPLETED = "PARTIAL_COMPLETED";
   static const String IS_MY_INSPECTION_SCREEN = "IS_MY_INSPECTION_SCREEN";
   static const String ITEM_SKU_ID = "ITEM_SKU_ID";

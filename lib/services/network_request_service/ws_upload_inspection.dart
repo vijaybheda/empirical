@@ -91,7 +91,7 @@ class WSUploadInspection {
         'qualityControlComments': qualityControl?.qcComments,
         'partnerComment': '',
         'claimFiledAgainst': qualityControl?.claimFiledAgainst,
-        'completed': inspection?.complete,
+        'completed': (inspection?.complete == '1').toString(),
         'quantityRejected': qualityControl?.qtyRejected,
         'unitOfMeasureReceivedId': qualityControl?.uomQtyReceivedID,
         'unitOfMeasureRejectedId': qualityControl?.uomQtyRejectedID,

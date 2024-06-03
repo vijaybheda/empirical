@@ -6,7 +6,7 @@ import 'dart:math' as math;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -80,21 +80,21 @@ class Utils {
     return false;
   }
 
-  /*static Future<XFile?> compressImage(File file,
-      {int quality = 80, int minWidth = 1000, int minHeight = 1000}) async {
+  static Future<XFile?> compressImage(File file,
+      {int quality = 50, int minWidth = 1000, int minHeight = 1000}) async {
     final filePath = file.absolute.path;
 
     final lastIndex = filePath.lastIndexOf(RegExp(r'.jp'));
     final splitted = filePath.substring(0, (lastIndex));
     final outPath = "${splitted}_out${filePath.substring(lastIndex)}";
 
-    */ /* Max image compression quality value accept up to 95 */ /*
+    /* Max image compression quality value accept up to 95 */
     final compressedImage = await FlutterImageCompress.compressAndGetFile(
         filePath, outPath,
         minWidth: minWidth, minHeight: minHeight, quality: quality);
 
     return compressedImage;
-  }*/
+  }
 
   static Future<bool> hasInternetConnection() async {
     try {
@@ -241,6 +241,20 @@ class Utils {
     final random = math.Random.secure();
     return List.generate(len, (_) => charset[random.nextInt(charset.length)])
         .join();
+  }
+
+  static DateTime? parseDate(String dateString) {
+    try {
+      int timestamp = int.tryParse(dateString) ?? 0;
+      if (timestamp == 0) {
+        return _dateFormat.parse(dateString);
+      }
+      return DateTime.fromMillisecondsSinceEpoch(timestamp);
+    } catch (e) {
+      log("Error parsing as timestamp: $e");
+    }
+
+    return null;
   }
 
   static String parseTimeStamp({required int value, required bool isTime}) {
