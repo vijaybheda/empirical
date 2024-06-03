@@ -68,7 +68,7 @@ class MyInspection48HourItem {
   factory MyInspection48HourItem.fromJson(Map<String, dynamic> json) {
     printKeysAndValueTypes(json);
     return MyInspection48HourItem(
-      inspectionId: json[InspectionColumn.INSPECTION_SERVER_ID],
+      inspectionId: json[InspectionColumn.ID],
       commodityId: json[InspectionColumn.COMMODITY_ID],
       carrierId: json[InspectionColumn.CARRIER_ID],
       date: json[InspectionColumn.PACK_DATE] ?? "",
