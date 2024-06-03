@@ -382,8 +382,7 @@ class DefectsScreenController extends GetxController {
       InspectionDefect inspectionDefect = InspectionDefect(
         createdTime: DateTime.now().millisecondsSinceEpoch,
         comment: "",
-        attachmentIds:
-            sampleData.defectItems.elementAt(sampleIndex).attachmentIds,
+        attachmentIds: [],
         defectCategory: '',
         damageCnt: 0,
         decayCnt: sampleData.dCnt,
@@ -452,7 +451,7 @@ class DefectsScreenController extends GetxController {
         defectId: 0,
         injuryCnt: 0,
         inspectionDefectId: 0,
-        sampleId: sampleData.defectItems.length,
+        sampleId: sampleData.sampleId,
         seriousDamageCnt: 0,
         severityDamageId: 0,
         severityDecayId: 0,
@@ -1030,7 +1029,8 @@ class DefectsScreenController extends GetxController {
       Consts.INSPECTION_ID: inspectionId,
       Consts.PO_NUMBER: poNumber,
     };
-    await Get.to(() => const InspectionPhotos(), arguments: passingData);
+    final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+    await Get.to(() => InspectionPhotos(tag: tag), arguments: passingData);
   }
 
   Future deleteInspectionAndGotoMyInspectionScreen(BuildContext context) async {
@@ -1300,7 +1300,7 @@ class DefectsScreenController extends GetxController {
     hideKeypad();
   }
 
-  void saveAsDraftAndGotoMyInspectionScreen() {
+  Future<void> saveAsDraftAndGotoMyInspectionScreen() async {
     if (sampleList.isEmpty) {
       AppAlertDialog.validateAlerts(
         Get.context!,
@@ -1310,7 +1310,7 @@ class DefectsScreenController extends GetxController {
     } else {
       if (validateDefects()) {
         if (validateSameDefects()) {
-          saveSamplesToDB();
+          await saveSamplesToDB();
           Map<String, dynamic> bundle = {
             Consts.SERVER_INSPECTION_ID: serverInspectionID,
             Consts.PARTNER_NAME: partnerName,
@@ -1577,10 +1577,32 @@ class DefectsScreenController extends GetxController {
       passingData.putIfAbsent(Consts.SAMPLE_ID, () => sampleId);
     }
 
+    int? inspectionDefectId = sampleDataMap[sampleIndex]
+        ?.defectItems[defectItemIndex]
+        .inspectionDefectId;
+    if (inspectionDefectId != null) {
+      passingData.putIfAbsent(Consts.DEFECT_ID, () => inspectionDefectId);
+    }
+    if (sampleDataMap[sampleIndex]
+                ?.defectItems[defectItemIndex]
+                .attachmentIds !=
+            null &&
+        (sampleDataMap[sampleIndex]
+                    ?.defectItems[defectItemIndex]
+                    .attachmentIds ??
+                [])
+            .isNotEmpty) {
+      passingData[Consts.HAS_INSPECTION_IDS] = true;
+      appStorage.attachmentIds = sampleDataMap[sampleIndex]
+          ?.defectItems[defectItemIndex]
+          .attachmentIds;
+    }
+
     currentAttachPhotosDataName = dataName;
     currentAttachPhotosPosition = sampleIndex;
+    final String tag = DateTime.now().millisecondsSinceEpoch.toString();
     var result =
-        await Get.to(() => const InspectionPhotos(), arguments: passingData);
+        await Get.to(() => InspectionPhotos(tag: tag), arguments: passingData);
     if (result != null) {
       try {
         List<InspectionDefect>? inspection =
@@ -1806,6 +1828,8 @@ class DefectsScreenController extends GetxController {
 
 // Label column
     Widget labelContainer = Container(
+      width: 99,
+      height: 51,
       margin: EdgeInsets.only(left: borderOutside, top: borderOutside),
       child: Text(
         'Type',
@@ -1839,6 +1863,8 @@ class DefectsScreenController extends GetxController {
 // Injury column
     if (hasSeverityInjury) {
       injuryColumn = Container(
+        width: 99,
+        height: 51,
         margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
         color: Colors.blue,
         child: Text(
@@ -1851,6 +1877,8 @@ class DefectsScreenController extends GetxController {
 // Damage column
     if (hasSeverityDamage) {
       damageColumn = Container(
+        width: 99,
+        height: 51,
         margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
         color: Colors.green,
         child: Text(
@@ -1863,6 +1891,8 @@ class DefectsScreenController extends GetxController {
 // Serious damage column(s)
     for (int i = 0; i < numberSeriousDefects; i++) {
       seriousDamageColumn = Container(
+        width: 99,
+        height: 51,
         margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
         color: Colors.orange,
         child: Text(
@@ -1875,6 +1905,8 @@ class DefectsScreenController extends GetxController {
     // Very serious damage column
     if (hasSeverityVerySeriousDamage) {
       verySeriousDamageColumn = Container(
+        width: 99,
+        height: 51,
         margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
         color: Colors.blue,
         child: Text(
@@ -1887,6 +1919,8 @@ class DefectsScreenController extends GetxController {
 // Decay column
     if (hasSeverityDecay) {
       decayColumn1 = Container(
+        width: 99,
+        height: 51,
         margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
         color: Colors.green,
         child: Text(
@@ -1903,6 +1937,8 @@ class DefectsScreenController extends GetxController {
     Row tableRow2 = Row(children: []);
 
     severityWidget = Container(
+      width: 99,
+      height: 51,
       margin: EdgeInsets.only(left: borderOutside, right: borderGrey),
       child: Text(
         'Severity',
@@ -1916,6 +1952,8 @@ class DefectsScreenController extends GetxController {
 // Injury column
     if (hasSeverityInjury) {
       injuryColumn1 = Container(
+        width: 99,
+        height: 51,
         margin: EdgeInsets.only(right: borderGrey, bottom: borderOutside),
         child: Stack(
           children: [
@@ -1938,6 +1976,8 @@ class DefectsScreenController extends GetxController {
 // Damage column
     if (hasSeverityDamage) {
       damageColumn1 = Container(
+        width: 99,
+        height: 51,
         margin: EdgeInsets.only(right: borderGrey, bottom: borderOutside),
         child: Stack(
           children: [
@@ -1963,6 +2003,8 @@ class DefectsScreenController extends GetxController {
     // Serious damage column(s)
     for (int i = 0; i < numberSeriousDefects; i++) {
       seriousDamageColumn1 = Container(
+        width: 99,
+        height: 51,
         margin: EdgeInsets.only(
           left: borderGrey,
           right: i == numberSeriousDefects - 1 ? borderOutside : borderGrey,
@@ -2026,6 +2068,8 @@ class DefectsScreenController extends GetxController {
 // Very serious damage column
     if (hasSeverityVerySeriousDamage) {
       verySeriousDamageColumn1 = Container(
+        width: 99,
+        height: 51,
         margin: EdgeInsets.only(
             left: borderGrey, right: borderGrey, bottom: borderOutside),
         child: Stack(
@@ -2052,6 +2096,8 @@ class DefectsScreenController extends GetxController {
 // Decay column
     if (hasSeverityDecay) {
       decayColumn2 = Container(
+        width: 99,
+        height: 51,
         margin: EdgeInsets.only(
             left: borderGrey, right: borderGrey, bottom: borderOutside),
         child: Stack(
@@ -2088,6 +2134,8 @@ class DefectsScreenController extends GetxController {
 
       // Label column
       lableColumn2 = Container(
+        width: 99,
+        height: 51,
         margin: EdgeInsets.only(
           left: borderOutside,
           right: j == numberSamples - 1 ? 0 : borderOutside,
@@ -2102,6 +2150,8 @@ class DefectsScreenController extends GetxController {
 
       // Injury column
       injuryColumn2 = Container(
+        width: 99,
+        height: 51,
         margin: EdgeInsets.only(
           left: 0,
           right: j == numberSamples - 1 ? 0 : borderOutside,
@@ -2117,6 +2167,8 @@ class DefectsScreenController extends GetxController {
 
       // Damage column
       damageColumn2 = Container(
+        width: 99,
+        height: 51,
         margin: EdgeInsets.only(
           left: 0,
           right: j == numberSamples - 1 ? 0 : borderOutside,
@@ -2143,6 +2195,8 @@ class DefectsScreenController extends GetxController {
           }
         }
         seriousDamageColumn2 = Container(
+          width: 99,
+          height: 51,
           margin: EdgeInsets.only(
             left: 0,
             right: i == numberSeriousDefects - 1 ? borderOutside : 0,
@@ -2159,6 +2213,8 @@ class DefectsScreenController extends GetxController {
 
       // Very serious damage column
       verySeriousDamageColumn2 = Container(
+        width: 99,
+        height: 51,
         margin: EdgeInsets.only(
           left: 0,
           right: 0,
@@ -2174,6 +2230,8 @@ class DefectsScreenController extends GetxController {
 
       // Decay column
       decayColumn3 = Container(
+        width: 99,
+        height: 51,
         margin: EdgeInsets.only(
           left: 0,
           right: 0,
@@ -2223,6 +2281,8 @@ class DefectsScreenController extends GetxController {
 
 // Label column
     totalQualityLabelColumn = Container(
+      width: 99,
+      height: 51,
       margin: EdgeInsets.only(left: borderOutside),
       child: Text(
         'Total Quality Defects',
@@ -2233,6 +2293,8 @@ class DefectsScreenController extends GetxController {
 
 // Injury column
     totalQualityInjuryColumn = Container(
+      width: 99,
+      height: 51,
       margin: EdgeInsets.only(left: 0),
       color: hasSeverityInjury ? Colors.blue : null,
       child: Text(
@@ -2244,6 +2306,8 @@ class DefectsScreenController extends GetxController {
 
 // Damage column
     totalQualityDamageColumn = Container(
+      width: 99,
+      height: 51,
       margin: EdgeInsets.only(left: 0),
       color: hasSeverityDamage ? Colors.green : null,
       child: Text(
@@ -2259,6 +2323,8 @@ class DefectsScreenController extends GetxController {
     // Serious damage column(s)
     for (int i = 0; i < numberSeriousDefects; i++) {
       columnView1 = Container(
+        width: 99,
+        height: 51,
         margin: EdgeInsets.only(
           right: i == numberSeriousDefects - 1 ? borderOutside : 0,
         ),
@@ -2299,6 +2365,8 @@ class DefectsScreenController extends GetxController {
     );
 // Very serious damage column
     verySeriousDamageColumn2 = Container(
+      width: 99,
+      height: 51,
       margin: EdgeInsets.only(
         left: borderGrey.toDouble(),
         right: borderGrey.toDouble(),
@@ -2350,6 +2418,8 @@ class DefectsScreenController extends GetxController {
       children: [
         // label column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(
               borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
@@ -2365,6 +2435,8 @@ class DefectsScreenController extends GetxController {
         ),
         // injury column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
             color: Colors.blue,
@@ -2386,6 +2458,8 @@ class DefectsScreenController extends GetxController {
         ),
         // damage column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
             color: Colors.green,
@@ -2412,6 +2486,8 @@ class DefectsScreenController extends GetxController {
     for (int i = 0; i < numberSeriousDefects; i++) {
       tableRow1.children.add(
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
               i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
           decoration: BoxDecoration(
@@ -2438,6 +2514,8 @@ class DefectsScreenController extends GetxController {
 // Very serious damage column
     tableRow1.children.add(
       Container(
+        width: 80,
+        height: 50,
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
         decoration: BoxDecoration(
           color: Colors.blue,
@@ -2466,6 +2544,8 @@ class DefectsScreenController extends GetxController {
       children: [
         // label column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(
               borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
@@ -2481,6 +2561,8 @@ class DefectsScreenController extends GetxController {
         ),
         // injury column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
             color: Colors.blue,
@@ -2496,6 +2578,8 @@ class DefectsScreenController extends GetxController {
         ),
         // damage column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
             color: Colors.green,
@@ -2516,6 +2600,8 @@ class DefectsScreenController extends GetxController {
     for (int i = 0; i < numberSeriousDefects; i++) {
       conditionTableRow.children.add(
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
               i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
           decoration: BoxDecoration(
@@ -2536,6 +2622,8 @@ class DefectsScreenController extends GetxController {
 // Very serious damage column
     conditionTableRow.children.add(
       Container(
+        width: 80,
+        height: 50,
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
         decoration: BoxDecoration(
           color: Colors.blue,
@@ -2554,6 +2642,8 @@ class DefectsScreenController extends GetxController {
 // Decay column
     conditionTableRow.children.add(
       Container(
+        width: 80,
+        height: 50,
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
         decoration: BoxDecoration(
           color: Colors.green,
@@ -2579,6 +2669,8 @@ class DefectsScreenController extends GetxController {
       children: [
         // label column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(
               borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
@@ -2594,6 +2686,8 @@ class DefectsScreenController extends GetxController {
         ),
         // injury column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
             color: Colors.blue,
@@ -2609,6 +2703,8 @@ class DefectsScreenController extends GetxController {
         ),
         // damage column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
             color: Colors.green,
@@ -2629,6 +2725,8 @@ class DefectsScreenController extends GetxController {
     for (int i = 0; i < numberSeriousDefects; i++) {
       conditionPercentageRow.children.add(
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
               i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
           decoration: BoxDecoration(
@@ -2649,6 +2747,8 @@ class DefectsScreenController extends GetxController {
 // Very serious damage column
     conditionPercentageRow.children.add(
       Container(
+        width: 80,
+        height: 50,
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
         decoration: BoxDecoration(
           color: Colors.blue,
@@ -2667,6 +2767,8 @@ class DefectsScreenController extends GetxController {
 // Decay column
     conditionPercentageRow.children.add(
       Container(
+        width: 80,
+        height: 50,
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
         decoration: BoxDecoration(
           color: Colors.green,
@@ -2692,6 +2794,8 @@ class DefectsScreenController extends GetxController {
       children: [
         // label column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(
               borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
@@ -2707,6 +2811,8 @@ class DefectsScreenController extends GetxController {
         ),
         // injury column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
             color: Colors.blue,
@@ -2722,6 +2828,8 @@ class DefectsScreenController extends GetxController {
         ),
         // damage column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
             color: Colors.green,
@@ -2745,6 +2853,8 @@ class DefectsScreenController extends GetxController {
           : seriousDefectCountMap[seriousDefectList[i]] ?? 0;
       severityTableRow.children.add(
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(
               0,
               borderBlack.toDouble(),
@@ -2770,6 +2880,8 @@ class DefectsScreenController extends GetxController {
 // Very serious damage column
     severityTableRow.children.add(
       Container(
+        width: 80,
+        height: 50,
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
         decoration: BoxDecoration(
           color: Colors.blue,
@@ -2788,6 +2900,8 @@ class DefectsScreenController extends GetxController {
 // Decay column
     severityTableRow.children.add(
       Container(
+        width: 80,
+        height: 50,
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
         decoration: BoxDecoration(
           color: Colors.green,
@@ -2811,6 +2925,8 @@ class DefectsScreenController extends GetxController {
       children: [
         // label column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(borderOutside.toDouble(),
               borderBlack.toDouble(), 0, borderBlack.toDouble()),
           decoration: BoxDecoration(
@@ -2826,6 +2942,8 @@ class DefectsScreenController extends GetxController {
         ),
         // injury column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(
               0, borderBlack.toDouble(), 0, borderBlack.toDouble()),
           decoration: BoxDecoration(
@@ -2847,6 +2965,8 @@ class DefectsScreenController extends GetxController {
         ),
         // damage column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(
               0, borderBlack.toDouble(), 0, borderBlack.toDouble()),
           decoration: BoxDecoration(
@@ -2877,6 +2997,8 @@ class DefectsScreenController extends GetxController {
       double percent = (sdcount == 0) ? 0.0 : (sdcount / totalSamples) * 100;
       defectTypePercentRow.children.add(
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(
               0,
               borderBlack.toDouble(),
@@ -2906,6 +3028,8 @@ class DefectsScreenController extends GetxController {
 // Very serious damage column
     defectTypePercentRow.children.add(
       Container(
+        width: 80,
+        height: 50,
         margin: EdgeInsets.fromLTRB(
             0, borderBlack.toDouble(), 0, borderBlack.toDouble()),
         decoration: BoxDecoration(
@@ -2931,6 +3055,8 @@ class DefectsScreenController extends GetxController {
 // Decay column
     defectTypePercentRow.children.add(
       Container(
+        width: 80,
+        height: 50,
         margin: EdgeInsets.fromLTRB(
             0, borderBlack.toDouble(), 0, borderBlack.toDouble()),
         decoration: BoxDecoration(
@@ -2960,6 +3086,8 @@ class DefectsScreenController extends GetxController {
       children: [
         // label column
         Container(
+          height: 50,
+          width: 80,
           margin: EdgeInsets.fromLTRB(borderOutside.toDouble(),
               borderOutside.toDouble(), 0, borderOutside.toDouble()),
           decoration: BoxDecoration(
@@ -2975,6 +3103,8 @@ class DefectsScreenController extends GetxController {
         ),
         // injury column
         Container(
+          height: 50,
+          width: 80,
           margin: EdgeInsets.fromLTRB(
               0, borderOutside.toDouble(), 0, borderOutside.toDouble()),
           decoration: BoxDecoration(
@@ -2991,6 +3121,8 @@ class DefectsScreenController extends GetxController {
         ),
         // damage column
         Container(
+          height: 50,
+          width: 80,
           margin: EdgeInsets.fromLTRB(
               0, borderOutside.toDouble(), 0, borderOutside.toDouble()),
           decoration: BoxDecoration(
@@ -3016,6 +3148,8 @@ class DefectsScreenController extends GetxController {
       children: [
         // label column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(
               borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
@@ -3031,6 +3165,8 @@ class DefectsScreenController extends GetxController {
         ),
         // injury column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
             color: Colors.blue,
@@ -3046,6 +3182,8 @@ class DefectsScreenController extends GetxController {
         ),
         // damage column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
             color: Colors.green,
@@ -3066,6 +3204,8 @@ class DefectsScreenController extends GetxController {
     for (int i = 0; i < numberSeriousDefects; i++) {
       totalSizeDefectsRow.children.add(
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
               i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
           decoration: BoxDecoration(
@@ -3086,6 +3226,8 @@ class DefectsScreenController extends GetxController {
 // Very serious damage column
     totalSizeDefectsRow.children.add(
       Container(
+        width: 80,
+        height: 50,
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
         decoration: BoxDecoration(
           color: Colors.blue,
@@ -3104,6 +3246,8 @@ class DefectsScreenController extends GetxController {
 // Decay column
     totalSizeDefectsRow.children.add(
       Container(
+        width: 80,
+        height: 50,
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
         decoration: BoxDecoration(
           color: Colors.green,
@@ -3129,6 +3273,8 @@ class DefectsScreenController extends GetxController {
       children: [
         // label column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(
               borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
@@ -3144,6 +3290,8 @@ class DefectsScreenController extends GetxController {
         ),
         // injury column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
             color: Colors.blue,
@@ -3159,6 +3307,8 @@ class DefectsScreenController extends GetxController {
         ),
         // damage column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
             color: Colors.green,
@@ -3179,6 +3329,8 @@ class DefectsScreenController extends GetxController {
     for (int i = 0; i < numberSeriousDefects; i++) {
       totalSizeDefectsPercentageRow.children.add(
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
               i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
           decoration: BoxDecoration(
@@ -3199,6 +3351,8 @@ class DefectsScreenController extends GetxController {
 // Very serious damage column
     totalSizeDefectsPercentageRow.children.add(
       Container(
+        width: 80,
+        height: 50,
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
         decoration: BoxDecoration(
           color: Colors.blue,
@@ -3217,6 +3371,8 @@ class DefectsScreenController extends GetxController {
 // Decay column
     totalSizeDefectsPercentageRow.children.add(
       Container(
+        width: 80,
+        height: 50,
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
         decoration: BoxDecoration(
           color: Colors.green,
@@ -3242,6 +3398,8 @@ class DefectsScreenController extends GetxController {
       children: [
         // label column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(
               borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
@@ -3257,6 +3415,8 @@ class DefectsScreenController extends GetxController {
         ),
         // injury column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
             color: Colors.blue,
@@ -3272,6 +3432,8 @@ class DefectsScreenController extends GetxController {
         ),
         // damage column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
           decoration: BoxDecoration(
             color: Colors.green,
@@ -3292,6 +3454,8 @@ class DefectsScreenController extends GetxController {
     for (int i = 0; i < numberSeriousDefects; i++) {
       totalColorDefectsRow.children.add(
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
               i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
           decoration: BoxDecoration(
@@ -3312,6 +3476,8 @@ class DefectsScreenController extends GetxController {
 // Very serious damage column
     totalColorDefectsRow.children.add(
       Container(
+        width: 80,
+        height: 50,
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
         decoration: BoxDecoration(
           color: Colors.blue,
@@ -3330,6 +3496,8 @@ class DefectsScreenController extends GetxController {
 // Decay column
     totalColorDefectsRow.children.add(
       Container(
+        width: 80,
+        height: 50,
         margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
         decoration: BoxDecoration(
           color: Colors.green,
@@ -3355,6 +3523,8 @@ class DefectsScreenController extends GetxController {
       children: [
         // label column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(borderOutside.toDouble(),
               borderBlack.toDouble(), 0, borderOutside.toDouble()),
           decoration: BoxDecoration(
@@ -3370,6 +3540,8 @@ class DefectsScreenController extends GetxController {
         ),
         // injury column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(
               0, borderBlack.toDouble(), 0, borderOutside.toDouble()),
           decoration: BoxDecoration(
@@ -3386,6 +3558,8 @@ class DefectsScreenController extends GetxController {
         ),
         // damage column
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(
               0, borderBlack.toDouble(), 0, borderOutside.toDouble()),
           decoration: BoxDecoration(
@@ -3407,6 +3581,8 @@ class DefectsScreenController extends GetxController {
     for (int i = 0; i < numberSeriousDefects; i++) {
       totalColorDefectsPercentageRow.children.add(
         Container(
+          width: 80,
+          height: 50,
           margin: EdgeInsets.fromLTRB(
               0,
               borderBlack.toDouble(),
@@ -3430,6 +3606,8 @@ class DefectsScreenController extends GetxController {
 // Very serious damage column
     totalColorDefectsPercentageRow.children.add(
       Container(
+        width: 80,
+        height: 50,
         margin: EdgeInsets.fromLTRB(
             0, borderBlack.toDouble(), 0, borderOutside.toDouble()),
         decoration: BoxDecoration(
@@ -3449,6 +3627,8 @@ class DefectsScreenController extends GetxController {
 // Decay column
     totalColorDefectsPercentageRow.children.add(
       Container(
+        width: 80,
+        height: 50,
         margin: EdgeInsets.fromLTRB(
             0, borderBlack.toDouble(), 0, borderOutside.toDouble()),
         decoration: BoxDecoration(
@@ -3469,7 +3649,7 @@ class DefectsScreenController extends GetxController {
     tableLayout.children.add(totalColorDefectsPercentageRow);
 
     Container defectsTableContainer = Container(
-      child: tableLayout,
+      child: SingleChildScrollView(child: tableLayout),
     );
     return defectsTableContainer;
   }

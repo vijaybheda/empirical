@@ -40,11 +40,11 @@ class LongFormQualityControlScreenController extends GetxController {
   ReasonItem? selectedReason;
 
   //For Claimfield Dropdown
-  List<String> claimFieldList = <String>[
+  final List<String> claimFieldList = <String>[
     "No Claim",
     "Partner Claim",
     "Carrier Claim",
-  ].obs;
+  ];
   RxString selectedClaimField = "No Claim".obs;
   RxString selectedClaimFieldLabel = "No Claim".obs;
 
@@ -318,8 +318,9 @@ class LongFormQualityControlScreenController extends GetxController {
     // claimFiledAgainst
     int clamFiledAgainstIndex =
         claimFieldList.indexOf(selectedClaimField.value);
-    String claimFiledAgainst = claimFieldList[clamFiledAgainstIndex];
-    mapClaimFiledAgainst(claimFiledAgainst);
+    // String claimFiledAgainst = claimFieldList[clamFiledAgainstIndex];
+    String claimFiledAgainst =
+        getClaimFiledAgainst(claimFieldList[clamFiledAgainstIndex]);
 
     int uomQtyShippedID = 0;
     int uomQtyRejectedID = 0;
@@ -421,7 +422,7 @@ class LongFormQualityControlScreenController extends GetxController {
           uomQtyReceivedID: uomQtyReceivedID,
           specificationName: specificationName ?? "",
           packDate: packDate,
-          seal_no: _appStorage.currentSealNumber!,
+          seal_no: _appStorage.currentSealNumber ?? '',
           lot_no: lotNoController.text,
           qcdOpen1: selectedTempRecorder.value,
           qcdOpen2: lotNoController.text,
@@ -835,16 +836,18 @@ class LongFormQualityControlScreenController extends GetxController {
     return array.indexOf(item);
   }
 
-  String mapClaimFiledAgainst(String claimFiledAgainst) {
-    switch (claimFiledAgainst) {
-      case "NC":
-        return "NC";
-      case "PC":
-        return "PC";
-      case "CC":
-        return "CC";
-      default:
-        return "";
+  String getClaimFiledAgainst(String claimFiledAgainst) {
+    String noClaim = claimFieldList.elementAt(0);
+    String partnerClaim = claimFieldList.elementAt(1);
+    String carrierClaim = claimFieldList.elementAt(2);
+    if (noClaim == claimFiledAgainst) {
+      return "NC";
+    } else if (partnerClaim == claimFiledAgainst) {
+      return "PC";
+    } else if (carrierClaim == claimFiledAgainst) {
+      return "CC";
+    } else {
+      return "";
     }
   }
 

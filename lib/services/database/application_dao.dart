@@ -4229,4 +4229,35 @@ class ApplicationDao {
           'Error has occurred while deleting a trailer temperature entries: $e');
     }
   }
+
+  Future<int> createDefectAttachment({
+    int? inspectionId,
+    int? sampleId,
+    int? defectId,
+    int? createdTime,
+    String? fileLocation,
+  }) async {
+    int attachmentId;
+    try {
+      final Database db = dbProvider.lazyDatabase;
+
+      Map<String, dynamic> values = {
+        InspectionDefectAttachmentColumn.INSPECTION_ID: inspectionId,
+        InspectionDefectAttachmentColumn.INSPECTION_SAMPLE_ID: sampleId,
+        InspectionDefectAttachmentColumn.INSPECTION_DEFECT_ID: defectId,
+        InspectionDefectAttachmentColumn.CREATED_TIME: createdTime,
+        InspectionDefectAttachmentColumn.FILE_LOCATION: fileLocation,
+        InspectionDefectAttachmentColumn.DEFECT_SAVED:
+            (sampleId != null && defectId != null) ? 'Y' : 'N'
+      };
+
+      attachmentId =
+          await db.insert(DBTables.INSPECTION_DEFECT_ATTACHMENT, values);
+    } catch (e) {
+      print('Error has occurred while creating a defect attachment: $e');
+      rethrow;
+    }
+
+    return attachmentId;
+  }
 }

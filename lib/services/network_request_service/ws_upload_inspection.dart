@@ -91,7 +91,7 @@ class WSUploadInspection {
         'qualityControlComments': qualityControl?.qcComments,
         'partnerComment': '',
         'claimFiledAgainst': qualityControl?.claimFiledAgainst,
-        'completed': (inspection?.complete == '1').toString(),
+        'completed': (inspection?.complete == '1'),
         'quantityRejected': qualityControl?.qtyRejected,
         'unitOfMeasureReceivedId': qualityControl?.uomQtyReceivedID,
         'unitOfMeasureRejectedId': qualityControl?.uomQtyRejectedID,
@@ -114,8 +114,8 @@ class WSUploadInspection {
         'lot': qualityControl?.lot,
         'quantityShipped': qualityControl?.qtyShipped,
         'unitOfMeasureShippedId': qualityControl?.uomQtyShippedID,
-        'specificationNumber': specification?.name,
-        'specificationVersion': specification?.value,
+        'specificationNumber': specification?.specificationNumber,
+        'specificationVersion': specification?.specificationVersion,
       };
 
       if (overriddenResult != null) {
