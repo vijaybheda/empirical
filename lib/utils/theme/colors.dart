@@ -64,6 +64,7 @@ class AppColors {
   static Color searchfieldColor = const Color(0xffF8F8F9);
   static Color warningColor = const Color(0xFFFF0101);
   static Color graniteGray = const Color(0xff5F646C);
+  static Color scoreCardRowColor = const Color(0xffa6cbff);
 
   // Login Screen Colors
 

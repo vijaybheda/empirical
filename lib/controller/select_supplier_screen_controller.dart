@@ -528,14 +528,15 @@ class SelectSupplierScreenController extends GetxController {
   }
 
   void navigateToScorecardScreen(PartnerItem partner) {
-    Get.to(() => ScorecardScreen(partner: partner), arguments: {
+    final arguments = {
       Consts.SCORECARD_NAME: partner.name,
       Consts.SCORECARD_ID: partner.id,
       Consts.REDPERCENTAGE: partner.redPercentage,
       Consts.GREENPERCENTAGE: partner.greenPercentage,
       Consts.YELLOWPERCENTAGE: partner.yellowPercentage,
       Consts.ORANGEPERCENTAGE: partner.orangePercentage,
-    });
+    };
+    Get.to(() => ScorecardScreen(partner: partner), arguments: arguments);
   }
 
   Future<void> navigateToCommodityIdScreen(
@@ -578,7 +579,7 @@ class SelectSupplierScreenController extends GetxController {
   }) async {
     String? res = await FlutterBarcodeScanner.scanBarcode(
         '#ff6666', 'Cancel', true, ScanMode.DEFAULT);
-    if (res != null && res.length > 10) {
+    if (res.length > 10) {
       if (onBarcodeScanned != null) {
         onBarcodeScanned(res);
       }
