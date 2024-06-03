@@ -53,7 +53,7 @@ class ApplicationDao {
   Future<int> createOrUpdateUser(UserData user) async {
     try {
       final Database db = dbProvider.lazyDatabase;
-      if (user.id == 0) {
+      if (user.id == null) {
         // Insert
         return await db.insert(DBTables.USER, user.toUserDBJson());
       } else {

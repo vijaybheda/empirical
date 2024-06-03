@@ -378,6 +378,7 @@ class AppStrings {
   static const String dtComments = 'Comments';
   static const String sizeOfNewSample = 'size of new set sample';
   static const String addSample = '+ add sample set';
+  static const String alertSample = 'Add sample set.';
   static const String addDefect = '+ add defect';
   static const String sample = 'sample';
   static const String samples = 'samples';

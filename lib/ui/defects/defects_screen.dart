@@ -13,7 +13,6 @@ import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
-import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class DefectsScreen extends GetView<DefectsScreenController> {
@@ -242,11 +241,11 @@ class DefectsScreen extends GetView<DefectsScreenController> {
       controller.activeTabIndex.value == 0
           ? Expanded(
               flex: 1,
-              child: /*controller
-                  .drawDefectsTable()*/
-                  SingleChildScrollView(
+              child: controller.drawDefectsTable()
+              /*SingleChildScrollView(
                 child: DefectsTable(),
-              ),
+              )*/
+              ,
             )
           : Expanded(
               flex: 1,
@@ -479,7 +478,8 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                       fontWeight: FontWeight.w600,
                       color: AppColors.textFieldText_Color),
                   onClickAction: () async {
-                    if (controller.validateDefects()) {
+                    await controller.saveDefectEntriesAndContinue();
+                    /*if (controller.validateDefects()) {
                       if (controller.validateSameDefects()) {
                         // TODO: Save the defects
                         await controller.saveSamplesToDB();
@@ -491,7 +491,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                     } else {
                       AppAlertDialog.validateAlerts(context, AppStrings.error,
                           AppStrings.defectEntryAlert);
-                    }
+                    }*/
                   }),
             ],
           ),
