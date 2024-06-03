@@ -250,7 +250,9 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
             GestureDetector(
               onTap: () async {
                 await controller.navigateToCameraScreen(
-                    rowIndex: defectItemIndex);
+                  sampleIndex: sampleIndex,
+                  defectItemIndex: defectItemIndex,
+                );
               },
               child: Icon(
                 Icons.photo_camera,
