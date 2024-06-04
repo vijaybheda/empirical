@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
@@ -71,7 +69,7 @@ class WSUploadInspection {
       String appVersion = globalConfigController.appVersion.value;
       jsonObj['appVersion'] = appVersion;
 
-      jsonObj['inspectionId'] = inspection?.serverInspectionId;
+      jsonObj['inspectionId'] = inspection?.inspectionId;
 
       // qualityControl
       Map<String, dynamic> qcObj = {
@@ -330,7 +328,7 @@ class WSUploadInspection {
     } catch (e) {
       debugPrint('🔴 Error creating JSON request WsUploadInspection : $e');
     }
-    log('🟢 JSON CREATED WsUploadInspection ${json.encode(jsonObj)}');
+    debugPrint('🟢 JSON CREATED WsUploadInspection ${json.encode(jsonObj)}');
     return jsonObj;
   }
 }

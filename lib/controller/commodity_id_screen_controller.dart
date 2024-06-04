@@ -260,8 +260,10 @@ class CommodityIDScreenController extends GetxController {
       final progressController = Get.put(ProgressController());
 
       Utils.showLinearProgressWithMessage(
-          message: AppStrings.uploadMessage,
-          progressController: progressController);
+        message: AppStrings.uploadMessage,
+        progressController: progressController,
+      
+      );
 
       int numberOfInspections = uploadCheckedList.length;
       int listIndex = 0;

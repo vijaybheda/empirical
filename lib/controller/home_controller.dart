@@ -24,55 +24,48 @@ import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
 
 class HomeController extends GetxController {
-  PageController pageController = PageController();
+  final ApplicationDao dao = ApplicationDao();
+  final AppStorage appStorage = AppStorage.instance;
 
   final GlobalConfigController globalConfigController =
       Get.find<GlobalConfigController>();
+  PageController pageController = PageController();
 
-  List<String> bannerImages = [
-    AppImages.img_banner,
-    AppImages.img_banner,
-  ];
+  RxMap<int, String> failedInspections = <int, String>{}.obs;
 
-  final ApplicationDao dao = ApplicationDao();
-  List<MyInspection48HourItem> itemsList = <MyInspection48HourItem>[].obs;
-  var bannersCurrentPage = 0.obs;
-  List<MyInspection48HourItem> selectedIDsInspection =
-      <MyInspection48HourItem>[].obs;
-
-  List expandContents = [].obs;
-  RxString sortType = ''.obs;
-
-  var progressLayoutVisible = false.obs;
-  var isInspectionFailed = false.obs;
-  var progressDialogStatus = 0.obs;
   Object uploadToken = Object();
 
-  RxBool completeAllChecked = false.obs;
-  RxMap<int, String> failedInspections = <int, String>{}.obs;
+  List<String> bannerImages = [AppImages.img_banner, AppImages.img_banner];
+  List<MyInspection48HourItem> itemsList = <MyInspection48HourItem>[].obs;
+  List<MyInspection48HourItem> selectedIDsInspection =
+      <MyInspection48HourItem>[].obs;
+  List expandContents = [].obs;
   RxList<int> uploadCheckedList = <int>[].obs;
-  final AppStorage appStorage = AppStorage.instance;
-
   RxList<MyInspection48HourItem> myInsp48HourList =
       <MyInspection48HourItem>[].obs;
 
+  RxInt bannersCurrentPage = 0.obs;
+  RxInt progressDialogStatus = 0.obs;
+
+  RxString sortType = ''.obs;
+
   RxBool completeAllCheckbox = false.obs;
+  RxBool progressLayoutVisible = false.obs;
+  RxBool isInspectionFailed = false.obs;
+
   @override
   void onInit() {
-    // Get.put(() => InspectionController(), permanent: true);
     super.onInit();
     int days = Utils().checkCacheDays();
     if (days >= 7) {
       if (globalConfigController.hasStableInternet.value) {
         Future.delayed(const Duration(seconds: 1)).then((value) =>
             UpdateDataAlert.showUpdateDataDialog(Get.context!, onOkPressed: () {
-              debugPrint('Ok button tap.');
               Get.off(() => const CacheDownloadScreen());
             }, message: AppStrings().getDayMessage(days)));
       } else {
         Future.delayed(const Duration(seconds: 1)).then((value) =>
             UpdateDataAlert.showUpdateDataDialog(Get.context!, onOkPressed: () {
-              debugPrint('Ok button tap.');
               Get.off(() => const CacheDownloadScreen());
             }, message: AppStrings().getDayMessage1(days)));
       }
@@ -88,10 +81,13 @@ class HomeController extends GetxController {
 
     if (isOnline) {
       itemsList = await getAllInspectionData();
+
       if (itemsList.isNotEmpty) {
         appStorage.myInsp48HourList ??= itemsList;
         myInsp48HourList.assignAll(itemsList);
         update(['inspectionsList']);
+      } else {
+        myInsp48HourList.value = [];
       }
     } else {
       itemsList = await getAllInspectionData();
@@ -100,69 +96,6 @@ class HomeController extends GetxController {
       }
     }
     appStorage.selectedItemSKUList.clear();
-  }
-
-  void simulateEvents() {
-    handleCompletedInspectionsWebServiceCall(true);
-    handleUploadMobileFilesWebServiceCall(false);
-    handleOfflineZipWebServiceCall(true);
-  }
-
-  Future<void> handleCompletedInspectionsWebServiceCall(bool success) async {
-    progressLayoutVisible.value = false;
-    if (success) {
-      itemsList = await getAllInspectionData();
-      if (itemsList.isNotEmpty) {
-        myInsp48HourList.assignAll(itemsList);
-      }
-    }
-  }
-
-  Future<void> handleOfflineZipWebServiceCall(bool success) async {
-    if (success) {
-      await importAllCSVFiles();
-      log(" 🟢 offline csv files downloaded");
-    }
-  }
-
-  Future<void> handleUploadMobileFilesWebServiceCall(bool success) async {
-    if (success) {
-      //todo  Handle successful upload
-    } else {
-      isInspectionFailed.value = true;
-      if (appStorage.uploadResponseData != null) {
-        if (appStorage.uploadResponseData!.getValidationErrors != null &&
-            appStorage.uploadResponseData!.getValidationErrors!.isNotEmpty) {
-          failedInspections[appStorage.uploadResponseData!.localInspectionID!] =
-              appStorage.uploadResponseData!.validationErrors!;
-        } else {
-          failedInspections[appStorage.uploadResponseData!.localInspectionID!] =
-              appStorage.uploadResponseData!.errorMessage!;
-        }
-      }
-    }
-  }
-
-  // Clear out any downloaded inspection data
-  Future<void> clearAnyDownloadedInspectionData() async {
-    appStorage.downloadedInspection = null;
-    bool isOnline = globalConfigController.hasStableInternet.value;
-    if (!isOnline) {
-      itemsList = await getAllInspectionData();
-      if (itemsList.isNotEmpty) {
-        myInsp48HourList.assignAll(itemsList);
-      }
-    } else {
-      itemsList = await getAllInspectionData();
-      if (itemsList.isNotEmpty) {
-        myInsp48HourList.assignAll(itemsList);
-      }
-      progressLayoutVisible.value = false;
-    }
-
-    if (Consts.IS_EXIT) {
-      Get.back();
-    }
   }
 
   Future<List<MyInspection48HourItem>> getAllInspectionData() async {
@@ -191,57 +124,6 @@ class HomeController extends GetxController {
     }
   }
 
-  // Import All CSV files
-  Future<void> importAllCSVFiles() async {
-    try {
-      await dao.csvImportItemGroup1();
-      await dao.csvImportItemSKU();
-      await dao.csvImportAgency();
-      await dao.csvImportGrade();
-      await dao.csvImportGradeCommodity();
-      await dao.csvImportGradeCommodityDetail();
-      await dao.csvImportSpecification();
-      await dao.csvImportMaterialSpecification();
-      await dao.csvImportSpecificationSupplier();
-      await dao.csvImportSpecificationGradeTolerance();
-      await dao.csvImportSpecificationAnalytical();
-      await dao.csvImportSpecificationPackagingFinishedGoods();
-      await dao.csvImportSpecificationType();
-      await dao.csvImportCommodity();
-      await dao.csvImportCommodityKeywords();
-      await dao.csvImportPOHeader();
-      await dao.csvImportPODetail();
-      await dao.csvImportSpecificationSupplierGtins();
-      await dao.csvImportCommodityCTE();
-    } catch (e) {
-      log(" 🔴 IMPORT ALL CSV FILES ERROR ${e.toString()}");
-    }
-  }
-
-  /*  void selectInspectionForDownload(int id, bool isSelectAll) {
-    if (isSelectAll) {
-      List<MyInspection48HourItem> selectedItems =
-          itemsList.where((item) => item.uploadStatus == 1).toList();
-      if (selectedItems.length != selectedIDsInspection.length) {
-        selectedIDsInspection.clear();
-        selectedIDsInspection.addAll(selectedItems);
-      } else {
-        selectedIDsInspection.clear();
-      }
-      completeAllCheckbox.value = selectedIDsInspection.length ==
-          itemsList.where((item) => item.uploadStatus == 1).length;
-    } else {
-      MyInspection48HourItem selectedItem =
-          itemsList.firstWhere((item) => item.id == id);
-      if (selectedIDsInspection.contains(selectedItem)) {
-        selectedIDsInspection.remove(selectedItem);
-      } else {
-        selectedIDsInspection.add(selectedItem);
-      }
-      completeAllCheckbox.value = selectedIDsInspection.length ==
-          itemsList.where((item) => item.uploadStatus == 1).length;
-    }
-  } */
   void selectInspectionForDownload(int id, bool isSelectAll) {
     if (isSelectAll) {
       List<MyInspection48HourItem> selectedItems =
@@ -343,12 +225,12 @@ class HomeController extends GetxController {
     List<int> uploadList = await dao.findReadyToUploadInspectionIDs();
 
     if (completeAllCheckbox.isTrue) {
+      uploadCheckedList.clear();
       uploadCheckedList.addAll(uploadList);
     }
 
-    log("hereee is $uploadCheckedList");
     if (uploadCheckedList.isEmpty) {
-      Utils.showErrorAlertDialog("No inspections to upload");
+      Utils.showErrorAlertDialog(AppStrings.noInspectionToUpload);
       return;
     } else {
       List<int> failedList = [];
@@ -366,8 +248,10 @@ class HomeController extends GetxController {
 
     final progressController = Get.put(ProgressController());
     Utils.showLinearProgressWithMessage(
-        message: AppStrings.uploadMessage,
-        progressController: progressController);
+      message: AppStrings.uploadMessage,
+      progressController: progressController,
+      totalInspection: uploadCheckedList.length,
+    );
 
     int numberOfInspections = uploadCheckedList.length;
     int listIndex = 0;
@@ -375,7 +259,6 @@ class HomeController extends GetxController {
 
     while (progressDialogStatus.value < numberOfInspections) {
       try {
-        log("INSPECTION ID ${uploadCheckedList[listIndex]}");
         await uploadInspection(uploadCheckedList[listIndex]);
       } catch (e) {
         AppSnackBar.error(message: AppStrings.uploadError);
@@ -407,7 +290,6 @@ class HomeController extends GetxController {
 
   Future<void> uploadInspection(int inspectionId) async {
     Inspection? inspection = await dao.findInspectionByID(inspectionId);
-    log(" 🟡 Utils.uploadInspection ${inspection?.toJson()}");
     if (inspection != null) {
       QCHeaderDetails? qcHeaderDetails =
           await dao.findTempQCHeaderDetails(inspection.poNumber!);
@@ -423,7 +305,7 @@ class HomeController extends GetxController {
           List<InspectionDefectAttachment>? attachments =
               await dao.findDefectAttachmentsByInspectionId(inspectionId);
 
-          await WSUploadMobileFiles(
+          var isApiCallSuccess = await WSUploadMobileFiles(
             inspectionId,
             attachments ?? [],
             jsonObject,
@@ -432,6 +314,12 @@ class HomeController extends GetxController {
             jsonObject,
             inspectionId,
           );
+          if (isApiCallSuccess) {
+            Future.delayed(Duration.zero, () {
+              getInspectionListOnInit();
+              update(['inspectionsList']);
+            });
+          }
         }
       }
     }
@@ -482,6 +370,95 @@ class HomeController extends GetxController {
           Get.back();
         },
       );
+    }
+  }
+
+  void simulateEvents() {
+    handleCompletedInspectionsWebServiceCall(true);
+    handleUploadMobileFilesWebServiceCall(false);
+    handleOfflineZipWebServiceCall(true);
+  }
+
+  Future<void> handleCompletedInspectionsWebServiceCall(bool success) async {
+    progressLayoutVisible.value = false;
+    if (success) {
+      itemsList = await getAllInspectionData();
+      if (itemsList.isNotEmpty) {
+        myInsp48HourList.assignAll(itemsList);
+      }
+    }
+  }
+
+  Future<void> handleOfflineZipWebServiceCall(bool success) async {
+    if (success) {
+      await importAllCSVFiles();
+    }
+  }
+
+  Future<void> handleUploadMobileFilesWebServiceCall(bool success) async {
+    if (success) {
+      //todo  Handle successful upload
+    } else {
+      isInspectionFailed.value = true;
+      if (appStorage.uploadResponseData != null) {
+        if (appStorage.uploadResponseData!.getValidationErrors != null &&
+            appStorage.uploadResponseData!.getValidationErrors!.isNotEmpty) {
+          failedInspections[appStorage.uploadResponseData!.localInspectionID!] =
+              appStorage.uploadResponseData!.validationErrors!;
+        } else {
+          failedInspections[appStorage.uploadResponseData!.localInspectionID!] =
+              appStorage.uploadResponseData!.errorMessage!;
+        }
+      }
+    }
+  }
+
+  // Clear out any downloaded inspection data
+  Future<void> clearAnyDownloadedInspectionData() async {
+    appStorage.downloadedInspection = null;
+    bool isOnline = globalConfigController.hasStableInternet.value;
+    if (!isOnline) {
+      itemsList = await getAllInspectionData();
+      if (itemsList.isNotEmpty) {
+        myInsp48HourList.assignAll(itemsList);
+      }
+    } else {
+      itemsList = await getAllInspectionData();
+      if (itemsList.isNotEmpty) {
+        myInsp48HourList.assignAll(itemsList);
+      }
+      progressLayoutVisible.value = false;
+    }
+
+    if (Consts.IS_EXIT) {
+      Get.back();
+    }
+  }
+
+  // Import All CSV files
+  Future<void> importAllCSVFiles() async {
+    try {
+      await dao.csvImportItemGroup1();
+      await dao.csvImportItemSKU();
+      await dao.csvImportAgency();
+      await dao.csvImportGrade();
+      await dao.csvImportGradeCommodity();
+      await dao.csvImportGradeCommodityDetail();
+      await dao.csvImportSpecification();
+      await dao.csvImportMaterialSpecification();
+      await dao.csvImportSpecificationSupplier();
+      await dao.csvImportSpecificationGradeTolerance();
+      await dao.csvImportSpecificationAnalytical();
+      await dao.csvImportSpecificationPackagingFinishedGoods();
+      await dao.csvImportSpecificationType();
+      await dao.csvImportCommodity();
+      await dao.csvImportCommodityKeywords();
+      await dao.csvImportPOHeader();
+      await dao.csvImportPODetail();
+      await dao.csvImportSpecificationSupplierGtins();
+      await dao.csvImportCommodityCTE();
+    } catch (e) {
+      log(" 🔴 IMPORT ALL CSV FILES ERROR ${e.toString()}");
     }
   }
 }
