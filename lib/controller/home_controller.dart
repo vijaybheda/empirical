@@ -192,8 +192,7 @@ class HomeController extends GetxController {
       Consts.VARIETY_NAME: selectedItem.varietyName,
       Consts.VARIETY_ID: selectedItem.varietyId,
       'VARIETY_SIZE': '1',
-      // todo discuss this Completed with Nirali shah
-      // 'COMPLETED': selectedItem.isCompleted,
+      Consts.COMPLETED: selectedItem.complete == "1",
       Consts.GRADE_ID: selectedItem.gradeId,
       Consts.INSPECTION_RESULT: selectedItem.inspectionResult ?? "",
       Consts.SPECIFICATION_NAME: selectedItem.specificationName,
@@ -211,7 +210,7 @@ class HomeController extends GetxController {
       Consts.ITEM_SKU_NAME: selectedItem.itemSkuName,
       Consts.CALLER_ACTIVITY: "TrendingReportActivity",
     };
-
+    log("HERE IS PASSED DATA $passingData");
     // Navigate to the details screen
     if (selectedItem.cteType != null && selectedItem.cteType!.isNotEmpty) {
       //todo add navigation for CTE flow.
