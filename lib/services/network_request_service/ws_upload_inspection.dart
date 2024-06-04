@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
@@ -328,7 +329,7 @@ class WSUploadInspection {
     } catch (e) {
       debugPrint('🔴 Error creating JSON request WsUploadInspection : $e');
     }
-    debugPrint('🟢 JSON CREATED WsUploadInspection ${json.encode(jsonObj)}');
+    log('🟢 JSON CREATED WsUploadInspection ${json.encode(jsonObj)}');
     return jsonObj;
   }
 }

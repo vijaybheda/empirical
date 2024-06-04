@@ -318,11 +318,9 @@ class LongFormQualityControlScreenController extends GetxController {
     // claimFiledAgainst
     int clamFiledAgainstIndex =
         claimFieldList.indexOf(selectedClaimField.value);
-    String claimFiledAgainst = claimFieldList[clamFiledAgainstIndex];
-    // String claimFiledAgainst =
-    //     getClaimFiledAgainst(claimFieldList[clamFiledAgainstIndex]);
-
-    log('On Save()-- claimFiledAgainst: $claimFiledAgainst  $clamFiledAgainstIndex');
+    // String claimFiledAgainst1 = claimFieldList[clamFiledAgainstIndex];
+    String claimFiledAgainst =
+        getClaimFiledAgainst(claimFieldList[clamFiledAgainstIndex]);
     int uomQtyShippedID = 0;
     int uomQtyRejectedID = 0;
     int uomQtyReceivedID = 0;
@@ -699,6 +697,16 @@ class LongFormQualityControlScreenController extends GetxController {
 
   // Method to set CLAIM FIELD spinner
   void setSpinnerClaimField() {
+    if (selectedClaimField.value == "PC") {
+      selectedClaimField.value = "Partner Claim";
+    } else if (selectedClaimField.value == "CC") {
+      selectedClaimField.value = "Carrier Claim";
+    } else if (selectedClaimField.value == "NC") {
+      selectedClaimField.value = "No Claim";
+    } else {
+      selectedClaimField.value = "No Claim";
+    }
+
     int selectedIndexClaimField =
         claimFieldList.indexOf(selectedClaimField.value);
     selectedClaimField.value = claimFieldList[selectedIndexClaimField];
