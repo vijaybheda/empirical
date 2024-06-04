@@ -88,10 +88,13 @@ class HomeController extends GetxController {
 
     if (isOnline) {
       itemsList = await getAllInspectionData();
+
       if (itemsList.isNotEmpty) {
         appStorage.myInsp48HourList ??= itemsList;
         myInsp48HourList.assignAll(itemsList);
         update(['inspectionsList']);
+      } else {
+        myInsp48HourList.value = [];
       }
     } else {
       itemsList = await getAllInspectionData();
@@ -218,30 +221,6 @@ class HomeController extends GetxController {
     }
   }
 
-  /*  void selectInspectionForDownload(int id, bool isSelectAll) {
-    if (isSelectAll) {
-      List<MyInspection48HourItem> selectedItems =
-          itemsList.where((item) => item.uploadStatus == 1).toList();
-      if (selectedItems.length != selectedIDsInspection.length) {
-        selectedIDsInspection.clear();
-        selectedIDsInspection.addAll(selectedItems);
-      } else {
-        selectedIDsInspection.clear();
-      }
-      completeAllCheckbox.value = selectedIDsInspection.length ==
-          itemsList.where((item) => item.uploadStatus == 1).length;
-    } else {
-      MyInspection48HourItem selectedItem =
-          itemsList.firstWhere((item) => item.id == id);
-      if (selectedIDsInspection.contains(selectedItem)) {
-        selectedIDsInspection.remove(selectedItem);
-      } else {
-        selectedIDsInspection.add(selectedItem);
-      }
-      completeAllCheckbox.value = selectedIDsInspection.length ==
-          itemsList.where((item) => item.uploadStatus == 1).length;
-    }
-  } */
   void selectInspectionForDownload(int id, bool isSelectAll) {
     if (isSelectAll) {
       List<MyInspection48HourItem> selectedItems =
@@ -423,7 +402,7 @@ class HomeController extends GetxController {
           List<InspectionDefectAttachment>? attachments =
               await dao.findDefectAttachmentsByInspectionId(inspectionId);
 
-          await WSUploadMobileFiles(
+          var isApiCallSuccess = await WSUploadMobileFiles(
             inspectionId,
             attachments ?? [],
             jsonObject,
@@ -432,6 +411,12 @@ class HomeController extends GetxController {
             jsonObject,
             inspectionId,
           );
+          if (isApiCallSuccess) {
+            Future.delayed(Duration.zero, () {
+              getInspectionListOnInit();
+              update(['inspectionsList']);
+            });
+          }
         }
       }
     }

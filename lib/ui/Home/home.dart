@@ -387,6 +387,9 @@ class Home extends GetView<HomeController> {
             physics: const ClampingScrollPhysics(),
             itemBuilder: (context, position) {
               var myInspectionList = controller.myInsp48HourList[position];
+              if (controller.myInsp48HourList.isEmpty) {
+                return const SizedBox.shrink();
+              }
               return GestureDetector(
                 onTap: () {
                   controller.onItemTap(position);
@@ -532,13 +535,13 @@ class Home extends GetView<HomeController> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          if (controller.expandContents.contains(
-                              controller.itemsList[position].inspectionId)) {
-                            controller.expandContents.remove(
-                                controller.itemsList[position].inspectionId);
+                          if (controller.expandContents
+                              .contains(myInspectionList.inspectionId)) {
+                            controller.expandContents
+                                .remove(myInspectionList.inspectionId);
                           } else {
-                            controller.expandContents.add(
-                                controller.itemsList[position].inspectionId);
+                            controller.expandContents
+                                .add(myInspectionList.inspectionId);
                           }
                         },
                         child: Container(
@@ -562,11 +565,10 @@ class Home extends GetView<HomeController> {
                           ),
                           child: Obx(
                             () => Text(
-                              controller.itemsList[position].partnerName ?? '',
+                              myInspectionList.partnerName ?? '',
                               textAlign: TextAlign.center,
-                              overflow: controller.expandContents.contains(
-                                      controller
-                                          .itemsList[position].inspectionId)
+                              overflow: controller.expandContents
+                                      .contains(myInspectionList.inspectionId)
                                   ? TextOverflow.visible
                                   : TextOverflow.ellipsis,
                               style: Get.textTheme.titleLarge!.copyWith(

@@ -34,7 +34,7 @@ class WSUploadMobileFiles {
     this.jsonInspection,
   );
 
-  Future<void> requestUploadMobileFiles(
+  Future<bool> requestUploadMobileFiles(
       List<InspectionDefectAttachment> attachments,
       Map<String, dynamic> jsonInspection,
       int inspectionId) async {
@@ -66,7 +66,7 @@ class WSUploadMobileFiles {
     debugPrint("HERE IS RESPONSE ${response.toString()}");
     if (response != null && response.isEmpty) {
       debugPrint('🔴 Error: Response is empty.$response');
-      return;
+      return false;
     } else {
       // Parse the response and handle success scenario
       UploadResponseData uploadResponseData = parseUploadJson(response!);
@@ -81,8 +81,10 @@ class WSUploadMobileFiles {
         Utils.setInspectionUploadStatus(
             inspectionId, Consts.INSPECTION_UPLOAD_IN_PROGRESS);
         await dao.deleteInspectionAfterUpload(inspectionId);
+        return true;
       }
     }
+    return false;
   }
 
   Future<String?> _doFileUpload() async {
