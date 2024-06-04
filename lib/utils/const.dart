@@ -2,6 +2,7 @@ class Consts {
   static const String TITLE = "title";
   static const String DETAIL = "detail";
   static const String CALLER_ACTIVITY = "CALLER_ACTIVITY";
+  static const String FOR_DEFECT_ATTACHMENT = "FOR_DEFECT_ATTACHMENT";
   static const String IS_PARTNER_ACTIVITY = "IS_PARTNER_ACTIVITY";
   static const String PARTNER_NAME = "PARTNER_NAME";
   static const String PARTNER_ID = "PARTNER_ID";

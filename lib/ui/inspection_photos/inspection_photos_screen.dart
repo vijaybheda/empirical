@@ -13,39 +13,43 @@ import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class InspectionPhotos extends GetView<InspectionPhotosController> {
-  final String? partnerName;
-  final String? partnerID;
-  final String? carrierName;
-  final String? carrierID;
-  final String? commodityName;
-  final int? commodityID;
-  final String? varietyName;
-  final String? varietySize;
-  final String? varietyId;
-  final bool? isViewOnlyMode;
-  final int? inspectionId;
-  final String? callerActivity;
+  // final String? partnerName;
+  // final String? partnerID;
+  // final String? carrierName;
+  // final String? carrierID;
+  // final String? commodityName;
+  // final int? commodityID;
+  // final String? varietyName;
+  // final String? varietySize;
+  // final String? varietyId;
+  // final bool? isViewOnlyMode;
+  // final int? inspectionId;
+  // final String? callerActivity;
+
+  final String? tag;
 
   const InspectionPhotos({
     super.key,
-    this.partnerName,
-    this.partnerID,
-    this.carrierName,
-    this.carrierID,
-    this.commodityName,
-    this.commodityID,
-    this.varietyName,
-    this.varietySize,
-    this.varietyId,
-    this.isViewOnlyMode,
-    this.inspectionId,
-    this.callerActivity,
+    required this.tag,
+    // this.partnerName,
+    // this.partnerID,
+    // this.carrierName,
+    // this.carrierID,
+    // this.commodityName,
+    // this.commodityID,
+    // this.varietyName,
+    // this.varietySize,
+    // this.varietyId,
+    // this.isViewOnlyMode,
+    // this.inspectionId,
+    // this.callerActivity,
   });
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<InspectionPhotosController>(
         init: InspectionPhotosController(),
+        tag: tag,
         builder: (controller) {
           return WillPopScope(
             onWillPop: () async {
@@ -91,7 +95,7 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
         Expanded(
             child: Padding(
           padding: EdgeInsets.all(30.w),
-          child: Obx(() => photosListView()),
+          child: Obx(() => photosListView(controller)),
         )),
         Container(
           padding: EdgeInsets.only(left: 35.w, right: 35.w),
@@ -157,7 +161,7 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
     );
   }
 
-  Widget photosListView() {
+  Widget photosListView(InspectionPhotosController controller) {
     return GridView.builder(
       itemCount: controller.imagesList.length, // Number of rows
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

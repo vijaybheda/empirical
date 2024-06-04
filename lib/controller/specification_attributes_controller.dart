@@ -661,7 +661,8 @@ class SpecificationAttributesController extends GetxController {
       Consts.PO_NUMBER: poNumber,
     };
 
-    await Get.to(() => const InspectionPhotos(), arguments: passingData);
+    final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+    await Get.to(() => InspectionPhotos(tag: tag), arguments: passingData);
   }
 
   void onBackButtonClick() {

@@ -45,8 +45,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
             ),
             drawer: SideDrawer(
               onDefectSaveAndCompleteTap: () async {
-                // TODO: implement
-                // await controller.saveAsDraftAndGotoMyInspectionScreen();
+                await controller.saveAsDraftAndGotoMyInspectionScreen();
               },
               onDiscardTap: () async {
                 await controller
@@ -338,7 +337,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                 ],
               ),
             ),
-      bottomContent(context)
+      bottomContent(context, controller)
     ]);
   }
 
@@ -442,7 +441,8 @@ class DefectsScreen extends GetView<DefectsScreenController> {
 
 // BOTTOM CONTENTS
 
-  Widget bottomContent(BuildContext context) {
+  Widget bottomContent(
+      BuildContext context, DefectsScreenController controller) {
     return Column(
       children: [
         Container(
@@ -461,8 +461,8 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                       fontSize: 35.sp,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textFieldText_Color),
-                  onClickAction: () {
-                    controller
+                  onClickAction: () async {
+                    await controller
                         .deleteInspectionAndGotoMyInspectionScreen(context);
                   }),
               SizedBox(
@@ -481,7 +481,6 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                     await controller.saveDefectEntriesAndContinue();
                     /*if (controller.validateDefects()) {
                       if (controller.validateSameDefects()) {
-                        // TODO: Save the defects
                         await controller.saveSamplesToDB();
                         controller.getToQCDetailShortForm();
                       } else {
@@ -512,8 +511,8 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                     fontSize: 28.sp,
                     fontWeight: FontWeight.w500,
                     color: AppColors.textFieldText_Color),
-                onClickAction: () {
-                  controller.onSpecialInstrMenuTap();
+                onClickAction: () async {
+                  await controller.onSpecialInstrMenuTap();
                 },
               ),
               SizedBox(
@@ -537,7 +536,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                       .appStorage.specificationGradeToleranceTable.isNotEmpty) {
                     controller.onSpecificationTap();
                   }*/
-                  controller.onSpecificationTap();
+                  await controller.onSpecificationTap();
                 },
               ),
               SizedBox(

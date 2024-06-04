@@ -7,22 +7,25 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pverify/models/inspection_attachment.dart';
+import 'package:pverify/models/inspection_defect_attachment.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
+import 'package:pverify/utils/utils.dart';
 
 class InspectionPhotosController extends GetxController {
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
-  var imagesList = <PictureData>[].obs;
-  var imagesListBackup = <PictureData>[];
+  List<PictureData> imagesList = <PictureData>[].obs;
+  List<PictureData> imagesListBackup = <PictureData>[];
   final ApplicationDao dao = ApplicationDao();
   List<int> attachmentIds = [];
 
-  get title => null;
-  bool? hasAttachmentIds = false;
+  bool forDefect = false;
+
+  bool hasAttachmentIds = false;
 
   String partnerName = '';
   int? partnerID;
@@ -33,6 +36,8 @@ class InspectionPhotosController extends GetxController {
   String? varietyName;
   String? varietySize;
   int? varietyId;
+  int sampleId = -1;
+  int defectId = -1;
   bool isViewOnlyMode = true;
   int inspectionId = -1;
   String callerActivity = '';
@@ -46,7 +51,6 @@ class InspectionPhotosController extends GetxController {
       throw Exception('Arguments required!');
     }
 
-    inspectionId = args[Consts.INSPECTION_ID] ?? -1;
     partnerName = args[Consts.PARTNER_NAME] ?? '';
     partnerID = args[Consts.PARTNER_ID] ?? 0;
     carrierName = args[Consts.CARRIER_NAME] ?? '';
@@ -58,9 +62,14 @@ class InspectionPhotosController extends GetxController {
     varietyId = args[Consts.VARIETY_ID];
     isViewOnlyMode = args[Consts.IS_VIEW_ONLY_MODE] ?? true;
     inspectionId = args[Consts.INSPECTION_ID] ?? -1;
-    callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
+
+    sampleId = args[Consts.SAMPLE_ID] ?? -1;
+    defectId = args[Consts.DEFECT_ID] ?? -1;
+    hasAttachmentIds = args[Consts.HAS_INSPECTION_IDS] ?? false;
 
     isViewOnlyMode = false;
+    callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
+    forDefect = args[Consts.FOR_DEFECT_ATTACHMENT] ?? false;
   }
 
   Future<String> saveImageToInternalStorage(File imageFile) async {
@@ -113,18 +122,23 @@ class InspectionPhotosController extends GetxController {
   }
 
   Future<void> cropImage(File imageFile, int index) async {
-    final croppedImage = await getCroppedImageFile(imageFile);
+    final File? croppedImage = await getCroppedImageFile(imageFile);
 
     if (croppedImage != null) {
-      imagesList.removeAt(index);
-      PictureData pictureData = PictureData(
-          image: croppedImage,
-          Attachment_Title: '',
-          createdTime: DateTime.now().millisecondsSinceEpoch,
-          pathToPhoto: await saveImageToInternalStorage(croppedImage));
+      // compressedImage =
+      final XFile? compressedImage = await Utils.compressImage(croppedImage);
+      if (compressedImage != null) {
+        File compressedImageFile = File(compressedImage.path);
+        imagesList.removeAt(index);
+        PictureData pictureData = PictureData(
+            image: compressedImageFile,
+            Attachment_Title: '',
+            createdTime: DateTime.now().millisecondsSinceEpoch,
+            pathToPhoto: await saveImageToInternalStorage(compressedImageFile));
 
-      imagesList.insert(index, pictureData);
-      imagesListBackup.insert(index, pictureData);
+        imagesList.insert(index, pictureData);
+        imagesListBackup.insert(index, pictureData);
+      }
     }
   }
 
@@ -182,12 +196,16 @@ class InspectionPhotosController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    loadPicturesFromDB();
+    if (forDefect) {
+      loadDefectPicturesFromDB();
+    } else {
+      loadPicturesFromDB();
+    }
   }
 
   void saveAction() async {
     await savePicturesToDB();
-    AppStorage.instance.attachmentIds = attachmentIds;
+    appStorage.attachmentIds = attachmentIds;
     Get.back();
   }
 
@@ -196,25 +214,42 @@ class InspectionPhotosController extends GetxController {
       if (imagesList[i].savedInDB == true) {
         attachmentIds.add(imagesList[i].pictureId ?? 0);
       } else {
-        await dao
-            .createInspectionAttachment(
-                InspectionAttachment(
-                  Inspection_ID: inspectionId ?? 0,
-                  Attachment_ID: 0,
-                  Attachment_Title: imagesList[i].Attachment_Title ?? '',
-                  CREATED_TIME: imagesList[i].createdTime ?? 0,
-                  filelocation: imagesList[i].pathToPhoto ?? '',
-                  title: imagesList[i].Attachment_Title ?? '',
-                ),
-                imagesList[i].Attachment_Title ?? '',
-                imagesList[i].createdTime ?? '',
-                imagesList[i].pathToPhoto ?? '')
-            .then((attachmentId) {
-          attachmentIds.add(attachmentId);
-          imagesListBackup.clear();
-        }).catchError((error) {
-          debugPrint('Error creating attachment: $error');
-        });
+        if (forDefect) {
+          await dao
+              .createDefectAttachment(
+            inspectionId: inspectionId,
+            sampleId: sampleId,
+            defectId: defectId,
+            createdTime: imagesList[i].createdTime,
+            fileLocation: imagesList[i].pathToPhoto ?? '',
+          )
+              .then((attachmentId) {
+            attachmentIds.add(attachmentId);
+            imagesListBackup.clear();
+          }).catchError((error) {
+            debugPrint('Error creating attachment: $error');
+          });
+        } else {
+          await dao
+              .createInspectionAttachment(
+                  InspectionAttachment(
+                    Inspection_ID: inspectionId,
+                    Attachment_ID: 0,
+                    Attachment_Title: imagesList[i].Attachment_Title ?? '',
+                    CREATED_TIME: imagesList[i].createdTime ?? 0,
+                    filelocation: imagesList[i].pathToPhoto ?? '',
+                    title: imagesList[i].Attachment_Title ?? '',
+                  ),
+                  imagesList[i].Attachment_Title ?? '',
+                  imagesList[i].createdTime ?? '',
+                  imagesList[i].pathToPhoto ?? '')
+              .then((attachmentId) {
+            attachmentIds.add(attachmentId);
+            imagesListBackup.clear();
+          }).catchError((error) {
+            debugPrint('Error creating attachment: $error');
+          });
+        }
       }
     }
   }
@@ -222,8 +257,13 @@ class InspectionPhotosController extends GetxController {
   Future<void> deletePicture(int position) async {
     if (imagesList[position].savedInDB == true) {
       try {
-        await dao.deleteAttachmentByAttachmentId(
-            imagesList[position].pictureId ?? 0);
+        if (forDefect) {
+          await dao.deleteDefectAttachmentByAttachmentId(
+              imagesList[position].pictureId ?? 0);
+        } else {
+          await dao.deleteAttachmentByAttachmentId(
+              imagesList[position].pictureId ?? 0);
+        }
 
         imagesList.removeAt(position);
         imagesListBackup.removeAt(position);
@@ -261,14 +301,13 @@ class InspectionPhotosController extends GetxController {
 
   Future<void> loadPicturesFromDB() async {
     List<InspectionAttachment> picsFromDB = [];
-    if (AppStorage.instance.attachmentIds != null) {
-      hasAttachmentIds =
-          AppStorage.instance.attachmentIds!.isNotEmpty ? true : false;
+    if (appStorage.attachmentIds != null) {
+      hasAttachmentIds = appStorage.attachmentIds!.isNotEmpty ? true : false;
     }
 
     try {
       if (hasAttachmentIds == true) {
-        List<int>? attachmentIds = AppStorage.instance.attachmentIds;
+        List<int>? attachmentIds = appStorage.attachmentIds;
         if (attachmentIds != null && attachmentIds.isNotEmpty) {
           for (int i = 0; i < attachmentIds.length; i++) {
             await dao
@@ -307,5 +346,48 @@ class InspectionPhotosController extends GetxController {
     }
     log(imagesList.length);
     imagesListBackup.clear();
+  }
+
+  AppStorage get appStorage => AppStorage.instance;
+
+  Future<void> loadDefectPicturesFromDB() async {
+    List<InspectionDefectAttachment> picsFromDB = [];
+
+    try {
+      if (isViewOnlyMode) {
+        if (sampleId != -1) {
+          picsFromDB =
+              await dao.findDefectAttachmentsBySampleId(sampleId) ?? [];
+        }
+      } else {
+        if (defectId != -1) {
+          picsFromDB =
+              await dao.findDefectAttachmentsByDefectId(defectId) ?? [];
+        } else if (hasAttachmentIds) {
+          List<int> attachmentIds = appStorage.attachmentIds ?? [];
+          if (attachmentIds.isNotEmpty) {
+            for (var id in attachmentIds) {
+              InspectionDefectAttachment? inspectionDefectAttachment =
+                  await dao.findDefectAttachmentByAttachmentId(id);
+              if (inspectionDefectAttachment != null) {
+                picsFromDB.add(inspectionDefectAttachment);
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+
+    if (picsFromDB.isNotEmpty) {
+      for (var pic in picsFromDB) {
+        PictureData temp = PictureData();
+        temp.setData(pic.attachmentId, pic.fileLocation, true,
+            File(pic.fileLocation.toString()));
+        imagesList.add(temp);
+      }
+    }
+    update();
   }
 }
