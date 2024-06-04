@@ -229,7 +229,7 @@ class HomeController extends GetxController {
     }
 
     if (uploadCheckedList.isEmpty) {
-      Utils.showErrorAlertDialog(AppStrings.noInspectionToUpload);
+      Utils.noInspectionAlert(title: AppStrings.noInspectionToUpload);
       return;
     } else {
       List<int> failedList = [];

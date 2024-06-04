@@ -658,6 +658,62 @@ class Utils {
     );
   }
 
+  static Future<void> noInspectionAlert({
+    required String title,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 10));
+
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: Theme.of(Get.context!).colorScheme.background,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(Get.context!).size.width * 0.65,
+                  child: Text(
+                    title,
+                    style: Get.textTheme.titleLarge!.copyWith(
+                      fontSize: 25.sp,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    Get.back();
+                  },
+                  child: Text(
+                    AppStrings.ok,
+                    style: Get.textTheme.titleLarge!.copyWith(
+                      fontSize: 26.sp,
+                      fontWeight: FontWeight.normal,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      barrierDismissible: true,
+      transitionCurve: Curves.easeInOut,
+      navigatorKey: Get.key,
+      transitionDuration: const Duration(milliseconds: 200),
+    );
+  }
+
   static Future<void> setInspectionUploadStatus(
       int inspectionId, int inspectionUploadReady) async {
     await _dao.updateInspectionUploadStatus(
