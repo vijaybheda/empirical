@@ -71,7 +71,7 @@ class WSUploadInspection {
       String appVersion = globalConfigController.appVersion.value;
       jsonObj['appVersion'] = appVersion;
 
-      jsonObj['inspectionId'] = inspection?.serverInspectionId;
+      jsonObj['inspectionId'] = inspection?.inspectionId;
 
       // qualityControl
       Map<String, dynamic> qcObj = {

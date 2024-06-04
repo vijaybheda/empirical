@@ -63,7 +63,7 @@ class WSUploadMobileFiles {
     jsonInspection2 = createInspectionAttachmentJSONRequest();
 
     String? response = await _doFileUpload();
-    debugPrint("HERE IS ${response.toString()}");
+    debugPrint("HERE IS RESPONSE ${response.toString()}");
     if (response != null && response.isEmpty) {
       debugPrint('🔴 Error: Response is empty.$response');
       return;
