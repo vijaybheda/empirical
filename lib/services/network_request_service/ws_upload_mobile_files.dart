@@ -236,19 +236,3 @@ class WSUploadMobileFiles {
     );
   }
 }
-
-// class UploadResponseData {
-//   final int inspectionServerID;
-//   final String errorMessage;
-//   final String validationError;
-//   final int localInspectionID;
-//   final bool uploaded;
-//
-//   UploadResponseData(
-//     this.inspectionServerID,
-//     this.errorMessage,
-//     this.validationError,
-//     this.localInspectionID,
-//     this.uploaded,
-//   );
-// }

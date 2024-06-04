@@ -270,6 +270,7 @@ class AppStrings {
   static const String gln = 'GLN';
   static const String uploadInspectionAlert =
       'Do you want to upload Inspection to server?';
+  static const String noInspectionToUpload = "No inspections to upload";
 
   static String noSpecificationAlert(String item) =>
       'No specification found for item $item';

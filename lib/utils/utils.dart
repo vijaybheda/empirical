@@ -598,37 +598,60 @@ class Utils {
   static Future<void> showLinearProgressWithMessage({
     String? message,
     required ProgressController progressController,
+    int? totalInspection,
   }) async {
     await Future.delayed(const Duration(milliseconds: 10));
+
     Get.dialog(
       Obx(
         () => AlertDialog(
-          backgroundColor: Colors.black87,
+          backgroundColor: Theme.of(Get.context!).colorScheme.background,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Row(
+                children: [
+                  Text(
+                    message ?? 'Loading...',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 50),
               SizedBox(
-                width: double.infinity,
+                width: MediaQuery.of(Get.context!).size.width * 0.6,
                 child: LinearProgressIndicator(
-                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
                   backgroundColor: Colors.grey,
-                  value: progressController.progress.value,
+                  value: progressController.progress.value / totalInspection!,
                 ),
               ),
               const SizedBox(height: 20),
-              Text(
-                message ?? 'Loading...',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
-                textAlign: TextAlign.center,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    "${progressController.progress.value.toInt()}/$totalInspection",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             ],
           ),
         ),
       ),
-      barrierDismissible: false,
+      barrierDismissible: true,
       transitionCurve: Curves.easeInOut,
       navigatorKey: Get.key,
       transitionDuration: const Duration(milliseconds: 200),

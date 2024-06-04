@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -90,7 +88,6 @@ class Home extends GetView<HomeController> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              log("Upload Button tapped");
                               controller
                                   .onUploadAllInspectionButtonClick(context);
                             },
