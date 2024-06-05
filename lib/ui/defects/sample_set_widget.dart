@@ -12,6 +12,7 @@ import 'package:pverify/utils/theme/colors.dart';
 class SampleSetWidget extends StatefulWidget {
   final int sampleIndex;
   final DefectsScreenController controller;
+
   const SampleSetWidget({
     super.key,
     required this.sampleIndex,
@@ -24,6 +25,7 @@ class SampleSetWidget extends StatefulWidget {
 
 class _SampleSetWidgetState extends State<SampleSetWidget> {
   int get sampleIndex => widget.sampleIndex;
+
   DefectsScreenController get controller => widget.controller;
 
   @override
@@ -83,7 +85,12 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
             ],
           ),
         ),
-        controller.sampleList[sampleIndex].defectItems.isNotEmpty
+        // controller.sampleList[sampleIndex].defectItems.isNotEmpty
+        (controller.defectDataMap[controller.sampleList
+                        .elementAt(controller.sampleList.length - 1)
+                        .name] ??
+                    [])
+                .isNotEmpty
             ? Column(
                 children: [
                   SizedBox(height: 50.h),

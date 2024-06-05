@@ -95,6 +95,7 @@ class BoxTextFieldLogin extends StatelessWidget {
   }
 
   textFieldfocused() {}
+
   errorrTextFieldBorder() {}
 }
 
@@ -116,6 +117,7 @@ class BoxTextField1 extends StatelessWidget {
   final bool isPasswordField;
   final String? intialValue;
   final TextAlign? textalign;
+  final Function(bool hasFocus)? onFocusChange;
 
   const BoxTextField1({
     super.key,
@@ -136,10 +138,17 @@ class BoxTextField1 extends StatelessWidget {
     required this.onChanged,
     this.intialValue,
     this.textalign,
+    this.onFocusChange,
   });
 
   @override
   Widget build(BuildContext context) {
+    FocusNode focusNode = FocusNode();
+    focusNode.addListener(() {
+      if (onFocusChange != null) {
+        onFocusChange!(focusNode.hasFocus);
+      }
+    });
     return Container(
       alignment: Alignment.center,
       height: 105.h,
@@ -154,6 +163,7 @@ class BoxTextField1 extends StatelessWidget {
         maxLines: isMulti ? null : 1,
         onTap: onTap,
         enabled: enabled,
+        focusNode: focusNode,
         readOnly: readOnly,
         keyboardType: keyboardType,
         controller: controller,
@@ -185,6 +195,7 @@ class BoxTextField1 extends StatelessWidget {
   }
 
   textFieldfocused() {}
+
   errorrTextFieldBorder() {}
 }
 
@@ -276,5 +287,6 @@ class BoxTextField2 extends StatelessWidget {
   }
 
   textFieldfocused() {}
+
   errorrTextFieldBorder() {}
 }

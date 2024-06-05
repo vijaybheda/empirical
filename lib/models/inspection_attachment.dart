@@ -28,7 +28,7 @@ class InspectionAttachment {
       'Attachment_ID': Attachment_ID,
       'Attachment_Title': Attachment_Title,
       'Created_Time': CREATED_TIME,
-      'fileLocation': filelocation,
+      'File_Location': filelocation,
       'title': title,
     };
   }
@@ -40,7 +40,7 @@ class InspectionAttachment {
       Attachment_ID: map['Attachment_ID'],
       Attachment_Title: map['Attachment_Title'],
       CREATED_TIME: map['Created_Time'],
-      filelocation: map['fileLocation'],
+      filelocation: map['File_Location'],
       title: map['title'],
     );
   }

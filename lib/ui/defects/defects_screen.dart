@@ -17,6 +17,7 @@ import 'package:pverify/utils/theme/colors.dart';
 
 class DefectsScreen extends GetView<DefectsScreenController> {
   final String tag;
+
   const DefectsScreen({
     super.key,
     required this.tag,
@@ -240,11 +241,49 @@ class DefectsScreen extends GetView<DefectsScreenController> {
       controller.activeTabIndex.value == 0
           ? Expanded(
               flex: 1,
-              child: controller.drawDefectsTable()
-              /*SingleChildScrollView(
-                child: DefectsTable(),
-              )*/
-              ,
+              child: //controller.drawDefectsTable()
+                  SingleChildScrollView(
+                child: DefectsTable(
+                  worksheetDataTable: WorksheetDataTable(
+                    defectType: AppStrings.types,
+                    severity: [
+                      [AppStrings.injury],
+                      [AppStrings.damage, AppStrings.damage, AppStrings.damage],
+                      [AppStrings.verySeriousDamage],
+                      [AppStrings.decay],
+                      [AppStrings.injury],
+                    ],
+                    qualityDefects: [2, 5, 15, 20, 25],
+                    qualityDefectsPercentage: [10, 15, 4, 7, 17],
+                    conditionDefects: [0, 0, 1, 23, 26],
+                    conditionDefectsPercentage: [0, 0, 4, 8, 25],
+                    totalSeverity: getTotalSeverity(controller),
+                    totalSeverityPercentage: [],
+                    // TODO:
+                    // totalSeverityPercentage:
+                    //     getTotalSeverityPercentage(controller),
+                    sizeDefects: [
+                      controller.totalSizeInjury,
+                      controller.totalSizeDamage,
+                      controller.totalSizeSeriousDamage,
+                      controller.totalSizeVerySeriousDamage,
+                      controller.totalSizeDecay
+                    ],
+                    // TODO:
+                    sizeDefectsPercentage: [],
+                    // sizeDefectsPercentage: getSizeDefectsPercentage(controller),
+                    colorDefects: [
+                      controller.totalColorInjury,
+                      controller.totalColorDamage,
+                      controller.totalColorSeriousDamage,
+                      controller.totalColorVerySeriousDamage,
+                      controller.totalColorDecay
+                    ],
+                    colorDefectsPercentage: [],
+                    // colorDefectsPercentage: getColorDefectsPercentage(controller),
+                  ),
+                ),
+              ),
             )
           : Expanded(
               flex: 1,
@@ -339,6 +378,78 @@ class DefectsScreen extends GetView<DefectsScreenController> {
             ),
       bottomContent(context, controller)
     ]);
+  }
+
+  List<int> getColorDefectsPercentage(DefectsScreenController controller) {
+    return [
+      (((controller.totalColorInjury / controller.totalSamples) * 100)).round(),
+      (((controller.totalColorDamage / controller.totalSamples) * 100)).round(),
+      (((controller.totalColorSeriousDamage / controller.totalSamples) * 100))
+          .round(),
+      (((controller.totalColorVerySeriousDamage / controller.totalSamples) *
+              100))
+          .round(),
+      (((controller.totalColorDecay / controller.totalSamples) * 100)).round(),
+    ];
+  }
+
+  List<int> getSizeDefectsPercentage(DefectsScreenController controller) {
+    return [
+      (((controller.totalSizeInjury / controller.totalSamples) * 100)).round(),
+      (((controller.totalSizeDamage / controller.totalSamples) * 100)).round(),
+      (((controller.totalSizeSeriousDamage / controller.totalSamples) * 100))
+          .round(),
+      (((controller.totalSizeVerySeriousDamage / controller.totalSamples) *
+              100))
+          .round(),
+      (((controller.totalSizeDecay / controller.totalSamples) * 100)).round(),
+    ];
+  }
+
+  List<List<int>> getTotalSeverityPercentage(
+      DefectsScreenController controller) {
+    return [
+      [(((controller.totalInjury / controller.totalSamples) * 100)).round()],
+      [
+        (((controller.totalDamage / controller.totalSamples) * 100)).round(),
+        (((controller.seriousDefectCountMap[controller.seriousDefectList[0]]! /
+                    controller.totalSamples) *
+                100))
+            .round(),
+        (((controller.seriousDefectCountMap[controller.seriousDefectList[1]]! /
+                    controller.totalSamples) *
+                100))
+            .round()
+      ],
+      [
+        (((controller.totalVerySeriousDamage / controller.totalSamples) * 100))
+            .round()
+      ],
+      [(((controller.totalDecay / controller.totalSamples) * 100)).round()],
+      [(((controller.totalInjury / controller.totalSamples) * 100)).round()]
+    ];
+  }
+
+  List<List<int>> getTotalSeverity(DefectsScreenController controller) {
+    int x1 = 0;
+    int x2 = 0;
+    if (controller.seriousDefectCountMap.isNotEmpty &&
+        controller.seriousDefectList.isNotEmpty) {
+      x1 = controller.seriousDefectCountMap[controller.seriousDefectList[0]] ??
+          0;
+      if (controller.seriousDefectList.length > 1) {
+        x2 =
+            controller.seriousDefectCountMap[controller.seriousDefectList[1]] ??
+                0;
+      }
+    }
+    return [
+      [controller.totalInjury],
+      [controller.totalDamage, x1, x2],
+      [controller.totalVerySeriousDamage],
+      [controller.totalDecay],
+      [controller.totalInjury]
+    ];
   }
 
   Widget defectTags(String title) {
@@ -479,18 +590,6 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                       color: AppColors.textFieldText_Color),
                   onClickAction: () async {
                     await controller.saveDefectEntriesAndContinue();
-                    /*if (controller.validateDefects()) {
-                      if (controller.validateSameDefects()) {
-                        await controller.saveSamplesToDB();
-                        controller.getToQCDetailShortForm();
-                      } else {
-                        AppAlertDialog.validateAlerts(context, AppStrings.error,
-                            AppStrings.sameDefectEntryAlert);
-                      }
-                    } else {
-                      AppAlertDialog.validateAlerts(context, AppStrings.error,
-                          AppStrings.defectEntryAlert);
-                    }*/
                   }),
             ],
           ),
@@ -584,446 +683,253 @@ class DefectsScreen extends GetView<DefectsScreenController> {
 }
 
 class DefectsTable extends StatelessWidget {
-  DefectsTable({super.key});
+  final WorksheetDataTable worksheetDataTable;
 
-  final double typeColumnWidth = 160.w;
-  final double emptyColumnWidth = 80.w;
-  final double defectColumnWidth = 170.w;
-  final double cellHeight = 140.h;
-
-  Color getDataColumnColor(String defectType) {
-    switch (defectType) {
-      case AppStrings.injury:
-        return Colors.greenAccent;
-      case AppStrings.damage:
-        return AppColors.orange;
-      case AppStrings.seriousDamage:
-        return Colors.cyanAccent;
-      case AppStrings.verySeriousDamage:
-        return Colors.redAccent;
-      case AppStrings.decay:
-        return Colors.purpleAccent;
-      default:
-        return Colors.white;
-    }
-  }
-
-  final WorksheetDataTable worksheetDataTable = WorksheetDataTable(
-    defectType: AppStrings.types,
-    severity: [
-      [AppStrings.injury],
-      [
-        AppStrings.damage,
-        AppStrings.damage,
-        AppStrings.damage,
-      ],
-      [
-        AppStrings.verySeriousDamage,
-      ],
-      [
-        AppStrings.decay,
-      ],
-      [
-        AppStrings.injury,
-      ],
-    ],
-    qualityDefects: [2, 5, 15, 20, 25],
-    qualityDefectsPercentage: [10, 15, 4, 7, 17],
-    conditionDefects: [0, 0, 1, 23, 26],
-    conditionDefectsPercentage: [0, 0, 4, 8, 25],
-    totalSeverity: [
-      [0],
-      [5, 15, 12],
-      [5],
-      [6],
-      [18]
-    ],
-    totalSeverityPercentage: [
-      [1],
-      [11, 12, 14],
-      [11],
-      [12],
-      [18]
-    ],
-    sizeDefects: [12, 13, 17, 16, 18],
-    sizeDefectsPercentage: [11, 14, 18, 20, 12],
-    colorDefects: [11, 14, 17, 22, 17],
-    colorDefectsPercentage: [15, 16, 11, 12, 18],
-  );
-
-  Widget getDefectTypeTag({required String defectType}) {
-    String text = '';
-    switch (defectType) {
-      case AppStrings.injury:
-        text = AppStrings.injuryIcon;
-      case AppStrings.damage:
-        text = AppStrings.damageIcon;
-      case AppStrings.seriousDamage:
-        text = AppStrings.seriousDamageIcon;
-      case AppStrings.verySeriousDamage:
-        text = AppStrings.verySeriousDamageIcon;
-      case AppStrings.decay:
-        text = AppStrings.decayIcon;
-      default:
-        text = '';
-    }
-
-    return Container(
-      width: 60.w,
-      height: 60.w,
-      alignment: Alignment.center,
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.red,
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(fontSize: 16),
-      ),
-    );
-  }
-
-  Widget getSeverityRowWidget() {
-    List<Widget> widgets = [];
-
-    for (List<String> i in worksheetDataTable.severity) {
-      List<Widget> innnerWidget = [];
-
-      for (String serverity in i) {
-        innnerWidget.add(
-          tableDefectsCell(
-            text: serverity,
-            defectType: serverity,
-            widget: getDefectTypeTag(defectType: serverity),
-          ),
-        );
-      }
-      widgets.addAll(innnerWidget);
-    }
-    return Row(
-      children: widgets,
-    );
-  }
-
-  Widget getSingleDataRowWidgets({
-    required List<num> field,
-    bool? isPercentage = false,
-  }) {
-    List<Widget> widgets = [];
-
-    for (var i = 0; i < field.length; i++) {
-      widgets.add(
-        tableDefectsCell(
-          defectType: worksheetDataTable.severity[i][0],
-          text: "${field[i]}${(isPercentage == true ? "%" : "")}",
-          colSpanItem: worksheetDataTable.severity[i].length,
-        ),
-      );
-    }
-    return Row(
-      children: widgets,
-    );
-  }
-
-  Widget getMultipleDataRowWidgets({
-    required List<List<num>> field,
-    bool? isPercentage = false,
-    bool? isColumnHeader,
-  }) {
-    List<Widget> widgets = [];
-
-    for (var i = 0; i < field.length; i++) {
-      List<Widget> innerWidget = [];
-      for (var j = 0; j < field[i].length; j++) {
-        innerWidget.add(tableDefectsCell(
-          defectType: worksheetDataTable.severity[i][0],
-          text: isColumnHeader == true
-              ? AppStrings.defects
-              : "${field[i][j]}${(isPercentage == true ? "%" : "")}",
-        ));
-      }
-      widgets.addAll(innerWidget);
-    }
-    return Row(
-      children: widgets,
-    );
-  }
+  const DefectsTable({
+    super.key,
+    required this.worksheetDataTable,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Severity
-          Row(
-            children: [
-              tableTypeCell(
-                text: AppStrings.dtType,
-                isEnabledTopBorder: true,
-              ),
-              getMultipleDataRowWidgets(
-                  field: worksheetDataTable.totalSeverity, isColumnHeader: true)
-            ],
+          _buildTableHeader(),
+          _buildSeverityRow(),
+          _buildTableRow(
+            title: 'Total Quality Defects',
+            data: worksheetDataTable.qualityDefects,
           ),
-
-          // Severity
-          Row(
-            children: [
-              tableTypeCell(
-                text: AppStrings.dtSeverity,
-              ),
-              getSeverityRowWidget()
-            ],
+          _buildTableRow(
+            title: 'Total Quality Defects %',
+            data: worksheetDataTable.qualityDefectsPercentage,
+            isPercentage: true,
           ),
-
-          // Quality Defect
-          Row(
-            children: [
-              tableTypeCell(
-                text: AppStrings.totalQualityDefects,
-                isEnabledTopBorder: true,
-              ),
-              getSingleDataRowWidgets(field: worksheetDataTable.qualityDefects),
-            ],
+          _buildTableRow(
+            title: 'Total Condition Defects',
+            data: worksheetDataTable.conditionDefects,
           ),
-
-          // Quality Defects percentage
-          Row(
-            children: [
-              tableTypeCell(text: AppStrings.totalQualityDefectsPercentage),
-              getSingleDataRowWidgets(
-                field: worksheetDataTable.qualityDefectsPercentage,
-                isPercentage: true,
-              ),
-            ],
+          _buildTableRow(
+            title: 'Total Condition Defects %',
+            data: worksheetDataTable.conditionDefectsPercentage,
+            isPercentage: true,
           ),
-
-          // Condition Defect
-          Row(
-            children: [
-              tableTypeCell(text: AppStrings.totalConditionDefects),
-              getSingleDataRowWidgets(
-                field: worksheetDataTable.conditionDefects,
-              )
-            ],
+          _buildTotalSeverityRow(
+            title: 'Total Severity by Defect Type',
+            data: worksheetDataTable.totalSeverity,
           ),
-
-          // Condition Defect Percentage
-          Row(
-            children: [
-              tableTypeCell(text: AppStrings.totalConditionDefectsPercentage),
-              getSingleDataRowWidgets(
-                field: worksheetDataTable.conditionDefectsPercentage,
-                isPercentage: true,
-              )
-            ],
+          _buildTotalSeverityRow(
+            title: '% by Defect Type',
+            data: worksheetDataTable.totalSeverityPercentage,
+            isPercentage: true,
           ),
-
-          // Total Severity
-          Row(
-            children: [
-              tableTypeCell(text: AppStrings.dtTotalByDefectType),
-              getMultipleDataRowWidgets(
-                field: worksheetDataTable.totalSeverity,
-              ),
-            ],
+          _buildTableRow(
+            title: 'Total Size Defects',
+            data: worksheetDataTable.sizeDefects,
           ),
-
-          // Total Severity Percentage
-          Row(
-            children: [
-              tableTypeCell(text: AppStrings.dtPercentByDefectType),
-              getMultipleDataRowWidgets(
-                field: worksheetDataTable.totalSeverityPercentage,
-                isPercentage: true,
-              ),
-            ],
+          _buildTableRow(
+            title: 'Total Size Defects %',
+            data: worksheetDataTable.sizeDefectsPercentage,
+            isPercentage: true,
           ),
-
-          // Size Defect
-          Row(
-            children: [
-              tableTypeCell(text: AppStrings.totalSizeDefects),
-              getSingleDataRowWidgets(
-                field: worksheetDataTable.sizeDefects,
-              )
-            ],
+          _buildTableRow(
+            title: 'Total Color Defects',
+            data: worksheetDataTable.colorDefects,
           ),
-
-          // Size Defect Percentage
-          Row(
-            children: [
-              tableTypeCell(text: AppStrings.totalSizeDefectsPercentage),
-              getSingleDataRowWidgets(
-                field: worksheetDataTable.sizeDefectsPercentage,
-                isPercentage: true,
-              )
-            ],
-          ),
-
-          // Color defects
-          Row(
-            children: [
-              tableTypeCell(text: AppStrings.totalColorDefects),
-              getSingleDataRowWidgets(
-                field: worksheetDataTable.colorDefects,
-              )
-            ],
-          ),
-
-          // Color Defects percentage
-          Row(
-            children: [
-              tableTypeCell(
-                  text: AppStrings.totalColorDefectsPercentage,
-                  isEnabledBottomBorder: true),
-              getSingleDataRowWidgets(
-                field: worksheetDataTable.colorDefectsPercentage,
-                isPercentage: true,
-              )
-            ],
+          _buildTableRow(
+            title: 'Total Color Defects %',
+            data: worksheetDataTable.colorDefectsPercentage,
+            isPercentage: true,
           ),
         ],
       ),
     );
   }
 
-  Widget tableSideContainer({
-    Color? bgColor,
-    Widget? widget,
-    int? flexCount,
-    bool? isEmpty,
-    required BuildContext context,
-    bool? isEnabledTopBorder,
-    bool? isEnabledBottomBorder,
-    bool? isEnabledRightBorder,
-    bool? isEnabledLeftBorder = false,
-  }) {
-    return Container(
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-          color: bgColor ?? Theme.of(context).colorScheme.background,
-          border: Border(
-            top: isEnabledTopBorder == true
-                ? const BorderSide(color: Colors.black, width: 2)
-                : const BorderSide(color: Colors.transparent, width: 0),
-            bottom: isEnabledBottomBorder == true
-                ? const BorderSide(color: Colors.black, width: 2)
-                : const BorderSide(color: Colors.transparent, width: 0),
-            right: isEnabledRightBorder == true
-                ? const BorderSide(color: Colors.black, width: 2)
-                : const BorderSide(color: Colors.transparent, width: 0),
-            left: isEnabledLeftBorder == true
-                ? const BorderSide(color: Colors.grey, width: 4)
-                : const BorderSide(color: Colors.transparent, width: 0),
-          )),
-      padding: EdgeInsets.symmetric(vertical: 35.h),
-      child: isEmpty == true
-          ? const SizedBox()
-          : widget ??
-              Icon(
-                Icons.camera,
-                color: Theme.of(context).colorScheme.background,
-              ),
-    );
-  }
-
-  Widget tableDefectsCell({
-    required String text,
-    required String defectType,
-    int colSpanItem = 1,
-    Widget? widget,
-    bool? isEnabledTopBorder,
-    bool? isEnabledBottomBorder,
-    bool? isEnabledRightBorder,
-    bool? isEnabledLeftBorder = false,
-  }) {
-    return Container(
-      width: (defectColumnWidth * colSpanItem),
-      height: cellHeight,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: getDataColumnColor(defectType),
-        border: Border(
-          top: isEnabledTopBorder == true
-              ? const BorderSide(color: Colors.black, width: 2)
-              : const BorderSide(color: Colors.transparent, width: 0),
-          bottom: isEnabledBottomBorder == true
-              ? const BorderSide(color: Colors.black, width: 2)
-              : const BorderSide(color: Colors.transparent, width: 0),
-          right: isEnabledRightBorder == true
-              ? const BorderSide(color: Colors.black, width: 2)
-              : const BorderSide(color: Colors.transparent, width: 0),
-          left: isEnabledLeftBorder == true
-              ? const BorderSide(color: Colors.grey, width: 4)
-              : const BorderSide(color: Colors.transparent, width: 0),
-        ),
-      ),
-      child: widget ??
-          Text(
-            text,
-            style: const TextStyle(color: Colors.black),
+  Widget _buildTableHeader() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildHeaderCell('Type'),
+        ...worksheetDataTable.severity.map(
+          (severityList) => Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: severityList
+                .map(
+                  (severity) => _buildHeaderCell(severity),
+                )
+                .toList(),
           ),
+        ),
+      ],
     );
   }
 
-  Widget tableEmptyCell({
-    bool? isEnabledTopBorder,
-    bool? isEnabledBottomBorder,
-  }) {
-    return Container(
-      width: emptyColumnWidth,
-      height: cellHeight,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.grey,
-        border: Border(
-          top: isEnabledTopBorder == true
-              ? const BorderSide(color: Colors.black, width: 2)
-              : const BorderSide(color: Colors.transparent, width: 0),
-          bottom: isEnabledBottomBorder == true
-              ? const BorderSide(color: Colors.black, width: 2)
-              : const BorderSide(color: Colors.transparent, width: 0),
+  Widget _buildSeverityRow() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildHeaderCell('Severity'),
+        ...worksheetDataTable.severity.map(
+          (severityList) => Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: severityList
+                .map(
+                  (severity) => _buildSeverityCell(severity),
+                )
+                .toList(),
+          ),
         ),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 16),
-      child: const Text(
-        "s",
-        style: TextStyle(color: Colors.grey),
-      ),
+      ],
     );
   }
 
-  Widget tableTypeCell({
-    required String text,
-    bool? isEnabledTopBorder,
-    bool? isEnabledBottomBorder,
+  Widget _buildTableRow({
+    required String title,
+    required List<num> data,
+    bool isPercentage = false,
   }) {
-    return Container(
-      width: typeColumnWidth,
-      height: cellHeight,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: isEnabledTopBorder == true
-              ? const BorderSide(color: Colors.black, width: 2)
-              : const BorderSide(color: Colors.transparent, width: 0),
-          left: const BorderSide(color: Colors.black, width: 2),
-          bottom: isEnabledBottomBorder == true
-              ? const BorderSide(color: Colors.black, width: 2)
-              : const BorderSide(color: Colors.transparent, width: 0),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildHeaderCell(title),
+        ...data.map(
+          (value) => _buildDataCell(
+            '${value}${isPercentage ? '%' : ''}',
+          ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildTotalSeverityRow({
+    required String title,
+    required List<List<num>> data,
+    bool isPercentage = false,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildHeaderCell(title),
+        ...data.map(
+          (severityList) => Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: severityList
+                .map(
+                  (value) => _buildDataCell(
+                    '${value}${isPercentage ? '%' : ''}',
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeaderCell(String text) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      width: 100,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black),
+        color: Colors.grey[300],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 5),
       child: Text(
         text,
-        style: const TextStyle(color: Colors.black),
-        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.red,
+        ),
       ),
     );
+  }
+
+  Widget _buildSeverityCell(String severity) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      width: 100,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black),
+        color: getDataColumnColor(severity),
+      ),
+      child: Center(
+        child: Text(
+          getDefectTypeIcon(severity),
+          style: const TextStyle(
+            fontSize: 24,
+            color: Colors.red,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDataCell(String text) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      width: 100,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black),
+        color: Colors.white,
+      ),
+      child: Text(text,
+          style: const TextStyle(
+            color: Colors.red,
+          )),
+    );
+  }
+
+  Color getDataColumnColor(String defectType) {
+    switch (defectType) {
+      case 'Injury':
+        return Colors.greenAccent;
+      case 'Damage':
+        return Colors.orange;
+      case 'Serious Damage':
+        return Colors.cyanAccent;
+      case 'Very Serious Damage':
+        return Colors.redAccent;
+      case 'Decay':
+        return Colors.purpleAccent;
+      default:
+        return Colors.white;
+    }
+  }
+
+  String getDefectTypeIcon(String defectType) {
+    switch (defectType) {
+      case 'Injury':
+        return 'I';
+      case 'Damage':
+        return 'D';
+      case 'Serious Damage':
+        return 'SD';
+      case 'Very Serious Damage':
+        return 'VSD';
+      case 'Decay':
+        return 'DC';
+      default:
+        return '';
+    }
   }
 }
