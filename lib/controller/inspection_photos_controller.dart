@@ -70,6 +70,12 @@ class InspectionPhotosController extends GetxController {
     isViewOnlyMode = false;
     callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
     forDefect = args[Consts.FOR_DEFECT_ATTACHMENT] ?? false;
+
+    if (forDefect) {
+      loadDefectPicturesFromDB();
+    } else {
+      loadPicturesFromDB();
+    }
   }
 
   Future<String> saveImageToInternalStorage(File imageFile) async {
@@ -193,20 +199,10 @@ class InspectionPhotosController extends GetxController {
     imagesListBackup.add(pictureData);
   }
 
-  @override
-  void onReady() {
-    super.onReady();
-    if (forDefect) {
-      loadDefectPicturesFromDB();
-    } else {
-      loadPicturesFromDB();
-    }
-  }
-
-  void saveAction() async {
+  Future<void> saveAction() async {
     await savePicturesToDB();
     appStorage.attachmentIds = attachmentIds;
-    Get.back();
+    Get.back(result: appStorage.attachmentIds);
   }
 
   Future<void> savePicturesToDB() async {
@@ -215,40 +211,35 @@ class InspectionPhotosController extends GetxController {
         attachmentIds.add(imagesList[i].pictureId ?? 0);
       } else {
         if (forDefect) {
-          await dao
-              .createDefectAttachment(
+          int? attachmentId = await dao.createDefectAttachment(
             inspectionId: inspectionId,
             sampleId: sampleId,
             defectId: defectId,
             createdTime: imagesList[i].createdTime,
             fileLocation: imagesList[i].pathToPhoto ?? '',
-          )
-              .then((attachmentId) {
+          );
+          if (attachmentId != null) {
             attachmentIds.add(attachmentId);
             imagesListBackup.clear();
-          }).catchError((error) {
-            debugPrint('Error creating attachment: $error');
-          });
+          }
         } else {
-          await dao
-              .createInspectionAttachment(
-                  InspectionAttachment(
-                    Inspection_ID: inspectionId,
-                    Attachment_ID: 0,
-                    Attachment_Title: imagesList[i].Attachment_Title ?? '',
-                    CREATED_TIME: imagesList[i].createdTime ?? 0,
-                    filelocation: imagesList[i].pathToPhoto ?? '',
-                    title: imagesList[i].Attachment_Title ?? '',
-                  ),
-                  imagesList[i].Attachment_Title ?? '',
-                  imagesList[i].createdTime ?? '',
-                  imagesList[i].pathToPhoto ?? '')
-              .then((attachmentId) {
+          int? attachmentId = await dao.createInspectionAttachment(
+              InspectionAttachment(
+                Inspection_ID: inspectionId,
+                Attachment_ID: 0,
+                Attachment_Title: imagesList[i].Attachment_Title ?? '',
+                CREATED_TIME: imagesList[i].createdTime ?? 0,
+                filelocation: imagesList[i].pathToPhoto ?? '',
+                title: imagesList[i].Attachment_Title ?? '',
+              ),
+              imagesList[i].Attachment_Title ?? '',
+              imagesList[i].createdTime ?? '',
+              imagesList[i].pathToPhoto ?? '');
+
+          if (attachmentId != null) {
             attachmentIds.add(attachmentId);
             imagesListBackup.clear();
-          }).catchError((error) {
-            debugPrint('Error creating attachment: $error');
-          });
+          }
         }
       }
     }
@@ -346,6 +337,7 @@ class InspectionPhotosController extends GetxController {
     }
     log(imagesList.length);
     imagesListBackup.clear();
+    update();
   }
 
   AppStorage get appStorage => AppStorage.instance;

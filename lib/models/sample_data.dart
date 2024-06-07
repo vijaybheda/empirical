@@ -13,6 +13,7 @@ class SampleData {
   int dcCnt = 0;
   bool complete;
   String? sampleNameUser;
+
   // defectItems: List<InspectionDefect> = [];
   List<InspectionDefect> defectItems = <InspectionDefect>[];
 
@@ -20,14 +21,14 @@ class SampleData {
     required this.sampleSize,
     required this.name,
     this.sampleId,
-    required this.setNumber,
+    this.setNumber = 0,
     this.timeCreated,
     this.iCnt = 0,
     this.dCnt = 0,
     this.sdCnt = 0,
     this.vsdCnt = 0,
     this.dcCnt = 0,
-    required this.complete,
+    this.complete = false,
     this.sampleNameUser,
     this.defectItems = const <InspectionDefect>[],
   });

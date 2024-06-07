@@ -14,6 +14,7 @@ import 'package:pverify/models/inspection_defect.dart';
 import 'package:pverify/models/inspection_sample.dart';
 import 'package:pverify/models/sample_data.dart';
 import 'package:pverify/models/severity.dart';
+import 'package:pverify/models/severity_defect.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
 import 'package:pverify/ui/defects/table_dialog.dart';
@@ -60,9 +61,6 @@ class DefectsScreenController extends GetxController {
   String? specificationNumber;
   String? specificationVersion;
   String? specificationTypeName;
-
-  String? currentAttachPhotosDataName;
-  int? currentAttachPhotosPosition;
 
   bool hasDamage = false;
   bool hasSeriousDamage = false;
@@ -169,9 +167,7 @@ class DefectsScreenController extends GetxController {
   // RxInt visisblePopupIndex = 0.obs;
   RxBool isVisibleSpecificationPopup = false.obs;
 
-  Map<int, String> defectCategoriesHashMap = {};
-
-  bool defectTableAddSampleVisible = false;
+  Map<int, String>? defectCategoriesHashMap;
 
   String get packDateString =>
       packDate != null ? Utils().dateFormat.format(packDate!) : '';
@@ -235,25 +231,27 @@ class DefectsScreenController extends GetxController {
     appStorage.getCommodityList();
     super.onInit();
 
-    if (appStorage.severityList != null) {
-      for (var severity in appStorage.severityList!) {
-        if (severity.name == "Injury" || severity.name == "Lesión") {
-          hasSeverityInjury = true;
-        } else if (severity.name == "Damage" || severity.name == "Daño") {
-          hasSeverityDamage = true;
-        } else if (severity.name == "Serious Damage" ||
-            severity.name == "Daño Serio") {
-          hasSeveritySeriousDamage = true;
-        } else if (severity.name == "Very Serious Damage" ||
-            severity.name == "Daño Muy Serio") {
-          hasSeverityVerySeriousDamage = true;
-        } else if (severity.name == "Decay" || severity.name == "Pudrición") {
-          hasSeverityDecay = true;
+    Future.delayed(const Duration(milliseconds: 10)).then((value) async {
+      await setInit();
+      if (appStorage.severityList != null) {
+        for (var severity in appStorage.severityList!) {
+          if (severity.name == "Injury" || severity.name == "Lesión") {
+            hasSeverityInjury = true;
+          } else if (severity.name == "Damage" || severity.name == "Daño") {
+            hasSeverityDamage = true;
+          } else if (severity.name == "Serious Damage" ||
+              severity.name == "Daño Serio") {
+            hasSeveritySeriousDamage = true;
+          } else if (severity.name == "Very Serious Damage" ||
+              severity.name == "Daño Muy Serio") {
+            hasSeverityVerySeriousDamage = true;
+          } else if (severity.name == "Decay" || severity.name == "Pudrición") {
+            hasSeverityDecay = true;
+          }
         }
       }
-    }
-
-    setInit();
+      update();
+    });
   }
 
   Future<void> setInit() async {
@@ -292,7 +290,10 @@ class DefectsScreenController extends GetxController {
             await dao.findInspectionDefects(temp.sampleId!);
         if (defectList.isNotEmpty) {
           hasDefects = true;
-          defectDataMap.putIfAbsent(temp.name, () => defectList);
+          defectDataMap[temp.name] = defectList;
+          sampleList[i] = sampleList[i].copyWith(defectItems: defectList);
+          SampleData sampleDummyData = sampleList[i];
+          setInitValuesToTextFields(sampleDummyData);
         }
         // loadDataIfNotEmpty(i, temp);
       }
@@ -301,9 +302,8 @@ class DefectsScreenController extends GetxController {
       getDefectCategories();
       // setTabSelected(tableTabSelected);
     }
+    update();
   }
-
-  // LOGIN SCREEN VALIDATION'S
 
   bool isValid(BuildContext context) {
     if (sizeOfNewSetTextController.value.text.trim().isEmpty) {
@@ -316,13 +316,7 @@ class DefectsScreenController extends GetxController {
 
   void addSample() {
     int setsValue = int.tryParse(sizeOfNewSetTextController.text) ?? 0;
-    int id = sampleList.isNotEmpty
-        ? (sampleList.reversed.last.sampleId ?? 1) + 1
-        : 1;
-    // SampleData tempSampleObj = SampleData();
-    // tempSampleObj.sampleValue = setsValue;
-    // tempSampleObj.sampleId = id.toString();
-    // sampleSetObs.insert(0, tempSampleObj);
+    // int id = sampleList.isNotEmpty ? (sampleList.length + 1) : 1;
 
     final int index;
     final int pos = (sampleList.length - 1);
@@ -332,19 +326,29 @@ class DefectsScreenController extends GetxController {
       index = sampleList.length + 1;
     }
 
-    final String name = "Set #$index";
+    final String name = "$setsValue Samples Set #$index";
     final int timeStamp = DateTime.now().millisecondsSinceEpoch;
     SampleData sampleData = SampleData(
-        sampleSize: setsValue,
-        name: name,
-        setNumber: index,
-        timeCreated: timeStamp,
-        sampleId: id,
-        // lotNumber: 0,
-        // packDate: "",
-        complete: false);
+      sampleSize: setsValue,
+      name: name,
+      setNumber: index,
+      timeCreated: timeStamp,
+      // sampleId: id,
+      // lotNumber: 0,
+      // packDate: "",
+      complete: false,
+      sampleNameUser: name,
+    );
     sampleList.add(sampleData);
     sizeOfNewSetTextController.text = "";
+
+    String dataName = sampleList.elementAt(sampleList.length - 1).name;
+    List<InspectionDefect> defectList = [];
+    if (defectDataMap.containsKey(dataName)) {
+      defectList = defectDataMap[dataName]!;
+    } else {
+      defectList = [];
+    }
 
     populateSeverityList();
 
@@ -370,7 +374,7 @@ class DefectsScreenController extends GetxController {
     update();
   }
 
-  void addDefectRow({required int sampleIndex}) {
+  void addDefectRow(BuildContext context, {required int sampleIndex}) {
     SampleData sampleData = sampleList.elementAt(sampleIndex);
     String dataName = sampleData.name;
     List<InspectionDefect> defectList;
@@ -378,18 +382,17 @@ class DefectsScreenController extends GetxController {
     if (defectDataMap.containsKey(dataName)) {
       defectList = defectDataMap[dataName]!;
 
-      // FIXME: remove static data
       InspectionDefect inspectionDefect = InspectionDefect(
         createdTime: DateTime.now().millisecondsSinceEpoch,
         comment: "",
         attachmentIds: [],
         defectCategory: '',
         damageCnt: 0,
-        decayCnt: sampleData.dCnt,
+        decayCnt: 0,
         defectId: 0,
-        injuryCnt: sampleData.iCnt,
-        inspectionDefectId: 0,
-        sampleId: sampleData.defectItems.length,
+        injuryCnt: 0,
+        // inspectionDefectId: 0,
+        // sampleId: sampleData.defectItems.length,
         seriousDamageCnt: sampleData.sdCnt,
         severityDamageId: 0,
         severityDecayId: 0,
@@ -402,7 +405,7 @@ class DefectsScreenController extends GetxController {
       defectList.add(inspectionDefect);
       sampleList[sampleIndex] =
           sampleList[sampleIndex].copyWith(defectItems: defectList);
-      defectDataMap.putIfAbsent(dataName, () => defectList);
+      defectDataMap[dataName] = defectList;
     } else {
       // legendLayout.visible = true;
       if (!hasSeverityInjury) {
@@ -440,7 +443,6 @@ class DefectsScreenController extends GetxController {
       // defectsListview.visible = true;
       defectList = [];
 
-      // FIXME: remove static data
       InspectionDefect inspectionDefect = InspectionDefect(
         createdTime: DateTime.now().millisecondsSinceEpoch,
         comment: "",
@@ -450,8 +452,8 @@ class DefectsScreenController extends GetxController {
         decayCnt: 0,
         defectId: 0,
         injuryCnt: 0,
-        inspectionDefectId: 0,
-        sampleId: sampleData.sampleId,
+        // inspectionDefectId: 0,
+        // sampleId: sampleData.sampleId,
         seriousDamageCnt: 0,
         severityDamageId: 0,
         severityDecayId: 0,
@@ -465,14 +467,27 @@ class DefectsScreenController extends GetxController {
       defectList.add(inspectionDefect);
       sampleList[sampleIndex] =
           sampleList[sampleIndex].copyWith(defectItems: defectList);
-      defectDataMap.putIfAbsent(dataName, () => defectList);
+      defectDataMap[dataName] = defectList;
     }
     final int pos = (sampleList.length - 1);
     loadDefectData((defectList.length - 1), defectList, dataName, pos);
 
-    sampleDataMap[sampleIndex]?.defectItems = defectList;
+    int defectItemIndex = (sampleList[sampleIndex].defectItems.length - 1);
+    String dropDownValue = sampleList[sampleIndex]
+            .defectItems
+            .elementAtOrNull(defectItemIndex)
+            ?.spinnerSelection ??
+        defectSpinnerNames.first;
 
-    hideKeypad();
+    onDropDownChange(
+      selected: dropDownValue,
+      sampleIndex: sampleIndex,
+      defectItemIndex: defectItemIndex,
+    );
+
+    // sampleDataMap[sampleIndex]?.defectItems = defectList;
+
+    hideKeypad(context);
     update();
   }
 
@@ -527,19 +542,11 @@ class DefectsScreenController extends GetxController {
       // defectsListviewVisible = false;
     }
 
-    sampleList[sampleIndex].defectItems.removeAt(defectIndex);
-    sampleList.refresh();
+    // sampleList[sampleIndex].defectItems.removeAt(defectIndex);
+    // sampleList.refresh();
 
     update();
   }
-
-  // FIXME:
-  /*int getDefectItemIndex({
-    required int setIndex,
-    required DefectItem defectItem,
-  }) {
-    return sampleList[setIndex].defectItem?.indexOf(defectItem) ?? -1;
-  }*/
 
   void onTextChange({
     required String textData,
@@ -557,6 +564,8 @@ class DefectsScreenController extends GetxController {
             ?.spinnerSelection ??
         defectSpinnerNames.first;
 
+    String dataName = sampleList[sampleIndex].name;
+
     if (value > sampleSize) {
       isError = true;
       AppAlertDialog.validateAlerts(
@@ -566,156 +575,71 @@ class DefectsScreenController extends GetxController {
       );
     }
 
-    switch (fieldName) {
-      case AppStrings.injury:
-        // do nothing
-        if (isError) {
-          sampleList[sampleIndex].defectItems[defectIndex].injuryCnt =
-              isError ? 0 : value;
-          sampleList[sampleIndex]
-              .defectItems[defectIndex]
-              .injuryTextEditingController
-              .text = (isError ? 0 : value).toString();
-        }
+    InspectionDefect defectItem =
+        sampleList[sampleIndex].defectItems[defectIndex];
+    if (!isError) {
+      switch (fieldName) {
+        case AppStrings.injury:
+          defectItem.injuryCnt = value;
+          defectItem.injuryTextEditingController.text = value.toString();
+          break;
+        case AppStrings.damage:
+          defectItem.injuryCnt = value;
+          defectItem.damageCnt = value;
+          defectItem.damageTextEditingController.text = value.toString();
+          defectItem.injuryTextEditingController.text = value.toString();
+          break;
+        case AppStrings.seriousDamage:
+          defectItem.injuryCnt = value;
+          defectItem.damageCnt = value;
+          defectItem.seriousDamageCnt = value;
+          defectItem.sDamageTextEditingController.text = value.toString();
+          defectItem.damageTextEditingController.text = value.toString();
+          defectItem.injuryTextEditingController.text = value.toString();
+          break;
+        case AppStrings.verySeriousDamage:
+          defectItem.injuryCnt = value;
+          defectItem.damageCnt = value;
+          defectItem.seriousDamageCnt = value;
+          defectItem.verySeriousDamageCnt = value;
+          defectItem.vsDamageTextEditingController.text = value.toString();
+          defectItem.sDamageTextEditingController.text = value.toString();
+          defectItem.damageTextEditingController.text = value.toString();
+          defectItem.injuryTextEditingController.text = value.toString();
+          break;
+        case AppStrings.decay:
+          defectItem.decayCnt = value;
+          break;
+      }
 
-      case AppStrings.damage:
-        sampleList[sampleIndex].defectItems[defectIndex].injuryCnt =
-            isError ? 0 : value;
-        sampleList[sampleIndex]
-            .defectItems[defectIndex]
-            .injuryTextEditingController
-            .text = value.toString();
-        if (isError) {
-          sampleList[sampleIndex].defectItems[defectIndex].damageCnt =
-              isError ? 0 : value;
-          sampleList[sampleIndex]
-              .defectItems[defectIndex]
-              .damageTextEditingController
-              .text = value.toString();
-        }
-
-      case AppStrings.seriousDamage:
-        sampleList[sampleIndex].defectItems[defectIndex].injuryCnt =
-            isError ? 0 : value;
-
-        sampleList[sampleIndex]
-            .defectItems[defectIndex]
-            .injuryTextEditingController
-            .text = value.toString();
-
-        sampleList[sampleIndex]
-            .defectItems[defectIndex]
-            .damageTextEditingController
-            .text = value.toString();
-
-        sampleList[sampleIndex].defectItems[defectIndex].damageCnt =
-            isError ? 0 : value;
-        if (isError) {
-          sampleList[sampleIndex].defectItems[defectIndex].seriousDamageCnt =
-              isError ? 0 : value;
-
-          sampleList[sampleIndex]
-              .defectItems[defectIndex]
-              .sDamageTextEditingController
-              .text = value.toString();
-        }
-
-      case AppStrings.verySeriousDamage:
-        sampleList[sampleIndex].defectItems[defectIndex].injuryCnt =
-            isError ? 0 : value;
-        sampleList[sampleIndex].defectItems[defectIndex].damageCnt =
-            isError ? 0 : value;
-        sampleList[sampleIndex].defectItems[defectIndex].seriousDamageCnt =
-            isError ? 0 : value;
-
-        sampleList[sampleIndex]
-            .defectItems[defectIndex]
-            .injuryTextEditingController
-            .text = value.toString();
-        sampleList[sampleIndex]
-            .defectItems[defectIndex]
-            .damageTextEditingController
-            .text = value.toString();
-        sampleList[sampleIndex]
-            .defectItems[defectIndex]
-            .sDamageTextEditingController
-            .text = value.toString();
-        if (isError) {
-          sampleList[sampleIndex]
-              .defectItems[defectIndex]
-              .verySeriousDamageCnt = isError ? 0 : value;
-
-          sampleList[sampleIndex]
-              .defectItems[defectIndex]
-              .vsDamageTextEditingController
-              .text = value.toString();
-        }
-
-      case AppStrings.decay:
-        // not in current requirement
-        /*sampleDataMap[sampleIndex]!.defectItems[defectIndex].injuryCnt =
-            isError ? 0 : value;
-        sampleDataMap[sampleIndex]!.defectItems[defectIndex].damageCnt =
-            isError ? 0 : value;
-        sampleDataMap[sampleIndex]!.defectItems[defectIndex].seriousDamageCnt =
-            isError ? 0 : value;
-
-        sampleDataMap[sampleIndex]!
-            .defectItems[defectIndex]
-            .injuryTextEditingController
-            ?.text = value;
-        sampleDataMap[sampleIndex]!
-            .defectItems[defectIndex]
-            .damageTextEditingController
-            ?.text = value;
-        sampleDataMap[sampleIndex]!
-            .defectItems[defectIndex]
-            .sDamageTextEditingController
-            ?.text = value;
-
-        sampleDataMap[sampleIndex]!
-            .defectItems[defectIndex]
-            .verySeriousDamageCnt = isError ? 0 : value;
-
-        sampleDataMap[sampleIndex]!
-            .defectItems[defectIndex]
-            .vsDamageTextEditingController
-            ?.text = value;
-
-        // do nothing
-        if (isError) {
-          sampleList[sampleIndex].defectItems[defectIndex].decayCnt =
-              isError ? 0 : value;
-
-          sampleList[sampleIndex]
-              .defectItems[defectIndex]
-              .decayTextEditingController
-              ?.text = value;
-        }*/
-
-        try {
-          if (value <= sampleSize) {
-            sampleList[sampleIndex].defectItems[defectIndex].decayCnt = value;
-          }
-        } catch (e) {
-          // Handle exception
-        }
-
-      default:
-      // do nothing
+      sampleList[sampleIndex].defectItems[defectIndex] = defectItem;
+      // Update the map only if no error
+      defectDataMap[dataName] = sampleList[sampleIndex].defectItems;
+    } else {
+      resetErrorState(defectItem);
     }
 
+    // Refresh the UI or data structures if needed
     sampleList.refresh();
     update();
   }
 
+  void resetErrorState(InspectionDefect defectItem) {
+    defectItem.injuryTextEditingController.text = '0';
+    defectItem.damageTextEditingController.text = '0';
+    defectItem.sDamageTextEditingController.text = '0';
+    defectItem.vsDamageTextEditingController.text = '0';
+    defectItem.injuryCnt = 0;
+    defectItem.damageCnt = 0;
+    defectItem.seriousDamageCnt = 0;
+    defectItem.verySeriousDamageCnt = 0;
+  }
+
   void onDropDownChange({
-    required String value,
+    required String selected,
     required int sampleIndex,
     required int defectItemIndex,
   }) {
-    String selected = value;
-
     sampleList[sampleIndex].defectItems[defectItemIndex].spinnerSelection =
         selected;
 
@@ -766,7 +690,9 @@ class DefectsScreenController extends GetxController {
     required int defectItemIndex,
   }) {
     if (!isViewOnlyMode) {
+      String dataName = sampleList[sampleIndex].name;
       sampleList[sampleIndex].defectItems[defectItemIndex].comment = value;
+      defectDataMap[dataName] = sampleList[sampleIndex].defectItems;
       sampleList.refresh();
       update();
     }
@@ -840,7 +766,7 @@ class DefectsScreenController extends GetxController {
       await dao.deleteDefectAttachmentsBySampleId(sampleId);
     }
 
-    sampleList.remove(sampleData);
+    sampleList.removeAt(index);
 
     if (defectDataMap.containsKey(dataName)) {
       defectDataMap.remove(dataName);
@@ -881,7 +807,6 @@ class DefectsScreenController extends GetxController {
     CommodityItem? item;
     defectSpinnerIds.clear();
     defectSpinnerNames.clear();
-    // defectSpinnerNames.add('Select');
 
     // Get the list of defects for the commodity
     if (appStorage.getCommodityList() != null &&
@@ -907,9 +832,8 @@ class DefectsScreenController extends GetxController {
           defectSpinnerNames.add(defect.name ?? '');
         }
       }
-      // defectSpinnerIds.insert(0, 0);
-      // defectSpinnerNames.insert(0, 'Select');
     }
+    update();
   }
 
   void populateSeverityList() {
@@ -940,7 +864,7 @@ class DefectsScreenController extends GetxController {
         item.severityDefectList.isNotEmpty) {
       List<Severity> list = [];
 
-      for (var severityDefect in item.severityDefectList) {
+      for (SeverityDefect severityDefect in item.severityDefectList) {
         Severity listItem = Severity(
           severityDefect.id ?? 0,
           severityDefect.name ?? '',
@@ -1029,6 +953,7 @@ class DefectsScreenController extends GetxController {
       Consts.INSPECTION_ID: inspectionId,
       Consts.PO_NUMBER: poNumber,
     };
+    passingData[Consts.FOR_DEFECT_ATTACHMENT] = true;
     final String tag = DateTime.now().millisecondsSinceEpoch.toString();
     await Get.to(() => InspectionPhotos(tag: tag), arguments: passingData);
   }
@@ -1151,19 +1076,6 @@ class DefectsScreenController extends GetxController {
     return true;
   }
 
-  /*bool validateSameDefects() {
-    for (SampleData element in sampleList) {
-      List<String> defectNames = [];
-      for (DefectItem defectItem in element.defectItem ?? []) {
-        if (defectNames.contains(defectItem.name)) {
-          return false;
-        }
-        defectNames.add(defectItem.name ?? '');
-      }
-    }
-    return true;
-  }*/
-
   bool validateSameDefects() {
     for (var entry in defectDataMap.entries) {
       List<String> defectNames = [];
@@ -1181,7 +1093,7 @@ class DefectsScreenController extends GetxController {
   }
 
   void getDefectCategories() {
-    Map<int, String> defectCategoriesHashMap = {};
+    defectCategoriesHashMap = {};
 
     for (var i = 0; i < defectCategoriesList.length; i++) {
       if (defectCategoriesList[i].name == "Condition") {
@@ -1192,7 +1104,7 @@ class DefectsScreenController extends GetxController {
             if (defectItem.name?.contains("Total Condition") ?? false) {
               totalConditionDefectId = defectItem.id;
             } else {
-              defectCategoriesHashMap[defectItem.id!] = "Condition";
+              defectCategoriesHashMap![defectItem.id!] = "Condition";
             }
           }
         }
@@ -1204,7 +1116,7 @@ class DefectsScreenController extends GetxController {
             if (defectItem.name?.contains("Total Quality") ?? false) {
               totalQualityDefectId = defectItem.id;
             } else {
-              defectCategoriesHashMap[defectItem.id!] = "Quality";
+              defectCategoriesHashMap![defectItem.id!] = "Quality";
             }
           }
         }
@@ -1213,7 +1125,7 @@ class DefectsScreenController extends GetxController {
 
         if (defectItemList != null) {
           for (var defectItem in defectItemList) {
-            defectCategoriesHashMap[defectItem.id!] = "Size";
+            defectCategoriesHashMap![defectItem.id!] = "Size";
           }
         }
       } else if (defectCategoriesList[i].name == "Color") {
@@ -1221,7 +1133,7 @@ class DefectsScreenController extends GetxController {
 
         if (defectItemList != null) {
           for (var defectItem in defectItemList) {
-            defectCategoriesHashMap[defectItem.id!] = "Color";
+            defectCategoriesHashMap![defectItem.id!] = "Color";
           }
         }
       }
@@ -1231,7 +1143,7 @@ class DefectsScreenController extends GetxController {
   List<DefectCategories> get defectCategoriesList =>
       appStorage.defectCategoriesList ?? [];
 
-  Future<void> saveDefectEntriesAndContinue() async {
+  Future<void> saveDefectEntriesAndContinue(BuildContext context) async {
     if (sampleList.isEmpty) {
       AppAlertDialog.validateAlerts(
         Get.context!,
@@ -1297,7 +1209,7 @@ class DefectsScreenController extends GetxController {
         );
       }
     }
-    hideKeypad();
+    hideKeypad(context);
   }
 
   Future<void> saveAsDraftAndGotoMyInspectionScreen() async {
@@ -1385,7 +1297,10 @@ class DefectsScreenController extends GetxController {
             0,
             sampleNameUser,
           ));
-          sample.sampleId = sampleId;
+          sample = sample.copyWith(sampleId: sampleId);
+          int ind =
+              sampleList.indexWhere((element) => element.name == sampleName);
+          sampleList[ind] = sample;
         } catch (e) {
           debugPrint(e.toString());
         }
@@ -1421,9 +1336,13 @@ class DefectsScreenController extends GetxController {
         int? severityVerySeriousDamageId = defect.severityVerySeriousDamageId;
         int? severityDecayId = defect.severityDecayId;
 
-        String defectCategory = defectCategoriesHashMap != null
-            ? defectCategoriesHashMap[defectId] ?? ''
-            : '';
+        String defectCategory = '';
+
+        if (defectCategoriesHashMap != null) {
+          if (defectCategoriesHashMap?.containsKey(defectId) ?? false) {
+            defectCategory = defectCategoriesHashMap![defectId] ?? '';
+          }
+        }
 
         if (defectId != 0) {
           if (inspectionDefectId == null) {
@@ -1501,23 +1420,25 @@ class DefectsScreenController extends GetxController {
     dataSaved = true;
   }
 
-  String getKeyFromIndex(int index) {
-    return "Set #${index + 1}";
+  String getKeyFromIndex(int index, int samples) {
+    return "$samples Samples Set #${index + 1}";
   }
 
   int getIndexFromKey(String name) {
-    String numString = name.replaceAll("Set #", "");
-    return int.parse(numString) - 1;
+    return extractNumberFromBeginning(name);
   }
 
-  /*int getSampleSize(String name, List<SampleData> sampleList) {
-    for (int i = 0; i < sampleList.length; i++) {
-      if (name == sampleList[i].name) {
-        return sampleList[i].sampleSize;
-      }
+  int extractNumberFromBeginning(String input) {
+    RegExp regExp = RegExp(r'^(\d+)');
+
+    Match? match = regExp.firstMatch(input);
+
+    if (match != null) {
+      return int.parse(match.group(1)!);
+    } else {
+      return -1;
     }
-    return -1;
-  }*/
+  }
 
   int? getSampleSize(String name) {
     for (var i = 0; i < sampleList.length; i++) {
@@ -1544,8 +1465,9 @@ class DefectsScreenController extends GetxController {
     }
   }
 
-  void hideKeypad() {
-    unFocus();
+  void hideKeypad(BuildContext context) {
+    // unFocus();
+    FocusScope.of(context).unfocus();
   }
 
   void loadDefectData(int i, List<InspectionDefect> defectList, String dataName,
@@ -1556,60 +1478,45 @@ class DefectsScreenController extends GetxController {
   Future<void> navigateToCameraScreen({
     required int sampleIndex,
     required int defectItemIndex,
+    required InspectionDefect inspectionDefect,
   }) async {
-    String dataName = 'Set #${sampleIndex + 1}';
-
     Map<String, dynamic> passingData = {};
-    passingData.putIfAbsent(Consts.PARTNER_NAME, () => partnerName);
-    passingData.putIfAbsent(Consts.PARTNER_NAME, () => partnerName);
-    passingData.putIfAbsent(Consts.PARTNER_ID, () => partnerID);
-    passingData.putIfAbsent(Consts.CARRIER_NAME, () => carrierName);
-    passingData.putIfAbsent(Consts.CARRIER_ID, () => carrierID);
-    passingData.putIfAbsent(Consts.COMMODITY_NAME, () => commodityName);
-    passingData.putIfAbsent(Consts.COMMODITY_ID, () => commodityID);
-    passingData.putIfAbsent(Consts.VARIETY_NAME, () => varietyName);
-    passingData.putIfAbsent(Consts.VARIETY_SIZE, () => varietySize);
-    passingData.putIfAbsent(Consts.VARIETY_ID, () => varietyId);
-    int? sampleId =
-        sampleDataMap[sampleIndex]?.defectItems[defectItemIndex].sampleId;
-    // int? sampleId = getSampleID(sampleDataMap[sampleIndex]!.name);
+    passingData[Consts.PARTNER_NAME] = partnerName;
+    passingData[Consts.PARTNER_NAME] = partnerName;
+    passingData[Consts.PARTNER_ID] = partnerID;
+    passingData[Consts.CARRIER_NAME] = carrierName;
+    passingData[Consts.CARRIER_ID] = carrierID;
+    passingData[Consts.COMMODITY_NAME] = commodityName;
+    passingData[Consts.COMMODITY_ID] = commodityID;
+    passingData[Consts.VARIETY_NAME] = varietyName;
+    passingData[Consts.VARIETY_SIZE] = varietySize;
+    passingData[Consts.VARIETY_ID] = varietyId;
+
+    int? sampleId = inspectionDefect.sampleId;
+    int? inspectionDefectId = inspectionDefect.inspectionDefectId;
+    List<int>? attachmentIds = inspectionDefect.attachmentIds;
     if (sampleId != null) {
-      passingData.putIfAbsent(Consts.SAMPLE_ID, () => sampleId);
+      passingData[Consts.SAMPLE_ID] = sampleId;
     }
-
-    int? inspectionDefectId = sampleDataMap[sampleIndex]
-        ?.defectItems[defectItemIndex]
-        .inspectionDefectId;
     if (inspectionDefectId != null) {
-      passingData.putIfAbsent(Consts.DEFECT_ID, () => inspectionDefectId);
+      passingData[Consts.DEFECT_ID] = sampleId;
     }
-    if (sampleDataMap[sampleIndex]
-                ?.defectItems[defectItemIndex]
-                .attachmentIds !=
-            null &&
-        (sampleDataMap[sampleIndex]
-                    ?.defectItems[defectItemIndex]
-                    .attachmentIds ??
-                [])
-            .isNotEmpty) {
+    if (attachmentIds != null && attachmentIds.isNotEmpty) {
       passingData[Consts.HAS_INSPECTION_IDS] = true;
-      appStorage.attachmentIds = sampleDataMap[sampleIndex]
-          ?.defectItems[defectItemIndex]
-          .attachmentIds;
+      appStorage.attachmentIds = attachmentIds;
     }
 
-    currentAttachPhotosDataName = dataName;
-    currentAttachPhotosPosition = sampleIndex;
+    passingData[Consts.FOR_DEFECT_ATTACHMENT] = true;
+
     final String tag = DateTime.now().millisecondsSinceEpoch.toString();
     var result =
         await Get.to(() => InspectionPhotos(tag: tag), arguments: passingData);
     if (result != null) {
       try {
-        List<InspectionDefect>? inspection =
-            defectDataMap[currentAttachPhotosDataName];
-        inspection![currentAttachPhotosPosition!].attachmentIds =
-            appStorage.attachmentIds;
-        defectDataMap[currentAttachPhotosDataName!] = inspection;
+        String dataName = sampleList.elementAt(sampleIndex).name;
+        List<InspectionDefect>? inspection = defectDataMap[dataName];
+        inspection![defectItemIndex].attachmentIds = appStorage.attachmentIds;
+        defectDataMap[dataName] = inspection;
       } catch (e) {
         print(e);
       }
@@ -1660,12 +1567,13 @@ class DefectsScreenController extends GetxController {
       sampleDataMapIndexList.add(getIndexFromKey(sampleList[j].name));
 
       SampleData data = SampleData(
-          sampleSize: sampleList[j].sampleSize,
-          name: sampleList[j].name,
-          complete: false,
-          setNumber: sampleList[j].setNumber,
-          timeCreated: sampleList[j].timeCreated,
-          sampleId: sampleList[j].sampleId);
+        sampleSize: sampleList[j].sampleSize,
+        name: sampleList[j].name,
+        // complete: false,
+        // setNumber: sampleList[j].setNumber,
+        // timeCreated: sampleList[j].timeCreated,
+        // sampleId: sampleList[j].sampleId,
+      );
       sampleDataMap[getIndexFromKey(sampleList[j].name)] = data;
     }
 
@@ -1673,12 +1581,13 @@ class DefectsScreenController extends GetxController {
       bool hasDefects = false;
       int? sampleSize = getSampleSize(key);
       SampleData data = SampleData(
-          sampleSize: sampleSize ?? 0,
-          name: key,
-          complete: false,
-          setNumber: 0,
-          timeCreated: DateTime.now().millisecondsSinceEpoch,
-          sampleId: 0);
+        sampleSize: sampleSize ?? 0,
+        name: key,
+        // complete: false,
+        // setNumber: 0,
+        // timeCreated: DateTime.now().millisecondsSinceEpoch,
+        // sampleId: 0,
+      );
 
       for (int i = 0; i < value.length; i++) {
         // Check the counts for each defect entry
@@ -1700,26 +1609,26 @@ class DefectsScreenController extends GetxController {
 
           int defectId = value[i].defectId!;
 
-          if (defectCategoriesHashMap.containsKey(defectId)) {
-            if (defectCategoriesHashMap[defectId] == "Condition") {
+          if (defectCategoriesHashMap?.containsKey(defectId) ?? false) {
+            if (defectCategoriesHashMap![defectId] == "Condition") {
               totalConditionInjury += value[i].injuryCnt!;
               totalConditionDamage += value[i].damageCnt!;
               totalConditionSeriousDamage += value[i].seriousDamageCnt!;
               totalConditionVerySeriousDamage += value[i].verySeriousDamageCnt!;
               totalConditionDecay += value[i].decayCnt!;
-            } else if (defectCategoriesHashMap[defectId] == "Quality") {
+            } else if (defectCategoriesHashMap![defectId] == "Quality") {
               totalQualityInjury += value[i].injuryCnt!;
               totalQualityDamage += value[i].damageCnt!;
               totalQualitySeriousDamage += value[i].seriousDamageCnt!;
               totalQualityVerySeriousDamage += value[i].verySeriousDamageCnt!;
               totalQualityDecay += value[i].decayCnt!;
-            } else if (defectCategoriesHashMap[defectId] == "Size") {
+            } else if (defectCategoriesHashMap![defectId] == "Size") {
               totalSizeInjury += value[i].injuryCnt!;
               totalSizeDamage += value[i].damageCnt!;
               totalSizeSeriousDamage += value[i].seriousDamageCnt!;
               totalSizeVerySeriousDamage += value[i].verySeriousDamageCnt!;
               totalSizeDecay += value[i].decayCnt!;
-            } else if (defectCategoriesHashMap[defectId] == "Color") {
+            } else if (defectCategoriesHashMap![defectId] == "Color") {
               totalColorInjury += value[i].injuryCnt!;
               totalColorDamage += value[i].damageCnt!;
               totalColorSeriousDamage += value[i].seriousDamageCnt!;
@@ -1737,11 +1646,10 @@ class DefectsScreenController extends GetxController {
               seriousDefectList.add(defectName);
               seriousDefectCountMap[defectName] = 0;
             }
-            if (defectCategoriesHashMap.containsKey(defectId)) {
-              if (defectCategoriesHashMap[defectId] != "Size" &&
-                  defectCategoriesHashMap[defectId] != "Color") {
+            if (defectCategoriesHashMap?.containsKey(defectId) ?? false) {
+              if (!(defectCategoriesHashMap![defectId] == "Size") &&
+                  !(defectCategoriesHashMap![defectId] == "Color")) {
                 if (seriousDefectCountMap.containsKey(defectName)) {
-                  // seriousDefectCountMap[defectName] += data.sdCnt;
                   seriousDefectCountMap[defectName] =
                       (seriousDefectCountMap[defectName] ?? 0) + data.sdCnt;
                 } else {
@@ -1782,1876 +1690,9 @@ class DefectsScreenController extends GetxController {
     if (seriousDefectList.length > 1) {
       numberSeriousDefects = seriousDefectList.length;
     }
-  }
 
-  Container drawDefectsTable() {
-    if (numberSamples > 0) {
-      defectTableAddSampleVisible = false;
-    } else {
-      defectTableAddSampleVisible = true;
-    }
-
-    populateSeverityList();
-
-    if (appStorage.severityList != null) {
-      for (var severity in appStorage.severityList!) {
-        if (severity.name == "Injury" || severity.name == "Lesión") {
-          hasSeverityInjury = true;
-        } else if (severity.name == "Damage" || severity.name == "Daño") {
-          hasSeverityDamage = true;
-        } else if (severity.name == "Serious Damage" ||
-            severity.name == "Daño Serio") {
-          hasSeveritySeriousDamage = true;
-        } else if (severity.name == "Very Serious Damage" ||
-            severity.name == "Daño Muy Serio") {
-          hasSeverityVerySeriousDamage = true;
-        } else if (severity.name == "Decay" || severity.name == "Pudrición") {
-          hasSeverityDecay = true;
-        }
-      }
-    }
-
-    // Note: In Flutter, instead of using LayoutInflater, we typically create widgets directly.
-    // Here's an example of creating a TableLayout widget:
-    double borderBlack = 3;
-    double borderGrey = 3;
-    double borderOutside = 6;
-    Column tableLayout = Column(
-      // borderBlack: borderBlack,
-      // borderGrey: borderGrey,
-      // borderOutside: borderOutside,
-      children: [],
-    );
-
-    // Create the table row
-    // Row tableRow = Row(children: []);
-
-// Label column
-    Widget labelContainer = Container(
-      width: 99,
-      height: 51,
-      margin: EdgeInsets.only(left: borderOutside, top: borderOutside),
-      child: Text(
-        'Type',
-        style: TextStyle(fontSize: 20),
-      ),
-    );
-    Widget? injuryColumn;
-    Widget? damageColumn;
-    Widget? seriousDamageColumn;
-    Widget? verySeriousDamageColumn;
-    Widget? decayColumn1;
-    Widget? lableColumn2;
-    Widget? picturesCommentsColumn;
-    Widget? severityWidget;
-    Widget? injuryColumn1;
-    Widget? damageColumn1;
-    Widget? seriousDamageColumn1;
-    Widget? verySeriousDamageColumn1;
-    Widget? decayColumn2;
-    Widget? injuryColumn2;
-    Widget? damageColumn2;
-    Widget? seriousDamageColumn2;
-    Widget? decayColumn3;
-    Widget? totalQualityLabelColumn;
-    Widget? totalQualityInjuryColumn;
-    Widget? totalQualityDamageColumn;
-    Widget? columnView1;
-    Widget? verySeriousDamageColumn2;
-    Widget? damageColumn3;
-
-// Injury column
-    if (hasSeverityInjury) {
-      injuryColumn = Container(
-        width: 99,
-        height: 51,
-        margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
-        color: Colors.blue,
-        child: Text(
-          'Defects',
-          style: TextStyle(fontSize: 16),
-        ), // or use your color from resources
-      );
-    }
-
-// Damage column
-    if (hasSeverityDamage) {
-      damageColumn = Container(
-        width: 99,
-        height: 51,
-        margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
-        color: Colors.green,
-        child: Text(
-          'Defects',
-          style: TextStyle(fontSize: 16),
-        ), // or use your color from resources
-      );
-    }
-
-// Serious damage column(s)
-    for (int i = 0; i < numberSeriousDefects; i++) {
-      seriousDamageColumn = Container(
-        width: 99,
-        height: 51,
-        margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
-        color: Colors.orange,
-        child: Text(
-          'Defects',
-          style: TextStyle(fontSize: 16),
-        ), // or use your color from resources
-      );
-    }
-
-    // Very serious damage column
-    if (hasSeverityVerySeriousDamage) {
-      verySeriousDamageColumn = Container(
-        width: 99,
-        height: 51,
-        margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
-        color: Colors.blue,
-        child: Text(
-          'Defects',
-          style: TextStyle(fontSize: 16),
-        ), // or use your color from resources
-      );
-    }
-
-// Decay column
-    if (hasSeverityDecay) {
-      decayColumn1 = Container(
-        width: 99,
-        height: 51,
-        margin: EdgeInsets.only(left: borderGrey, top: borderOutside),
-        color: Colors.green,
-        child: Text(
-          'Defects',
-          style: TextStyle(fontSize: 16),
-        ), // or use your color from resources
-      );
-    }
-
-// Add the constructed row to the table layout
-//     tableLayout.children.add(tableRow);
-
-    // Create the table row
-    Row tableRow2 = Row(children: []);
-
-    severityWidget = Container(
-      width: 99,
-      height: 51,
-      margin: EdgeInsets.only(left: borderOutside, right: borderGrey),
-      child: Text(
-        'Severity',
-        style: TextStyle(fontSize: 20),
-      ),
-    );
-
-// Label column
-    tableRow2.children.add(severityWidget);
-
-// Injury column
-    if (hasSeverityInjury) {
-      injuryColumn1 = Container(
-        width: 99,
-        height: 51,
-        margin: EdgeInsets.only(right: borderGrey, bottom: borderOutside),
-        child: Stack(
-          children: [
-            Container(
-              margin: EdgeInsets.all(borderGrey),
-              color: Colors.blue, // or use your color from resources
-              child: Icon(Icons.circle, color: Colors.red),
-            ),
-            Positioned.fill(
-              child: Center(
-                child: Text('I', style: TextStyle(color: Colors.white)),
-              ),
-            ),
-          ],
-        ),
-      );
-      tableRow2.children.add(injuryColumn1);
-    }
-
-// Damage column
-    if (hasSeverityDamage) {
-      damageColumn1 = Container(
-        width: 99,
-        height: 51,
-        margin: EdgeInsets.only(right: borderGrey, bottom: borderOutside),
-        child: Stack(
-          children: [
-            Container(
-              margin: EdgeInsets.all(borderGrey),
-              color: Colors.green, // or use your color from resources
-              child: Icon(Icons.circle, color: Colors.red),
-            ),
-            Positioned.fill(
-              child: Center(
-                child: Text('D', style: TextStyle(color: Colors.white)),
-              ),
-            ),
-          ],
-        ),
-      );
-      tableRow2.children.add(damageColumn1);
-    }
-
-// Add the constructed row to the table layout
-    tableLayout.children.add(tableRow2);
-
-    // Serious damage column(s)
-    for (int i = 0; i < numberSeriousDefects; i++) {
-      seriousDamageColumn1 = Container(
-        width: 99,
-        height: 51,
-        margin: EdgeInsets.only(
-          left: borderGrey,
-          right: i == numberSeriousDefects - 1 ? borderOutside : borderGrey,
-          bottom: i == numberSeriousDefects - 1 ? borderOutside : 0,
-        ),
-        child: Stack(
-          children: [
-            Container(
-              margin: EdgeInsets.all(borderGrey),
-              color: Colors.orange, // or use your color from resources
-              child: Icon(Icons.circle, color: Colors.red),
-            ),
-            Positioned.fill(
-              child: Center(
-                child: Text(
-                  'SD',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-
-      if (numberSeriousDefects > 1) {
-        // Add subscript to indicate index
-        int subscriptIndex = i + 1;
-        seriousDamageColumn1 = GestureDetector(
-          child: seriousDamageColumn1,
-          onTap: () {
-            showDialog(
-              context: Get.context!,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('Serious Defect $subscriptIndex'),
-                      SizedBox(height: 10),
-                      Text(seriousDefectList[subscriptIndex - 1]),
-                    ],
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Text('OK'),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-        );
-      }
-
-      if (hasSeveritySeriousDamage) {
-        tableRow2.children.add(seriousDamageColumn1);
-      }
-    }
-
-// Very serious damage column
-    if (hasSeverityVerySeriousDamage) {
-      verySeriousDamageColumn1 = Container(
-        width: 99,
-        height: 51,
-        margin: EdgeInsets.only(
-            left: borderGrey, right: borderGrey, bottom: borderOutside),
-        child: Stack(
-          children: [
-            Container(
-              margin: EdgeInsets.all(borderGrey),
-              color: Colors.blue, // or use your color from resources
-              child: Icon(Icons.circle, color: Colors.red),
-            ),
-            Positioned.fill(
-              child: Center(
-                child: Text(
-                  'VSD',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-      tableRow2.children.add(verySeriousDamageColumn1);
-    }
-
-// Decay column
-    if (hasSeverityDecay) {
-      decayColumn2 = Container(
-        width: 99,
-        height: 51,
-        margin: EdgeInsets.only(
-            left: borderGrey, right: borderGrey, bottom: borderOutside),
-        child: Stack(
-          children: [
-            Container(
-              margin: EdgeInsets.all(borderGrey),
-              color: Colors.green, // or use your color from resources
-              child: Icon(Icons.circle, color: Colors.red),
-            ),
-            Positioned.fill(
-              child: Center(
-                child: Text(
-                  'DC',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-      tableRow2.children.add(decayColumn2);
-    }
-
-// Add the constructed row to the table layout
-    tableLayout.children.add(tableRow2);
-
-    // **************************
-// Row - Sample(s)
-// **************************
-    for (int j = 0; j < numberSamples; j++) {
-      Row tableRow = Row(children: []);
-
-      final int index = sampleDataMapIndexList[j];
-
-      // Label column
-      lableColumn2 = Container(
-        width: 99,
-        height: 51,
-        margin: EdgeInsets.only(
-          left: borderOutside,
-          right: j == numberSamples - 1 ? 0 : borderOutside,
-          bottom: j == numberSamples - 1 ? borderOutside : 0,
-        ),
-        child: Text(
-          sampleDataMap[index]!.sampleSize.toString(),
-          style: TextStyle(fontSize: 20),
-        ),
-      );
-      // tableRow.children.add();
-
-      // Injury column
-      injuryColumn2 = Container(
-        width: 99,
-        height: 51,
-        margin: EdgeInsets.only(
-          left: 0,
-          right: j == numberSamples - 1 ? 0 : borderOutside,
-          bottom: j == numberSamples - 1 ? borderOutside : 0,
-        ),
-        color: hasSeverityInjury ? Colors.blue : null,
-        child: Text(
-          sampleDataMap[index]!.iCnt.toString(),
-          style: TextStyle(fontSize: 20),
-        ),
-      );
-      tableRow.children.add(injuryColumn2);
-
-      // Damage column
-      damageColumn2 = Container(
-        width: 99,
-        height: 51,
-        margin: EdgeInsets.only(
-          left: 0,
-          right: j == numberSamples - 1 ? 0 : borderOutside,
-          bottom: j == numberSamples - 1 ? borderOutside : 0,
-        ),
-        color: hasSeverityDamage ? Colors.green : null,
-        child: Text(
-          sampleDataMap[index]!.dCnt.toString(),
-          style: TextStyle(fontSize: 20),
-        ),
-      );
-      tableRow.children.add(damageColumn2);
-
-      // Serious damage column(s)
-      for (int i = 0; i < numberSeriousDefects; i++) {
-        int count = 0;
-        final data = defectDataMap[getKeyFromIndex(index)];
-        if (data != null) {
-          for (int k = 0; k < data.length; k++) {
-            if (seriousDefectList.isNotEmpty &&
-                data[k].spinnerSelection == seriousDefectList[i]) {
-              count += data[k].seriousDamageCnt!;
-            }
-          }
-        }
-        seriousDamageColumn2 = Container(
-          width: 99,
-          height: 51,
-          margin: EdgeInsets.only(
-            left: 0,
-            right: i == numberSeriousDefects - 1 ? borderOutside : 0,
-            bottom: j == numberSamples - 1 ? borderOutside : 0,
-          ),
-          color: hasSeveritySeriousDamage ? Colors.orange : null,
-          child: Text(
-            count.toString(),
-            style: TextStyle(fontSize: 20),
-          ),
-        );
-        tableRow.children.add(seriousDamageColumn2);
-      }
-
-      // Very serious damage column
-      verySeriousDamageColumn2 = Container(
-        width: 99,
-        height: 51,
-        margin: EdgeInsets.only(
-          left: 0,
-          right: 0,
-          bottom: j == numberSamples - 1 ? borderOutside : 0,
-        ),
-        color: hasSeverityVerySeriousDamage ? Colors.blue : null,
-        child: Text(
-          sampleDataMap[index]!.vsdCnt.toString(),
-          style: TextStyle(fontSize: 20),
-        ),
-      );
-      tableRow.children.add(verySeriousDamageColumn2);
-
-      // Decay column
-      decayColumn3 = Container(
-        width: 99,
-        height: 51,
-        margin: EdgeInsets.only(
-          left: 0,
-          right: 0,
-          bottom: j == numberSamples - 1 ? borderOutside : 0,
-        ),
-        color: hasSeverityDecay ? Colors.green : null,
-        child: Text(
-          sampleDataMap[index]!.dcCnt.toString(),
-          style: TextStyle(fontSize: 20),
-        ),
-      );
-      tableRow.children.add(decayColumn3);
-
-      // Pictures / Comments column
-      picturesCommentsColumn = Container(
-        margin: EdgeInsets.only(
-          left: 0,
-          right: borderOutside,
-          bottom: j == numberSamples - 1 ? borderOutside : 0,
-        ),
-        child: Row(
-          children: [
-            IconButton(
-              icon: Icon(Icons.camera),
-              onPressed: () {
-                // Your onPressed function for camera button
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.comment),
-              onPressed: () {
-                // Your onPressed function for comment button
-              },
-            ),
-          ],
-        ),
-      );
-      // tableRow.children.add(picturesCommentsColumn);
-
-      tableLayout.children.add(tableRow);
-    }
-
-// **********************************************************************************
-// Row - Total Quality Defects
-// ***********************************************************************************
-    Row totalQualityRow = Row(children: []);
-
-// Label column
-    totalQualityLabelColumn = Container(
-      width: 99,
-      height: 51,
-      margin: EdgeInsets.only(left: borderOutside),
-      child: Text(
-        'Total Quality Defects',
-        style: TextStyle(fontSize: 20),
-      ),
-    );
-    totalQualityRow.children.add(totalQualityLabelColumn);
-
-// Injury column
-    totalQualityInjuryColumn = Container(
-      width: 99,
-      height: 51,
-      margin: EdgeInsets.only(left: 0),
-      color: hasSeverityInjury ? Colors.blue : null,
-      child: Text(
-        totalQualityInjury.toString(),
-        style: TextStyle(fontSize: 20),
-      ),
-    );
-    totalQualityRow.children.add(totalQualityInjuryColumn);
-
-// Damage column
-    totalQualityDamageColumn = Container(
-      width: 99,
-      height: 51,
-      margin: EdgeInsets.only(left: 0),
-      color: hasSeverityDamage ? Colors.green : null,
-      child: Text(
-        totalQualityDamage.toString(),
-        style: TextStyle(fontSize: 20),
-      ),
-    );
-    totalQualityRow.children.add(totalQualityDamageColumn);
-
-    tableLayout.children.add(totalQualityRow);
-
-    List<Widget> columnViews = [];
-    // Serious damage column(s)
-    for (int i = 0; i < numberSeriousDefects; i++) {
-      columnView1 = Container(
-        width: 99,
-        height: 51,
-        margin: EdgeInsets.only(
-          right: i == numberSeriousDefects - 1 ? borderOutside : 0,
-        ),
-        decoration: BoxDecoration(
-          color: Colors.orange,
-          border: Border(
-            right: BorderSide(
-              color: Colors.grey,
-              width: borderGrey.toDouble(),
-            ),
-          ),
-        ),
-        child: Text(
-          i == 0 ? totalQualitySeriousDamage.toString() : '',
-          style: TextStyle(fontSize: 20),
-        ),
-      );
-
-      if (hasSeveritySeriousDamage) {
-        columnViews.add(columnView1);
-      }
-    }
-
-    List<Widget?> dataList = [
-      injuryColumn,
-      damageColumn,
-      seriousDamageColumn,
-      verySeriousDamageColumn,
-      decayColumn1,
-      lableColumn2,
-      picturesCommentsColumn,
-      severityWidget,
-      injuryColumn1,
-      damageColumn1,
-    ];
-    Row tableRow = Row(
-      children: dataList.where((element) => element != null).nonNulls.toList(),
-    );
-// Very serious damage column
-    verySeriousDamageColumn2 = Container(
-      width: 99,
-      height: 51,
-      margin: EdgeInsets.only(
-        left: borderGrey.toDouble(),
-        right: borderGrey.toDouble(),
-      ),
-      decoration: BoxDecoration(
-        color: Colors.blue,
-        border: Border.all(
-          color: Colors.grey,
-          width: borderGrey.toDouble(),
-        ),
-      ),
-      child: Text(
-        totalQualityVerySeriousDamage.toString(),
-        style: TextStyle(fontSize: 20),
-      ),
-    );
-
-    if (hasSeverityVerySeriousDamage) {
-      tableRow.children.add(verySeriousDamageColumn2);
-    }
-
-// Damage column
-    damageColumn3 = Container(
-      margin: EdgeInsets.only(
-        left: borderGrey.toDouble(),
-        right: borderGrey.toDouble() + borderOutside.toDouble(),
-      ),
-      decoration: BoxDecoration(
-        color: Colors.green,
-        border: Border.all(
-          color: Colors.grey,
-          width: borderGrey.toDouble(),
-        ),
-      ),
-      child: Text(
-        totalQualityDecay.toString(),
-        style: TextStyle(fontSize: 20),
-      ),
-    );
-
-    if (hasSeverityDecay) {
-      tableRow.children.add(damageColumn3);
-    }
-
-    tableLayout.children.add(tableRow);
-
-    // Row - Total Quality Defects %
-    Row tableRow1 = Row(
-      children: [
-        // label column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(
-              borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            "Total Quality Defects %",
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-        // injury column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            getTotalQualityInjury(),
-            style: TextStyle(
-                fontSize: 20,
-                color: (injuryQualitySpec != null &&
-                        ((totalQualityInjury / totalSamples) * 100) >
-                            injuryQualitySpec!)
-                    ? Colors.red
-                    : Colors.black),
-          ),
-        ),
-        // damage column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.green,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            getTotalQualityDamage(),
-            style: TextStyle(
-                fontSize: 20,
-                color: (damageQualitySpec != null &&
-                        ((totalQualityDamage / totalSamples) * 100) >
-                            damageQualitySpec!)
-                    ? Colors.red
-                    : Colors.black),
-          ),
-        ),
-      ],
-    );
-
-// Serious damage column(s)
-    for (int i = 0; i < numberSeriousDefects; i++) {
-      tableRow1.children.add(
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
-              i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.orange,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            getTotalQualitySeriousDamage(i),
-            style: TextStyle(
-                fontSize: 20,
-                color: (seriousDamageQualitySpec != null &&
-                        ((totalQualitySeriousDamage / totalSamples) * 100) >
-                            seriousDamageQualitySpec!)
-                    ? Colors.red
-                    : Colors.black),
-          ),
-        ),
-      );
-    }
-
-// Very serious damage column
-    tableRow1.children.add(
-      Container(
-        width: 80,
-        height: 50,
-        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          border: Border(
-            bottom: BorderSide(color: Colors.black),
-            right: BorderSide(color: Colors.grey),
-          ),
-        ),
-        child: Text(
-          getTotalQualityVerySeriousDamage(),
-          style: TextStyle(
-              fontSize: 20,
-              color: (verySeriousDamageQualitySpec != null &&
-                      ((totalQualityVerySeriousDamage / totalSamples) * 100) >
-                          verySeriousDamageQualitySpec!)
-                  ? Colors.red
-                  : Colors.black),
-        ),
-      ),
-    );
-
-    // **************************
-// Row - Total Condition Defects
-// **************************
-    Row conditionTableRow = Row(
-      children: [
-        // label column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(
-              borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            "Total Condition Defects",
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-        // injury column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            "$totalConditionInjury",
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-        // damage column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.green,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            "$totalConditionDamage",
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      ],
-    );
-
-// Serious damage column(s)
-    for (int i = 0; i < numberSeriousDefects; i++) {
-      conditionTableRow.children.add(
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
-              i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.orange,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            i == 0 ? "$totalConditionSeriousDamage" : "",
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      );
-    }
-
-// Very serious damage column
-    conditionTableRow.children.add(
-      Container(
-        width: 80,
-        height: 50,
-        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          border: Border(
-            bottom: BorderSide(color: Colors.black),
-            right: BorderSide(color: Colors.grey),
-          ),
-        ),
-        child: Text(
-          "$totalConditionVerySeriousDamage",
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
-
-// Decay column
-    conditionTableRow.children.add(
-      Container(
-        width: 80,
-        height: 50,
-        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: BoxDecoration(
-          color: Colors.green,
-          border: Border(
-            bottom: BorderSide(color: Colors.black),
-            right: BorderSide(color: Colors.grey),
-          ),
-        ),
-        child: Text(
-          "$totalConditionDecay",
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
-
-// Add the row to the table layout
-    tableLayout.children.add(conditionTableRow);
-
-// **************************
-// Row - Total Condition Defects %
-// **************************
-    Row conditionPercentageRow = Row(
-      children: [
-        // label column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(
-              borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            "Total Condition Defects %",
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-        // injury column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            getTotalConditionInjury(),
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-        // damage column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.green,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            getTotalConditionDamage(),
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      ],
-    );
-
-// Serious damage column(s)
-    for (int i = 0; i < numberSeriousDefects; i++) {
-      conditionPercentageRow.children.add(
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
-              i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.orange,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            getTotalConditionSeriousDamage(i),
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      );
-    }
-
-// Very serious damage column
-    conditionPercentageRow.children.add(
-      Container(
-        width: 80,
-        height: 50,
-        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          border: Border(
-            bottom: BorderSide(color: Colors.black),
-            right: BorderSide(color: Colors.grey),
-          ),
-        ),
-        child: Text(
-          getTotalConditionVerySeriousDamage(),
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
-
-// Decay column
-    conditionPercentageRow.children.add(
-      Container(
-        width: 80,
-        height: 50,
-        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: BoxDecoration(
-          color: Colors.green,
-          border: Border(
-            bottom: BorderSide(color: Colors.black),
-            right: BorderSide(color: Colors.grey),
-          ),
-        ),
-        child: Text(
-          getTotalConditionDecay(),
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
-
-// Add the row to the table layout
-    tableLayout.children.add(conditionPercentageRow);
-
-    // **************************
-// Row - Total Severity by Defect Type
-// **************************
-    Row severityTableRow = Row(
-      children: [
-        // label column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(
-              borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            "Total Severity by Defect Type",
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-        // injury column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            "$totalInjury",
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-        // damage column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.green,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            "$totalDamage",
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      ],
-    );
-
-// Serious damage column(s)
-    for (int i = 0; i < numberSeriousDefects; i++) {
-      int sdcount = seriousDefectList.isEmpty
-          ? 0
-          : seriousDefectCountMap[seriousDefectList[i]] ?? 0;
-      severityTableRow.children.add(
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(
-              0,
-              borderBlack.toDouble(),
-              i == numberSeriousDefects - 1
-                  ? borderOutside.toDouble()
-                  : borderGrey.toDouble(),
-              0),
-          decoration: BoxDecoration(
-            color: Colors.orange,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            "$sdcount",
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      );
-    }
-
-// Very serious damage column
-    severityTableRow.children.add(
-      Container(
-        width: 80,
-        height: 50,
-        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          border: Border(
-            bottom: BorderSide(color: Colors.black),
-            right: BorderSide(color: Colors.grey),
-          ),
-        ),
-        child: Text(
-          "$totalVerySeriousDamage",
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
-
-// Decay column
-    severityTableRow.children.add(
-      Container(
-        width: 80,
-        height: 50,
-        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: BoxDecoration(
-          color: Colors.green,
-          border: Border(
-            bottom: BorderSide(color: Colors.black),
-            right: BorderSide(color: Colors.grey),
-          ),
-        ),
-        child: Text(
-          "$totalDecay",
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
-
-// Add the row to the table layout
-    tableLayout.children.add(severityTableRow);
-
-    // Row - Total Severity by Defect Type %
-    Row defectTypePercentRow = Row(
-      children: [
-        // label column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(borderOutside.toDouble(),
-              borderBlack.toDouble(), 0, borderBlack.toDouble()),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            "Total Severity by Defect Type %",
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-        // injury column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(
-              0, borderBlack.toDouble(), 0, borderBlack.toDouble()),
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            getTotalInjury(),
-            style: TextStyle(
-                fontSize: 20,
-                color: injurySpec != null &&
-                        (totalInjury / totalSamples) * 100 > injurySpec!
-                    ? Colors.red
-                    : null),
-          ),
-        ),
-        // damage column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(
-              0, borderBlack.toDouble(), 0, borderBlack.toDouble()),
-          decoration: BoxDecoration(
-            color: Colors.green,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            getTotalDamage(),
-            style: TextStyle(
-                fontSize: 20,
-                color: damageSpec != null &&
-                        (totalDamage / totalSamples) * 100 > damageSpec!
-                    ? Colors.red
-                    : null),
-          ),
-        ),
-      ],
-    );
-
-// Serious damage column(s)
-    for (int i = 0; i < numberSeriousDefects; i++) {
-      int sdcount = seriousDefectList.isEmpty
-          ? 0
-          : seriousDefectCountMap[seriousDefectList[i]] ?? 0;
-      double percent = (sdcount == 0) ? 0.0 : (sdcount / totalSamples) * 100;
-      defectTypePercentRow.children.add(
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(
-              0,
-              borderBlack.toDouble(),
-              i == numberSeriousDefects - 1
-                  ? borderOutside.toDouble()
-                  : borderGrey.toDouble(),
-              borderBlack.toDouble()),
-          decoration: BoxDecoration(
-            color: Colors.orange,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            "${percent.round()}%",
-            style: TextStyle(
-                fontSize: 20,
-                color: seriousDamageSpec != null && percent > seriousDamageSpec!
-                    ? Colors.red
-                    : null),
-          ),
-        ),
-      );
-    }
-
-// Very serious damage column
-    defectTypePercentRow.children.add(
-      Container(
-        width: 80,
-        height: 50,
-        margin: EdgeInsets.fromLTRB(
-            0, borderBlack.toDouble(), 0, borderBlack.toDouble()),
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          border: Border(
-            bottom: BorderSide(color: Colors.black),
-            right: BorderSide(color: Colors.grey),
-          ),
-        ),
-        child: Text(
-          getTotalVerySeriousDamage(),
-          style: TextStyle(
-              fontSize: 20,
-              color: verySeriousDamageSpec != null &&
-                      (totalVerySeriousDamage / totalSamples) * 100 >
-                          verySeriousDamageSpec!
-                  ? Colors.red
-                  : null),
-        ),
-      ),
-    );
-
-// Decay column
-    defectTypePercentRow.children.add(
-      Container(
-        width: 80,
-        height: 50,
-        margin: EdgeInsets.fromLTRB(
-            0, borderBlack.toDouble(), 0, borderBlack.toDouble()),
-        decoration: BoxDecoration(
-          color: Colors.green,
-          border: Border(
-            bottom: BorderSide(color: Colors.black),
-            right: BorderSide(color: Colors.grey),
-          ),
-        ),
-        child: Text(
-          getTotalDecay(),
-          style: TextStyle(
-              fontSize: 20,
-              color: decaySpec != null &&
-                      (totalDecay / totalSamples) * 100 > decaySpec!
-                  ? Colors.red
-                  : null),
-        ),
-      ),
-    );
-
-// Add the row to the table layout
-    tableLayout.children.add(defectTypePercentRow);
-
-// Row - % by Severity Level
-    Row severityLevelPercentRow = Row(
-      children: [
-        // label column
-        Container(
-          height: 50,
-          width: 80,
-          margin: EdgeInsets.fromLTRB(borderOutside.toDouble(),
-              borderOutside.toDouble(), 0, borderOutside.toDouble()),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            "Percent by Severity Level",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-        // injury column
-        Container(
-          height: 50,
-          width: 80,
-          margin: EdgeInsets.fromLTRB(
-              0, borderOutside.toDouble(), 0, borderOutside.toDouble()),
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            getTotalInjury(),
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-        // damage column
-        Container(
-          height: 50,
-          width: 80,
-          margin: EdgeInsets.fromLTRB(
-              0, borderOutside.toDouble(), 0, borderOutside.toDouble()),
-          decoration: BoxDecoration(
-            color: Colors.green,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            getTotalDamage(),
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ],
-    );
-
-// Add the row to the table layout
-    tableLayout.children.add(severityLevelPercentRow);
-
-    // Row - Total Size Defects
-    Row totalSizeDefectsRow = Row(
-      children: [
-        // label column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(
-              borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            "Total Size Defects",
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-        // injury column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            totalSizeInjury.toString(),
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-        // damage column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.green,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            totalSizeDamage.toString(),
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      ],
-    );
-
-// Serious damage column(s)
-    for (int i = 0; i < numberSeriousDefects; i++) {
-      totalSizeDefectsRow.children.add(
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
-              i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.orange,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            i == 0 ? totalSizeSeriousDamage.toString() : '',
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      );
-    }
-
-// Very serious damage column
-    totalSizeDefectsRow.children.add(
-      Container(
-        width: 80,
-        height: 50,
-        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          border: Border(
-            bottom: BorderSide(color: Colors.black),
-            right: BorderSide(color: Colors.grey),
-          ),
-        ),
-        child: Text(
-          totalSizeVerySeriousDamage.toString(),
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
-
-// Decay column
-    totalSizeDefectsRow.children.add(
-      Container(
-        width: 80,
-        height: 50,
-        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: BoxDecoration(
-          color: Colors.green,
-          border: Border(
-            bottom: BorderSide(color: Colors.black),
-            right: BorderSide(color: Colors.grey),
-          ),
-        ),
-        child: Text(
-          totalSizeDecay.toString(),
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
-
-// Add the row to the table layout
-    tableLayout.children.add(totalSizeDefectsRow);
-
-    // **************************
-// Row - Total Size Defects %
-// **************************
-    Row totalSizeDefectsPercentageRow = Row(
-      children: [
-        // label column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(
-              borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            "Total Size Defects Percentage",
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-        // injury column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            getTotalSizeInjury(),
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-        // damage column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.green,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            getTotalSizeDamage(),
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      ],
-    );
-
-// Serious damage column(s)
-    for (int i = 0; i < numberSeriousDefects; i++) {
-      totalSizeDefectsPercentageRow.children.add(
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
-              i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.orange,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            getTotalSizeSeriousDamage(i),
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      );
-    }
-
-// Very serious damage column
-    totalSizeDefectsPercentageRow.children.add(
-      Container(
-        width: 80,
-        height: 50,
-        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          border: Border(
-            bottom: BorderSide(color: Colors.black),
-            right: BorderSide(color: Colors.grey),
-          ),
-        ),
-        child: Text(
-          getTotalSizeVerySeriousDamage(),
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
-
-// Decay column
-    totalSizeDefectsPercentageRow.children.add(
-      Container(
-        width: 80,
-        height: 50,
-        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: BoxDecoration(
-          color: Colors.green,
-          border: Border(
-            bottom: BorderSide(color: Colors.black),
-            right: BorderSide(color: Colors.grey),
-          ),
-        ),
-        child: Text(
-          getTotalSizeDecay(),
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
-
-// Add the row to the table layout
-    tableLayout.children.add(totalSizeDefectsPercentageRow);
-
-// **************************
-// Row - Total Color Defects
-// **************************
-    Row totalColorDefectsRow = Row(
-      children: [
-        // label column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(
-              borderOutside.toDouble(), borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            "Total Color Defects",
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-        // injury column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            totalColorInjury.toString(),
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-        // damage column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.green,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            totalColorDamage.toString(),
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      ],
-    );
-
-// Serious damage column(s)
-    for (int i = 0; i < numberSeriousDefects; i++) {
-      totalColorDefectsRow.children.add(
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(),
-              i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0, 0),
-          decoration: BoxDecoration(
-            color: Colors.orange,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            i == 0 ? totalColorSeriousDamage.toString() : '',
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      );
-    }
-
-// Very serious damage column
-    totalColorDefectsRow.children.add(
-      Container(
-        width: 80,
-        height: 50,
-        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          border: Border(
-            bottom: BorderSide(color: Colors.black),
-            right: BorderSide(color: Colors.grey),
-          ),
-        ),
-        child: Text(
-          totalColorVerySeriousDamage.toString(),
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
-
-// Decay column
-    totalColorDefectsRow.children.add(
-      Container(
-        width: 80,
-        height: 50,
-        margin: EdgeInsets.fromLTRB(0, borderBlack.toDouble(), 0, 0),
-        decoration: BoxDecoration(
-          color: Colors.green,
-          border: Border(
-            bottom: BorderSide(color: Colors.black),
-            right: BorderSide(color: Colors.grey),
-          ),
-        ),
-        child: Text(
-          totalColorDecay.toString(),
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
-
-// Add the row to the table layout
-    tableLayout.children.add(totalColorDefectsRow);
-
-// **************************
-// Row - Total Color Defects %
-// **************************
-    Row totalColorDefectsPercentageRow = Row(
-      children: [
-        // label column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(borderOutside.toDouble(),
-              borderBlack.toDouble(), 0, borderOutside.toDouble()),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            "Total Color Defects Percentage",
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-        // injury column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(
-              0, borderBlack.toDouble(), 0, borderOutside.toDouble()),
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            getTotalColorInjury(),
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-        // damage column
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(
-              0, borderBlack.toDouble(), 0, borderOutside.toDouble()),
-          decoration: BoxDecoration(
-            color: Colors.green,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            getTotalColorDamage(),
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      ],
-    );
-
-// Serious damage column(s)
-    for (int i = 0; i < numberSeriousDefects; i++) {
-      totalColorDefectsPercentageRow.children.add(
-        Container(
-          width: 80,
-          height: 50,
-          margin: EdgeInsets.fromLTRB(
-              0,
-              borderBlack.toDouble(),
-              i == numberSeriousDefects - 1 ? borderOutside.toDouble() : 0,
-              borderOutside.toDouble()),
-          decoration: BoxDecoration(
-            color: Colors.orange,
-            border: Border(
-              bottom: BorderSide(color: Colors.black),
-              right: BorderSide(color: Colors.grey),
-            ),
-          ),
-          child: Text(
-            getTotalColorSeriousDamage(i),
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      );
-    }
-
-// Very serious damage column
-    totalColorDefectsPercentageRow.children.add(
-      Container(
-        width: 80,
-        height: 50,
-        margin: EdgeInsets.fromLTRB(
-            0, borderBlack.toDouble(), 0, borderOutside.toDouble()),
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          border: Border(
-            bottom: BorderSide(color: Colors.black),
-            right: BorderSide(color: Colors.grey),
-          ),
-        ),
-        child: Text(
-          getTotalColorVerySeriousDamage(),
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
-
-// Decay column
-    totalColorDefectsPercentageRow.children.add(
-      Container(
-        width: 80,
-        height: 50,
-        margin: EdgeInsets.fromLTRB(
-            0, borderBlack.toDouble(), 0, borderOutside.toDouble()),
-        decoration: BoxDecoration(
-          color: Colors.green,
-          border: Border(
-            bottom: BorderSide(color: Colors.black),
-            right: BorderSide(color: Colors.grey),
-          ),
-        ),
-        child: Text(
-          getTotalColorDecay(),
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
-
-// Add the row to the table layout
-    tableLayout.children.add(totalColorDefectsPercentageRow);
-
-    Container defectsTableContainer = Container(
-      child: SingleChildScrollView(child: tableLayout),
-    );
-    return defectsTableContainer;
+    print(
+        'totalInjury: $totalInjury totalDamage: $totalDamage totalSeriousDamage: $totalSeriousDamage totalVerySeriousDamage: $totalVerySeriousDamage totalDecay: $totalDecay');
   }
 
   String getTotalColorDecay() {
@@ -3873,5 +1914,41 @@ class DefectsScreenController extends GetxController {
       }
     }
     return 0;
+  }
+
+  String? getComment(int sampleIndex) {
+    int index = sampleDataMapIndexList[sampleIndex];
+    return getCommentsForSample(sampleDataMap[index]!.name);
+  }
+
+  void setInitValuesToTextFields(SampleData sampleDummyData) {
+    for (InspectionDefect inspectionDefect in sampleDummyData.defectItems) {
+      if (inspectionDefect.injuryCnt != 0) {
+        inspectionDefect.injuryTextEditingController.text =
+            inspectionDefect.injuryCnt.toString();
+      }
+      if (inspectionDefect.damageCnt != 0) {
+        inspectionDefect.damageTextEditingController.text =
+            inspectionDefect.damageCnt.toString();
+      }
+      if (inspectionDefect.seriousDamageCnt != 0) {
+        inspectionDefect.sDamageTextEditingController.text =
+            inspectionDefect.seriousDamageCnt.toString();
+      }
+
+      if (inspectionDefect.verySeriousDamageCnt != 0) {
+        inspectionDefect.vsDamageTextEditingController.text =
+            inspectionDefect.verySeriousDamageCnt.toString();
+      }
+      if (inspectionDefect.decayCnt != 0) {
+        inspectionDefect.decayTextEditingController.text =
+            inspectionDefect.decayCnt.toString();
+      }
+
+      if (inspectionDefect.spinnerSelection?.isNotEmpty ?? false) {
+        // inspectionDefect.defectSpinne =
+        //     getDefectSpinnerName(inspectionDefect.spinnerSelection);
+      }
+    }
   }
 }

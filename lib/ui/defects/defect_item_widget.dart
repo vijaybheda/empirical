@@ -35,7 +35,26 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
   Widget build(BuildContext context) {
     String? comment =
         controller.sampleList[sampleIndex].defectItems[defectItemIndex].comment;
+    // String? comment = controller.getComment(sampleIndex);
     bool hasComment = comment != null && comment.isNotEmpty;
+    if (controller.appStorage.severityList != null) {
+      for (var severity in controller.appStorage.severityList!) {
+        if (severity.name == "Injury" || severity.name == "Lesión") {
+          controller.hasSeverityInjury = true;
+        } else if (severity.name == "Damage" || severity.name == "Daño") {
+          controller.hasSeverityDamage = true;
+        } else if (severity.name == "Serious Damage" ||
+            severity.name == "Daño Serio") {
+          controller.hasSeveritySeriousDamage = true;
+        } else if (severity.name == "Very Serious Damage" ||
+            severity.name == "Daño Muy Serio") {
+          controller.hasSeverityVerySeriousDamage = true;
+        } else if (severity.name == "Decay" || severity.name == "Pudrición") {
+          controller.hasSeverityDecay = true;
+        }
+      }
+    }
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 50.w),
       child: Container(
@@ -94,7 +113,7 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                     }).toList(),
                     onChanged: (value) {
                       controller.onDropDownChange(
-                        value: value ?? "",
+                        selected: value ?? "",
                         sampleIndex: sampleIndex,
                         defectItemIndex: defectItemIndex,
                       );
@@ -116,6 +135,23 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                         inspectionDefect.injuryTextEditingController.clear();
                       },
                       errorText: '',
+                      focusNode: FocusNode(),
+                      onFocusChange: (bool hasFocus) {
+                        String text = inspectionDefect
+                            .injuryTextEditingController.text
+                            .trim();
+                        if (hasFocus) {
+                          if (text == "0") {
+                            inspectionDefect.injuryTextEditingController.text =
+                                '';
+                          }
+                        } else {
+                          if (text.isEmpty) {
+                            inspectionDefect.injuryTextEditingController.text =
+                                '0';
+                          }
+                        }
+                      },
                       onEditingCompleted: () {
                         FocusScope.of(context).unfocus();
                       },
@@ -142,6 +178,23 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                       controller: inspectionDefect.damageTextEditingController,
                       onTap: () {
                         inspectionDefect.damageTextEditingController.clear();
+                      },
+                      focusNode: FocusNode(),
+                      onFocusChange: (bool hasFocus) {
+                        String text = inspectionDefect
+                            .damageTextEditingController.text
+                            .trim();
+                        if (hasFocus) {
+                          if (text == "0") {
+                            inspectionDefect.damageTextEditingController.text =
+                                '';
+                          }
+                        } else {
+                          if (text.isEmpty) {
+                            inspectionDefect.damageTextEditingController.text =
+                                '0';
+                          }
+                        }
                       },
                       errorText: '',
                       onEditingCompleted: () {
@@ -173,6 +226,23 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                         inspectionDefect.sDamageTextEditingController.clear();
                       },
                       errorText: '',
+                      focusNode: FocusNode(),
+                      onFocusChange: (bool hasFocus) {
+                        String text = inspectionDefect
+                            .sDamageTextEditingController.text
+                            .trim();
+                        if (hasFocus) {
+                          if (text == "0") {
+                            inspectionDefect.sDamageTextEditingController.text =
+                                '';
+                          }
+                        } else {
+                          if (text.isEmpty) {
+                            inspectionDefect.sDamageTextEditingController.text =
+                                '0';
+                          }
+                        }
+                      },
                       onEditingCompleted: () {
                         FocusScope.of(context).unfocus();
                       },
@@ -181,7 +251,7 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                           textData: v,
                           sampleIndex: sampleIndex,
                           defectIndex: defectItemIndex,
-                          fieldName: AppStrings.seriousDamage,
+                          fieldName: AppStrings.seriousDamageStr,
                           context: context,
                         );
                       },
@@ -203,6 +273,23 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                         inspectionDefect.vsDamageTextEditingController.clear();
                       },
                       errorText: '',
+                      focusNode: FocusNode(),
+                      onFocusChange: (bool hasFocus) {
+                        String text = inspectionDefect
+                            .vsDamageTextEditingController.text
+                            .trim();
+                        if (hasFocus) {
+                          if (text == "0") {
+                            inspectionDefect
+                                .vsDamageTextEditingController.text = '';
+                          }
+                        } else {
+                          if (text.isEmpty) {
+                            inspectionDefect
+                                .vsDamageTextEditingController.text = '0';
+                          }
+                        }
+                      },
                       onEditingCompleted: () {
                         FocusScope.of(context).unfocus();
                       },
@@ -211,7 +298,7 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                           textData: v,
                           sampleIndex: sampleIndex,
                           defectIndex: defectItemIndex,
-                          fieldName: AppStrings.verySeriousDamage,
+                          fieldName: AppStrings.verySeriousDamageStr,
                           context: context,
                         );
                       },
@@ -231,6 +318,23 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                         inspectionDefect.decayTextEditingController.clear();
                       },
                       errorText: '',
+                      focusNode: FocusNode(),
+                      onFocusChange: (bool hasFocus) {
+                        String text = inspectionDefect
+                            .decayTextEditingController.text
+                            .trim();
+                        if (hasFocus) {
+                          if (text == "0") {
+                            inspectionDefect.decayTextEditingController.text =
+                                '';
+                          }
+                        } else {
+                          if (text.isEmpty) {
+                            inspectionDefect.decayTextEditingController.text =
+                                '0';
+                          }
+                        }
+                      },
                       onEditingCompleted: () {
                         FocusScope.of(context).unfocus();
                       },
@@ -252,6 +356,7 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                 await controller.navigateToCameraScreen(
                   sampleIndex: sampleIndex,
                   defectItemIndex: defectItemIndex,
+                  inspectionDefect: inspectionDefect,
                 );
               },
               child: Icon(
@@ -261,8 +366,6 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
               ),
             ),
             SizedBox(width: 10.w),
-
-            // TODO: implement
             GestureDetector(
               onTap: () {
                 AppAlertDialog.textfiAlert(
@@ -289,7 +392,7 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                 fit: BoxFit.contain,
               ),
             ),
-            SizedBox(width: 10.h),
+            SizedBox(width: 10.w),
             InkWell(
               onTap: () {
                 DefectsInfoDialog defectsInfoDialog = DefectsInfoDialog(
@@ -319,6 +422,8 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
   }
 
   int get defectItemIndex => widget.defectItemIndex;
+
   int get sampleIndex => widget.sampleIndex;
+
   InspectionDefect get inspectionDefect => widget.inspectionDefect;
 }

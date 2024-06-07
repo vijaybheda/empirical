@@ -244,7 +244,7 @@ class ApplicationDao {
     }
   }
 
-  Future<int> createInspectionAttachment(InspectionAttachment attachment,
+  Future<int?> createInspectionAttachment(InspectionAttachment attachment,
       photoTitle, createdTime, pathToPhoto) async {
     final Database db = dbProvider.lazyDatabase;
 
@@ -282,7 +282,8 @@ class ApplicationDao {
       return attachmentId;
     } catch (e) {
       log('Error creating inspection attachment: $e');
-      throw e;
+      // throw e;
+      return null;
     }
   }
 
@@ -790,7 +791,7 @@ class ApplicationDao {
         InspectionSampleColumn.SET_NUMBER: setNumber,
         InspectionSampleColumn.CREATED_TIME: createdTime,
         InspectionSampleColumn.LAST_UPDATED_TIME: updatedTime,
-        InspectionSampleColumn.COMPLETE: 1,
+        InspectionSampleColumn.COMPLETE: 1.toString(),
         InspectionSampleColumn.SAMPLE_NAME: sampleNameUser,
       },
     );
@@ -3674,8 +3675,8 @@ class ApplicationDao {
               map[SpecificationGradeToleranceColumn.NUMBER_SPECIFICATION],
           specificationVersion:
               map[SpecificationGradeToleranceColumn.VERSION_SPECIFICATION],
-          severityDefectID:
-              map[SpecificationGradeToleranceColumn.SEVERITY_DEFECT_ID],
+          severityDefectID: int.tryParse(
+              map[SpecificationGradeToleranceColumn.SEVERITY_DEFECT_ID]),
           defectID: map[SpecificationGradeToleranceColumn.DEFECT_ID],
           specTolerancePercentage:
               map[SpecificationGradeToleranceColumn.GRADE_TOLERANCE_PERCENTAGE],
@@ -4230,7 +4231,7 @@ class ApplicationDao {
     }
   }
 
-  Future<int> createDefectAttachment({
+  Future<int?> createDefectAttachment({
     int? inspectionId,
     int? sampleId,
     int? defectId,
@@ -4255,7 +4256,7 @@ class ApplicationDao {
           await db.insert(DBTables.INSPECTION_DEFECT_ATTACHMENT, values);
     } catch (e) {
       print('Error has occurred while creating a defect attachment: $e');
-      rethrow;
+      return null;
     }
 
     return attachmentId;

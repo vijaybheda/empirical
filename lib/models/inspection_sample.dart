@@ -6,8 +6,6 @@ class InspectionSample {
   int? setNumber;
   int? createdTime;
   int? lastUpdatedTime;
-  int? lotNumber;
-  String? packDate;
   bool? isComplete;
   String? sampleName;
 
@@ -19,40 +17,34 @@ class InspectionSample {
     this.setNumber,
     this.createdTime,
     this.lastUpdatedTime,
-    this.lotNumber,
-    this.packDate,
     this.isComplete,
     this.sampleName,
   });
 
   factory InspectionSample.fromJson(Map<String, dynamic> json) {
     return InspectionSample(
-      sampleId: json['sampleId'],
-      inspectionId: json['inspectionId'],
-      setSize: json['setSize'],
-      setName: json['setName'],
-      setNumber: json['setNumber'],
-      createdTime: json['createdTime'],
-      lastUpdatedTime: json['lastUpdatedTime'],
-      lotNumber: json['lotNumber'],
-      packDate: json['packDate'],
-      isComplete: json['isComplete'],
+      sampleId: json['_id'],
+      inspectionId: json['Inspection_ID'],
+      setSize: json['Set_Size'],
+      setName: json['Set_Name'],
+      setNumber: json['Set_Number'],
+      createdTime: json['Created_Time'],
+      lastUpdatedTime: json['Last_Updated_Time'],
+      isComplete: json['complete'] == 1.toString(),
       sampleName: json['sampleName'],
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'sampleId': sampleId,
-      'inspectionId': inspectionId,
-      'setSize': setSize,
-      'setName': setName,
-      'setNumber': setNumber,
-      'createdTime': createdTime,
-      'lastUpdatedTime': lastUpdatedTime,
-      'lotNumber': lotNumber,
-      'packDate': packDate,
-      'isComplete': isComplete,
+      '_id': sampleId,
+      'Inspection_ID': inspectionId,
+      'Set_Size': setSize,
+      'Set_Name': setName,
+      'Set_Number': setNumber,
+      'Created_Time': createdTime,
+      'Last_Updated_Time': lastUpdatedTime,
+      'complete': isComplete,
       'sampleName': sampleName,
     };
   }
@@ -65,8 +57,6 @@ class InspectionSample {
     int? setNumber,
     int? createdTime,
     int? lastUpdatedTime,
-    int? lotNumber,
-    String? packDate,
     bool? isComplete,
     String? sampleName,
   }) {
@@ -78,8 +68,6 @@ class InspectionSample {
       setNumber: setNumber ?? this.setNumber,
       createdTime: createdTime ?? this.createdTime,
       lastUpdatedTime: lastUpdatedTime ?? this.lastUpdatedTime,
-      lotNumber: lotNumber ?? this.lotNumber,
-      packDate: packDate ?? this.packDate,
       isComplete: isComplete ?? this.isComplete,
       sampleName: sampleName ?? this.sampleName,
     );

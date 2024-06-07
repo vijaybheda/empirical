@@ -114,8 +114,8 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
                     fontWeight: FontWeight.w600,
                     color: AppColors.textFieldText_Color,
                   ),
-                  onClickAction: () {
-                    controller.saveAction();
+                  onClickAction: () async {
+                    await controller.saveAction();
                   }),
               SizedBox(
                 width: 38.w,

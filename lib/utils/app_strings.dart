@@ -362,6 +362,8 @@ class AppStrings {
   static const String damage = 'Damage';
   static const String seriousDamage = 'Serious\n Damage';
   static const String verySeriousDamage = 'Very Serious\n Damage';
+  static const String seriousDamageStr = 'Serious\n Damage';
+  static const String verySeriousDamageStr = 'Very Serious\n Damage';
   static const String decay = 'Decay';
 
   static const String injuryIcon = 'I';
@@ -437,6 +439,7 @@ class AppStrings {
   static const String specAttributes = 'Specification Attributes';
   static const String comment = 'Comment';
   static const String specBrandAndPrivateLabel = "Spec Brand and Private Label";
+
   static String alertMessage(String item) => 'Value needed for: $item';
 
   static String alertCommentMessage(String item) =>
@@ -564,8 +567,10 @@ class AppStrings {
   static const String qtyApproved = "Quantity Approved";
   static const String min = "Min";
   static const String max = "Max";
+
   String getDayMessage(int days) =>
       "Data has not been updated in $days days; need to update. \nPlease go to your hotspot and update data now.";
+
   String getDayMessage1(int days) =>
       "Data has not been updated in $days days; need to update. \nPlease go to your hotspot, turn WiFi on and update data now.";
 
