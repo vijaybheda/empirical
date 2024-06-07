@@ -20,6 +20,7 @@ import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
 import 'package:pverify/ui/defects/defects_screen.dart';
+import 'package:pverify/ui/inspection_details/inspection_details_screen.dart';
 import 'package:pverify/ui/inspection_photos/inspection_photos_screen.dart';
 import 'package:pverify/ui/long_form_quality_control_screen.dart';
 import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
@@ -1134,7 +1135,11 @@ class QCDetailsShortFormScreenController extends GetxController {
         }
         passingData[Consts.IS_MY_INSPECTION_SCREEN] = true;
         passingData[Consts.CALLER_ACTIVITY] = 'QCDetailsShortForm';
-        // TODO: Implement navigation to InspectionMenuActivity
+        final String uniqueTag =
+            DateTime.now().millisecondsSinceEpoch.toString();
+
+        Get.to(() => InspectionDetailsScreen(uniqueTag: uniqueTag),
+            arguments: passingData);
         // Get.offAll(
         //       () => InspectionMenuActivity(),
         //   arguments: passingData,

@@ -51,6 +51,7 @@ class OverriddenResultScreenController extends GetxController {
   String? lotSize;
   String? poNumber;
   String? productTransfer;
+  String? callerActivity;
   String carrierName = "";
 
   RxString newResultAccept = AppStrings.accept.obs;
@@ -95,6 +96,7 @@ class OverriddenResultScreenController extends GetxController {
     productTransfer = passingData[Consts.PRODUCT_TRANSFER];
     itemSkuId = passingData[Consts.ITEM_SKU_ID];
     itemSkuName = passingData[Consts.ITEM_SKU_NAME];
+    callerActivity = passingData[Consts.CALLER_ACTIVITY] ?? '';
 
     if (myInspectionResult == "AC" || myInspectionResult == AppStrings.accept) {
       myInspectionResult = AppStrings.accept;
@@ -268,10 +270,17 @@ class OverriddenResultScreenController extends GetxController {
           Consts.PO_NUMBER: poNumber,
           Consts.PRODUCT_TRANSFER: productTransfer,
         };
-        final String tag = DateTime.now().millisecondsSinceEpoch.toString();
 
-        Get.offAll(() => PurchaseOrderDetailsScreen(tag: tag),
-            arguments: passingData);
+        final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+        if (callerActivity == "PurchaseOrderDetailsActivity" ||
+            callerActivity == "NewPurchaseOrderDetailsActivity") {
+          Get.offAll(() => PurchaseOrderDetailsScreen(tag: tag),
+              arguments: passingData);
+        } else {
+          Get.back(
+            result: inspectionID,
+          );
+        }
       }
     }
   }
