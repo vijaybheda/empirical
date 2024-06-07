@@ -4260,4 +4260,41 @@ class ApplicationDao {
 
     return attachmentId;
   }
+
+  Future<bool> isQCTIsComplete(int inspectionId) async {
+    final Database db = await dbProvider.database;
+    List<Map<String, dynamic>> result;
+
+    try {
+      String query =
+          'SELECT * FROM ${DBTables.QUALITY_CONTROL} WHERE ${QualityControlColumn.INSPECTION_ID} = ?';
+      result = await db.rawQuery(query, [inspectionId]);
+
+      if (result.isNotEmpty) {
+        return result.first[QualityControlColumn.IS_COMPLETE] == 1;
+      }
+    } catch (e) {
+      debugPrint('Error has occurred while finding quality control items: $e');
+    }
+    return false;
+  }
+
+  Future<bool> isISTIsComplete(int inspectionId) async {
+    final Database db = await dbProvider.database;
+    List<Map<String, dynamic>> result;
+
+    try {
+      String query =
+          'SELECT * FROM ${DBTables.INSPECTION_SAMPLE} WHERE ${InspectionSampleColumn.INSPECTION_ID} = ?';
+      result = await db.rawQuery(query, [inspectionId]);
+
+      if (result.isNotEmpty) {
+        return result.first[InspectionSampleColumn.COMPLETE] == 1;
+      }
+    } catch (e) {
+      debugPrint(
+          'Error has occurred while finding trailer temperature items: $e');
+    }
+    return false;
+  }
 }
