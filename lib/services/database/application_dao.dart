@@ -3675,8 +3675,8 @@ class ApplicationDao {
               map[SpecificationGradeToleranceColumn.NUMBER_SPECIFICATION],
           specificationVersion:
               map[SpecificationGradeToleranceColumn.VERSION_SPECIFICATION],
-          severityDefectID:
-              map[SpecificationGradeToleranceColumn.SEVERITY_DEFECT_ID],
+          severityDefectID: int.tryParse(
+              map[SpecificationGradeToleranceColumn.SEVERITY_DEFECT_ID]),
           defectID: map[SpecificationGradeToleranceColumn.DEFECT_ID],
           specTolerancePercentage:
               map[SpecificationGradeToleranceColumn.GRADE_TOLERANCE_PERCENTAGE],

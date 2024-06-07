@@ -130,7 +130,8 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
         SizedBox(height: 20.h),
         GestureDetector(
           onTap: () {
-            controller.addDefectRow(sampleIndex: sampleIndex);
+            controller.hideKeypad(context);
+            controller.addDefectRow(context, sampleIndex: sampleIndex);
           },
           child: Text(
             AppStrings.addDefect,
