@@ -37,7 +37,7 @@ class MergeTable extends StatelessWidget {
         scrollDirection: Axis.vertical,
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            minWidth: MediaQuery.of(context).size.width,
+            maxWidth: MediaQuery.of(context).size.width * 3,
           ),
           child: Table(
             // border: TableBorder.all(color: borderColor),
@@ -113,7 +113,8 @@ class MergeTable extends StatelessWidget {
         Widget value = values[index];
         double spaceForBorder = (values.length - 1) / values.length;
         return SizedBox(
-          width: constraint.maxWidth / values.length - spaceForBorder,
+          // width: constraint.maxWidth / values.length - spaceForBorder,
+          width: 80,
           child: buildAlign(value),
         );
       });
@@ -143,12 +144,13 @@ class MergeTable extends StatelessWidget {
     if (child is Container) {
       return Container(
         alignment: alignmentGeometry,
+        width: 80,
         child: child,
       );
     }
     return SizedBox(
       height: 50,
-      width: 200,
+      width: 80,
       child: Container(
         alignment: alignmentGeometry,
         decoration: BoxDecoration(

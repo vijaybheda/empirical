@@ -31,10 +31,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
         tag: tag,
         builder: (controller) {
           return Scaffold(
-            backgroundColor: Theme
-                .of(context)
-                .colorScheme
-                .background,
+            backgroundColor: Theme.of(context).colorScheme.background,
             resizeToAvoidBottomInset: true,
             appBar: AppBar(
               toolbarHeight: 150.h,
@@ -42,9 +39,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               automaticallyImplyLeading: false,
               leading: const Offstage(),
               centerTitle: false,
-              backgroundColor: Theme
-                  .of(context)
-                  .primaryColor,
+              backgroundColor: Theme.of(context).primaryColor,
               titleSpacing: 0,
               title: DrawerHeaderContentView(
                 title: controller.partnerName,
@@ -114,8 +109,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
           ],
         ),
       ),
-      Obx(() =>
-          Container(
+      Obx(() => Container(
             padding: EdgeInsets.only(left: 40.w, right: 40.w),
             color: AppColors.black,
             height: 150.h,
@@ -124,39 +118,35 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               children: [
                 controller.sampleList.isNotEmpty
                     ? GestureDetector(
-                  onTap: () {
-                    controller.setSampleAndDefectCounts();
-                    controller.activeTabIndex.value = 0;
-                    controller.populateSeverityList();
-                    Future.delayed(const Duration(milliseconds: 500))
-                        .then((_) {
-                      controller.update();
-                    });
-                  },
-                  child: customViewDefectsView(
-                    100.h,
-                    320.w,
-                    AppStrings.defectsTable,
-                    context,
-                    controller.activeTabIndex.value == 0,
-                  ),
-                )
+                        onTap: () {
+                          controller.setSampleAndDefectCounts();
+                          controller.activeTabIndex.value = 0;
+                          controller.populateSeverityList();
+                          Future.delayed(const Duration(milliseconds: 500))
+                              .then((_) {
+                            controller.update();
+                          });
+                        },
+                        child: customViewDefectsView(
+                          100.h,
+                          320.w,
+                          AppStrings.defectsTable,
+                          context,
+                          controller.activeTabIndex.value == 0,
+                        ),
+                      )
                     : const SizedBox(),
                 controller.sampleList.isNotEmpty
                     ? Container(
-                  width: 3.w,
-                  height: 100.h,
-                  decoration: BoxDecoration(
-                      color: Theme
-                          .of(context)
-                          .primaryColor),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Theme
-                            .of(context)
-                            .canvasColor),
-                  ),
-                )
+                        width: 3.w,
+                        height: 100.h,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).canvasColor),
+                        ),
+                      )
                     : const SizedBox(),
                 GestureDetector(
                   onTap: () {
@@ -196,117 +186,117 @@ class DefectsScreen extends GetView<DefectsScreenController> {
       ),
       controller.activeTabIndex.value == 0
           ? Expanded(
-        flex: 1,
-        child: SingleChildScrollView(
-          child: DefectsMergerTable(
-            controller: controller,
-          ),
-        ),
-        //controller.drawDefectsTable()
-        //     SingleChildScrollView(
-        //   child: DefectsTable(
-        //     defectDataMap: controller.defectDataMap,
-        //     numberSamples: controller.numberSamples,
-        //     numberSeriousDefects: controller.numberSeriousDefects,
-        //     sampleDataMap: controller.sampleDataMap,
-        //     sampleDataMapIndexList: controller.sampleDataMapIndexList,
-        //     seriousDefectList: controller.seriousDefectList,
-        //     severityList: controller.appStorage.severityList ?? [],
-        //     controller: controller,
-        //   ),
-        // ),
-      )
-          : Expanded(
-        flex: 1,
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: 50.w, right: 50.w),
-              child: SizedBox(
-                height: 150.h,
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                            color: AppColors.lightSky,
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(20.r),
-                                bottomLeft: Radius.circular(20.r))),
-                        child: Container(
-                          margin:
-                          const EdgeInsets.symmetric(horizontal: 20),
-                          child: BoxTextField1(
-                            textColor: AppColors.textFieldText_Color,
-                            hintColor: AppColors.textFieldText_Color,
-                            isMulti: false,
-                            controller:
-                            controller.sizeOfNewSetTextController,
-                            onTap: () {},
-                            textalign: TextAlign.center,
-                            errorText: '',
-                            onEditingCompleted: () {
-                              FocusScope.of(context).unfocus();
-                            },
-                            onChanged: (value) {},
-                            keyboardType: TextInputType.number,
-                            hintText: AppStrings.sizeOfNewSample,
-                            isPasswordField: true,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: GestureDetector(
-                        onTap: () {
-                          if (controller.isValid(context)) {
-                            controller.addSample();
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              color: AppColors.primary,
-                              borderRadius: BorderRadius.only(
-                                  bottomRight: Radius.circular(20.r),
-                                  topRight: Radius.circular(20.r))),
-                          child: Text(
-                            AppStrings.addSample,
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.poppins(
-                                fontSize: 30.sp,
-                                fontWeight: FontWeight.w400,
-                                color: AppColors.white),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
+              flex: 1,
+              child: SingleChildScrollView(
+                child: DefectsMergerTable(
+                  controller: controller,
                 ),
               ),
-            ),
-            SizedBox(
-              height: 60.h,
-            ),
-            Expanded(
-              flex: 1,
-              child: ListView.builder(
-                  itemCount: controller.sampleList.length,
-                  itemBuilder: (BuildContext context, int sampleIndex) {
-                    return SampleSetWidget(
-                      sampleIndex: sampleIndex,
-                      controller: controller,
-                    );
-                  }),
+              //controller.drawDefectsTable()
+              //     SingleChildScrollView(
+              //   child: DefectsTable(
+              //     defectDataMap: controller.defectDataMap,
+              //     numberSamples: controller.numberSamples,
+              //     numberSeriousDefects: controller.numberSeriousDefects,
+              //     sampleDataMap: controller.sampleDataMap,
+              //     sampleDataMapIndexList: controller.sampleDataMapIndexList,
+              //     seriousDefectList: controller.seriousDefectList,
+              //     severityList: controller.appStorage.severityList ?? [],
+              //     controller: controller,
+              //   ),
+              // ),
             )
-          ],
-        ),
-      ),
+          : Expanded(
+              flex: 1,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 50.w, right: 50.w),
+                    child: SizedBox(
+                      height: 150.h,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: Container(
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  color: AppColors.lightSky,
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(20.r),
+                                      bottomLeft: Radius.circular(20.r))),
+                              child: Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: BoxTextField1(
+                                  textColor: AppColors.textFieldText_Color,
+                                  hintColor: AppColors.textFieldText_Color,
+                                  isMulti: false,
+                                  controller:
+                                      controller.sizeOfNewSetTextController,
+                                  onTap: () {},
+                                  textalign: TextAlign.center,
+                                  errorText: '',
+                                  onEditingCompleted: () {
+                                    FocusScope.of(context).unfocus();
+                                  },
+                                  onChanged: (value) {},
+                                  keyboardType: TextInputType.number,
+                                  hintText: AppStrings.sizeOfNewSample,
+                                  isPasswordField: true,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: GestureDetector(
+                              onTap: () {
+                                if (controller.isValid(context)) {
+                                  controller.addSample();
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                    color: AppColors.primary,
+                                    borderRadius: BorderRadius.only(
+                                        bottomRight: Radius.circular(20.r),
+                                        topRight: Radius.circular(20.r))),
+                                child: Text(
+                                  AppStrings.addSample,
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 30.sp,
+                                      fontWeight: FontWeight.w400,
+                                      color: AppColors.white),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 60.h,
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: ListView.builder(
+                        itemCount: controller.sampleList.length,
+                        itemBuilder: (BuildContext context, int sampleIndex) {
+                          return SampleSetWidget(
+                            sampleIndex: sampleIndex,
+                            controller: controller,
+                          );
+                        }),
+                  )
+                ],
+              ),
+            ),
       bottomContent(context, controller)
     ]);
   }
@@ -318,7 +308,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
       (((controller.totalColorSeriousDamage / controller.totalSamples) * 100))
           .round(),
       (((controller.totalColorVerySeriousDamage / controller.totalSamples) *
-          100))
+              100))
           .round(),
       (((controller.totalColorDecay / controller.totalSamples) * 100)).round(),
     ];
@@ -331,7 +321,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
       (((controller.totalSizeSeriousDamage / controller.totalSamples) * 100))
           .round(),
       (((controller.totalSizeVerySeriousDamage / controller.totalSamples) *
-          100))
+              100))
           .round(),
       (((controller.totalSizeDecay / controller.totalSamples) * 100)).round(),
     ];
@@ -344,12 +334,12 @@ class DefectsScreen extends GetView<DefectsScreenController> {
       [
         (((controller.totalDamage / controller.totalSamples) * 100)).round(),
         (((controller.seriousDefectCountMap[controller.seriousDefectList[0]]! /
-            controller.totalSamples) *
-            100))
+                    controller.totalSamples) *
+                100))
             .round(),
         (((controller.seriousDefectCountMap[controller.seriousDefectList[1]]! /
-            controller.totalSamples) *
-            100))
+                    controller.totalSamples) *
+                100))
             .round()
       ],
       [
@@ -404,11 +394,13 @@ class DefectsScreen extends GetView<DefectsScreenController> {
 
 // DEFECTS VIEW
 
-  Widget customViewDefectsView(double height,
-      double width,
-      String title,
-      BuildContext context,
-      bool isActive,) {
+  Widget customViewDefectsView(
+    double height,
+    double width,
+    String title,
+    BuildContext context,
+    bool isActive,
+  ) {
     return Row(
       children: [
         Container(
@@ -416,16 +408,14 @@ class DefectsScreen extends GetView<DefectsScreenController> {
           height: height,
           width: width,
           decoration: BoxDecoration(
-            color: Theme
-                .of(context)
-                .primaryColor,
+            color: Theme.of(context).primaryColor,
             border: isActive
                 ? Border(
-              bottom: BorderSide(
-                color: AppColors.blue,
-                width: 3,
-              ),
-            )
+                    bottom: BorderSide(
+                      color: AppColors.blue,
+                      width: 3,
+                    ),
+                  )
                 : null,
           ),
           child: Text(
@@ -483,8 +473,8 @@ class DefectsScreen extends GetView<DefectsScreenController> {
 
 // BOTTOM CONTENTS
 
-  Widget bottomContent(BuildContext context,
-      DefectsScreenController controller) {
+  Widget bottomContent(
+      BuildContext context, DefectsScreenController controller) {
     return Column(
       children: [
         Container(
@@ -497,10 +487,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               customButton(
                   backgroundColor: AppColors.white,
                   title: AppStrings.defectDiscard,
-                  width: (MediaQuery
-                      .of(context)
-                      .size
-                      .width / 2.3),
+                  width: (MediaQuery.of(context).size.width / 2.3),
                   height: 115,
                   fontStyle: GoogleFonts.poppins(
                       fontSize: 35.sp,
@@ -516,10 +503,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               customButton(
                   backgroundColor: AppColors.white,
                   title: AppStrings.saveInspectionButton,
-                  width: (MediaQuery
-                      .of(context)
-                      .size
-                      .width / 2.3),
+                  width: (MediaQuery.of(context).size.width / 2.3),
                   height: 115,
                   fontStyle: GoogleFonts.poppins(
                       fontSize: 35.sp,
@@ -541,10 +525,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               customButton(
                 backgroundColor: AppColors.white,
                 title: AppStrings.specException,
-                width: (MediaQuery
-                    .of(context)
-                    .size
-                    .width / 4.5),
+                width: (MediaQuery.of(context).size.width / 4.5),
                 height: 320.h,
                 fontStyle: GoogleFonts.poppins(
                     fontSize: 28.sp,
@@ -560,10 +541,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               customButton(
                 backgroundColor: AppColors.white,
                 title: AppStrings.specification,
-                width: (MediaQuery
-                    .of(context)
-                    .size
-                    .width / 4.5),
+                width: (MediaQuery.of(context).size.width / 4.5),
                 height: 320.h,
                 fontStyle: GoogleFonts.poppins(
                     fontSize: 28.sp,
@@ -587,10 +565,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               customButton(
                   backgroundColor: AppColors.white,
                   title: AppStrings.grade,
-                  width: (MediaQuery
-                      .of(context)
-                      .size
-                      .width / 4.5),
+                  width: (MediaQuery.of(context).size.width / 4.5),
                   height: 320.h,
                   fontStyle: GoogleFonts.poppins(
                     fontSize: 28.sp,
@@ -608,10 +583,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               customButton(
                   backgroundColor: AppColors.white,
                   title: AppStrings.specInstrunction,
-                  width: (MediaQuery
-                      .of(context)
-                      .size
-                      .width / 4.5),
+                  width: (MediaQuery.of(context).size.width / 4.5),
                   height: 320.h,
                   fontStyle: GoogleFonts.poppins(
                       fontSize: 28.sp,
@@ -729,17 +701,16 @@ class DefectsMergerTable extends StatelessWidget {
   List<BaseMColumn> _getColumns() {
     return [
       MColumn(header: "Type"),
-      if (controller.hasSeverityInjury) MColumn(header: "Injury"),
-      if (controller.hasSeverityDamage) MColumn(header: "Damage"),
+      if (controller.hasSeverityInjury) MColumn(header: "Defects"),
+      if (controller.hasSeverityDamage) MColumn(header: "Defects"),
       if (controller.hasSeveritySeriousDamage)
         MMergedColumns(
-          header: "Serious Damage",
+          header: "Defects",
           columns:
-          List.generate(numberSeriousDefects, (index) => "SD ${index + 1}"),
+              List.generate(numberSeriousDefects, (index) => "SD ${index + 1}"),
         ),
-      if (controller.hasSeverityVerySeriousDamage)
-        MColumn(header: "Very Serious Damage"),
-      if (controller.hasSeverityDecay) MColumn(header: "Decay"),
+      if (controller.hasSeverityVerySeriousDamage) MColumn(header: "Defects"),
+      if (controller.hasSeverityDecay) MColumn(header: "Defects"),
       MColumn(header: ""),
     ];
   }
@@ -758,6 +729,7 @@ class DefectsMergerTable extends StatelessWidget {
     rows.add(_getTotalConditionDefectsRow());
     rows.add(_getTotalConditionDefectsPercentRow());
     rows.add(_getTotalSeverityByDefectTypeRow());
+    rows.add(_getTotalSeverityByDefectPercentRow());
     rows.add(_getPercentByDefectTypeRow());
     rows.add(_getTotalSizeDefectsRow());
     rows.add(_getTotalSizeDefectsPercentRow());
@@ -805,18 +777,19 @@ class DefectsMergerTable extends StatelessWidget {
     );
   }
 
-  Widget defaultTextItem(String title) {
+  Widget defaultTextItem(String title, {Color? color}) {
     return SizedBox(
+      width: 100,
       child: Container(
         padding: EdgeInsets.all(2),
         // margin: EdgeInsets.symmetric(vertical: 5),
-        width: 200,
+        width: 100,
         height: 50,
         child: Center(
           child: Text(
             title,
-            style: Get.textTheme.labelMedium!
-                .copyWith(fontWeight: FontWeight.w600, color: AppColors.white),
+            style: Get.textTheme.labelMedium!.copyWith(
+                fontWeight: FontWeight.w600, color: color ?? AppColors.white),
           ),
         ),
       ),
@@ -925,11 +898,9 @@ class DefectsMergerTable extends StatelessWidget {
       if (controller.hasSeveritySeriousDamage)
         MMergedRows(List.generate(
             numberSeriousDefects,
-                (index) =>
-                Container(
-                    margin: EdgeInsets.symmetric(vertical: 5),
-                    child: defaultTextItem(
-                        (sampleData?.sdCnt ?? 0).toString())))),
+            (index) => Container(
+                margin: EdgeInsets.symmetric(vertical: 5),
+                child: defaultTextItem((sampleData?.sdCnt ?? 0).toString())))),
       if (controller.hasSeverityVerySeriousDamage)
         MRow(defaultTextItem((sampleData?.vsdCnt ?? 0).toString())),
       if (controller.hasSeverityDecay)
@@ -939,161 +910,356 @@ class DefectsMergerTable extends StatelessWidget {
     ];
   }
 
+  // Done
   List<BaseMRow> _getTotalQualityDefectsRow() {
     return [
       MRow(defaultTextItem("Quality Defects")),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem("$totalQualityInjury")),
+        MRow(defaultTextItem("${controller.totalQualityInjury}")),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem("$totalQualityDamage")),
+        MRow(defaultTextItem("${controller.totalQualityDamage}")),
       if (controller.hasSeveritySeriousDamage)
-        MMergedRows(List.generate(
-            numberSeriousDefects,
-                (index) =>
-                Container(
-                    margin: EdgeInsets.symmetric(vertical: 5),
-                    child: Text("$totalQualitySeriousDamage")))),
+        MMergedRows(List.generate(numberSeriousDefects, (index) {
+          String value = "";
+          if (index == 0) {
+            value = "$totalQualitySeriousDamage";
+          }
+          return Container(
+              margin: EdgeInsets.symmetric(vertical: 5), child: Text(value));
+        })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(defaultTextItem("$totalQualityVerySeriousDamage")),
+        MRow(defaultTextItem("${controller.totalQualityVerySeriousDamage}")),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem("$totalQualityDecay")),
+        MRow(defaultTextItem("${controller.totalQualityDecay}")),
       VerticalMergedRow(rowSpan: 5, child: Container())
     ];
   }
 
+  // Done
   List<BaseMRow> _getTotalQualityDefectsPercentRow() {
+    int percentDecay = (totalQualityDecay / totalSamples * 100).ceil();
+    int percentVSDamage =
+        (totalQualityVerySeriousDamage / totalSamples * 100).ceil();
+    int percentSDamage =
+        (totalQualitySeriousDamage / totalSamples * 100).ceil();
+    int percentDamage = (totalQualityDamage / totalSamples * 100).ceil();
+    int percentInjury = (totalQualityInjury / totalSamples * 100).ceil();
     return [
       MRow(defaultTextItem("Quality Defects %")),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem(
-            "${(totalQualityInjury / totalSamples * 100).ceil()}%")),
+        MRow(defaultTextItem("$percentInjury%")),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem(
-            "${(totalQualityDamage / totalSamples * 100).ceil()}%")),
+        MRow(defaultTextItem("$percentDamage%")),
       if (controller.hasSeveritySeriousDamage)
-        MMergedRows(List.generate(
-            numberSeriousDefects,
-                (index) =>
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 5),
-                  child: Text(
-                      "${(totalQualitySeriousDamage / totalSamples * 100)
-                          .ceil()}%"),
-                ))),
+        MMergedRows(List.generate(numberSeriousDefects, (index) {
+          String value = "";
+          if (index == 0) {
+            value = "$percentSDamage%";
+          }
+          return Container(
+            margin: EdgeInsets.symmetric(vertical: 5),
+            child: Text(
+              value,
+              style: TextStyle(
+                color: (controller.seriousDamageQualitySpec != null &&
+                        percentSDamage >
+                            (controller.seriousDamageQualitySpec ?? 0.0))
+                    ? Colors.red
+                    : Colors.white,
+              ),
+            ),
+          );
+        })),
       if (controller.hasSeverityVerySeriousDamage)
         MRow(Text(
-            "${(totalQualityVerySeriousDamage / totalSamples * 100).ceil()}%")),
+          "$percentVSDamage%",
+          style: TextStyle(
+            color: (controller.verySeriousDamageQualitySpec != null &&
+                    percentVSDamage >
+                        (controller.verySeriousDamageQualitySpec ?? 0.0))
+                ? Colors.red
+                : Colors.white,
+          ),
+        )),
       if (controller.hasSeverityDecay)
         MRow(defaultTextItem(
-            "${(totalQualityDecay / totalSamples * 100).ceil()}%")),
+          "$percentDecay%",
+          color: (controller.decayQualitySpec != null &&
+                  percentDecay > (controller.decayQualitySpec ?? 0.0))
+              ? Colors.red
+              : null,
+        )),
       VerticalMergedRow(rowSpan: 5, child: Container())
     ];
   }
 
+  // Done
   List<BaseMRow> _getTotalConditionDefectsRow() {
     return [
       MRow(defaultTextItem("Condition Defects")),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem("$totalConditionInjury")),
+        MRow(defaultTextItem("${controller.totalConditionInjury}")),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem("$totalConditionDamage")),
+        MRow(defaultTextItem("${controller.totalConditionDamage}")),
       if (controller.hasSeveritySeriousDamage)
-        MMergedRows(List.generate(
-            numberSeriousDefects,
-                (index) =>
-                Container(
-                    margin: EdgeInsets.symmetric(vertical: 5),
-                    child: Text("$totalConditionSeriousDamage")))),
+        MMergedRows(List.generate(numberSeriousDefects, (index) {
+          String value = "";
+          if (index == 0) {
+            int a = controller.totalConditionSeriousDamage;
+            value = "$a";
+          }
+          return Container(
+              margin: EdgeInsets.symmetric(vertical: 5), child: Text(value));
+        })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(defaultTextItem("$totalConditionVerySeriousDamage")),
+        MRow(defaultTextItem("${controller.totalConditionVerySeriousDamage}")),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem("$totalConditionDecay")),
+        MRow(defaultTextItem("${controller.totalConditionDecay}")),
       VerticalMergedRow(rowSpan: 5, child: Container())
     ];
   }
 
+  // Done
   List<BaseMRow> _getTotalConditionDefectsPercentRow() {
+    int percentCDecay = (totalConditionDecay / totalSamples * 100).ceil();
+    int percentCVSDamage =
+        (totalConditionVerySeriousDamage / totalSamples * 100).ceil();
+    int percentSCDamage =
+        (totalConditionSeriousDamage / totalSamples * 100).ceil();
+    int percentCDamage = (totalConditionDamage / totalSamples * 100).ceil();
+    int percentCInjury = (totalConditionInjury / totalSamples * 100).ceil();
+
     return [
       MRow(defaultTextItem("Condition Defects %")),
       if (controller.hasSeverityInjury)
         MRow(defaultTextItem(
-            "${(totalConditionInjury / totalSamples * 100).ceil()}%")),
+          "$percentCInjury%",
+          color: (controller.injuryConditionSpec != null &&
+                  percentCInjury > (controller.injuryConditionSpec ?? 0.0))
+              ? Colors.red
+              : null,
+        )),
       if (controller.hasSeverityDamage)
         MRow(defaultTextItem(
-            "${(totalConditionDamage / totalSamples * 100).ceil()}%")),
+          "$percentCDamage%",
+          color: (controller.damageConditionSpec != null &&
+                  percentCDamage > (controller.damageConditionSpec ?? 0.0))
+              ? Colors.red
+              : null,
+        )),
       if (controller.hasSeveritySeriousDamage)
-        MMergedRows(List.generate(
-            numberSeriousDefects,
-                (index) =>
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 5),
-                  child: Text(
-                      "${(totalConditionSeriousDamage / totalSamples * 100)
-                          .ceil()}%"),
-                ))),
+        MMergedRows(List.generate(numberSeriousDefects, (index) {
+          String value = "";
+          if (index == 0) {
+            value = "$percentSCDamage%";
+          }
+          return Container(
+            margin: EdgeInsets.symmetric(vertical: 5),
+            child: Text(
+              value,
+              style: TextStyle(
+                color: (controller.seriousDamageConditionSpec != null &&
+                        percentSCDamage >
+                            (controller.seriousDamageConditionSpec ?? 0.0))
+                    ? Colors.red
+                    : Colors.white,
+              ),
+            ),
+          );
+        })),
       if (controller.hasSeverityVerySeriousDamage)
         MRow(Text(
-            "${(totalConditionVerySeriousDamage / totalSamples * 100)
-                .ceil()}%")),
+          "$percentCVSDamage%",
+          style: TextStyle(
+            color: (controller.verySeriousDamageConditionSpec != null &&
+                    percentCVSDamage >
+                        (controller.verySeriousDamageConditionSpec ?? 0.0))
+                ? Colors.red
+                : Colors.white,
+          ),
+        )),
       if (controller.hasSeverityDecay)
         MRow(defaultTextItem(
-            "${(totalConditionDecay / totalSamples * 100).ceil()}%")),
+          "$percentCDecay%",
+          color: (controller.decayConditionSpec != null &&
+                  percentCDecay > (controller.decayConditionSpec ?? 0.0))
+              ? Colors.red
+              : null,
+        )),
       VerticalMergedRow(rowSpan: 5, child: Container())
     ];
   }
 
+  // Done
   List<BaseMRow> _getTotalSeverityByDefectTypeRow() {
     return [
       MRow(defaultTextItem("Total Severity")),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem("${controller.totalInjury}")),
+        MRow(defaultTextItem("${controller.totalInjury}%")),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem("${controller.totalDamage}")),
+        MRow(defaultTextItem("${controller.totalDamage}%")),
       if (controller.hasSeveritySeriousDamage)
-        MMergedRows(List.generate(
-            numberSeriousDefects,
-                (index) =>
-                Container(
-                    margin: EdgeInsets.symmetric(vertical: 5),
-                    child: Text("${controller.totalSeriousDamage}")))),
+        MMergedRows(List.generate(numberSeriousDefects, (index) {
+          String value = "0";
+          int percent = 0;
+          if (!controller.seriousDefectList.isEmpty) {
+            int? sdcount = controller
+                .seriousDefectCountMap[controller.seriousDefectList[index]];
+            if (sdcount != null) {
+              percent = (sdcount / totalSamples * 100).ceil();
+              value = percent.toString();
+            }
+          }
+          return Container(
+              margin: EdgeInsets.symmetric(vertical: 5),
+              child: Text(
+                "$value%",
+                style: TextStyle(
+                  color: (controller.seriousDamageSpec != null &&
+                          percent > (controller.seriousDamageSpec ?? 0.0))
+                      ? Colors.red
+                      : Colors.white,
+                ),
+              ));
+        })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(defaultTextItem("${controller.totalVerySeriousDamage}")),
+        MRow(defaultTextItem("${controller.totalVerySeriousDamage}%")),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem("${controller.totalDecay}")),
+        MRow(defaultTextItem("${controller.totalDecay}%")),
       VerticalMergedRow(rowSpan: 5, child: Container())
     ];
   }
 
-  List<BaseMRow> _getPercentByDefectTypeRow() {
+  // Done
+  List<BaseMRow> _getTotalSeverityByDefectPercentRow() {
+    int totalDecay = (controller.totalDecay / totalSamples * 100).ceil();
+    int totalDamage = (controller.totalDamage / totalSamples * 100).ceil();
+    int totalInjury = (controller.totalInjury / totalSamples * 100).ceil();
+    int totalVerySeriousDamage =
+        (controller.totalVerySeriousDamage / totalSamples * 100).ceil();
     return [
       MRow(defaultTextItem("Total Severity %")),
       if (controller.hasSeverityInjury)
         MRow(defaultTextItem(
-            "${(controller.totalInjury / totalSamples * 100).ceil()}%")),
+          "$totalInjury%",
+          color: (controller.injurySpec != null &&
+                  totalInjury > (controller.injurySpec ?? 0.0))
+              ? Colors.red
+              : null,
+        )),
       if (controller.hasSeverityDamage)
         MRow(defaultTextItem(
-            "${(controller.totalDamage / totalSamples * 100).ceil()}%")),
+          "$totalDamage%",
+          color: (controller.damageSpec != null &&
+                  totalDamage > (controller.damageSpec ?? 0.0))
+              ? Colors.red
+              : null,
+        )),
       if (controller.hasSeveritySeriousDamage)
-        MMergedRows(List.generate(
-            numberSeriousDefects,
-                (index) =>
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 5),
-                  child: Text(
-                      "${(controller.totalSeriousDamage / totalSamples * 100)
-                          .ceil()}%"),
-                ))),
+        MMergedRows(List.generate(numberSeriousDefects, (index) {
+          String value = "0";
+          int percent = 0;
+          if (!controller.seriousDefectList.isEmpty) {
+            int? sdcount = controller
+                .seriousDefectCountMap[controller.seriousDefectList[index]];
+            if (sdcount != null) {
+              percent = (sdcount / totalSamples * 100).ceil();
+              value = percent.toString();
+            }
+          }
+          return Container(
+              margin: EdgeInsets.symmetric(vertical: 5),
+              child: Text(
+                "$value%",
+                style: TextStyle(
+                  color: (controller.seriousDamageSpec != null &&
+                          percent > (controller.seriousDamageSpec ?? 0.0))
+                      ? Colors.red
+                      : Colors.white,
+                ),
+              ));
+        })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(Text(
-            "${(controller.totalVerySeriousDamage / totalSamples * 100)
-                .ceil()}%")),
-      if (controller.hasSeverityDecay)
         MRow(defaultTextItem(
-            "${(controller.totalDecay / totalSamples * 100).ceil()}%")),
+          "$totalVerySeriousDamage%",
+          color: controller.verySeriousDamageSpec != null &&
+                  totalVerySeriousDamage >
+                      (controller.verySeriousDamageSpec ?? 0.0)
+              ? Colors.red
+              : null,
+        )),
+      if (controller.hasSeverityDecay)
+        MRow(defaultTextItem("$totalDecay%",
+            color: (controller.decaySpec != null &&
+                    totalDecay > (controller.decaySpec ?? 0.0))
+                ? Colors.red
+                : null)),
       VerticalMergedRow(rowSpan: 5, child: Container())
     ];
   }
 
+  // Done
+  List<BaseMRow> _getPercentByDefectTypeRow() {
+    int totalDecay = (controller.totalDecay / totalSamples * 100).ceil();
+    int totalVerySeriousDamage =
+        (controller.totalSeriousDamage / totalSamples * 100).ceil();
+    int totalInjury = (controller.totalInjury / totalSamples * 100).ceil();
+    int totalDamage = (controller.totalDamage / totalSamples * 100).ceil();
+
+    return [
+      MRow(defaultTextItem("Total %")),
+      if (controller.hasSeverityInjury)
+        MRow(defaultTextItem("$totalInjury%",
+            color: (controller.injurySpec != null &&
+                    totalInjury > (controller.injurySpec ?? 0.0))
+                ? Colors.red
+                : null)),
+      if (controller.hasSeverityDamage)
+        MRow(defaultTextItem(
+          "$totalDamage%",
+          color: (controller.damageSpec != null &&
+                  totalDamage > (controller.damageSpec ?? 0.0))
+              ? Colors.red
+              : null,
+        )),
+      if (controller.hasSeveritySeriousDamage)
+        MMergedRows(List.generate(numberSeriousDefects, (index) {
+          int percent =
+              (controller.totalSeriousDamage / totalSamples * 100).ceil();
+          return Container(
+            margin: EdgeInsets.symmetric(vertical: 5),
+            child: Text(
+              "$percent%",
+              style: TextStyle(
+                  color: (controller.seriousDamageSpec != null &&
+                          percent > (controller.seriousDamageSpec ?? 0.0))
+                      ? Colors.red
+                      : null),
+            ),
+          );
+        })),
+      if (controller.hasSeverityVerySeriousDamage)
+        MRow(
+          Text("$totalVerySeriousDamage%",
+              style: TextStyle(
+                color: (controller.verySeriousDamageSpec != null &&
+                        totalVerySeriousDamage >
+                            (controller.verySeriousDamageSpec ?? 0.0))
+                    ? Colors.red
+                    : null,
+              )),
+        ),
+      if (controller.hasSeverityDecay)
+        MRow(defaultTextItem("$totalDecay%",
+            color: (controller.decaySpec != null &&
+                    totalDecay > (controller.decaySpec ?? 0.0))
+                ? Colors.red
+                : null)),
+      VerticalMergedRow(rowSpan: 5, child: Container())
+    ];
+  }
+
+  // Done
   List<BaseMRow> _getTotalSizeDefectsRow() {
     return [
       MRow(defaultTextItem("Size Defects")),
@@ -1102,12 +1268,14 @@ class DefectsMergerTable extends StatelessWidget {
       if (controller.hasSeverityDamage)
         MRow(defaultTextItem("$totalSizeDamage")),
       if (controller.hasSeveritySeriousDamage)
-        MMergedRows(List.generate(
-            numberSeriousDefects,
-                (index) =>
-                Container(
-                    margin: EdgeInsets.symmetric(vertical: 5),
-                    child: Text("$totalSizeSeriousDamage")))),
+        MMergedRows(List.generate(numberSeriousDefects, (index) {
+          String value = "";
+          if (index == 0) {
+            value = "$totalSizeSeriousDamage";
+          }
+          return Container(
+              margin: EdgeInsets.symmetric(vertical: 5), child: Text(value));
+        })),
       if (controller.hasSeverityVerySeriousDamage)
         MRow(defaultTextItem("$totalSizeVerySeriousDamage")),
       if (controller.hasSeverityDecay) MRow(defaultTextItem("$totalSizeDecay")),
@@ -1115,35 +1283,41 @@ class DefectsMergerTable extends StatelessWidget {
     ];
   }
 
+  // Done
   List<BaseMRow> _getTotalSizeDefectsPercentRow() {
+    int percentSizeDecay = (totalSizeDecay / totalSamples * 100).ceil();
+    int percentSizeVSDamage =
+        (totalSizeVerySeriousDamage / totalSamples * 100).ceil();
+    int percentSizeDamage = (totalSizeDamage / totalSamples * 100).ceil();
+    int percentSizeInjury = (totalSizeInjury / totalSamples * 100).ceil();
     return [
       MRow(defaultTextItem("Size Defects %")),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem(
-            "${(totalSizeInjury / totalSamples * 100).ceil()}%")),
+        MRow(defaultTextItem("$percentSizeInjury%")),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem(
-            "${(totalSizeDamage / totalSamples * 100).ceil()}%")),
+        MRow(defaultTextItem("$percentSizeDamage%")),
       if (controller.hasSeveritySeriousDamage)
-        MMergedRows(List.generate(
-            numberSeriousDefects,
-                (index) =>
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 5),
-                  child: Text(
-                      "${(totalSizeSeriousDamage / totalSamples * 100)
-                          .ceil()}%"),
-                ))),
+        MMergedRows(List.generate(numberSeriousDefects, (index) {
+          String value = "";
+          if (index == 0) {
+            int percentSCDamage =
+                (totalSizeSeriousDamage / totalSamples * 100).ceil();
+            value = "$percentSCDamage%";
+          }
+          return Container(
+            margin: EdgeInsets.symmetric(vertical: 5),
+            child: Text(value),
+          );
+        })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(Text(
-            "${(totalSizeVerySeriousDamage / totalSamples * 100).ceil()}%")),
+        MRow(Text("$percentSizeVSDamage%")),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem(
-            "${(totalSizeDecay / totalSamples * 100).ceil()}%")),
+        MRow(defaultTextItem("$percentSizeDecay%")),
       VerticalMergedRow(rowSpan: 5, child: Container())
     ];
   }
 
+  // Done
   List<BaseMRow> _getTotalColorDefectsRow() {
     return [
       MRow(defaultTextItem("Color Defects")),
@@ -1152,12 +1326,14 @@ class DefectsMergerTable extends StatelessWidget {
       if (controller.hasSeverityDamage)
         MRow(defaultTextItem("$totalColorDamage")),
       if (controller.hasSeveritySeriousDamage)
-        MMergedRows(List.generate(
-            numberSeriousDefects,
-                (index) =>
-                Container(
-                    margin: EdgeInsets.symmetric(vertical: 5),
-                    child: Text("$totalColorSeriousDamage")))),
+        MMergedRows(List.generate(numberSeriousDefects, (index) {
+          String value = "";
+          if (index == 0) {
+            value = "$totalColorSeriousDamage";
+          }
+          return Container(
+              margin: EdgeInsets.symmetric(vertical: 5), child: Text(value));
+        })),
       if (controller.hasSeverityVerySeriousDamage)
         MRow(defaultTextItem("$totalColorVerySeriousDamage")),
       if (controller.hasSeverityDecay)
@@ -1166,31 +1342,36 @@ class DefectsMergerTable extends StatelessWidget {
     ];
   }
 
+  // Done
   List<BaseMRow> _getTotalColorDefectsPercentRow() {
+    double percentColorDecay = (totalColorDecay / totalSamples * 100);
+    double percentColorVSDamage =
+        (totalColorVerySeriousDamage / totalSamples * 100);
+    int percentColorDamage = (totalColorDamage / totalSamples * 100).ceil();
+    int percentColorInjury = (totalColorInjury / totalSamples * 100).ceil();
     return [
       MRow(defaultTextItem("Color Defects %")),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem(
-            "${(totalColorInjury / totalSamples * 100).ceil()}%")),
+        MRow(defaultTextItem("$percentColorInjury%")),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem(
-            "${(totalColorDamage / totalSamples * 100).ceil()}%")),
+        MRow(defaultTextItem("$percentColorDamage%")),
       if (controller.hasSeveritySeriousDamage)
-        MMergedRows(List.generate(
-            numberSeriousDefects,
-                (index) =>
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 5),
-                  child: Text(
-                      "${(totalColorSeriousDamage / totalSamples * 100)
-                          .ceil()}%"),
-                ))),
+        MMergedRows(List.generate(numberSeriousDefects, (index) {
+          String value = "";
+          if (index == 0) {
+            int percentSColorDamage =
+                (totalColorSeriousDamage / totalSamples * 100).ceil();
+            "$percentSColorDamage%";
+          }
+          return Container(
+            margin: EdgeInsets.symmetric(vertical: 5),
+            child: Text(value),
+          );
+        })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(Text(
-            "${(totalColorVerySeriousDamage / totalSamples * 100).ceil()}%")),
+        MRow(Text("${percentColorVSDamage.ceil()}%")),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem(
-            "${(totalColorDecay / totalSamples * 100).ceil()}%")),
+        MRow(defaultTextItem("${percentColorDecay.ceil()}%")),
       VerticalMergedRow(rowSpan: 5, child: Container())
     ];
   }
