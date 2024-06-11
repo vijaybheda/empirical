@@ -2,6 +2,7 @@ import UIKit
 import Flutter
 import CoreLocation
 import Network
+import MTBBarcodeScanner
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate, FlutterStreamHandler{
@@ -10,6 +11,8 @@ import Network
     var eventSink: FlutterEventSink?
     let monitor = NWPathMonitor()
     var isConnected = false
+    private var scanner: MTBBarcodeScanner?
+    private var result: FlutterResult?
 
     override func application(
         _ application: UIApplication,
@@ -32,6 +35,10 @@ import Network
             }
         }
 
+        // Setup method channel for barcode scanning
+        let channel = FlutterMethodChannel(name: "com.example.barcode_scan", binaryMessenger: flutterViewController.binaryMessenger)
+        channel.setMethodCallHandler(handleMethodCall)
+
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
@@ -48,6 +55,49 @@ import Network
     func sendEventToFlutter(rssi: Bool) {
         print("RSSI ==========>>>>>>>>>> ", rssi)
         eventSink?(rssi)
+    }
+
+    // Method to handle method calls
+    private func handleMethodCall(call: FlutterMethodCall, result: @escaping FlutterResult) {
+        if call.method == "scanBarcode" {
+            self.result = result
+            startScanning()
+        } else {
+            result(FlutterMethodNotImplemented)
+        }
+    }
+
+    // Method to start barcode scanning
+    private func startScanning() {
+        guard let controller = window?.rootViewController else {
+            result?("Failed to start scanning: No root view controller")
+            return
+        }
+
+        let scanView = UIView(frame: controller.view.bounds)
+        scanView.backgroundColor = .white
+        controller.view.addSubview(scanView)
+
+        scanner = MTBBarcodeScanner(previewView: scanView)
+        MTBBarcodeScanner.requestCameraPermission { [weak self] success in
+            guard let self = self else { return }
+            if success {
+                do {
+                    try self.scanner?.startScanning(resultBlock: { codes in
+                        if let codes = codes {
+                            let codeString = codes.compactMap { $0.stringValue }.joined(separator: "\n")
+                            self.scanner?.stopScanning()
+                            scanView.removeFromSuperview()
+                            self.result?(codeString)
+                        }
+                    })
+                } catch {
+                    self.result?("Failed to start scanning: \(error.localizedDescription)")
+                }
+            } else {
+                self.result?("Failed to get camera permission")
+            }
+        }
     }
 }
 
