@@ -1523,6 +1523,32 @@ class DefectsScreenController extends GetxController {
     }
   }
 
+  Future<void> navigateToViewCameraScreen({
+    required SampleData sampleData,
+  }) async {
+    Map<String, dynamic> passingData = {};
+    passingData[Consts.PARTNER_NAME] = partnerName;
+    passingData[Consts.PARTNER_NAME] = partnerName;
+    passingData[Consts.PARTNER_ID] = partnerID;
+    passingData[Consts.CARRIER_NAME] = carrierName;
+    passingData[Consts.CARRIER_ID] = carrierID;
+    passingData[Consts.COMMODITY_NAME] = commodityName;
+    passingData[Consts.COMMODITY_ID] = commodityID;
+    passingData[Consts.VARIETY_NAME] = varietyName;
+    passingData[Consts.VARIETY_SIZE] = varietySize;
+    passingData[Consts.VARIETY_ID] = varietyId;
+
+    int? sampleId = getSampleID(sampleData.name);
+    if (sampleId != null) {
+      passingData[Consts.SAMPLE_ID] = sampleId;
+    }
+
+    passingData[Consts.FOR_DEFECT_ATTACHMENT] = true;
+
+    final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+    Get.to(() => InspectionPhotos(tag: tag), arguments: passingData);
+  }
+
   void setSampleAndDefectCounts() {
     sampleDataMap.clear();
     sampleDataMapIndexList.clear();

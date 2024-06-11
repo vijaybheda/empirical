@@ -14,6 +14,8 @@ import 'package:pverify/utils/app_const.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
+import 'package:pverify/utils/dialogs/app_alerts.dart';
+import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class DefectsScreen extends GetView<DefectsScreenController> {
@@ -712,12 +714,15 @@ class DefectsMergerTable extends StatelessWidget {
       if (controller.hasSeverityVerySeriousDamage) MColumn(header: "Defects"),
       if (controller.hasSeverityDecay) MColumn(header: "Defects"),
       MColumn(header: ""),
+      MColumn(header: ""),
+      // MColumn(header: ""),
     ];
   }
 
   List<List<BaseMRow>> _getRows() {
     List<List<BaseMRow>> rows = [];
 
+    rows.add(_createDefectTableHeaderRow());
     rows.add(_getRowSeverity());
 
     for (int i = 0; i < numberSamples; i++) {
@@ -750,7 +755,24 @@ class DefectsMergerTable extends StatelessWidget {
       if (controller.hasSeverityVerySeriousDamage)
         MRow(circularDefectItem("VS")),
       if (controller.hasSeverityDecay) MRow(circularDefectItem("DK")),
-      VerticalMergedRow(rowSpan: 5, child: Container())
+      VerticalMergedRow(rowSpan: 5, child: Container()),
+      VerticalMergedRow(rowSpan: 5, child: Container()),
+    ];
+  }
+
+  List<BaseMRow> _createDefectTableHeaderRow() {
+    return [
+      MRow(defaultTextItem("Type")),
+      if (controller.hasSeverityInjury) MRow(defaultTextItem('Defects')),
+      if (controller.hasSeverityDamage) MRow(defaultTextItem('Defects')),
+      if (controller.hasSeveritySeriousDamage)
+        for (int i = 0; i < numberSeriousDefects; i++)
+          if (controller.hasSeverityDamage) MRow(defaultTextItem('Defects')),
+      if (controller.hasSeverityVerySeriousDamage)
+        MRow(defaultTextItem('Defects')),
+      if (controller.hasSeverityDecay) MRow(defaultTextItem('Defects')),
+      VerticalMergedRow(rowSpan: 5, child: Container()),
+      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
@@ -890,23 +912,23 @@ class DefectsMergerTable extends StatelessWidget {
   List<BaseMRow> _getSampleRow(int index) {
     SampleData? sampleData = controller.sampleList.elementAtOrNull(index);
     return [
-      MRow(defaultTextItem((sampleData?.setNumber ?? 0).toString())),
+      MRow(defaultTextItem((sampleData?.sampleSize ?? 0).toString())),
       if (controller.hasSeverityInjury)
         MRow(defaultTextItem((sampleData?.iCnt ?? 0).toString())),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem((sampleData?.sdCnt ?? 0).toString())),
+        MRow(defaultTextItem((sampleData?.dCnt ?? 0).toString())),
       if (controller.hasSeveritySeriousDamage)
-        MMergedRows(List.generate(
-            numberSeriousDefects,
-            (index) => Container(
-                margin: EdgeInsets.symmetric(vertical: 5),
-                child: defaultTextItem((sampleData?.sdCnt ?? 0).toString())))),
+        MMergedRows(List.generate(numberSeriousDefects, (index) {
+          return Container(
+              margin: EdgeInsets.symmetric(vertical: 5),
+              child: defaultTextItem((sampleData?.sdCnt ?? 0).toString()));
+        })),
       if (controller.hasSeverityVerySeriousDamage)
         MRow(defaultTextItem((sampleData?.vsdCnt ?? 0).toString())),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem((sampleData?.dCnt ?? 0).toString())),
-      MMergedRows(List.generate(
-          numberSeriousDefects, (index) => circularDefectItem("1"))),
+        MRow(defaultTextItem((sampleData?.dcCnt ?? 0).toString())),
+      MRow(_createPicturesCell(sampleData)),
+      MRow(_createCommentsCell(sampleData)),
     ];
   }
 
@@ -931,7 +953,8 @@ class DefectsMergerTable extends StatelessWidget {
         MRow(defaultTextItem("${controller.totalQualityVerySeriousDamage}")),
       if (controller.hasSeverityDecay)
         MRow(defaultTextItem("${controller.totalQualityDecay}")),
-      VerticalMergedRow(rowSpan: 5, child: Container())
+      VerticalMergedRow(rowSpan: 5, child: Container()),
+      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
@@ -989,7 +1012,8 @@ class DefectsMergerTable extends StatelessWidget {
               ? Colors.red
               : null,
         )),
-      VerticalMergedRow(rowSpan: 5, child: Container())
+      VerticalMergedRow(rowSpan: 5, child: Container()),
+      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
@@ -1015,7 +1039,8 @@ class DefectsMergerTable extends StatelessWidget {
         MRow(defaultTextItem("${controller.totalConditionVerySeriousDamage}")),
       if (controller.hasSeverityDecay)
         MRow(defaultTextItem("${controller.totalConditionDecay}")),
-      VerticalMergedRow(rowSpan: 5, child: Container())
+      VerticalMergedRow(rowSpan: 5, child: Container()),
+      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
@@ -1086,7 +1111,8 @@ class DefectsMergerTable extends StatelessWidget {
               ? Colors.red
               : null,
         )),
-      VerticalMergedRow(rowSpan: 5, child: Container())
+      VerticalMergedRow(rowSpan: 5, child: Container()),
+      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
@@ -1126,7 +1152,8 @@ class DefectsMergerTable extends StatelessWidget {
         MRow(defaultTextItem("${controller.totalVerySeriousDamage}%")),
       if (controller.hasSeverityDecay)
         MRow(defaultTextItem("${controller.totalDecay}%")),
-      VerticalMergedRow(rowSpan: 5, child: Container())
+      VerticalMergedRow(rowSpan: 5, child: Container()),
+      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
@@ -1194,7 +1221,8 @@ class DefectsMergerTable extends StatelessWidget {
                     totalDecay > (controller.decaySpec ?? 0.0))
                 ? Colors.red
                 : null)),
-      VerticalMergedRow(rowSpan: 5, child: Container())
+      VerticalMergedRow(rowSpan: 5, child: Container()),
+      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
@@ -1255,7 +1283,8 @@ class DefectsMergerTable extends StatelessWidget {
                     totalDecay > (controller.decaySpec ?? 0.0))
                 ? Colors.red
                 : null)),
-      VerticalMergedRow(rowSpan: 5, child: Container())
+      VerticalMergedRow(rowSpan: 5, child: Container()),
+      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
@@ -1279,7 +1308,8 @@ class DefectsMergerTable extends StatelessWidget {
       if (controller.hasSeverityVerySeriousDamage)
         MRow(defaultTextItem("$totalSizeVerySeriousDamage")),
       if (controller.hasSeverityDecay) MRow(defaultTextItem("$totalSizeDecay")),
-      VerticalMergedRow(rowSpan: 5, child: Container())
+      VerticalMergedRow(rowSpan: 5, child: Container()),
+      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
@@ -1313,7 +1343,8 @@ class DefectsMergerTable extends StatelessWidget {
         MRow(Text("$percentSizeVSDamage%")),
       if (controller.hasSeverityDecay)
         MRow(defaultTextItem("$percentSizeDecay%")),
-      VerticalMergedRow(rowSpan: 5, child: Container())
+      VerticalMergedRow(rowSpan: 5, child: Container()),
+      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
@@ -1338,7 +1369,8 @@ class DefectsMergerTable extends StatelessWidget {
         MRow(defaultTextItem("$totalColorVerySeriousDamage")),
       if (controller.hasSeverityDecay)
         MRow(defaultTextItem("$totalColorDecay")),
-      VerticalMergedRow(rowSpan: 5, child: Container())
+      VerticalMergedRow(rowSpan: 5, child: Container()),
+      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
@@ -1361,7 +1393,7 @@ class DefectsMergerTable extends StatelessWidget {
           if (index == 0) {
             int percentSColorDamage =
                 (totalColorSeriousDamage / totalSamples * 100).ceil();
-            "$percentSColorDamage%";
+            value = "$percentSColorDamage%";
           }
           return Container(
             margin: EdgeInsets.symmetric(vertical: 5),
@@ -1372,8 +1404,44 @@ class DefectsMergerTable extends StatelessWidget {
         MRow(Text("${percentColorVSDamage.ceil()}%")),
       if (controller.hasSeverityDecay)
         MRow(defaultTextItem("${percentColorDecay.ceil()}%")),
-      VerticalMergedRow(rowSpan: 5, child: Container())
+      VerticalMergedRow(rowSpan: 5, child: Container()),
+      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
+  }
+
+  Widget _createPicturesCell(SampleData? sampleData) {
+    return GestureDetector(
+      onTap: () async {
+        if (sampleData != null) {
+          controller.navigateToViewCameraScreen(sampleData: sampleData);
+        }
+      },
+      child: Icon(
+        Icons.photo_camera,
+        color: AppColors.iconBlue,
+        size: 90.w,
+      ),
+    );
+  }
+
+  Widget _createCommentsCell(SampleData? sampleData) {
+    String comment = controller.getCommentsForSample(sampleData!.name);
+    return GestureDetector(
+      onTap: () {
+        AppAlertDialog.validateAlerts(
+          Get.context!,
+          AppStrings.viewComment,
+          comment,
+        );
+      },
+      child: Image.asset(
+        comment.trim().isNotEmpty
+            ? AppImages.ic_specCommentsAdded
+            : AppImages.ic_specComments,
+        width: 80.w,
+        fit: BoxFit.contain,
+      ),
+    );
   }
 }
 
