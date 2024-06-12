@@ -191,7 +191,7 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
               ? Flexible(
                   flex: 1,
                   child: defectCategoryTag(
-                    tag: AppStrings.seriousDamageIcon,
+                    tag: AppStrings.verySeriousDamageIcon,
                     textStyle: textStyle,
                   ),
                 )
@@ -202,7 +202,7 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
               ? Flexible(
                   flex: 1,
                   child: defectCategoryTag(
-                    tag: AppStrings.verySeriousDamageIcon,
+                    tag: AppStrings.seriousDamageIcon,
                     textStyle: textStyle,
                   ),
                 )
