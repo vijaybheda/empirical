@@ -13,6 +13,7 @@ import 'package:pverify/models/country_item.dart';
 import 'package:pverify/models/defect_categories.dart';
 import 'package:pverify/models/defect_instruction_attachment.dart';
 import 'package:pverify/models/defect_item.dart';
+import 'package:pverify/models/delivery_to_item.dart';
 import 'package:pverify/models/document_item.dart';
 import 'package:pverify/models/document_item_data.dart';
 import 'package:pverify/models/exception_item.dart';
@@ -54,6 +55,28 @@ class JsonFileOperations {
     if (data != null && data.isNotEmpty) {
       await _appStorage.savePartnerList(data);
     }
+    return (data != null && data.isNotEmpty);
+  }
+
+  Future<bool> offlineLoadDeliveredFrom() async {
+    var storagePath = await Utils().getExternalStoragePath();
+    final Directory directory =
+        Directory("$storagePath${FileManString.jsonFilesCache}/");
+
+    File file =
+        File(join(directory.path, FileManString.DELIVERYTO_JSON_FILENAME));
+    if (!(await file.exists())) {
+      return false;
+    }
+
+    String content = await file.readAsString();
+
+    List<DeliveryToItem>? data = parseDeliveryToJson(content);
+
+    if (data != null && data.isNotEmpty) {
+      await _appStorage.saveDeliveredList(data);
+    }
+
     return (data != null && data.isNotEmpty);
   }
 
@@ -221,6 +244,26 @@ class JsonFileOperations {
           recordType: recordType,
         );
         list ??= [];
+        list.add(listItem);
+      }
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+    return list;
+  }
+
+  List<DeliveryToItem>? parseDeliveryToJson(String response) {
+    List<DeliveryToItem>? list = [];
+    try {
+      List<dynamic> deliveryToArray = jsonDecode(response);
+
+      for (int i = 0; i < deliveryToArray.length; i++) {
+        Map<String, dynamic> item = deliveryToArray[i];
+        int id = item['partnerID'];
+        String name = item['partnerName'];
+
+        DeliveryToItem listItem = DeliveryToItem(id, name);
         list.add(listItem);
       }
     } catch (e) {

@@ -100,6 +100,7 @@ class CacheDownloadController extends GetxController {
     AppSnackBar.success(message: AppStrings.jsonDownloadedSuccessfully);
     var allFunctions = [
       jsonFileOperations.offlineLoadSuppliersData(),
+      jsonFileOperations.offlineLoadDeliveredFrom(),
       jsonFileOperations.offlineLoadCarriersData(),
       jsonFileOperations.offlineLoadCommodityData(),
       jsonFileOperations.offlineLoadSpecificationBannerData(),

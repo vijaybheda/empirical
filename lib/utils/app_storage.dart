@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pverify/models/agency_item.dart';
@@ -125,6 +127,13 @@ class AppStorage extends GetxController {
     return write(StorageKey.kPartnerList, partnerListString);
   }
 
+  Future<void> saveDeliveredList(List<DeliveryToItem> deliveredList) {
+    // list to String
+    List<Map<String, dynamic>> deliveredListString =
+        deliveredList.map((e) => e.toJson()).toList();
+    return write(StorageKey.kDeliveryList, deliveredListString);
+  }
+
   List<PartnerItem>? getPartnerList() {
     // read String data and convert to List<PartnerItem> list
     var partnerListString = read(StorageKey.kPartnerList);
@@ -139,6 +148,22 @@ class AppStorage extends GetxController {
         .cast<PartnerItem>();
 
     return partnerList;
+  }
+
+  List<DeliveryToItem>? getDeliveryToList() {
+    // read String data and convert to List<DeliveryToItem> list
+    var deliveryToListString = read(StorageKey.kDeliveryList);
+    if (deliveryToListString == null) {
+      return null;
+    }
+
+    List<dynamic> decodedData = deliveryToListString;
+    List<DeliveryToItem> deliveryToList = decodedData
+        .map((item) => DeliveryToItem.fromJson(item))
+        .toList()
+        .cast<DeliveryToItem>();
+
+    return deliveryToList;
   }
 
   Future<void> saveCarrierList(List<CarrierItem> carrierList) {
@@ -413,6 +438,7 @@ class StorageKey {
   static const String kIsCSVDownloaded1 = 'isCSVDownloaded1';
   static const String kHeaderMap = 'headerMap';
   static const String kPartnerList = 'partnerList';
+  static const String kDeliveryList = 'deliveryList';
   static const String kCarrierList = 'carrierList';
   static const String kCommodityList = 'commodityList';
   static const String kMainCommodityList = 'mainCommodityList';
