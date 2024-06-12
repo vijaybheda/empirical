@@ -13,6 +13,11 @@ class MergeTable extends StatelessWidget {
     assert(columns.isNotEmpty);
     assert(rows.isNotEmpty);
     for (List<BaseMRow> row in rows) {
+      if (row.length != columns.length) {
+        if (row.length < columns.length) {
+          row.add(MRow(const SizedBox()));
+        }
+      }
       assert(row.length == columns.length);
     }
   }
@@ -37,12 +42,13 @@ class MergeTable extends StatelessWidget {
         scrollDirection: Axis.vertical,
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            minWidth: MediaQuery.of(context).size.width,
+            minHeight: MediaQuery.of(context).size.width,
+            maxWidth: MediaQuery.of(context).size.width * 1.5,
           ),
           child: Table(
             // border: TableBorder.all(color: borderColor),
-            // columnWidths: columnWidths,
-            // defaultColumnWidth: IntrinsicColumnWidth(),
+            columnWidths: columnWidths,
+            defaultColumnWidth: IntrinsicColumnWidth(),
             defaultVerticalAlignment: defaultVerticalAlignment,
             children: [
               buildHeader(),
@@ -100,7 +106,7 @@ class MergeTable extends StatelessWidget {
         Divider(color: borderColor, height: 1, thickness: 1),
         buildMutiColumns(
           List.generate(column.columns!.length, (index) {
-            return buildSingleColumn(column.columns![index]);
+            return buildAlign(column.columns![index]);
           }),
         ),
       ],
@@ -113,7 +119,8 @@ class MergeTable extends StatelessWidget {
         Widget value = values[index];
         double spaceForBorder = (values.length - 1) / values.length;
         return SizedBox(
-          width: constraint.maxWidth / values.length - spaceForBorder,
+          // width: constraint.maxWidth / values.length - spaceForBorder,
+          width: 80,
           child: buildAlign(value),
         );
       });
@@ -143,12 +150,13 @@ class MergeTable extends StatelessWidget {
     if (child is Container) {
       return Container(
         alignment: alignmentGeometry,
+        width: 80,
         child: child,
       );
     }
     return SizedBox(
       height: 50,
-      width: 200,
+      width: 80,
       child: Container(
         alignment: alignmentGeometry,
         decoration: BoxDecoration(

@@ -60,14 +60,13 @@ class InspectionPhotosController extends GetxController {
     varietyName = args[Consts.VARIETY_NAME];
     varietySize = args[Consts.VARIETY_SIZE];
     varietyId = args[Consts.VARIETY_ID];
-    isViewOnlyMode = args[Consts.IS_VIEW_ONLY_MODE] ?? true;
+    isViewOnlyMode = args[Consts.IS_VIEW_ONLY_MODE] ?? false;
     inspectionId = args[Consts.INSPECTION_ID] ?? -1;
 
     sampleId = args[Consts.SAMPLE_ID] ?? -1;
     defectId = args[Consts.DEFECT_ID] ?? -1;
     hasAttachmentIds = args[Consts.HAS_INSPECTION_IDS] ?? false;
 
-    isViewOnlyMode = false;
     callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
     forDefect = args[Consts.FOR_DEFECT_ATTACHMENT] ?? false;
 
@@ -266,7 +265,7 @@ class InspectionPhotosController extends GetxController {
 
   void backAction(BuildContext context) {
     if (imagesListBackup.isEmpty) {
-      Get.back();
+      Get.back(result: true);
     } else {
       if (imagesListBackup.length == 1) {
         AppAlertDialog.confirmationAlert(
@@ -283,7 +282,7 @@ class InspectionPhotosController extends GetxController {
           AppStrings.error,
           'There are ${imagesListBackup.length} pictures not saved, are you sure you want to back?',
           onYesTap: () {
-            Get.back();
+            Get.back(result: true);
           },
         );
       }

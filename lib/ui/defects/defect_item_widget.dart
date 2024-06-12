@@ -396,11 +396,12 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
             InkWell(
               onTap: () {
                 DefectsInfoDialog defectsInfoDialog = DefectsInfoDialog(
-                  position: sampleIndex,
-                  commodityID: controller.commodityID!,
-                  commodityList: controller.appStorage.commodityList ?? [],
-                  defectList: controller.appStorage.defectsList ?? [],
-                );
+                    position: sampleIndex,
+                    commodityID: controller.commodityID!,
+                    commodityList: controller.appStorage.commodityList ?? [],
+                    defectid: controller.sampleList[sampleIndex]
+                        .defectItems[defectItemIndex].defectId,
+                    name: controller.sampleList[sampleIndex].name);
 
                 defectsInfoDialog.showDefectDialog(Get.context!);
               },

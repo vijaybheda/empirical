@@ -2,7 +2,7 @@ part of '../../merge_table.dart';
 
 abstract class BaseMColumn {
   final String header;
-  final List<String>? columns;
+  final List<Widget>? columns;
 
   bool get isMergedColumn => columns != null;
 
@@ -20,10 +20,10 @@ class MColumn extends BaseMColumn {
 
 class MMergedColumns extends BaseMColumn {
   @override
-  List<String> get columns => super.columns!;
+  List<Widget> get columns => super.columns!;
 
   MMergedColumns({
     required super.header,
-    required List<String> super.columns,
+    required List<Widget> super.columns,
   });
 }

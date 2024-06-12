@@ -232,6 +232,24 @@ class DefectsScreenController extends GetxController {
     super.onInit();
 
     Future.delayed(const Duration(milliseconds: 10)).then((value) async {
+      populateSeverityList();
+      if (appStorage.severityList != null) {
+        for (var severity in appStorage.severityList!) {
+          if (severity.name == "Injury" || severity.name == "Lesión") {
+            hasSeverityInjury = true;
+          } else if (severity.name == "Damage" || severity.name == "Daño") {
+            hasSeverityDamage = true;
+          } else if (severity.name == "Serious Damage" ||
+              severity.name == "Daño Serio") {
+            hasSeveritySeriousDamage = true;
+          } else if (severity.name == "Very Serious Damage" ||
+              severity.name == "Daño Muy Serio") {
+            hasSeverityVerySeriousDamage = true;
+          } else if (severity.name == "Decay" || severity.name == "Pudrición") {
+            hasSeverityDecay = true;
+          }
+        }
+      }
       await setInit();
       if (appStorage.severityList != null) {
         for (var severity in appStorage.severityList!) {
@@ -755,7 +773,7 @@ class DefectsScreenController extends GetxController {
     debugPrint("commodity $commodityItemsList");
   }
 
-  Future<void> removeSampleSets(int index) async {
+  Future<void> removeSampleSets(int index, {Function()? onRemoveAll}) async {
     SampleData sampleData = sampleList.elementAt(index);
     String dataName = sampleData.name;
     int? sampleId = sampleData.sampleId;
@@ -771,7 +789,11 @@ class DefectsScreenController extends GetxController {
     if (defectDataMap.containsKey(dataName)) {
       defectDataMap.remove(dataName);
     }
-
+    if (sampleList.isEmpty) {
+      if (onRemoveAll != null) {
+        onRemoveAll.call();
+      }
+    }
     sampleList.refresh();
     update();
   }
@@ -1100,7 +1122,7 @@ class DefectsScreenController extends GetxController {
         List<DefectItem>? defectItemList = defectCategoriesList[i].defectList;
 
         if (defectItemList != null) {
-          for (var defectItem in defectItemList) {
+          for (DefectItem defectItem in defectItemList) {
             if (defectItem.name?.contains("Total Condition") ?? false) {
               totalConditionDefectId = defectItem.id;
             } else {
@@ -1112,7 +1134,7 @@ class DefectsScreenController extends GetxController {
         List<DefectItem>? defectItemList = defectCategoriesList[i].defectList;
 
         if (defectItemList != null) {
-          for (var defectItem in defectItemList) {
+          for (DefectItem defectItem in defectItemList) {
             if (defectItem.name?.contains("Total Quality") ?? false) {
               totalQualityDefectId = defectItem.id;
             } else {
@@ -1124,7 +1146,7 @@ class DefectsScreenController extends GetxController {
         List<DefectItem>? defectItemList = defectCategoriesList[i].defectList;
 
         if (defectItemList != null) {
-          for (var defectItem in defectItemList) {
+          for (DefectItem defectItem in defectItemList) {
             defectCategoriesHashMap![defectItem.id!] = "Size";
           }
         }
@@ -1132,7 +1154,7 @@ class DefectsScreenController extends GetxController {
         List<DefectItem>? defectItemList = defectCategoriesList[i].defectList;
 
         if (defectItemList != null) {
-          for (var defectItem in defectItemList) {
+          for (DefectItem defectItem in defectItemList) {
             defectCategoriesHashMap![defectItem.id!] = "Color";
           }
         }
@@ -1278,19 +1300,18 @@ class DefectsScreenController extends GetxController {
     // Save all the samples
     for (SampleData sample in sampleList) {
       int? sampleId = sample.sampleId;
-      // TODO:
-      var sampleSize = '1'; //sample.sampleSize;
-      var sampleName = sample.name;
-      var setNumber = sample.setNumber;
-      var timeCreated = sample.timeCreated;
-      var sampleNameUser = sample.name;
+      int sampleSize = sample.sampleSize;
+      String sampleName = sample.name;
+      int setNumber = sample.setNumber;
+      int? timeCreated = sample.timeCreated;
+      String sampleNameUser = sample.name;
 
       // If the sample has not been saved yet, save it
       if (sampleId == null) {
         try {
           sampleId = (await dao.createInspectionSample(
             inspectionId ?? 0,
-            int.parse(sampleSize),
+            sampleSize,
             sampleName,
             setNumber,
             timeCreated?.toInt() ?? 0,
@@ -1315,8 +1336,8 @@ class DefectsScreenController extends GetxController {
 
     // Save all the defects
     for (var entry in defectDataMap.entries) {
-      var sampleSize = getSampleSize(entry.key);
-      var sampleId = getSampleID(entry.key);
+      int? sampleSize = getSampleSize(entry.key);
+      int? sampleId = getSampleID(entry.key);
 
       for (InspectionDefect defect in entry.value) {
         int? inspectionDefectId = defect.inspectionDefectId;
@@ -1351,7 +1372,7 @@ class DefectsScreenController extends GetxController {
               inspectionDefectId = await dao.createInspectionDefect(
                 inspectionId: inspectionId ?? 0,
                 sampleId: sampleId!,
-                defectId: int.parse(defectId.toString()),
+                defectId: defectId!,
                 defectName: defectName!,
                 injuryCnt: injuryCnt!,
                 damageCnt: damageCnt!,
@@ -1399,8 +1420,9 @@ class DefectsScreenController extends GetxController {
         }
 
         // Update any defect attachments to associate the sampleId and defectId with the attachment.
+        // Check
         if (attachmentIds != null && attachmentIds.isNotEmpty) {
-          for (var attachmentId in attachmentIds) {
+          for (int attachmentId in attachmentIds) {
             await dao.updateDefectAttachment(
               attachmentId,
               sampleId,
@@ -1499,7 +1521,7 @@ class DefectsScreenController extends GetxController {
       passingData[Consts.SAMPLE_ID] = sampleId;
     }
     if (inspectionDefectId != null) {
-      passingData[Consts.DEFECT_ID] = sampleId;
+      passingData[Consts.DEFECT_ID] = inspectionDefectId;
     }
     if (attachmentIds != null && attachmentIds.isNotEmpty) {
       passingData[Consts.HAS_INSPECTION_IDS] = true;
@@ -1521,6 +1543,33 @@ class DefectsScreenController extends GetxController {
         print(e);
       }
     }
+  }
+
+  Future<void> navigateToViewCameraScreen({
+    required SampleData sampleData,
+  }) async {
+    Map<String, dynamic> passingData = {};
+    passingData[Consts.PARTNER_NAME] = partnerName;
+    passingData[Consts.PARTNER_NAME] = partnerName;
+    passingData[Consts.PARTNER_ID] = partnerID;
+    passingData[Consts.CARRIER_NAME] = carrierName;
+    passingData[Consts.CARRIER_ID] = carrierID;
+    passingData[Consts.COMMODITY_NAME] = commodityName;
+    passingData[Consts.COMMODITY_ID] = commodityID;
+    passingData[Consts.VARIETY_NAME] = varietyName;
+    passingData[Consts.VARIETY_SIZE] = varietySize;
+    passingData[Consts.VARIETY_ID] = varietyId;
+
+    int? sampleId = getSampleID(sampleData.name);
+    if (sampleId != null) {
+      passingData[Consts.SAMPLE_ID] = sampleId;
+    }
+
+    passingData[Consts.FOR_DEFECT_ATTACHMENT] = true;
+    passingData[Consts.IS_VIEW_ONLY_MODE] = true;
+
+    final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+    Get.to(() => InspectionPhotos(tag: tag), arguments: passingData);
   }
 
   void setSampleAndDefectCounts() {
@@ -1569,10 +1618,10 @@ class DefectsScreenController extends GetxController {
       SampleData data = SampleData(
         sampleSize: sampleList[j].sampleSize,
         name: sampleList[j].name,
-        // complete: false,
-        // setNumber: sampleList[j].setNumber,
-        // timeCreated: sampleList[j].timeCreated,
-        // sampleId: sampleList[j].sampleId,
+        complete: false,
+        setNumber: sampleList[j].setNumber,
+        timeCreated: sampleList[j].timeCreated,
+        sampleId: sampleList[j].sampleId,
       );
       sampleDataMap[getIndexFromKey(sampleList[j].name)] = data;
     }
@@ -1583,10 +1632,10 @@ class DefectsScreenController extends GetxController {
       SampleData data = SampleData(
         sampleSize: sampleSize ?? 0,
         name: key,
-        // complete: false,
-        // setNumber: 0,
-        // timeCreated: DateTime.now().millisecondsSinceEpoch,
-        // sampleId: 0,
+        complete: false,
+        setNumber: 0,
+        timeCreated: DateTime.now().millisecondsSinceEpoch,
+        sampleId: 0,
       );
 
       for (int i = 0; i < value.length; i++) {
@@ -1598,11 +1647,11 @@ class DefectsScreenController extends GetxController {
             value[i].decayCnt! > 0) {
           hasDefects = true;
           data.sampleId = value[i].sampleId;
-          data.iCnt += value[i].injuryCnt!;
-          data.dCnt += value[i].damageCnt!;
-          data.sdCnt += value[i].seriousDamageCnt!;
-          data.vsdCnt += value[i].verySeriousDamageCnt!;
-          data.dcCnt += value[i].decayCnt!;
+          data.iCnt = (data.iCnt + value[i].injuryCnt!);
+          data.dCnt = (data.dCnt + value[i].damageCnt!);
+          data.sdCnt = (data.sdCnt + value[i].seriousDamageCnt!);
+          data.vsdCnt = (data.vsdCnt + value[i].verySeriousDamageCnt!);
+          data.dcCnt = (data.dcCnt + value[i].decayCnt!);
 
           //Mob-285
           totalSeriousDamage += value[i].seriousDamageCnt!;

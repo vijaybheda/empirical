@@ -97,61 +97,62 @@ class InspectionPhotos extends GetView<InspectionPhotosController> {
           padding: EdgeInsets.all(30.w),
           child: Obx(() => photosListView(controller)),
         )),
-        Container(
-          padding: EdgeInsets.only(left: 35.w, right: 35.w),
-          height: 150.h,
-          color: AppColors.primaryColor,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              customButton(
-                  backgroundColor: AppColors.white,
-                  title: AppStrings.savePhotosButton,
-                  width: (MediaQuery.of(context).size.width / 3.5),
-                  height: 115,
-                  fontStyle: Get.textTheme.titleLarge!.copyWith(
-                    fontSize: 35.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textFieldText_Color,
-                  ),
-                  onClickAction: () async {
-                    await controller.saveAction();
-                  }),
-              SizedBox(
-                width: 38.w,
-              ),
-              customButton(
-                  backgroundColor: AppColors.white,
-                  title: AppStrings.openPhotosButton,
-                  width: (MediaQuery.of(context).size.width / 3.5),
-                  height: 115,
-                  fontStyle: Get.textTheme.titleLarge!.copyWith(
-                    fontSize: 35.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textFieldText_Color,
-                  ),
-                  onClickAction: () async {
-                    await controller.getImageFromGallery();
-                  }),
-              SizedBox(
-                width: 38.w,
-              ),
-              customButton(
-                  backgroundColor: AppColors.white,
-                  title: AppStrings.takePhotoButton,
-                  width: (MediaQuery.of(context).size.width / 3.5),
-                  height: 115,
-                  fontStyle: Get.textTheme.titleLarge!.copyWith(
-                    fontSize: 35.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textFieldText_Color,
-                  ),
-                  onClickAction: () async {
-                    await controller.getImageFromCamera();
-                  }),
-            ],
+        if (!controller.isViewOnlyMode)
+          Container(
+            padding: EdgeInsets.only(left: 35.w, right: 35.w),
+            height: 150.h,
+            color: AppColors.primaryColor,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                customButton(
+                    backgroundColor: AppColors.white,
+                    title: AppStrings.savePhotosButton,
+                    width: (MediaQuery.of(context).size.width / 3.5),
+                    height: 115,
+                    fontStyle: Get.textTheme.titleLarge!.copyWith(
+                      fontSize: 35.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textFieldText_Color,
+                    ),
+                    onClickAction: () async {
+                      await controller.saveAction();
+                    }),
+                SizedBox(
+                  width: 38.w,
+                ),
+                customButton(
+                    backgroundColor: AppColors.white,
+                    title: AppStrings.openPhotosButton,
+                    width: (MediaQuery.of(context).size.width / 3.5),
+                    height: 115,
+                    fontStyle: Get.textTheme.titleLarge!.copyWith(
+                      fontSize: 35.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textFieldText_Color,
+                    ),
+                    onClickAction: () async {
+                      await controller.getImageFromGallery();
+                    }),
+                SizedBox(
+                  width: 38.w,
+                ),
+                customButton(
+                    backgroundColor: AppColors.white,
+                    title: AppStrings.takePhotoButton,
+                    width: (MediaQuery.of(context).size.width / 3.5),
+                    height: 115,
+                    fontStyle: Get.textTheme.titleLarge!.copyWith(
+                      fontSize: 35.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textFieldText_Color,
+                    ),
+                    onClickAction: () async {
+                      await controller.getImageFromCamera();
+                    }),
+              ],
+            ),
           ),
-        ),
         FooterContentView(
           onBackTap: () {
             controller.backAction(context);

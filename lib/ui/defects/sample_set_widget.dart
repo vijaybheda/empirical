@@ -12,11 +12,13 @@ import 'package:pverify/utils/theme/colors.dart';
 class SampleSetWidget extends StatefulWidget {
   final int sampleIndex;
   final DefectsScreenController controller;
+  final Function()? onRemoveAll;
 
   const SampleSetWidget({
     super.key,
     required this.sampleIndex,
     required this.controller,
+    required this.onRemoveAll,
   });
 
   @override
@@ -46,7 +48,12 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
                       AppStrings.alert,
                       AppStrings.removeSample,
                       onYesTap: () {
-                        controller.removeSampleSets(sampleIndex);
+                        controller.removeSampleSets(sampleIndex,
+                            onRemoveAll: () {
+                          if (widget.onRemoveAll != null) {
+                            widget.onRemoveAll?.call();
+                          }
+                        });
                       },
                     );
                   },
@@ -184,7 +191,7 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
               ? Flexible(
                   flex: 1,
                   child: defectCategoryTag(
-                    tag: AppStrings.seriousDamageIcon,
+                    tag: AppStrings.verySeriousDamageIcon,
                     textStyle: textStyle,
                   ),
                 )
@@ -195,7 +202,7 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
               ? Flexible(
                   flex: 1,
                   child: defectCategoryTag(
-                    tag: AppStrings.verySeriousDamageIcon,
+                    tag: AppStrings.seriousDamageIcon,
                     textStyle: textStyle,
                   ),
                 )
