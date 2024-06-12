@@ -3662,7 +3662,7 @@ class ApplicationDao {
       String query = '''
       SELECT Number_Specification, Version_Specification, Severity_Defect_ID, Defect_ID,
       Grade_Tolerance_Percentage, Overridden, Defect_Name, Defect_Category_Name, Severity_Defect_Name
-      FROM Specification_Grade_Tolerance
+      FROM ${DBTables.SPECIFICATION_GRADE_TOLERANCE}
       WHERE Number_Specification=? AND Version_Specification=?
     ''';
       final Database db = dbProvider.lazyDatabase;

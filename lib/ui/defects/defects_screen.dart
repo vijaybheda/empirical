@@ -11,6 +11,7 @@ import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/defects/sample_set_widget.dart';
 import 'package:pverify/ui/side_drawer.dart';
 import 'package:pverify/utils/app_const.dart';
+import 'package:pverify/utils/app_snackbar.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
@@ -537,7 +538,16 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                     fontWeight: FontWeight.w500,
                     color: AppColors.textFieldText_Color),
                 onClickAction: () async {
-                  await controller.onSpecialInstrMenuTap();
+                  if (controller.appStorage.commodityVarietyData != null &&
+                      controller.appStorage.commodityVarietyData?.exceptions !=
+                          null &&
+                      controller.appStorage.commodityVarietyData!.exceptions
+                          .isNotEmpty) {
+                    await controller.onSpecialInstrMenuTap();
+                  } else {
+                    AppSnackBar.info(
+                        message: AppStrings.noSpecificationInstructions);
+                  }
                 },
               ),
               SizedBox(
@@ -553,15 +563,15 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                     fontWeight: FontWeight.w500,
                     color: AppColors.textFieldText_Color),
                 onClickAction: () async {
-                  /*controller.appStorage.specificationGradeToleranceTable =
+                  controller.appStorage.specificationGradeToleranceTable =
                       await controller.dao.getSpecificationGradeToleranceTable(
                           controller.specificationNumber!,
                           controller.specificationVersion!);
                   if (controller
                       .appStorage.specificationGradeToleranceTable.isNotEmpty) {
-                    controller.onSpecificationTap();
-                  }*/
-                  await controller.onSpecificationTap();
+                    await controller.onSpecificationTap();
+                  }
+                  // await controller.onSpecificationTap();
                 },
               ),
               SizedBox(

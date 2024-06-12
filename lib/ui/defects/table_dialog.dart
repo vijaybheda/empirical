@@ -4,8 +4,152 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/models/specification_grade_tolerance.dart';
 import 'package:pverify/utils/app_storage.dart';
-import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
+
+Widget tableDialog(BuildContext context) {
+  List<SpecificationGradeTolerance> specData =
+      AppStorage.instance.specificationGradeToleranceTable;
+  return AlertDialog(
+    backgroundColor: Theme.of(context).colorScheme.background,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(0),
+    ),
+    title: null,
+    contentPadding: const EdgeInsets.all(8),
+    content: SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          buildTable(specData),
+          SizedBox(height: 40.h),
+          closeDialogButton(context),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget buildTable(List<SpecificationGradeTolerance> specData) {
+  Map<String, Map<String, List<SpecificationGradeTolerance>>> categorizedData =
+      {};
+  for (var spec in specData) {
+    categorizedData.putIfAbsent(spec.defectCategoryName!, () => {});
+    categorizedData[spec.defectCategoryName]!
+        .putIfAbsent(spec.defectName!, () => []);
+    categorizedData[spec.defectCategoryName]![spec.defectName]!.add(spec);
+  }
+
+  List<TableRow> rows = [
+    TableRow(
+      children: [
+        buildHeaderCell(''),
+        buildHeaderCell('Injury (%)'),
+        buildHeaderCell('D (%)'),
+        buildHeaderCell('SD (%)'),
+        buildHeaderCell('VSD (%)'),
+        buildHeaderCell('Decay (%)'),
+        buildHeaderCell('Total Defects(%)'),
+      ],
+    ),
+  ];
+
+  categorizedData.forEach((category, defects) {
+    defects.forEach((defect, specs) {
+      rows.add(buildSpecRow(category, defect, specs));
+    });
+  });
+
+  return Table(
+    border: TableBorder.all(color: AppColors.white),
+    columnWidths: {0: FixedColumnWidth(160.w)},
+    children: rows,
+  );
+}
+
+TableRow buildSpecRow(
+    String category, String defect, List<SpecificationGradeTolerance> specs) {
+  int? injury = specs
+      .firstWhereOrNull((s) => s.severityDefectName == "Injury")
+      ?.specTolerancePercentage;
+  int? damage = specs
+      .firstWhereOrNull((s) => s.severityDefectName == "Damage")
+      ?.specTolerancePercentage;
+  int? seriousDamage = specs
+      .firstWhereOrNull((s) => s.severityDefectName == "Serious Damage")
+      ?.specTolerancePercentage;
+  int? verySeriousDamage = specs
+      .firstWhereOrNull((s) => s.severityDefectName == "Very Serious Damage")
+      ?.specTolerancePercentage;
+  int? decay = specs
+      .firstWhereOrNull((s) => s.severityDefectName == "Decay")
+      ?.specTolerancePercentage;
+  int total = 0;
+  if (injury != null) {
+    total = injury;
+  } else if (damage != null) {
+    total = damage;
+  } else if (seriousDamage != null) {
+    total = seriousDamage;
+  } else if (verySeriousDamage != null) {
+    total = verySeriousDamage;
+  } else if (decay != null) {
+    total = decay;
+  }
+
+  return TableRow(
+    children: [
+      buildTableCell('$category - $defect'),
+      buildTableCell('${injury ?? ""}'),
+      buildTableCell('${damage ?? ""}'),
+      buildTableCell('${seriousDamage ?? ""}'),
+      buildTableCell('${verySeriousDamage ?? ""}'),
+      buildTableCell('${decay ?? ""}'),
+      buildTableCell('$total'),
+    ],
+  );
+}
+
+Widget buildHeaderCell(String text) {
+  return Center(
+    child: Container(
+      padding: const EdgeInsets.all(8),
+      // color: Colors.grey[300],
+      child: Text(text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontWeight: FontWeight.bold)),
+    ),
+  );
+}
+
+Widget buildTableCell(String text) {
+  return Container(
+    padding: const EdgeInsets.all(8),
+    child: Text(text),
+  );
+}
+
+Widget closeDialogButton(BuildContext context) {
+  return GestureDetector(
+    onTap: () => Navigator.pop(context),
+    child: Container(
+      height: 90.h,
+      width: MediaQuery.of(context).size.width,
+      color: AppColors.greenButtonColor,
+      child: Center(
+        child: Text(
+          'OK',
+          style: GoogleFonts.poppins(
+            fontSize: 28.sp,
+            fontWeight: FontWeight.w400,
+            color: AppColors.white,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/*
 
 Widget tableDialog(BuildContext context) {
   return AlertDialog(
@@ -20,7 +164,7 @@ Widget tableDialog(BuildContext context) {
       children: [
         SizedBox(
           width: double.maxFinite,
-          child: true
+          child: false
               ? SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: _buildTable(
@@ -203,3 +347,4 @@ Widget setTableCell(String tableText, {bool leftAlign = false}) {
     ),
   );
 }
+*/

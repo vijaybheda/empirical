@@ -63,37 +63,43 @@ class DefectsInfoDialog {
                 borderRadius: BorderRadius.circular(0),
               ),
               title: null,
-              contentPadding: const EdgeInsets.all(16),
+              contentPadding: const EdgeInsets.all(8),
               content: SizedBox(
                 height: MediaQuery.of(context).size.height * 0.7,
                 child: Column(
                   children: [
                     Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: <Widget>[
-                            if (name != null && name!.isNotEmpty)
-                              Text(name ?? '',
-                                  style: Get.textTheme.titleMedium),
-                            const SizedBox(height: 15),
-                            if (instruction != null && instruction!.isNotEmpty)
-                              Text(instruction ?? '',
-                                  style: Get.textTheme.titleMedium),
-                            const SizedBox(height: 15),
-                            for (var i = 0; i < attachments.length; i++)
-                              FutureBuilder(
-                                future: _loadImage(context, getInstFileName(i)),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<Image> image) {
-                                  if (image.hasData) {
-                                    return image.data!;
-                                  } else {
-                                    // return const CircularProgressIndicator();
-                                    return const SizedBox();
-                                  }
-                                },
-                              ),
-                          ],
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: <Widget>[
+                              if (name != null && name!.isNotEmpty)
+                                Text(name ?? '',
+                                    style: Get.textTheme.titleMedium),
+                              const SizedBox(height: 15),
+                              if (instruction != null &&
+                                  instruction!.isNotEmpty)
+                                Text(instruction ?? '',
+                                    style: Get.textTheme.titleMedium),
+                              const SizedBox(height: 15),
+                              for (var i = 0; i < attachments.length; i++)
+                                FutureBuilder(
+                                  future:
+                                      _loadImage(context, getInstFileName(i)),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<Image> image) {
+                                    if (image.hasData) {
+                                      return image.data!;
+                                    } else {
+                                      // return const CircularProgressIndicator();
+                                      return const SizedBox();
+                                    }
+                                  },
+                                ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -109,22 +115,34 @@ class DefectsInfoDialog {
               borderRadius: BorderRadius.circular(0),
             ),
             title: null,
-            contentPadding: const EdgeInsets.all(16),
+            contentPadding: const EdgeInsets.all(8),
             content: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.3,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: <Widget>[
-                      if (name != null && name!.isNotEmpty)
-                        Text(name ?? '', style: Get.textTheme.titleMedium),
-                      const SizedBox(height: 15),
-                      if (instruction != null && instruction!.isNotEmpty)
-                        Text(instruction ?? '',
-                            style: Get.textTheme.titleMedium),
-                      const SizedBox(height: 15),
-                      OkWidget,
-                    ],
-                  ),
+                height: MediaQuery.of(context).size.height * 0.4,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: <Widget>[
+                              if (name != null && name!.isNotEmpty)
+                                Text(name ?? '',
+                                    style: Get.textTheme.titleMedium),
+                              const SizedBox(height: 15),
+                              if (instruction != null &&
+                                  instruction!.isNotEmpty)
+                                Text(instruction ?? '',
+                                    style: Get.textTheme.titleMedium),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    OkWidget,
+                  ],
                 )));
       },
     );

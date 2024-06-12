@@ -36,15 +36,27 @@ class MergeTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Table(
-      border: TableBorder.all(color: borderColor),
-      // columnWidths: columnWidths,
-      // defaultColumnWidth: IntrinsicColumnWidth(),
-      defaultVerticalAlignment: defaultVerticalAlignment,
-      children: [
-        buildHeader(),
-        ...buildRows(),
-      ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.width,
+            maxWidth: MediaQuery.of(context).size.width * 1.5,
+          ),
+          child: Table(
+            // border: TableBorder.all(color: borderColor),
+            columnWidths: columnWidths,
+            defaultColumnWidth: IntrinsicColumnWidth(),
+            defaultVerticalAlignment: defaultVerticalAlignment,
+            children: [
+              buildHeader(),
+              ...buildRows(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
