@@ -10,9 +10,9 @@ class DefectCategories {
   DefectCategories.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
-    if (json['defectList'] != null) {
+    if (json['defects'] != null) {
       defectList = <DefectItem>[];
-      json['defectList'].forEach((dynamic v) {
+      json['defects'].forEach((dynamic v) {
         defectList!.add(DefectItem.fromJson(v as Map<String, dynamic>));
       });
     }
@@ -23,7 +23,7 @@ class DefectCategories {
     data['id'] = id;
     data['name'] = name;
     if (defectList != null) {
-      data['defectList'] = defectList!.map((v) => v.toJson()).toList();
+      data['defects'] = defectList!.map((v) => v.toJson()).toList();
     }
     return data;
   }

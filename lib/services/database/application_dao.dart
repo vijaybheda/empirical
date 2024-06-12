@@ -964,7 +964,7 @@ class ApplicationDao {
         await txn.update(
           DBTables.INSPECTION_DEFECT_ATTACHMENT,
           values,
-          where: '${InspectionDefectAttachmentColumn.ATTACHMENT_ID}=?',
+          where: '${InspectionDefectAttachmentColumn.ID}=?',
           whereArgs: [attachmentId.toString()],
         );
       });

@@ -293,6 +293,9 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                           return SampleSetWidget(
                             sampleIndex: sampleIndex,
                             controller: controller,
+                            onRemoveAll: () {
+                              controller.update();
+                            },
                           );
                         }),
                   )
@@ -692,12 +695,23 @@ class DefectsMergerTable extends StatelessWidget {
       }
     }
 
+    List<int> rowLengths = _getRowLengths(_getRows([]));
+    List<List<BaseMRow>> rows = _getRows(rowLengths);
+
+    int maxLength = rowLengths.reduce((a, b) => a > b ? a : b);
+
     return MergeTable(
       borderColor: Colors.grey,
       alignment: MergeTableAlignment.center,
-      columns: _getColumns(),
-      rows: _getRows(),
+      // columns: _getColumns(),
+      columns: _createDefectTableHeaderRow(maxLength),
+      rows: rows,
     );
+  }
+
+  List<int> _getRowLengths(List<List<BaseMRow>> rows) {
+    List<int> lengths = rows.map((row) => row.length).toList();
+    return lengths;
   }
 
   List<BaseMColumn> _getColumns() {
@@ -708,8 +722,8 @@ class DefectsMergerTable extends StatelessWidget {
       if (controller.hasSeveritySeriousDamage)
         MMergedColumns(
           header: "Defects",
-          columns:
-              List.generate(numberSeriousDefects, (index) => "SD ${index + 1}"),
+          columns: List.generate(numberSeriousDefects,
+              (index) => Container(child: Text("SD ${index + 1}"))),
         ),
       if (controller.hasSeverityVerySeriousDamage) MColumn(header: "Defects"),
       if (controller.hasSeverityDecay) MColumn(header: "Defects"),
@@ -719,14 +733,14 @@ class DefectsMergerTable extends StatelessWidget {
     ];
   }
 
-  List<List<BaseMRow>> _getRows() {
+  List<List<BaseMRow>> _getRows(List<int> rowLengths) {
     List<List<BaseMRow>> rows = [];
 
-    rows.add(_createDefectTableHeaderRow());
+    // rows.add(_createDefectTableHeaderRow1());
     rows.add(_getRowSeverity());
 
     for (int i = 0; i < numberSamples; i++) {
-      rows.add(_getSampleRow(i));
+      rows.add(_getSampleRow(i, rowLengths));
     }
 
     rows.add(_getTotalQualityDefectsRow());
@@ -735,7 +749,7 @@ class DefectsMergerTable extends StatelessWidget {
     rows.add(_getTotalConditionDefectsPercentRow());
     rows.add(_getTotalSeverityByDefectTypeRow());
     rows.add(_getTotalSeverityByDefectPercentRow());
-    rows.add(_getPercentByDefectTypeRow());
+    // rows.add(_getPercentByDefectTypeRow());
     rows.add(_getTotalSizeDefectsRow());
     rows.add(_getTotalSizeDefectsPercentRow());
     rows.add(_getTotalColorDefectsRow());
@@ -760,7 +774,27 @@ class DefectsMergerTable extends StatelessWidget {
     ];
   }
 
-  List<BaseMRow> _createDefectTableHeaderRow() {
+  List<BaseMColumn> _createDefectTableHeaderRow(int maxLength) {
+    List<BaseMColumn> rows = [
+      MColumn(header: "Type"),
+      if (controller.hasSeverityInjury) MColumn(header: 'Defects'),
+      if (controller.hasSeverityDamage) MColumn(header: 'Defects'),
+      if (controller.hasSeveritySeriousDamage)
+        for (int i = 0; i < numberSeriousDefects; i++)
+          if (controller.hasSeverityDamage) MColumn(header: 'Defects'),
+      if (controller.hasSeverityVerySeriousDamage) MColumn(header: 'Defects'),
+      if (controller.hasSeverityDecay) MColumn(header: 'Defects'),
+    ];
+    return [
+      ...rows,
+      for (int i = 0; i < maxLength - 4; i++) MColumn(header: ''),
+      // MColumn(header: ''),
+      // VerticalMergedRow(rowSpan: 5, child: Container()),
+      // VerticalMergedRow(rowSpan: 5, child: Container()),
+    ];
+  }
+
+  List<BaseMRow> _createDefectTableHeaderRow1() {
     return [
       MRow(defaultTextItem("Type")),
       if (controller.hasSeverityInjury) MRow(defaultTextItem('Defects')),
@@ -909,8 +943,9 @@ class DefectsMergerTable extends StatelessWidget {
     return rowChildren;
   }
 
-  List<BaseMRow> _getSampleRow(int index) {
-    SampleData? sampleData = controller.sampleList.elementAtOrNull(index);
+  List<BaseMRow> _getSampleRow(int index, List<int> rowLengths) {
+    SampleData? a = controller.sampleList.elementAtOrNull(index);
+    SampleData? sampleData = controller.sampleDataMap[a?.sampleSize ?? 0];
     return [
       MRow(defaultTextItem((sampleData?.sampleSize ?? 0).toString())),
       if (controller.hasSeverityInjury)
@@ -920,7 +955,7 @@ class DefectsMergerTable extends StatelessWidget {
       if (controller.hasSeveritySeriousDamage)
         MMergedRows(List.generate(numberSeriousDefects, (index) {
           return Container(
-              margin: EdgeInsets.symmetric(vertical: 5),
+              // margin: EdgeInsets.symmetric(vertical: 5),
               child: defaultTextItem((sampleData?.sdCnt ?? 0).toString()));
         })),
       if (controller.hasSeverityVerySeriousDamage)
@@ -960,13 +995,13 @@ class DefectsMergerTable extends StatelessWidget {
 
   // Done
   List<BaseMRow> _getTotalQualityDefectsPercentRow() {
-    int percentDecay = (totalQualityDecay / totalSamples * 100).ceil();
+    int percentDecay = (totalQualityDecay / totalSamples * 100).floor();
     int percentVSDamage =
-        (totalQualityVerySeriousDamage / totalSamples * 100).ceil();
+        (totalQualityVerySeriousDamage / totalSamples * 100).floor();
     int percentSDamage =
-        (totalQualitySeriousDamage / totalSamples * 100).ceil();
-    int percentDamage = (totalQualityDamage / totalSamples * 100).ceil();
-    int percentInjury = (totalQualityInjury / totalSamples * 100).ceil();
+        (totalQualitySeriousDamage / totalSamples * 100).floor();
+    int percentDamage = (totalQualityDamage / totalSamples * 100).floor();
+    int percentInjury = (totalQualityInjury / totalSamples * 100).floor();
     return [
       MRow(defaultTextItem("Quality Defects %")),
       if (controller.hasSeverityInjury)
@@ -1046,13 +1081,13 @@ class DefectsMergerTable extends StatelessWidget {
 
   // Done
   List<BaseMRow> _getTotalConditionDefectsPercentRow() {
-    int percentCDecay = (totalConditionDecay / totalSamples * 100).ceil();
+    int percentCDecay = (totalConditionDecay / totalSamples * 100).floor();
     int percentCVSDamage =
-        (totalConditionVerySeriousDamage / totalSamples * 100).ceil();
+        (totalConditionVerySeriousDamage / totalSamples * 100).floor();
     int percentSCDamage =
-        (totalConditionSeriousDamage / totalSamples * 100).ceil();
-    int percentCDamage = (totalConditionDamage / totalSamples * 100).ceil();
-    int percentCInjury = (totalConditionInjury / totalSamples * 100).ceil();
+        (totalConditionSeriousDamage / totalSamples * 100).floor();
+    int percentCDamage = (totalConditionDamage / totalSamples * 100).floor();
+    int percentCInjury = (totalConditionInjury / totalSamples * 100).floor();
 
     return [
       MRow(defaultTextItem("Condition Defects %")),
@@ -1121,25 +1156,25 @@ class DefectsMergerTable extends StatelessWidget {
     return [
       MRow(defaultTextItem("Total Severity")),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem("${controller.totalInjury}%")),
+        MRow(defaultTextItem("${controller.totalInjury}")),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem("${controller.totalDamage}%")),
+        MRow(defaultTextItem("${controller.totalDamage}")),
       if (controller.hasSeveritySeriousDamage)
         MMergedRows(List.generate(numberSeriousDefects, (index) {
           String value = "0";
           int percent = 0;
-          if (!controller.seriousDefectList.isEmpty) {
+          if (controller.seriousDefectList.isNotEmpty) {
             int? sdcount = controller
                 .seriousDefectCountMap[controller.seriousDefectList[index]];
             if (sdcount != null) {
-              percent = (sdcount / totalSamples * 100).ceil();
+              percent = (sdcount / totalSamples * 10).floor();
               value = percent.toString();
             }
           }
           return Container(
               margin: EdgeInsets.symmetric(vertical: 5),
               child: Text(
-                "$value%",
+                value,
                 style: TextStyle(
                   color: (controller.seriousDamageSpec != null &&
                           percent > (controller.seriousDamageSpec ?? 0.0))
@@ -1149,9 +1184,9 @@ class DefectsMergerTable extends StatelessWidget {
               ));
         })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(defaultTextItem("${controller.totalVerySeriousDamage}%")),
+        MRow(defaultTextItem("${controller.totalVerySeriousDamage}")),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem("${controller.totalDecay}%")),
+        MRow(defaultTextItem("${controller.totalDecay}")),
       VerticalMergedRow(rowSpan: 5, child: Container()),
       VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
@@ -1159,11 +1194,11 @@ class DefectsMergerTable extends StatelessWidget {
 
   // Done
   List<BaseMRow> _getTotalSeverityByDefectPercentRow() {
-    int totalDecay = (controller.totalDecay / totalSamples * 100).ceil();
-    int totalDamage = (controller.totalDamage / totalSamples * 100).ceil();
-    int totalInjury = (controller.totalInjury / totalSamples * 100).ceil();
+    int totalDecay = (controller.totalDecay / totalSamples * 100).floor();
+    int totalDamage = (controller.totalDamage / totalSamples * 100).floor();
+    int totalInjury = (controller.totalInjury / totalSamples * 100).floor();
     int totalVerySeriousDamage =
-        (controller.totalVerySeriousDamage / totalSamples * 100).ceil();
+        (controller.totalVerySeriousDamage / totalSamples * 100).floor();
     return [
       MRow(defaultTextItem("Total Severity %")),
       if (controller.hasSeverityInjury)
@@ -1190,7 +1225,7 @@ class DefectsMergerTable extends StatelessWidget {
             int? sdcount = controller
                 .seriousDefectCountMap[controller.seriousDefectList[index]];
             if (sdcount != null) {
-              percent = (sdcount / totalSamples * 100).ceil();
+              percent = (sdcount / totalSamples * 100).floor();
               value = percent.toString();
             }
           }
@@ -1228,11 +1263,11 @@ class DefectsMergerTable extends StatelessWidget {
 
   // Done
   List<BaseMRow> _getPercentByDefectTypeRow() {
-    int totalDecay = (controller.totalDecay / totalSamples * 100).ceil();
+    int totalDecay = (controller.totalDecay / totalSamples * 100).floor();
     int totalVerySeriousDamage =
-        (controller.totalSeriousDamage / totalSamples * 100).ceil();
-    int totalInjury = (controller.totalInjury / totalSamples * 100).ceil();
-    int totalDamage = (controller.totalDamage / totalSamples * 100).ceil();
+        (controller.totalSeriousDamage / totalSamples * 100).floor();
+    int totalInjury = (controller.totalInjury / totalSamples * 100).floor();
+    int totalDamage = (controller.totalDamage / totalSamples * 100).floor();
 
     return [
       MRow(defaultTextItem("Total %")),
@@ -1253,7 +1288,7 @@ class DefectsMergerTable extends StatelessWidget {
       if (controller.hasSeveritySeriousDamage)
         MMergedRows(List.generate(numberSeriousDefects, (index) {
           int percent =
-              (controller.totalSeriousDamage / totalSamples * 100).ceil();
+              (controller.totalSeriousDamage / totalSamples * 100).floor();
           return Container(
             margin: EdgeInsets.symmetric(vertical: 5),
             child: Text(
@@ -1315,11 +1350,11 @@ class DefectsMergerTable extends StatelessWidget {
 
   // Done
   List<BaseMRow> _getTotalSizeDefectsPercentRow() {
-    int percentSizeDecay = (totalSizeDecay / totalSamples * 100).ceil();
+    int percentSizeDecay = (totalSizeDecay / totalSamples * 100).floor();
     int percentSizeVSDamage =
-        (totalSizeVerySeriousDamage / totalSamples * 100).ceil();
-    int percentSizeDamage = (totalSizeDamage / totalSamples * 100).ceil();
-    int percentSizeInjury = (totalSizeInjury / totalSamples * 100).ceil();
+        (totalSizeVerySeriousDamage / totalSamples * 100).floor();
+    int percentSizeDamage = (totalSizeDamage / totalSamples * 100).floor();
+    int percentSizeInjury = (totalSizeInjury / totalSamples * 100).floor();
     return [
       MRow(defaultTextItem("Size Defects %")),
       if (controller.hasSeverityInjury)
@@ -1331,7 +1366,7 @@ class DefectsMergerTable extends StatelessWidget {
           String value = "";
           if (index == 0) {
             int percentSCDamage =
-                (totalSizeSeriousDamage / totalSamples * 100).ceil();
+                (totalSizeSeriousDamage / totalSamples * 100).floor();
             value = "$percentSCDamage%";
           }
           return Container(
@@ -1379,8 +1414,8 @@ class DefectsMergerTable extends StatelessWidget {
     double percentColorDecay = (totalColorDecay / totalSamples * 100);
     double percentColorVSDamage =
         (totalColorVerySeriousDamage / totalSamples * 100);
-    int percentColorDamage = (totalColorDamage / totalSamples * 100).ceil();
-    int percentColorInjury = (totalColorInjury / totalSamples * 100).ceil();
+    int percentColorDamage = (totalColorDamage / totalSamples * 100).floor();
+    int percentColorInjury = (totalColorInjury / totalSamples * 100).floor();
     return [
       MRow(defaultTextItem("Color Defects %")),
       if (controller.hasSeverityInjury)
@@ -1392,7 +1427,7 @@ class DefectsMergerTable extends StatelessWidget {
           String value = "";
           if (index == 0) {
             int percentSColorDamage =
-                (totalColorSeriousDamage / totalSamples * 100).ceil();
+                (totalColorSeriousDamage / totalSamples * 100).floor();
             value = "$percentSColorDamage%";
           }
           return Container(
@@ -1401,9 +1436,9 @@ class DefectsMergerTable extends StatelessWidget {
           );
         })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(Text("${percentColorVSDamage.ceil()}%")),
+        MRow(Text("${percentColorVSDamage.floor()}%")),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem("${percentColorDecay.ceil()}%")),
+        MRow(defaultTextItem("${percentColorDecay.floor()}%")),
       VerticalMergedRow(rowSpan: 5, child: Container()),
       VerticalMergedRow(rowSpan: 5, child: Container()),
     ];

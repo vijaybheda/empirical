@@ -13,6 +13,11 @@ class MergeTable extends StatelessWidget {
     assert(columns.isNotEmpty);
     assert(rows.isNotEmpty);
     for (List<BaseMRow> row in rows) {
+      if (row.length != columns.length) {
+        if (row.length < columns.length) {
+          row.add(MRow(const SizedBox()));
+        }
+      }
       assert(row.length == columns.length);
     }
   }
@@ -89,7 +94,7 @@ class MergeTable extends StatelessWidget {
         Divider(color: borderColor, height: 1, thickness: 1),
         buildMutiColumns(
           List.generate(column.columns!.length, (index) {
-            return buildSingleColumn(column.columns![index]);
+            return buildAlign(column.columns![index]);
           }),
         ),
       ],
