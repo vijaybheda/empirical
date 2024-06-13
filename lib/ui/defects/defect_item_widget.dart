@@ -132,7 +132,12 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                       // intialValue: (inspectionDefect.injuryCnt ?? 0).toString(),
                       controller: inspectionDefect.injuryTextEditingController,
                       onTap: () {
-                        inspectionDefect.injuryTextEditingController.clear();
+                        String text = inspectionDefect
+                            .injuryTextEditingController.text
+                            .trim();
+                        if (text.isEmpty || text == "0") {
+                          inspectionDefect.injuryTextEditingController.clear();
+                        }
                       },
                       errorText: '',
                       focusNode: FocusNode(),
@@ -177,7 +182,12 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                       // intialValue: (inspectionDefect.damageCnt ?? 0).toString(),
                       controller: inspectionDefect.damageTextEditingController,
                       onTap: () {
-                        inspectionDefect.damageTextEditingController.clear();
+                        String text = inspectionDefect
+                            .damageTextEditingController.text
+                            .trim();
+                        if (text.isEmpty || text == "0") {
+                          inspectionDefect.damageTextEditingController.clear();
+                        }
                       },
                       focusNode: FocusNode(),
                       onFocusChange: (bool hasFocus) {
@@ -223,7 +233,12 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                       //     (inspectionDefect.seriousDamageCnt ?? 0).toString(),
                       controller: inspectionDefect.sDamageTextEditingController,
                       onTap: () {
-                        inspectionDefect.sDamageTextEditingController.clear();
+                        String text = inspectionDefect
+                            .sDamageTextEditingController.text
+                            .trim();
+                        if (text.isEmpty || text == "0") {
+                          inspectionDefect.sDamageTextEditingController.clear();
+                        }
                       },
                       errorText: '',
                       focusNode: FocusNode(),
@@ -270,7 +285,13 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                           inspectionDefect.vsDamageTextEditingController,
                       keyboardType: TextInputType.number,
                       onTap: () {
-                        inspectionDefect.vsDamageTextEditingController.clear();
+                        String text = inspectionDefect
+                            .vsDamageTextEditingController.text
+                            .trim();
+                        if (text.isEmpty || text == "0") {
+                          inspectionDefect.vsDamageTextEditingController
+                              .clear();
+                        }
                       },
                       errorText: '',
                       focusNode: FocusNode(),
@@ -315,7 +336,12 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                       controller: inspectionDefect.decayTextEditingController,
                       keyboardType: TextInputType.number,
                       onTap: () {
-                        inspectionDefect.decayTextEditingController.clear();
+                        String text = inspectionDefect
+                            .decayTextEditingController.text
+                            .trim();
+                        if (text.isEmpty || text == "0") {
+                          inspectionDefect.decayTextEditingController.clear();
+                        }
                       },
                       errorText: '',
                       focusNode: FocusNode(),

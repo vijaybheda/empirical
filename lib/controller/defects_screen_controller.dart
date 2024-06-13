@@ -1695,12 +1695,13 @@ class DefectsScreenController extends GetxController {
               seriousDefectList.add(defectName);
               seriousDefectCountMap[defectName] = 0;
             }
-            if (defectCategoriesHashMap?.containsKey(defectId) ?? false) {
+            if (defectCategoriesHashMap != null &&
+                defectCategoriesHashMap!.containsKey(defectId)) {
               if (!(defectCategoriesHashMap![defectId] == "Size") &&
                   !(defectCategoriesHashMap![defectId] == "Color")) {
                 if (seriousDefectCountMap.containsKey(defectName)) {
                   seriousDefectCountMap[defectName] =
-                      (seriousDefectCountMap[defectName] ?? 0) + data.sdCnt;
+                      seriousDefectCountMap[defectName]! + data.sdCnt;
                 } else {
                   seriousDefectCountMap[defectName] = data.sdCnt;
                 }
@@ -1708,7 +1709,7 @@ class DefectsScreenController extends GetxController {
             } else {
               if (seriousDefectCountMap.containsKey(defectName)) {
                 seriousDefectCountMap[defectName] =
-                    (seriousDefectCountMap[defectName] ?? 0) + data.sdCnt;
+                    seriousDefectCountMap[defectName]! + data.sdCnt;
               } else {
                 seriousDefectCountMap[defectName] = data.sdCnt;
               }
