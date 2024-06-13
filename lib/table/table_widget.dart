@@ -3,7 +3,6 @@ import 'package:pverify/table/merge_table.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class TableWidget extends StatelessWidget {
-  // final List<List<Widget>> datas;
   final List<List<BaseMRow>> datas;
 
   const TableWidget({super.key, required this.datas});
