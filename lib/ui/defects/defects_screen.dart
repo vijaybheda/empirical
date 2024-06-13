@@ -1258,7 +1258,7 @@ class DefectsMergerTable extends StatelessWidget {
             int? sdcount = controller
                 .seriousDefectCountMap[controller.seriousDefectList[index]];
             if (sdcount != null) {
-              percent = (sdcount / totalSamples * 10).round();
+              percent = (sdcount / totalSamples * 100).round();
               value = percent.toString();
             }
           }

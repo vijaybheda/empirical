@@ -1649,7 +1649,7 @@ class DefectsScreenController extends GetxController {
           data.sampleId = value[i].sampleId;
           data.iCnt = (data.iCnt + value[i].injuryCnt!);
           data.dCnt = (data.dCnt + value[i].damageCnt!);
-          data.sdCnt = (data.sdCnt + value[i].seriousDamageCnt!);
+          data.sdCnt = value[i].seriousDamageCnt!;
           data.vsdCnt = (data.vsdCnt + value[i].verySeriousDamageCnt!);
           data.dcCnt = (data.dcCnt + value[i].decayCnt!);
 
