@@ -202,4 +202,57 @@ class AppAlertDialog {
             ),
           );
   }
+
+  static void showSeverityItemDialog({
+    required BuildContext context,
+    required Widget titleWidget,
+    required String title,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.zero,
+          backgroundColor: Theme.of(context).colorScheme.background,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(0),
+          ),
+          insetPadding: EdgeInsets.zero,
+          titlePadding: EdgeInsets.zero,
+          actionsPadding: EdgeInsets.zero,
+          buttonPadding: EdgeInsets.zero,
+          iconPadding: EdgeInsets.zero,
+          title: Container(
+            color: AppColors.defectOrange,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              child: Row(
+                children: [
+                  titleWidget,
+                  SizedBox(width: 10),
+                  Text(title, style: Get.textTheme.titleMedium),
+                ],
+              ),
+            ),
+          ),
+          content: null,
+          actions: [
+            TextButton(
+              onPressed: () {
+                Get.back();
+              },
+              child: const Text(
+                AppStrings.ok,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

@@ -4,8 +4,10 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/defects_screen_controller.dart';
 import 'package:pverify/controller/json_file_operations.dart';
+import 'package:pverify/models/inspection_defect.dart';
 import 'package:pverify/models/sample_data.dart';
 import 'package:pverify/table/merge_table.dart';
+import 'package:pverify/table/table_widget.dart';
 import 'package:pverify/ui/components/drawer_header_content_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/defects/sample_set_widget.dart';
@@ -194,21 +196,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                 child: DefectsMergerTable(
                   controller: controller,
                 ),
-              ),
-              //controller.drawDefectsTable()
-              //     SingleChildScrollView(
-              //   child: DefectsTable(
-              //     defectDataMap: controller.defectDataMap,
-              //     numberSamples: controller.numberSamples,
-              //     numberSeriousDefects: controller.numberSeriousDefects,
-              //     sampleDataMap: controller.sampleDataMap,
-              //     sampleDataMapIndexList: controller.sampleDataMapIndexList,
-              //     seriousDefectList: controller.seriousDefectList,
-              //     severityList: controller.appStorage.severityList ?? [],
-              //     controller: controller,
-              //   ),
-              // ),
-            )
+              ))
           : Expanded(
               flex: 1,
               child: Column(
@@ -307,97 +295,6 @@ class DefectsScreen extends GetView<DefectsScreenController> {
     ]);
   }
 
-  List<int> getColorDefectsPercentage(DefectsScreenController controller) {
-    return [
-      (((controller.totalColorInjury / controller.totalSamples) * 100)).round(),
-      (((controller.totalColorDamage / controller.totalSamples) * 100)).round(),
-      (((controller.totalColorSeriousDamage / controller.totalSamples) * 100))
-          .round(),
-      (((controller.totalColorVerySeriousDamage / controller.totalSamples) *
-              100))
-          .round(),
-      (((controller.totalColorDecay / controller.totalSamples) * 100)).round(),
-    ];
-  }
-
-  List<int> getSizeDefectsPercentage(DefectsScreenController controller) {
-    return [
-      (((controller.totalSizeInjury / controller.totalSamples) * 100)).round(),
-      (((controller.totalSizeDamage / controller.totalSamples) * 100)).round(),
-      (((controller.totalSizeSeriousDamage / controller.totalSamples) * 100))
-          .round(),
-      (((controller.totalSizeVerySeriousDamage / controller.totalSamples) *
-              100))
-          .round(),
-      (((controller.totalSizeDecay / controller.totalSamples) * 100)).round(),
-    ];
-  }
-
-  List<List<int>> getTotalSeverityPercentage(
-      DefectsScreenController controller) {
-    return [
-      [(((controller.totalInjury / controller.totalSamples) * 100)).round()],
-      [
-        (((controller.totalDamage / controller.totalSamples) * 100)).round(),
-        (((controller.seriousDefectCountMap[controller.seriousDefectList[0]]! /
-                    controller.totalSamples) *
-                100))
-            .round(),
-        (((controller.seriousDefectCountMap[controller.seriousDefectList[1]]! /
-                    controller.totalSamples) *
-                100))
-            .round()
-      ],
-      [
-        (((controller.totalVerySeriousDamage / controller.totalSamples) * 100))
-            .round()
-      ],
-      [(((controller.totalDecay / controller.totalSamples) * 100)).round()],
-      [(((controller.totalInjury / controller.totalSamples) * 100)).round()]
-    ];
-  }
-
-  List<List<int>> getTotalSeverity(DefectsScreenController controller) {
-    int x1 = 0;
-    int x2 = 0;
-    if (controller.seriousDefectCountMap.isNotEmpty &&
-        controller.seriousDefectList.isNotEmpty) {
-      x1 = controller.seriousDefectCountMap[controller.seriousDefectList[0]] ??
-          0;
-      if (controller.seriousDefectList.length > 1) {
-        x2 =
-            controller.seriousDefectCountMap[controller.seriousDefectList[1]] ??
-                0;
-      }
-    }
-    return [
-      [controller.totalInjury],
-      [controller.totalDamage, x1, x2],
-      [controller.totalVerySeriousDamage],
-      [controller.totalDecay],
-      [controller.totalInjury]
-    ];
-  }
-
-  Widget defectTags(String title) {
-    return Container(
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.lightGrey), // Border color
-        borderRadius: BorderRadius.circular(15.0), // Border radius
-      ),
-      width: 72.w,
-      child: Text(
-        textAlign: TextAlign.center,
-        title,
-        style: GoogleFonts.poppins(
-            fontSize: 35.sp,
-            fontWeight: FontWeight.w600,
-            color: AppColors.white),
-      ),
-    );
-  }
-
 // DEFECTS VIEW
 
   Widget customViewDefectsView(
@@ -451,16 +348,13 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               borderRadius: BorderRadius.circular(30), // Border radius
             ),
             padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: Expanded(
-              flex: 1,
-              child: Text(
-                textAlign: TextAlign.center,
-                tag,
-                style: GoogleFonts.poppins(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textFieldText_Color),
-              ),
+            child: Text(
+              textAlign: TextAlign.center,
+              tag,
+              style: GoogleFonts.poppins(
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textFieldText_Color),
             ),
           ),
           const SizedBox(width: 5),
@@ -625,17 +519,6 @@ class DefectsMergerTable extends StatelessWidget {
 
   const DefectsMergerTable({super.key, required this.controller});
 
-  // bool get hasSeverityInjury => controller.hasSeverityInjury;
-  //
-  // bool get hasSeverityDamage => controller.hasSeverityDamage;
-  //
-  // bool get hasSeveritySeriousDamage => controller.hasSeveritySeriousDamage;
-  //
-  // bool get hasSeverityVerySeriousDamage =>
-  //     controller.hasSeverityVerySeriousDamage;
-  //
-  // bool get hasSeverityDecay => controller.hasSeverityDecay;
-
   int get numberSamples => controller.numberSamples;
 
   int get numberSeriousDefects => controller.numberSeriousDefects;
@@ -705,52 +588,20 @@ class DefectsMergerTable extends StatelessWidget {
       }
     }
 
-    List<int> rowLengths = _getRowLengths(_getRows([]));
-    List<List<BaseMRow>> rows = _getRows(rowLengths);
+    List<List<BaseMRow>> rows = _getRows();
 
-    int maxLength = rowLengths.reduce((a, b) => a > b ? a : b);
-
-    return MergeTable(
-      borderColor: Colors.grey,
-      alignment: MergeTableAlignment.center,
-      // columns: _getColumns(),
-      columns: _createDefectTableHeaderRow(maxLength),
-      rows: rows,
-    );
+    return Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        child: TableWidget(datas: rows));
   }
 
-  List<int> _getRowLengths(List<List<BaseMRow>> rows) {
-    List<int> lengths = rows.map((row) => row.length).toList();
-    return lengths;
-  }
-
-  List<BaseMColumn> _getColumns() {
-    return [
-      MColumn(header: "Type"),
-      if (controller.hasSeverityInjury) MColumn(header: "Defects"),
-      if (controller.hasSeverityDamage) MColumn(header: "Defects"),
-      if (controller.hasSeveritySeriousDamage)
-        MMergedColumns(
-          header: "Defects",
-          columns: List.generate(numberSeriousDefects,
-              (index) => Container(child: Text("SD ${index + 1}"))),
-        ),
-      if (controller.hasSeverityVerySeriousDamage) MColumn(header: "Defects"),
-      if (controller.hasSeverityDecay) MColumn(header: "Defects"),
-      MColumn(header: ""),
-      MColumn(header: ""),
-      // MColumn(header: ""),
-    ];
-  }
-
-  List<List<BaseMRow>> _getRows(List<int> rowLengths) {
+  List<List<BaseMRow>> _getRows() {
     List<List<BaseMRow>> rows = [];
-
-    // rows.add(_createDefectTableHeaderRow1());
+    rows.add(_createDefectTableHeaderRow());
     rows.add(_getRowSeverity());
 
     for (int i = 0; i < numberSamples; i++) {
-      rows.add(_getSampleRow(i, rowLengths));
+      rows.add(_getSampleRow(i));
     }
 
     rows.add(_getTotalQualityDefectsRow());
@@ -759,7 +610,6 @@ class DefectsMergerTable extends StatelessWidget {
     rows.add(_getTotalConditionDefectsPercentRow());
     rows.add(_getTotalSeverityByDefectTypeRow());
     rows.add(_getTotalSeverityByDefectPercentRow());
-    // rows.add(_getPercentByDefectTypeRow());
     rows.add(_getTotalSizeDefectsRow());
     rows.add(_getTotalSizeDefectsPercentRow());
     rows.add(_getTotalColorDefectsRow());
@@ -770,73 +620,150 @@ class DefectsMergerTable extends StatelessWidget {
 
   List<BaseMRow> _getRowSeverity() {
     return [
-      MRow(Text("Severity")),
-      if (controller.hasSeverityInjury) MRow(circularDefectItem("I")),
-      if (controller.hasSeverityDamage) MRow(circularDefectItem("D")),
+      MRow(Container(
+        color: AppColors.white,
+        child: Center(
+          child: Text(
+            "Severity",
+            style: textStyle(),
+          ),
+        ),
+      )),
+      if (controller.hasSeverityInjury)
+        MRow(Container(
+          color: AppColors.defectBlue,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(width: 35, height: 35, child: circularDefectItem("I")),
+              ],
+            ),
+          ),
+        )),
+      if (controller.hasSeverityDamage)
+        MRow(Container(
+          color: AppColors.defectGreen,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(width: 35, height: 35, child: circularDefectItem("D")),
+              ],
+            ),
+          ),
+        )),
+      // if (controller.hasSeveritySeriousDamage)
+      //   MMergedRows(List.generate(
+      //       numberSeriousDefects, (index) => circularDefectItem("SD"))),
       if (controller.hasSeveritySeriousDamage)
-        MMergedRows(List.generate(
-            numberSeriousDefects, (index) => circularDefectItem("SD"))),
+        for (int i = 0; i < numberSeriousDefects; i++)
+          if (controller.hasSeveritySeriousDamage)
+            MRow(GestureDetector(
+              onTap: () {
+                // alert dialog with ok action button
+                AppAlertDialog.showSeverityItemDialog(
+                  context: Get.context!,
+                  title: controller.seriousDefectList[(i)],
+                  titleWidget: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                          width: 35,
+                          height: 35,
+                          child: circularDefectItem("SD",
+                              color: const Color(0xff680000))),
+                      Text(
+                        (i + 1).toString(),
+                        style: textStyle(),
+                      )
+                    ],
+                  ),
+                );
+              },
+              child: Container(
+                color: AppColors.defectOrange,
+                child: Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                          width: 35,
+                          height: 35,
+                          child: circularDefectItem("SD",
+                              color: const Color(0xff680000))),
+                      const SizedBox(width: 3),
+                      Text(
+                        (i + 1).toString(),
+                        style: textStyle(),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            )),
       if (controller.hasSeverityVerySeriousDamage)
         MRow(circularDefectItem("VS")),
       if (controller.hasSeverityDecay) MRow(circularDefectItem("DK")),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
-  List<BaseMColumn> _createDefectTableHeaderRow(int maxLength) {
-    List<BaseMColumn> rows = [
-      MColumn(header: "Type"),
-      if (controller.hasSeverityInjury) MColumn(header: 'Defects'),
-      if (controller.hasSeverityDamage) MColumn(header: 'Defects'),
-      if (controller.hasSeveritySeriousDamage)
-        for (int i = 0; i < numberSeriousDefects; i++)
-          if (controller.hasSeverityDamage) MColumn(header: 'Defects'),
-      if (controller.hasSeverityVerySeriousDamage) MColumn(header: 'Defects'),
-      if (controller.hasSeverityDecay) MColumn(header: 'Defects'),
-    ];
-    return [
-      ...rows,
-      for (int i = 0; i < maxLength - 4; i++) MColumn(header: ''),
-      // MColumn(header: ''),
-      // VerticalMergedRow(rowSpan: 5, child: Container()),
-      // VerticalMergedRow(rowSpan: 5, child: Container()),
-    ];
+  TextStyle textStyle() {
+    return Get.textTheme.labelMedium!.copyWith(
+      fontWeight: FontWeight.w600,
+      color: AppColors.black,
+    );
   }
 
-  List<BaseMRow> _createDefectTableHeaderRow1() {
-    return [
-      MRow(defaultTextItem("Type")),
-      if (controller.hasSeverityInjury) MRow(defaultTextItem('Defects')),
-      if (controller.hasSeverityDamage) MRow(defaultTextItem('Defects')),
+  List<MRow> _createDefectTableHeaderRow() {
+    List<MRow> rows = [
+      MRow(Container(color: AppColors.white, child: defaultTextItem("Type"))),
+      if (controller.hasSeverityInjury)
+        MRow(Container(
+            color: AppColors.defectBlue, child: defaultTextItem('Defects'))),
+      if (controller.hasSeverityDamage)
+        MRow(Container(
+            color: AppColors.defectGreen, child: defaultTextItem('Defects'))),
       if (controller.hasSeveritySeriousDamage)
         for (int i = 0; i < numberSeriousDefects; i++)
-          if (controller.hasSeverityDamage) MRow(defaultTextItem('Defects')),
+          if (controller.hasSeveritySeriousDamage)
+            MRow(Container(
+                color: AppColors.defectOrange,
+                child: defaultTextItem('Defects'))),
       if (controller.hasSeverityVerySeriousDamage)
         MRow(defaultTextItem('Defects')),
       if (controller.hasSeverityDecay) MRow(defaultTextItem('Defects')),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
+    return rows;
   }
 
-  Widget circularDefectItem(String title) {
+  Widget circularDefectItem(String title, {Color? color}) {
     return SizedBox(
+      height: 25,
+      width: 25,
       child: Container(
-        padding: EdgeInsets.all(2),
+        padding: const EdgeInsets.all(2),
         // margin: EdgeInsets.symmetric(vertical: 5),
-        height: 35,
-        width: 35,
+        height: 25,
+        width: 25,
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.red),
+          border: Border.all(color: color ?? const Color(0xffFA0000)),
           shape: BoxShape.circle,
-          color: Colors.red,
+          color: color ?? AppColors.red,
         ),
         child: Center(
           child: Text(
             title,
-            style: Get.textTheme.labelMedium!
-                .copyWith(fontWeight: FontWeight.w600, color: AppColors.white),
+            textAlign: TextAlign.center,
+            style: textStyle().copyWith(
+              color: AppColors.white,
+            ),
           ),
         ),
       ),
@@ -844,18 +771,20 @@ class DefectsMergerTable extends StatelessWidget {
   }
 
   Widget defaultTextItem(String title, {Color? color}) {
-    return SizedBox(
-      width: 100,
-      child: Container(
-        padding: EdgeInsets.all(2),
-        // margin: EdgeInsets.symmetric(vertical: 5),
+    return Center(
+      child: SizedBox(
         width: 100,
-        height: 50,
-        child: Center(
-          child: Text(
-            title,
-            style: Get.textTheme.labelMedium!.copyWith(
-                fontWeight: FontWeight.w600, color: color ?? AppColors.white),
+        child: Container(
+          padding: const EdgeInsets.all(2),
+          // margin: EdgeInsets.symmetric(vertical: 5),
+          width: 100,
+          height: 50,
+          child: Center(
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: textStyle(),
+            ),
           ),
         ),
       ),
@@ -877,7 +806,7 @@ class DefectsMergerTable extends StatelessWidget {
           right: index == numberSeriousDefects - 1 ? 4.0 : 0,
           bottom: 4.0,
         ),
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         decoration: BoxDecoration(
           color: Colors.orange,
           border: Border.all(color: Colors.grey),
@@ -886,20 +815,20 @@ class DefectsMergerTable extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.all(4.0),
+              padding: const EdgeInsets.all(4.0),
               decoration: BoxDecoration(
-                color: Colors.red,
+                color: AppColors.red,
                 borderRadius: BorderRadius.circular(8.0),
               ),
               child: Text(
                 'SD',
-                style: TextStyle(color: Colors.white),
+                style: textStyle(),
               ),
             ),
             if (numberSeriousDefects > 1)
               Text(
                 '${index + 1}',
-                style: TextStyle(fontSize: 12.0),
+                style: TextStyle(fontSize: 12.0, color: AppColors.black),
               ),
           ],
         ),
@@ -907,67 +836,29 @@ class DefectsMergerTable extends StatelessWidget {
     );
   }
 
-  List<Widget> buildSeriousDefectRow({
-    required BuildContext context,
-    required int numberSeriousDefects,
-    required List<String> seriousDefectList,
-    required bool hasSeveritySeriousDamage,
-  }) {
-    List<Widget> rowChildren = [];
-
-    for (int i = 0; i < numberSeriousDefects; i++) {
-      rowChildren.add(buildSeriousDefect(
-        context: context,
-        index: i,
-        numberSeriousDefects: numberSeriousDefects,
-        defectName: seriousDefectList[i],
-        hasSeveritySeriousDamage: hasSeveritySeriousDamage,
-        onClick: (int index) {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Serious Defect'),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('Subscript: ${index + 1}'),
-                    Text('Name: ${seriousDefectList[index]}'),
-                  ],
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    child: Text('OK'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        },
-      ));
-    }
-
-    return rowChildren;
-  }
-
-  List<BaseMRow> _getSampleRow(int index, List<int> rowLengths) {
+  List<BaseMRow> _getSampleRow(int index) {
     SampleData? a = controller.sampleList.elementAtOrNull(index);
     SampleData? sampleData = controller.sampleDataMap[a?.sampleSize ?? 0];
     return [
-      MRow(defaultTextItem((sampleData?.sampleSize ?? 0).toString())),
+      MRow(Container(
+          color: AppColors.white,
+          child: defaultTextItem((sampleData?.sampleSize ?? 0).toString()))),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem((sampleData?.iCnt ?? 0).toString())),
+        MRow(Container(
+            color: AppColors.defectBlue,
+            child: defaultTextItem((sampleData?.iCnt ?? 0).toString()))),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem((sampleData?.dCnt ?? 0).toString())),
+        MRow(Container(
+            color: AppColors.defectGreen,
+            child: defaultTextItem((sampleData?.dCnt ?? 0).toString()))),
       if (controller.hasSeveritySeriousDamage)
-        MMergedRows(List.generate(numberSeriousDefects, (index) {
-          return Container(
-              // margin: EdgeInsets.symmetric(vertical: 5),
-              child: defaultTextItem((sampleData?.sdCnt ?? 0).toString()));
-        })),
+        for (int i = 0; i < numberSeriousDefects; i++)
+          if (controller.hasSeveritySeriousDamage)
+            MRow(Container(
+              color: AppColors.defectOrange,
+              child: defaultTextItem(
+                  getCount(sampleData?.name ?? '', i).toString()),
+            )),
       if (controller.hasSeverityVerySeriousDamage)
         MRow(defaultTextItem((sampleData?.vsdCnt ?? 0).toString())),
       if (controller.hasSeverityDecay)
@@ -980,73 +871,109 @@ class DefectsMergerTable extends StatelessWidget {
   // Done
   List<BaseMRow> _getTotalQualityDefectsRow() {
     return [
-      MRow(defaultTextItem("Quality Defects")),
+      MRow(Container(
+          color: AppColors.white, child: defaultTextItem("Quality Defects"))),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem("${controller.totalQualityInjury}")),
+        MRow(Container(
+            color: AppColors.defectBlue,
+            child: defaultTextItem("${controller.totalQualityInjury}"))),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem("${controller.totalQualityDamage}")),
+        MRow(Container(
+            color: AppColors.defectGreen,
+            child: defaultTextItem("${controller.totalQualityDamage}"))),
       if (controller.hasSeveritySeriousDamage)
         MMergedRows(List.generate(numberSeriousDefects, (index) {
           String value = "";
           if (index == 0) {
             value = "$totalQualitySeriousDamage";
           }
+          if (value.isEmpty) {
+            return Offstage(
+                child: Container(
+                    width: 100, height: 65, color: AppColors.defectOrange));
+          }
           return Container(
-              margin: EdgeInsets.symmetric(vertical: 5), child: Text(value));
+            color: AppColors.defectOrange,
+            child: Center(
+              child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 5),
+                  child: Text(
+                    value,
+                    style: textStyle(),
+                  )),
+            ),
+          );
         })),
       if (controller.hasSeverityVerySeriousDamage)
         MRow(defaultTextItem("${controller.totalQualityVerySeriousDamage}")),
       if (controller.hasSeverityDecay)
         MRow(defaultTextItem("${controller.totalQualityDecay}")),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
   // Done
   List<BaseMRow> _getTotalQualityDefectsPercentRow() {
-    int percentDecay = (totalQualityDecay / totalSamples * 100).floor();
+    int percentDecay = (totalQualityDecay / totalSamples * 100).round();
     int percentVSDamage =
-        (totalQualityVerySeriousDamage / totalSamples * 100).floor();
+        (totalQualityVerySeriousDamage / totalSamples * 100).round();
     int percentSDamage =
-        (totalQualitySeriousDamage / totalSamples * 100).floor();
-    int percentDamage = (totalQualityDamage / totalSamples * 100).floor();
-    int percentInjury = (totalQualityInjury / totalSamples * 100).floor();
+        (totalQualitySeriousDamage / totalSamples * 100).round();
+    int percentDamage = (totalQualityDamage / totalSamples * 100).round();
+    int percentInjury = (totalQualityInjury / totalSamples * 100).round();
     return [
-      MRow(defaultTextItem("Quality Defects %")),
+      MRow(Container(
+          color: AppColors.white, child: defaultTextItem("Quality Defects %"))),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem("$percentInjury%")),
+        MRow(Container(
+            color: AppColors.defectBlue,
+            child: defaultTextItem("$percentInjury%"))),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem("$percentDamage%")),
+        MRow(Container(
+            color: AppColors.defectGreen,
+            child: defaultTextItem("$percentDamage%"))),
       if (controller.hasSeveritySeriousDamage)
         MMergedRows(List.generate(numberSeriousDefects, (index) {
           String value = "";
           if (index == 0) {
             value = "$percentSDamage%";
           }
+          if (value.isEmpty) {
+            return Offstage(
+                child: Container(
+                    width: 100, height: 65, color: AppColors.defectOrange));
+          }
           return Container(
-            margin: EdgeInsets.symmetric(vertical: 5),
-            child: Text(
-              value,
-              style: TextStyle(
-                color: (controller.seriousDamageQualitySpec != null &&
-                        percentSDamage >
-                            (controller.seriousDamageQualitySpec ?? 0.0))
-                    ? Colors.red
-                    : Colors.white,
+            color: AppColors.defectOrange,
+            child: Center(
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  value,
+                  textAlign: TextAlign.center,
+                  style: textStyle().copyWith(
+                    color: (controller.seriousDamageQualitySpec != null &&
+                            percentSDamage >
+                                (controller.seriousDamageQualitySpec ?? 0.0))
+                        ? AppColors.red
+                        : AppColors.black,
+                  ),
+                ),
               ),
             ),
           );
         })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(Text(
-          "$percentVSDamage%",
-          style: TextStyle(
-            color: (controller.verySeriousDamageQualitySpec != null &&
-                    percentVSDamage >
-                        (controller.verySeriousDamageQualitySpec ?? 0.0))
-                ? Colors.red
-                : Colors.white,
+        MRow(Center(
+          child: Text(
+            "$percentVSDamage%",
+            textAlign: TextAlign.center,
+            style: textStyle().copyWith(
+              color: (controller.verySeriousDamageQualitySpec != null &&
+                      percentVSDamage >
+                          (controller.verySeriousDamageQualitySpec ?? 0.0))
+                  ? AppColors.red
+                  : AppColors.black,
+            ),
           ),
         )),
       if (controller.hasSeverityDecay)
@@ -1054,22 +981,25 @@ class DefectsMergerTable extends StatelessWidget {
           "$percentDecay%",
           color: (controller.decayQualitySpec != null &&
                   percentDecay > (controller.decayQualitySpec ?? 0.0))
-              ? Colors.red
+              ? AppColors.red
               : null,
         )),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
   // Done
   List<BaseMRow> _getTotalConditionDefectsRow() {
     return [
-      MRow(defaultTextItem("Condition Defects")),
+      MRow(Container(
+          color: AppColors.white, child: defaultTextItem("Condition Defects"))),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem("${controller.totalConditionInjury}")),
+        MRow(Container(
+            color: AppColors.defectBlue,
+            child: defaultTextItem("${controller.totalConditionInjury}"))),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem("${controller.totalConditionDamage}")),
+        MRow(Container(
+            color: AppColors.defectGreen,
+            child: defaultTextItem("${controller.totalConditionDamage}"))),
       if (controller.hasSeveritySeriousDamage)
         MMergedRows(List.generate(numberSeriousDefects, (index) {
           String value = "";
@@ -1077,45 +1007,62 @@ class DefectsMergerTable extends StatelessWidget {
             int a = controller.totalConditionSeriousDamage;
             value = "$a";
           }
+          if (value.isEmpty) {
+            return Offstage(
+                child: Container(
+                    width: 100, height: 65, color: AppColors.defectOrange));
+          }
           return Container(
-              margin: EdgeInsets.symmetric(vertical: 5), child: Text(value));
+            color: AppColors.defectOrange,
+            child: Center(
+              child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 5),
+                  child: Text(value, style: textStyle())),
+            ),
+          );
         })),
       if (controller.hasSeverityVerySeriousDamage)
         MRow(defaultTextItem("${controller.totalConditionVerySeriousDamage}")),
       if (controller.hasSeverityDecay)
         MRow(defaultTextItem("${controller.totalConditionDecay}")),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
   // Done
   List<BaseMRow> _getTotalConditionDefectsPercentRow() {
-    int percentCDecay = (totalConditionDecay / totalSamples * 100).floor();
+    int percentCDecay = (totalConditionDecay / totalSamples * 100).round();
     int percentCVSDamage =
-        (totalConditionVerySeriousDamage / totalSamples * 100).floor();
+        (totalConditionVerySeriousDamage / totalSamples * 100).round();
     int percentSCDamage =
-        (totalConditionSeriousDamage / totalSamples * 100).floor();
-    int percentCDamage = (totalConditionDamage / totalSamples * 100).floor();
-    int percentCInjury = (totalConditionInjury / totalSamples * 100).floor();
+        (totalConditionSeriousDamage / totalSamples * 100).round();
+    int percentCDamage = (totalConditionDamage / totalSamples * 100).round();
+    int percentCInjury = (totalConditionInjury / totalSamples * 100).round();
 
     return [
-      MRow(defaultTextItem("Condition Defects %")),
+      MRow(Container(
+          color: AppColors.white,
+          child: defaultTextItem("Condition Defects %"))),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem(
-          "$percentCInjury%",
-          color: (controller.injuryConditionSpec != null &&
-                  percentCInjury > (controller.injuryConditionSpec ?? 0.0))
-              ? Colors.red
-              : null,
+        MRow(Container(
+          color: AppColors.defectBlue,
+          child: defaultTextItem(
+            "$percentCInjury%",
+            color: (controller.injuryConditionSpec != null &&
+                    percentCInjury > (controller.injuryConditionSpec ?? 0.0))
+                ? AppColors.red
+                : null,
+          ),
         )),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem(
-          "$percentCDamage%",
-          color: (controller.damageConditionSpec != null &&
-                  percentCDamage > (controller.damageConditionSpec ?? 0.0))
-              ? Colors.red
-              : null,
+        MRow(Container(
+          color: AppColors.defectGreen,
+          child: defaultTextItem(
+            "$percentCDamage%",
+            color: (controller.damageConditionSpec != null &&
+                    percentCDamage > (controller.damageConditionSpec ?? 0.0))
+                ? AppColors.red
+                : null,
+          ),
         )),
       if (controller.hasSeveritySeriousDamage)
         MMergedRows(List.generate(numberSeriousDefects, (index) {
@@ -1123,29 +1070,43 @@ class DefectsMergerTable extends StatelessWidget {
           if (index == 0) {
             value = "$percentSCDamage%";
           }
+          if (value.isEmpty) {
+            return Offstage(
+                child: Container(
+                    width: 100, height: 65, color: AppColors.defectOrange));
+          }
           return Container(
-            margin: EdgeInsets.symmetric(vertical: 5),
-            child: Text(
-              value,
-              style: TextStyle(
-                color: (controller.seriousDamageConditionSpec != null &&
-                        percentSCDamage >
-                            (controller.seriousDamageConditionSpec ?? 0.0))
-                    ? Colors.red
-                    : Colors.white,
+            color: AppColors.defectOrange,
+            child: Center(
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  value,
+                  textAlign: TextAlign.center,
+                  style: textStyle().copyWith(
+                    color: (controller.seriousDamageConditionSpec != null &&
+                            percentSCDamage >
+                                (controller.seriousDamageConditionSpec ?? 0.0))
+                        ? AppColors.red
+                        : AppColors.black,
+                  ),
+                ),
               ),
             ),
           );
         })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(Text(
-          "$percentCVSDamage%",
-          style: TextStyle(
-            color: (controller.verySeriousDamageConditionSpec != null &&
-                    percentCVSDamage >
-                        (controller.verySeriousDamageConditionSpec ?? 0.0))
-                ? Colors.red
-                : Colors.white,
+        MRow(Center(
+          child: Text(
+            "$percentCVSDamage%",
+            textAlign: TextAlign.center,
+            style: textStyle().copyWith(
+              color: (controller.verySeriousDamageConditionSpec != null &&
+                      percentCVSDamage >
+                          (controller.verySeriousDamageConditionSpec ?? 0.0))
+                  ? AppColors.red
+                  : AppColors.black,
+            ),
           ),
         )),
       if (controller.hasSeverityDecay)
@@ -1153,79 +1114,91 @@ class DefectsMergerTable extends StatelessWidget {
           "$percentCDecay%",
           color: (controller.decayConditionSpec != null &&
                   percentCDecay > (controller.decayConditionSpec ?? 0.0))
-              ? Colors.red
+              ? AppColors.red
               : null,
         )),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
   // Done
   List<BaseMRow> _getTotalSeverityByDefectTypeRow() {
     return [
-      MRow(defaultTextItem("Total Severity")),
+      MRow(Container(
+          color: AppColors.white, child: defaultTextItem("Total Severity"))),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem("${controller.totalInjury}")),
+        MRow(Container(
+            color: AppColors.defectBlue,
+            child: defaultTextItem("${controller.totalInjury}"))),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem("${controller.totalDamage}")),
+        MRow(Container(
+            color: AppColors.defectGreen,
+            child: defaultTextItem("${controller.totalDamage}"))),
       if (controller.hasSeveritySeriousDamage)
         MMergedRows(List.generate(numberSeriousDefects, (index) {
-          String value = "0";
           int percent = 0;
           if (controller.seriousDefectList.isNotEmpty) {
             int? sdcount = controller
                 .seriousDefectCountMap[controller.seriousDefectList[index]];
             if (sdcount != null) {
-              percent = (sdcount / totalSamples * 10).floor();
-              value = percent.toString();
+              percent = sdcount;
             }
           }
           return Container(
-              margin: EdgeInsets.symmetric(vertical: 5),
-              child: Text(
-                value,
-                style: TextStyle(
-                  color: (controller.seriousDamageSpec != null &&
-                          percent > (controller.seriousDamageSpec ?? 0.0))
-                      ? Colors.red
-                      : Colors.white,
-                ),
-              ));
+            color: AppColors.defectOrange,
+            child: Center(
+              child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 5),
+                  child: Text(
+                    percent.toString(),
+                    textAlign: TextAlign.center,
+                    style: textStyle().copyWith(
+                      color: (controller.seriousDamageSpec != null &&
+                              percent > (controller.seriousDamageSpec ?? 0.0))
+                          ? AppColors.red
+                          : AppColors.black,
+                    ),
+                  )),
+            ),
+          );
         })),
       if (controller.hasSeverityVerySeriousDamage)
         MRow(defaultTextItem("${controller.totalVerySeriousDamage}")),
       if (controller.hasSeverityDecay)
         MRow(defaultTextItem("${controller.totalDecay}")),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
   // Done
   List<BaseMRow> _getTotalSeverityByDefectPercentRow() {
-    int totalDecay = (controller.totalDecay / totalSamples * 100).floor();
-    int totalDamage = (controller.totalDamage / totalSamples * 100).floor();
-    int totalInjury = (controller.totalInjury / totalSamples * 100).floor();
+    int totalDecay = (controller.totalDecay / totalSamples * 100).round();
+    int totalDamage = (controller.totalDamage / totalSamples * 100).round();
+    int totalInjury = (controller.totalInjury / totalSamples * 100).round();
     int totalVerySeriousDamage =
-        (controller.totalVerySeriousDamage / totalSamples * 100).floor();
+        (controller.totalVerySeriousDamage / totalSamples * 100).round();
     return [
-      MRow(defaultTextItem("Total Severity %")),
+      MRow(Container(
+          color: AppColors.white, child: defaultTextItem("Total Severity %"))),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem(
-          "$totalInjury%",
-          color: (controller.injurySpec != null &&
-                  totalInjury > (controller.injurySpec ?? 0.0))
-              ? Colors.red
-              : null,
+        MRow(Container(
+          color: AppColors.defectBlue,
+          child: defaultTextItem(
+            "$totalInjury%",
+            color: (controller.injurySpec != null &&
+                    totalInjury > (controller.injurySpec ?? 0.0))
+                ? AppColors.red
+                : null,
+          ),
         )),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem(
-          "$totalDamage%",
-          color: (controller.damageSpec != null &&
-                  totalDamage > (controller.damageSpec ?? 0.0))
-              ? Colors.red
-              : null,
+        MRow(Container(
+          color: AppColors.defectGreen,
+          child: defaultTextItem(
+            "$totalDamage%",
+            color: (controller.damageSpec != null &&
+                    totalDamage > (controller.damageSpec ?? 0.0))
+                ? AppColors.red
+                : null,
+          ),
         )),
       if (controller.hasSeveritySeriousDamage)
         MMergedRows(List.generate(numberSeriousDefects, (index) {
@@ -1235,21 +1208,27 @@ class DefectsMergerTable extends StatelessWidget {
             int? sdcount = controller
                 .seriousDefectCountMap[controller.seriousDefectList[index]];
             if (sdcount != null) {
-              percent = (sdcount / totalSamples * 100).floor();
+              percent = (sdcount / totalSamples * 100).round();
               value = percent.toString();
             }
           }
           return Container(
-              margin: EdgeInsets.symmetric(vertical: 5),
-              child: Text(
-                "$value%",
-                style: TextStyle(
-                  color: (controller.seriousDamageSpec != null &&
-                          percent > (controller.seriousDamageSpec ?? 0.0))
-                      ? Colors.red
-                      : Colors.white,
-                ),
-              ));
+            color: AppColors.defectOrange,
+            child: Center(
+              child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 5),
+                  child: Text(
+                    "$value%",
+                    textAlign: TextAlign.center,
+                    style: textStyle().copyWith(
+                      color: (controller.seriousDamageSpec != null &&
+                              percent > (controller.seriousDamageSpec ?? 0.0))
+                          ? AppColors.red
+                          : AppColors.black,
+                    ),
+                  )),
+            ),
+          );
         })),
       if (controller.hasSeverityVerySeriousDamage)
         MRow(defaultTextItem(
@@ -1257,165 +1236,142 @@ class DefectsMergerTable extends StatelessWidget {
           color: controller.verySeriousDamageSpec != null &&
                   totalVerySeriousDamage >
                       (controller.verySeriousDamageSpec ?? 0.0)
-              ? Colors.red
+              ? AppColors.red
               : null,
         )),
       if (controller.hasSeverityDecay)
         MRow(defaultTextItem("$totalDecay%",
             color: (controller.decaySpec != null &&
                     totalDecay > (controller.decaySpec ?? 0.0))
-                ? Colors.red
+                ? AppColors.red
                 : null)),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
-    ];
-  }
-
-  // Done
-  List<BaseMRow> _getPercentByDefectTypeRow() {
-    int totalDecay = (controller.totalDecay / totalSamples * 100).floor();
-    int totalVerySeriousDamage =
-        (controller.totalSeriousDamage / totalSamples * 100).floor();
-    int totalInjury = (controller.totalInjury / totalSamples * 100).floor();
-    int totalDamage = (controller.totalDamage / totalSamples * 100).floor();
-
-    return [
-      MRow(defaultTextItem("Total %")),
-      if (controller.hasSeverityInjury)
-        MRow(defaultTextItem("$totalInjury%",
-            color: (controller.injurySpec != null &&
-                    totalInjury > (controller.injurySpec ?? 0.0))
-                ? Colors.red
-                : null)),
-      if (controller.hasSeverityDamage)
-        MRow(defaultTextItem(
-          "$totalDamage%",
-          color: (controller.damageSpec != null &&
-                  totalDamage > (controller.damageSpec ?? 0.0))
-              ? Colors.red
-              : null,
-        )),
-      if (controller.hasSeveritySeriousDamage)
-        MMergedRows(List.generate(numberSeriousDefects, (index) {
-          int percent =
-              (controller.totalSeriousDamage / totalSamples * 100).floor();
-          return Container(
-            margin: EdgeInsets.symmetric(vertical: 5),
-            child: Text(
-              "$percent%",
-              style: TextStyle(
-                  color: (controller.seriousDamageSpec != null &&
-                          percent > (controller.seriousDamageSpec ?? 0.0))
-                      ? Colors.red
-                      : null),
-            ),
-          );
-        })),
-      if (controller.hasSeverityVerySeriousDamage)
-        MRow(
-          Text("$totalVerySeriousDamage%",
-              style: TextStyle(
-                color: (controller.verySeriousDamageSpec != null &&
-                        totalVerySeriousDamage >
-                            (controller.verySeriousDamageSpec ?? 0.0))
-                    ? Colors.red
-                    : null,
-              )),
-        ),
-      if (controller.hasSeverityDecay)
-        MRow(defaultTextItem("$totalDecay%",
-            color: (controller.decaySpec != null &&
-                    totalDecay > (controller.decaySpec ?? 0.0))
-                ? Colors.red
-                : null)),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
   // Done
   List<BaseMRow> _getTotalSizeDefectsRow() {
     return [
-      MRow(defaultTextItem("Size Defects")),
+      MRow(Container(
+          color: AppColors.white, child: defaultTextItem("Size Defects"))),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem("$totalSizeInjury")),
+        MRow(Container(
+            color: AppColors.defectBlue,
+            child: defaultTextItem("$totalSizeInjury"))),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem("$totalSizeDamage")),
+        MRow(Container(
+            color: AppColors.defectGreen,
+            child: defaultTextItem("$totalSizeDamage"))),
       if (controller.hasSeveritySeriousDamage)
         MMergedRows(List.generate(numberSeriousDefects, (index) {
           String value = "";
           if (index == 0) {
             value = "$totalSizeSeriousDamage";
           }
+          if (value.isEmpty) {
+            return Offstage(
+                child: Container(
+                    width: 100, height: 65, color: AppColors.defectOrange));
+          }
           return Container(
-              margin: EdgeInsets.symmetric(vertical: 5), child: Text(value));
+            color: AppColors.defectOrange,
+            child: Center(
+              child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 5),
+                  child: Text(value, style: textStyle())),
+            ),
+          );
         })),
       if (controller.hasSeverityVerySeriousDamage)
         MRow(defaultTextItem("$totalSizeVerySeriousDamage")),
       if (controller.hasSeverityDecay) MRow(defaultTextItem("$totalSizeDecay")),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
   // Done
   List<BaseMRow> _getTotalSizeDefectsPercentRow() {
-    int percentSizeDecay = (totalSizeDecay / totalSamples * 100).floor();
+    int percentSizeDecay = (totalSizeDecay / totalSamples * 100).round();
     int percentSizeVSDamage =
-        (totalSizeVerySeriousDamage / totalSamples * 100).floor();
-    int percentSizeDamage = (totalSizeDamage / totalSamples * 100).floor();
-    int percentSizeInjury = (totalSizeInjury / totalSamples * 100).floor();
+        (totalSizeVerySeriousDamage / totalSamples * 100).round();
+    int percentSizeDamage = (totalSizeDamage / totalSamples * 100).round();
+    int percentSizeInjury = (totalSizeInjury / totalSamples * 100).round();
     return [
-      MRow(defaultTextItem("Size Defects %")),
+      MRow(Container(
+          color: AppColors.white, child: defaultTextItem("Size Defects %"))),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem("$percentSizeInjury%")),
+        MRow(Container(
+            color: AppColors.defectBlue,
+            child: defaultTextItem("$percentSizeInjury%"))),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem("$percentSizeDamage%")),
+        MRow(Container(
+            color: AppColors.defectGreen,
+            child: defaultTextItem("$percentSizeDamage%"))),
       if (controller.hasSeveritySeriousDamage)
         MMergedRows(List.generate(numberSeriousDefects, (index) {
           String value = "";
           if (index == 0) {
             int percentSCDamage =
-                (totalSizeSeriousDamage / totalSamples * 100).floor();
+                (totalSizeSeriousDamage / totalSamples * 100).round();
             value = "$percentSCDamage%";
           }
+          if (value.isEmpty) {
+            return Offstage(
+                child: Container(
+                    width: 100, height: 65, color: AppColors.defectOrange));
+          }
           return Container(
-            margin: EdgeInsets.symmetric(vertical: 5),
-            child: Text(value),
+            color: AppColors.defectOrange,
+            child: Center(
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(value, style: textStyle()),
+              ),
+            ),
           );
         })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(Text("$percentSizeVSDamage%")),
+        MRow(Center(child: Text("$percentSizeVSDamage%", style: textStyle()))),
       if (controller.hasSeverityDecay)
         MRow(defaultTextItem("$percentSizeDecay%")),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
   // Done
   List<BaseMRow> _getTotalColorDefectsRow() {
     return [
-      MRow(defaultTextItem("Color Defects")),
+      MRow(Container(
+          color: AppColors.white, child: defaultTextItem("Color Defects"))),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem("$totalColorInjury")),
+        MRow(Container(
+            color: AppColors.defectBlue,
+            child: defaultTextItem("$totalColorInjury"))),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem("$totalColorDamage")),
+        MRow(Container(
+            color: AppColors.defectGreen,
+            child: defaultTextItem("$totalColorDamage"))),
       if (controller.hasSeveritySeriousDamage)
         MMergedRows(List.generate(numberSeriousDefects, (index) {
           String value = "";
           if (index == 0) {
             value = "$totalColorSeriousDamage";
           }
+          if (value.isEmpty) {
+            return Offstage(
+                child: Container(
+                    width: 100, height: 65, color: AppColors.defectOrange));
+          }
           return Container(
-              margin: EdgeInsets.symmetric(vertical: 5), child: Text(value));
+            color: AppColors.defectOrange,
+            child: Center(
+              child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 5),
+                  child: Text(value, style: textStyle())),
+            ),
+          );
         })),
       if (controller.hasSeverityVerySeriousDamage)
         MRow(defaultTextItem("$totalColorVerySeriousDamage")),
       if (controller.hasSeverityDecay)
         MRow(defaultTextItem("$totalColorDecay")),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
     ];
   }
 
@@ -1424,33 +1380,48 @@ class DefectsMergerTable extends StatelessWidget {
     double percentColorDecay = (totalColorDecay / totalSamples * 100);
     double percentColorVSDamage =
         (totalColorVerySeriousDamage / totalSamples * 100);
-    int percentColorDamage = (totalColorDamage / totalSamples * 100).floor();
-    int percentColorInjury = (totalColorInjury / totalSamples * 100).floor();
+    int percentColorDamage = (totalColorDamage / totalSamples * 100).round();
+    int percentColorInjury = (totalColorInjury / totalSamples * 100).round();
     return [
-      MRow(defaultTextItem("Color Defects %")),
+      MRow(Container(
+          color: AppColors.white, child: defaultTextItem("Color Defects %"))),
       if (controller.hasSeverityInjury)
-        MRow(defaultTextItem("$percentColorInjury%")),
+        MRow(Container(
+            color: AppColors.defectBlue,
+            child: defaultTextItem("$percentColorInjury%"))),
       if (controller.hasSeverityDamage)
-        MRow(defaultTextItem("$percentColorDamage%")),
+        MRow(Container(
+            color: AppColors.defectGreen,
+            child: defaultTextItem("$percentColorDamage%"))),
       if (controller.hasSeveritySeriousDamage)
         MMergedRows(List.generate(numberSeriousDefects, (index) {
           String value = "";
           if (index == 0) {
             int percentSColorDamage =
-                (totalColorSeriousDamage / totalSamples * 100).floor();
+                (totalColorSeriousDamage / totalSamples * 100).round();
             value = "$percentSColorDamage%";
           }
+          if (value.isEmpty) {
+            return Offstage(
+                child: Container(
+                    width: 100, height: 65, color: AppColors.defectOrange));
+          }
           return Container(
-            margin: EdgeInsets.symmetric(vertical: 5),
-            child: Text(value),
+            color: AppColors.defectOrange,
+            child: Center(
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(value, style: textStyle()),
+              ),
+            ),
           );
         })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(Text("${percentColorVSDamage.floor()}%")),
+        MRow(Center(
+            child:
+                Text("${percentColorVSDamage.round()}%", style: textStyle()))),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem("${percentColorDecay.floor()}%")),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
-      VerticalMergedRow(rowSpan: 5, child: Container()),
+        MRow(defaultTextItem("${percentColorDecay.round()}%")),
     ];
   }
 
@@ -1488,6 +1459,22 @@ class DefectsMergerTable extends StatelessWidget {
       ),
     );
   }
+
+  int getCount(String name, int i) {
+    List<InspectionDefect>? data = controller.defectDataMap[name];
+    int count = 0;
+    if (data != null) {
+      for (int k = 0; k < data.length; k++) {
+        if ((controller.seriousDefectList.isNotEmpty) &&
+            (data[k].spinnerSelection == controller.seriousDefectList[i])) {
+          if (data[k].seriousDamageCnt != null) {
+            count += data[k].seriousDamageCnt!;
+          }
+        }
+      }
+    }
+    return count;
+  }
 }
 
 class VerticalMergedCells extends StatelessWidget {
@@ -1506,1079 +1493,3 @@ class VerticalMergedCells extends StatelessWidget {
     );
   }
 }
-
-/// Defects Cloud AI
-
-/*class DefectsTable extends StatelessWidget {
-  final int numberSamples;
-  final List<Severity> severityList;
-  final int numberSeriousDefects;
-  final Map<String, List<InspectionDefect>> defectDataMap;
-  final Map<int, SampleData> sampleDataMap;
-  final List<int> sampleDataMapIndexList;
-  final List<String> seriousDefectList;
-  final DefectsScreenController controller;
-
-  const DefectsTable({
-    super.key,
-    required this.numberSamples,
-    required this.severityList,
-    required this.numberSeriousDefects,
-    required this.defectDataMap,
-    required this.sampleDataMap,
-    required this.sampleDataMapIndexList,
-    required this.seriousDefectList,
-    required this.controller,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    bool hasSeverityInjury = controller.hasSeverityInjury;
-    bool hasSeverityDamage = controller.hasSeverityDamage;
-    bool hasSeveritySeriousDamage = controller.hasSeveritySeriousDamage;
-    bool hasSeverityVerySeriousDamage = controller.hasSeverityVerySeriousDamage;
-    bool hasSeverityDecay = controller.hasSeverityDecay;
-
-    int totalQualityInjury = controller.totalQualityInjury;
-    int totalQualityDamage = controller.totalQualityDamage;
-    int totalQualitySeriousDamage = controller.totalQualitySeriousDamage;
-    int totalQualityVerySeriousDamage =
-        controller.totalQualityVerySeriousDamage;
-    int totalQualityDecay = controller.totalQualityDecay;
-
-    int totalConditionInjury = controller.totalConditionInjury;
-    int totalConditionDamage = controller.totalConditionDamage;
-    int totalConditionSeriousDamage = controller.totalConditionSeriousDamage;
-    int totalConditionVerySeriousDamage =
-        controller.totalConditionVerySeriousDamage;
-    int totalConditionDecay = controller.totalConditionDecay;
-
-    int totalSizeInjury = controller.totalSizeInjury;
-    int totalSizeDamage = controller.totalSizeDamage;
-    int totalSizeSeriousDamage = controller.totalSizeSeriousDamage;
-    int totalSizeVerySeriousDamage = controller.totalSizeVerySeriousDamage;
-    int totalSizeDecay = controller.totalSizeDecay;
-
-    int totalColorInjury = controller.totalColorInjury;
-    int totalColorDamage = controller.totalColorDamage;
-    int totalColorSeriousDamage = controller.totalColorSeriousDamage;
-    int totalColorVerySeriousDamage = controller.totalColorVerySeriousDamage;
-    int totalColorDecay = controller.totalColorDecay;
-
-    int totalInjury = controller.totalInjury;
-    int totalDamage = controller.totalDamage;
-    int totalSeriousDamage = controller.totalSeriousDamage;
-    int totalVerySeriousDamage = controller.totalVerySeriousDamage;
-    int totalDecay = controller.totalDecay;
-
-    int totalSamples = controller.totalSamples;
-
-    controller.populateSeverityList();
-    // Calculate the totals and update the flags based on the severity list
-    for (Severity severity in severityList) {
-      if (severity.name == 'Injury' || severity.name == 'Lesión') {
-        hasSeverityInjury = true;
-      } else if (severity.name == 'Damage' || severity.name == 'Daño') {
-        hasSeverityDamage = true;
-      } else if (severity.name == 'Serious Damage' ||
-          severity.name == 'Daño Serio') {
-        hasSeveritySeriousDamage = true;
-      } else if (severity.name == 'Very Serious Damage' ||
-          severity.name == 'Daño Muy Serio') {
-        hasSeverityVerySeriousDamage = true;
-      } else if (severity.name == 'Decay' || severity.name == 'Pudrición') {
-        hasSeverityDecay = true;
-      }
-    }
-
-    // Build the table
-    Table table = Table(
-      border: TableBorder.all(),
-      defaultColumnWidth: IntrinsicColumnWidth(),
-      children: [
-        // Type row
-        TableRow(
-          children: [
-            TableCell(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Type'),
-              ),
-            ),
-            if (controller.hasSeverityInjury)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('Defects'),
-                ),
-              ),
-            if (controller.hasSeverityDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('Defects'),
-                ),
-              ),
-            for (var i = 0; i < numberSeriousDefects; i++)
-              if (controller.hasSeveritySeriousDamage)
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text('Defects'),
-                  ),
-                ),
-            if (controller.hasSeverityVerySeriousDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('Defects'),
-                ),
-              ),
-            if (controller.hasSeverityDecay)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('Defects'),
-                ),
-              ),
-          ],
-        ),
-        // Severity row
-        TableRow(
-          children: [
-            TableCell(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Severity'),
-              ),
-            ),
-            if (controller.hasSeverityInjury)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.error, color: Colors.red),
-                ),
-              ),
-            if (controller.hasSeverityDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.error, color: Colors.red),
-                ),
-              ),
-            for (var i = 0; i < numberSeriousDefects; i++)
-              if (controller.hasSeveritySeriousDamage)
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(Icons.error, color: Colors.red),
-                  ),
-                ),
-            if (controller.hasSeverityVerySeriousDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.error, color: Colors.red),
-                ),
-              ),
-            if (controller.hasSeverityDecay)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.error, color: Colors.red),
-                ),
-              ),
-          ],
-        ),
-        // Sample rows
-        for (var i = 0; i < numberSamples; i++)
-          TableRow(
-            children: [
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                      sampleDataMap[sampleDataMapIndexList.elementAtOrNull(i)]
-                              ?.name ??
-                          ''),
-                ),
-              ),
-              if (controller.hasSeverityInjury)
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text((sampleDataMap[
-                                    sampleDataMapIndexList.elementAtOrNull(i)]
-                                ?.iCnt ??
-                            '')
-                        .toString()),
-                  ),
-                ),
-              if (controller.hasSeverityDamage)
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text((sampleDataMap[
-                                    sampleDataMapIndexList.elementAtOrNull(i)]
-                                ?.dCnt ??
-                            '')
-                        .toString()),
-                  ),
-                ),
-              for (var j = 0; j < numberSeriousDefects; j++)
-                if (controller.hasSeveritySeriousDamage)
-                  TableCell(
-                    child: Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text((sampleDataMap[
-                                      sampleDataMapIndexList.elementAtOrNull(i)]
-                                  ?.sdCnt ??
-                              '')
-                          .toString()),
-                    ),
-                  ),
-              if (controller.hasSeverityVerySeriousDamage)
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text((sampleDataMap[
-                                    sampleDataMapIndexList.elementAtOrNull(i)]
-                                ?.vsdCnt ??
-                            '')
-                        .toString()),
-                  ),
-                ),
-              if (controller.hasSeverityDecay)
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text((sampleDataMap[
-                                    sampleDataMapIndexList.elementAtOrNull(i)]
-                                ?.dCnt ??
-                            '')
-                        .toString()),
-                  ),
-                ),
-            ],
-          ),
-        // Total Quality Defects row
-        TableRow(
-          children: [
-            TableCell(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Total Quality Defects'),
-              ),
-            ),
-            if (controller.hasSeverityInjury)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalQualityInjury.toString()),
-                ),
-              ),
-            if (controller.hasSeverityDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalQualityDamage.toString()),
-                ),
-              ),
-            for (var i = 0; i < numberSeriousDefects; i++)
-              if (controller.hasSeveritySeriousDamage)
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(totalQualitySeriousDamage.toString()),
-                  ),
-                ),
-            if (controller.hasSeverityVerySeriousDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalQualityVerySeriousDamage.toString()),
-                ),
-              ),
-            if (controller.hasSeverityDecay)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalQualityDecay.toString()),
-                ),
-              ),
-          ],
-        ),
-        // Total Quality Defects % row
-        TableRow(
-          children: [
-            TableCell(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Total Quality Defects %'),
-              ),
-            ),
-            if (controller.hasSeverityInjury)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                      getTotalQualityInjury(totalQualityInjury, totalSamples)),
-                ),
-              ),
-            if (controller.hasSeverityDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                      getTotalQualityInjury(totalQualityDamage, totalSamples)),
-                ),
-              ),
-            for (var i = 0; i < numberSeriousDefects; i++)
-              if (controller.hasSeveritySeriousDamage)
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(getTotalQualityInjury(
-                        totalQualitySeriousDamage, totalSamples)),
-                  ),
-                ),
-            if (controller.hasSeverityVerySeriousDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(getTotalQualityInjury(
-                      totalQualityVerySeriousDamage, totalSamples)),
-                ),
-              ),
-            if (controller.hasSeverityDecay)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                      getTotalQualityInjury(totalQualityDecay, totalSamples)),
-                ),
-              ),
-          ],
-        ),
-        // Total Condition Defects row
-        TableRow(
-          children: [
-            TableCell(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Total Condition Defects'),
-              ),
-            ),
-            if (controller.hasSeverityInjury)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalConditionInjury.toString()),
-                ),
-              ),
-            if (controller.hasSeverityDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalConditionDamage.toString()),
-                ),
-              ),
-            for (var i = 0; i < numberSeriousDefects; i++)
-              if (controller.hasSeveritySeriousDamage)
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(totalConditionSeriousDamage.toString()),
-                  ),
-                ),
-            if (controller.hasSeverityVerySeriousDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalConditionVerySeriousDamage.toString()),
-                ),
-              ),
-            if (controller.hasSeverityDecay)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalConditionDecay.toString()),
-                ),
-              ),
-          ],
-        ),
-        // Total Condition Defects % row
-        TableRow(
-          children: [
-            TableCell(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Total Condition Defects %'),
-              ),
-            ),
-            if (controller.hasSeverityInjury)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(getTotalQualityInjury(
-                      totalConditionInjury, totalSamples)),
-                ),
-              ),
-            if (controller.hasSeverityDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(getTotalQualityInjury(
-                      totalConditionDamage, totalSamples)),
-                ),
-              ),
-            for (var i = 0; i < numberSeriousDefects; i++)
-              if (controller.hasSeveritySeriousDamage)
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(getTotalQualityInjury(
-                        totalConditionSeriousDamage, totalSamples)),
-                  ),
-                ),
-            if (controller.hasSeverityVerySeriousDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(getTotalQualityInjury(
-                      totalConditionVerySeriousDamage, totalSamples)),
-                ),
-              ),
-            if (controller.hasSeverityDecay)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                      getTotalQualityInjury(totalConditionDecay, totalSamples)),
-                ),
-              ),
-          ],
-        ),
-        TableRow(
-          children: [
-            TableCell(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Total Severity by Defect Type'),
-              ),
-            ),
-            if (controller.hasSeverityInjury)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalInjury.toString()),
-                ),
-              ),
-            if (controller.hasSeverityDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalDamage.toString()),
-                ),
-              ),
-            for (var i = 0; i < numberSeriousDefects; i++)
-              if (controller.hasSeveritySeriousDamage)
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child:
-                        Text(seriousDefectList.elementAtOrNull(i).toString()),
-                  ),
-                ),
-            if (controller.hasSeverityVerySeriousDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalVerySeriousDamage.toString()),
-                ),
-              ),
-            if (controller.hasSeverityDecay)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalDecay.toString()),
-                ),
-              ),
-          ],
-        ),
-// Total Severity by Defect Type % row
-        TableRow(
-          children: [
-            TableCell(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Total Severity by Defect Type %'),
-              ),
-            ),
-            if (controller.hasSeverityInjury)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(getTotalQualityInjury(totalInjury, totalSamples)),
-                ),
-              ),
-            if (controller.hasSeverityDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(getTotalQualityInjury(totalDamage, totalSamples)),
-                ),
-              ),
-            for (var i = 0; i < numberSeriousDefects; i++)
-              if (controller.hasSeveritySeriousDamage)
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(getSeriousDefectList(i, totalSamples)),
-                  ),
-                ),
-            if (controller.hasSeverityVerySeriousDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(getTotalQualityInjury(
-                      totalVerySeriousDamage, totalSamples)),
-                ),
-              ),
-            if (controller.hasSeverityDecay)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(getTotalQualityInjury(totalDecay, totalSamples)),
-                ),
-              ),
-          ],
-        ),
-// % by Severity Level row
-        TableRow(
-          children: [
-            TableCell(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('% by Severity Level'),
-              ),
-            ),
-            if (controller.hasSeverityInjury)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(getTotalQualityInjury(totalInjury, totalSamples)),
-                ),
-              ),
-            if (controller.hasSeverityDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(getTotalQualityInjury(totalDamage, totalSamples)),
-                ),
-              ),
-            for (var i = 0; i < numberSeriousDefects; i++)
-              if (controller.hasSeveritySeriousDamage)
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(getTotalQualityInjury(
-                        totalSeriousDamage, totalSamples)),
-                  ),
-                ),
-            if (controller.hasSeverityVerySeriousDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(getTotalQualityInjury(
-                      totalVerySeriousDamage, totalSamples)),
-                ),
-              ),
-            if (controller.hasSeverityDecay)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(getTotalQualityInjury(totalDecay, totalSamples)),
-                ),
-              ),
-          ],
-        ),
-// Total Size Defects row
-        TableRow(
-          children: [
-            TableCell(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Total Size Defects'),
-              ),
-            ),
-            if (controller.hasSeverityInjury)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalSizeInjury.toString()),
-                ),
-              ),
-            if (controller.hasSeverityDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalSizeDamage.toString()),
-                ),
-              ),
-            for (var i = 0; i < numberSeriousDefects; i++)
-              if (controller.hasSeveritySeriousDamage)
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(totalSizeSeriousDamage.toString()),
-                  ),
-                ),
-            if (controller.hasSeverityVerySeriousDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalSizeVerySeriousDamage.toString()),
-                ),
-              ),
-            if (controller.hasSeverityDecay)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalSizeDecay.toString()),
-                ),
-              ),
-          ],
-        ),
-// Total Size Defects % row
-        TableRow(
-          children: [
-            TableCell(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Total Size Defects %'),
-              ),
-            ),
-            if (controller.hasSeverityInjury)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                      getTotalQualityInjury(totalSizeInjury, totalSamples)),
-                ),
-              ),
-            if (controller.hasSeverityDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                      getTotalQualityInjury(totalSizeDamage, totalSamples)),
-                ),
-              ),
-            for (var i = 0; i < numberSeriousDefects; i++)
-              if (controller.hasSeveritySeriousDamage)
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(getTotalQualityInjury(
-                        totalSizeSeriousDamage, totalSamples)),
-                  ),
-                ),
-            if (controller.hasSeverityVerySeriousDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(getTotalQualityInjury(
-                      totalSizeVerySeriousDamage, totalSamples)),
-                ),
-              ),
-            if (controller.hasSeverityDecay)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child:
-                      Text(getTotalQualityInjury(totalSizeDecay, totalSamples)),
-                ),
-              ),
-          ],
-        ),
-// Total Color Defects row
-        TableRow(
-          children: [
-            TableCell(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Total Color Defects'),
-              ),
-            ),
-            if (controller.hasSeverityInjury)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalColorInjury.toString()),
-                ),
-              ),
-            if (controller.hasSeverityDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalColorDamage.toString()),
-                ),
-              ),
-            for (var i = 0; i < numberSeriousDefects; i++)
-              if (controller.hasSeveritySeriousDamage)
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(totalColorSeriousDamage.toString()),
-                  ),
-                ),
-            if (controller.hasSeverityVerySeriousDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalColorVerySeriousDamage.toString()),
-                ),
-              ),
-            if (controller.hasSeverityDecay)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(totalColorDecay.toString()),
-                ),
-              ),
-          ],
-        ),
-// Total Color Defects % row
-        TableRow(
-          children: [
-            TableCell(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Total Color Defects %'),
-              ),
-            ),
-            if (controller.hasSeverityInjury)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                      getTotalQualityInjury(totalColorInjury, totalSamples)),
-                ),
-              ),
-            if (controller.hasSeverityDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                      getTotalQualityInjury(totalColorDamage, totalSamples)),
-                ),
-              ),
-            for (var i = 0; i < numberSeriousDefects; i++)
-              if (controller.hasSeveritySeriousDamage)
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(getTotalQualityInjury(
-                        totalColorSeriousDamage, totalSamples)),
-                  ),
-                ),
-            if (controller.hasSeverityVerySeriousDamage)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(getTotalQualityInjury(
-                      totalColorVerySeriousDamage, totalSamples)),
-                ),
-              ),
-            if (controller.hasSeverityDecay)
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                      getTotalQualityInjury(totalColorDecay, totalSamples)),
-                ),
-              ),
-          ],
-        ),
-      ],
-    );
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    final double newKeyboardHeight = bottomInset > 0 ? bottomInset : 0;
-
-    return Container(
-        padding: EdgeInsets.only(bottom: newKeyboardHeight), child: table);
-  }
-
-  String getSeriousDefectList(int i, int totalSamples) {
-    int getSeriousDefect =
-        int.tryParse(seriousDefectList.elementAtOrNull(i).toString()) ?? 0;
-    if (getSeriousDefect == 0 || totalSamples == 0) {
-      return '0%';
-    }
-    return '${((int.parse(seriousDefectList.elementAtOrNull(i) ?? 0.toString()) / totalSamples) * 100).round()}%';
-  }
-
-  String getTotalQualityInjury(int totalQualityInjury, int totalSamples) {
-    if (totalSamples == 0 || totalQualityInjury == 0) {
-      return '0%';
-    }
-    return '${((totalQualityInjury / totalSamples) * 100).round()}%';
-  }
-}*/
-
-/// DefectsTable UI
-/*class DefectsTable1 extends StatelessWidget {
-  final WorksheetDataTable worksheetDataTable;
-
-  const DefectsTable1({
-    super.key,
-    required this.worksheetDataTable,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey[300],
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildTableHeader(),
-            _buildSeverityRow(),
-            _buildTableRow(
-              title: 'Total Quality Defects',
-              data: worksheetDataTable.qualityDefects,
-            ),
-            _buildTableRow(
-              title: 'Total Quality Defects %',
-              data: worksheetDataTable.qualityDefectsPercentage,
-              isPercentage: true,
-            ),
-            _buildTableRow(
-              title: 'Total Condition Defects',
-              data: worksheetDataTable.conditionDefects,
-            ),
-            _buildTableRow(
-              title: 'Total Condition Defects %',
-              data: worksheetDataTable.conditionDefectsPercentage,
-              isPercentage: true,
-            ),
-            _buildTotalSeverityRow(
-              title: 'Total Severity by Defect Type',
-              data: worksheetDataTable.totalSeverity,
-            ),
-            _buildTotalSeverityRow(
-              title: '% by Defect Type',
-              data: worksheetDataTable.totalSeverityPercentage,
-              isPercentage: true,
-            ),
-            _buildTableRow(
-              title: 'Total Size Defects',
-              data: worksheetDataTable.sizeDefects,
-            ),
-            _buildTableRow(
-              title: 'Total Size Defects %',
-              data: worksheetDataTable.sizeDefectsPercentage,
-              isPercentage: true,
-            ),
-            _buildTableRow(
-              title: 'Total Color Defects',
-              data: worksheetDataTable.colorDefects,
-            ),
-            _buildTableRow(
-              title: 'Total Color Defects %',
-              data: worksheetDataTable.colorDefectsPercentage,
-              isPercentage: true,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTableHeader() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildHeaderCell('Type'),
-        ...worksheetDataTable.severity.map(
-          (severityList) => Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: severityList
-                .map(
-                  (severity) => _buildHeaderCell(severity),
-                )
-                .toList(),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSeverityRow() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildHeaderCell('Severity'),
-        ...worksheetDataTable.severity.map(
-          (severityList) => Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: severityList
-                .map(
-                  (severity) => _buildSeverityCell(severity),
-                )
-                .toList(),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTableRow({
-    required String title,
-    required List<num> data,
-    bool isPercentage = false,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildHeaderCell(title),
-        ...data.map(
-          (value) => _buildDataCell(
-            '$value${isPercentage ? '%' : ''}',
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTotalSeverityRow({
-    required String title,
-    required List<List<num>> data,
-    bool isPercentage = false,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildHeaderCell(title),
-        ...data.map(
-          (severityList) => Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: severityList
-                .map(
-                  (value) => _buildDataCell(
-                    '$value${isPercentage ? '%' : ''}',
-                  ),
-                )
-                .toList(),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildHeaderCell(String text) {
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      width: 100,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
-        color: Colors.grey[300],
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Colors.red,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSeverityCell(String severity) {
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      width: 100,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
-        color: getDataColumnColor(severity),
-      ),
-      child: Center(
-        child: Text(
-          getDefectTypeIcon(severity),
-          style: const TextStyle(
-            fontSize: 24,
-            color: Colors.red,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDataCell(String text) {
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      width: 100,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
-        color: Colors.white,
-      ),
-      child: Text(text,
-          style: const TextStyle(
-            color: Colors.red,
-          )),
-    );
-  }
-
-  Color getDataColumnColor(String defectType) {
-    switch (defectType) {
-      case 'Injury':
-        return Colors.greenAccent;
-      case 'Damage':
-        return Colors.orange;
-      case 'Serious Damage':
-        return Colors.cyanAccent;
-      case 'Very Serious Damage':
-        return Colors.redAccent;
-      case 'Decay':
-        return Colors.purpleAccent;
-      default:
-        return Colors.white;
-    }
-  }
-
-  String getDefectTypeIcon(String defectType) {
-    switch (defectType) {
-      case 'Injury':
-        return 'I';
-      case 'Damage':
-        return 'D';
-      case 'Serious Damage':
-        return 'SD';
-      case 'Very Serious Damage':
-        return 'VSD';
-      case 'Decay':
-        return 'DC';
-      default:
-        return '';
-    }
-  }
-}*/
