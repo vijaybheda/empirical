@@ -2584,6 +2584,33 @@ class ApplicationDao {
     return itemSKUList;
   }
 
+  Future<List<Commodity>?> getCommodityByDeliveryToFromTable(int supplierId,
+      int enterpriseId, int supplierIdParam, int headquarterId) async {
+    List<Commodity> itemSKUList = [];
+    Commodity? item;
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      bool hqUser = (supplierIdParam == headquarterId);
+
+      String query1 =
+          "select distinct(c.id), c.name, c.keywords from Commodity C";
+
+      List<Map<String, dynamic>> cursor = await db.rawQuery(query1);
+
+      for (Map<String, dynamic> row in cursor) {
+        item = Commodity.fromJson(row);
+        itemSKUList.add(item);
+      }
+    } catch (e) {
+      debugPrint(
+          'Error has occurred while finding commodities Delivery From table: $e');
+      return null;
+    }
+
+    return itemSKUList;
+  }
+
   Future<int> getHeadquarterIdByUserId(String userID) async {
     final Database db = dbProvider.lazyDatabase;
     int enterpriseId = 0;

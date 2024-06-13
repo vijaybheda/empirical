@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pverify/models/agency_item.dart';
@@ -225,9 +223,37 @@ class AppStorage extends GetxController {
     return write(StorageKey.kMainCommodityList, commodityListString);
   }
 
+  Future<void> saveCteCommodityList(List<Commodity> cteCommodityList) {
+    // list to String
+    List<Map<String, dynamic>> commodityListString =
+        cteCommodityList.map((e) => e.toJson()).toList();
+    if (this.cteCommodityList == null) {
+      this.cteCommodityList = [];
+    }
+    this.cteCommodityList!.clear();
+    this.cteCommodityList!.addAll(cteCommodityList);
+    return write(StorageKey.kCteCommodityList, commodityListString);
+  }
+
   List<Commodity>? getMainCommodityList() {
     // read String data and convert to List<CommodityItem> list
     var commodityListString = read(StorageKey.kMainCommodityList);
+    if (commodityListString == null) {
+      return null;
+    }
+
+    List<dynamic> decodedData = commodityListString;
+    List<Commodity> commodityList = decodedData
+        .map((item) => Commodity.fromJson(item))
+        .toList()
+        .cast<Commodity>();
+
+    return commodityList;
+  }
+
+  List<Commodity>? getCteCommodityList() {
+    // read String data and convert to List<CommodityItem> list
+    var commodityListString = read(StorageKey.kCteCommodityList);
     if (commodityListString == null) {
       return null;
     }
@@ -442,6 +468,7 @@ class StorageKey {
   static const String kCarrierList = 'carrierList';
   static const String kCommodityList = 'commodityList';
   static const String kMainCommodityList = 'mainCommodityList';
+  static const String kCteCommodityList = 'cteCommodityList';
   static const String kDefectList = 'defectList';
   static const String kSeverityDefectList = 'severityDefect';
   static const String kOfflineCommodityList = 'offlineCommodity';
