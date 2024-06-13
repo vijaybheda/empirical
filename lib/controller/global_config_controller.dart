@@ -25,6 +25,7 @@ class GlobalConfigController extends GetxController {
 
   Stream<bool> get hasStableInternetStream =>
       _hasStableInternetController.stream;
+
   Stream<int> get wifiLevelStream => _wifiLevelController.stream;
 
   RxString appVersion = ''.obs;
@@ -134,7 +135,8 @@ class GlobalConfigController extends GetxController {
   void fetchAppVersion() {
     PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
       String version = packageInfo.version;
-      appVersion.value = version;
+      String buildNumber = packageInfo.buildNumber;
+      appVersion.value = '$version($buildNumber)';
     });
   }
 
