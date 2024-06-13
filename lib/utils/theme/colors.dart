@@ -84,4 +84,8 @@ class AppColors {
   static Color orange = const Color(0xffF29D38);
   static Color yellow = const Color(0xffFFFF00);
   static Color iconBlue = const Color(0xff5acdf1);
+
+  static Color defectOrange = const Color(0xffFECE9E);
+  static Color defectGreen = const Color(0xffE4FFB5);
+  static Color defectBlue = const Color(0xffC1DCFF);
 }

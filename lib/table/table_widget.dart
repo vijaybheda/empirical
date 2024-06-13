@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pverify/table/merge_table.dart';
+import 'package:pverify/utils/theme/colors.dart';
 
 class TableWidget extends StatelessWidget {
   // final List<List<Widget>> datas;
@@ -17,38 +18,39 @@ class TableWidget extends StatelessWidget {
           if (item.inlineRow[j] is Offstage) {
             // if j is last element border right side
             if (j == item.inlineRow.length - 1) {
-              final c = Row(
-                children: [
-                  Center(
-                    child: Container(
-                      width: 100,
-                      height: 65,
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          border: Border.symmetric(
-                              horizontal: BorderSide(color: Colors.black))),
-                      // child: item.inlineRow[0] as Widget,
+              final c = Container(
+                color: AppColors.defectOrange,
+                child: Row(
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 100,
+                        height: 65,
+                        decoration: const BoxDecoration(
+                            border: Border.symmetric(
+                                horizontal: BorderSide(color: Colors.black))),
+                      ),
                     ),
-                  ),
-                  Container(
-                    color: Colors.black,
-                    height: 65,
-                    width: 1,
-                  )
-                ],
+                    Container(
+                      color: Colors.black,
+                      height: 65,
+                      width: 1,
+                    )
+                  ],
+                ),
               );
               w.add(c);
             } else {
-              final c = Center(
-                child: Container(
-                  width: 100,
-                  height: 65,
-                  padding: const EdgeInsets.all(5),
-                  // color: Colors.red,
-                  decoration: BoxDecoration(
-                      border: Border.symmetric(
-                          horizontal: BorderSide(color: Colors.black))),
-                  // child: item.inlineRow[0] as Widget,
+              final c = Container(
+                color: AppColors.defectOrange,
+                child: Center(
+                  child: Container(
+                    width: 100,
+                    height: 65,
+                    decoration: const BoxDecoration(
+                        border: Border.symmetric(
+                            horizontal: BorderSide(color: Colors.black))),
+                  ),
                 ),
               );
               w.add(c);
@@ -58,7 +60,6 @@ class TableWidget extends StatelessWidget {
               child: Container(
                 width: 100,
                 height: 65,
-                padding: const EdgeInsets.all(5),
                 decoration:
                     BoxDecoration(border: Border.all(color: Colors.black)),
                 child: item.inlineRow[j],
@@ -73,9 +74,8 @@ class TableWidget extends StatelessWidget {
           child: Container(
             width: 100,
             height: 65,
-            padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-            child: Text(""),
+            child: const Text(""),
           ),
         );
         w.add(c);
@@ -100,25 +100,28 @@ class TableWidget extends StatelessWidget {
       final item = data[i];
       if (item is BaseMRow) {
         if (item.inlineRow[0] is Offstage) {
-          final c = Center(
-            child: Container(
-              width: 100,
-              height: 65,
-              padding: const EdgeInsets.all(5),
-              // decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-              // child: item.inlineRow[0] as Widget,
+          final c = Container(
+            color: AppColors.defectOrange,
+            child: const Center(
+              child: SizedBox(
+                width: 100,
+                height: 65,
+              ),
             ),
           );
           w.add(c);
           continue;
         }
-        final c = Center(
-          child: Container(
-            width: 100,
-            height: 65,
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-            child: item.inlineRow[0],
+        final c = Container(
+          color: AppColors.defectOrange,
+          child: Center(
+            child: Container(
+              width: 100,
+              height: 65,
+              decoration:
+                  BoxDecoration(border: Border.all(color: Colors.black)),
+              child: item.inlineRow[0],
+            ),
           ),
         );
         w.add(c);
@@ -129,9 +132,8 @@ class TableWidget extends StatelessWidget {
           child: Container(
             width: 100,
             height: 65,
-            padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-            child: Text(""),
+            child: const Text(""),
           ),
         );
         w.add(c);
