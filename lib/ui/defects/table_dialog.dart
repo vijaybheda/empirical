@@ -9,6 +9,12 @@ import 'package:pverify/utils/theme/colors.dart';
 Widget tableDialog(BuildContext context) {
   List<SpecificationGradeTolerance> specData =
       AppStorage.instance.specificationGradeToleranceTable;
+  specData.sort((a, b) {
+    if (a.defectCategoryName == b.defectCategoryName) {
+      return a.defectName!.compareTo(b.defectName!);
+    }
+    return a.defectCategoryName!.compareTo(b.defectCategoryName!);
+  });
   return AlertDialog(
     backgroundColor: Theme.of(context).colorScheme.background,
     shape: RoundedRectangleBorder(
@@ -32,7 +38,7 @@ Widget tableDialog(BuildContext context) {
 Widget buildTable(List<SpecificationGradeTolerance> specData) {
   Map<String, Map<String, List<SpecificationGradeTolerance>>> categorizedData =
       {};
-  for (var spec in specData) {
+  for (SpecificationGradeTolerance spec in specData) {
     categorizedData.putIfAbsent(spec.defectCategoryName!, () => {});
     categorizedData[spec.defectCategoryName]!
         .putIfAbsent(spec.defectName!, () => []);
@@ -53,16 +59,21 @@ Widget buildTable(List<SpecificationGradeTolerance> specData) {
     ),
   ];
 
-  categorizedData.forEach((category, defects) {
-    defects.forEach((defect, specs) {
-      rows.add(buildSpecRow(category, defect, specs));
-    });
-  });
-
   return Table(
     border: TableBorder.all(color: AppColors.white),
     columnWidths: {0: FixedColumnWidth(160.w)},
-    children: rows,
+    children: [
+      ...rows,
+      ...categorizedData.entries.expand(
+          (categoryEntry) => categoryEntry.value.entries.map((defectEntry) {
+                return TableRow(
+                  children: [
+                    _contentCell("${categoryEntry.key} - ${defectEntry.key}"),
+                    ..._buildSeverityCells(defectEntry.value),
+                  ],
+                );
+              })),
+    ],
   );
 }
 
@@ -99,12 +110,12 @@ TableRow buildSpecRow(
   return TableRow(
     children: [
       buildTableCell('$category - $defect'),
-      buildTableCell('${injury ?? ""}'),
-      buildTableCell('${damage ?? ""}'),
-      buildTableCell('${seriousDamage ?? ""}'),
-      buildTableCell('${verySeriousDamage ?? ""}'),
-      buildTableCell('${decay ?? ""}'),
-      buildTableCell('$total'),
+      buildTableCell('${injury! > 0.0 ? injury : ""}'),
+      buildTableCell('${damage! > 0.0 ? damage : ""}'),
+      buildTableCell('${seriousDamage! > 0.0 ? seriousDamage : ""}'),
+      buildTableCell('${verySeriousDamage! > 0.0 ? verySeriousDamage : ""}'),
+      buildTableCell('${decay! > 0.0 ? decay : ""}'),
+      buildTableCell('${total > 0.0 ? total : ""}'),
     ],
   );
 }
@@ -116,15 +127,57 @@ Widget buildHeaderCell(String text) {
       // color: Colors.grey[300],
       child: Text(text,
           textAlign: TextAlign.center,
-          style: const TextStyle(fontWeight: FontWeight.bold)),
+          style: GoogleFonts.poppins(
+            fontSize: 28.sp,
+            fontWeight: FontWeight.w400,
+            color: AppColors.white,
+          )),
     ),
+  );
+}
+
+List<Widget> _buildSeverityCells(List<SpecificationGradeTolerance> specs) {
+  Map<String, double> severities = {
+    "Injury": 0,
+    "Damage": 0,
+    "Serious Damage": 0,
+    "Very Serious Damage": 0,
+    "Decay": 0
+  };
+  for (var spec in specs) {
+    severities[spec.severityDefectName ?? ''] =
+        (spec.specTolerancePercentage?.toDouble() ?? 0.0);
+  }
+
+  return severities.entries
+      .map((entry) => _contentCell(entry.value.toString()))
+      .toList();
+}
+
+Widget _contentCell(String text) {
+  return Container(
+    padding: EdgeInsets.all(8.w),
+    alignment: Alignment.center,
+    child: Text(text == 0.0.toString() ? '' : text,
+        textAlign: TextAlign.center,
+        style: GoogleFonts.poppins(
+          fontSize: 28.sp,
+          fontWeight: FontWeight.w400,
+          color: AppColors.white,
+        )),
   );
 }
 
 Widget buildTableCell(String text) {
   return Container(
     padding: const EdgeInsets.all(8),
-    child: Text(text),
+    child: Text(text,
+        textAlign: TextAlign.center,
+        style: GoogleFonts.poppins(
+          fontSize: 28.sp,
+          fontWeight: FontWeight.w400,
+          color: AppColors.white,
+        )),
   );
 }
 
