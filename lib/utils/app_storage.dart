@@ -125,6 +125,13 @@ class AppStorage extends GetxController {
     return write(StorageKey.kPartnerList, partnerListString);
   }
 
+  Future<void> saveDeliveredList(List<DeliveryToItem> deliveredList) {
+    // list to String
+    List<Map<String, dynamic>> deliveredListString =
+        deliveredList.map((e) => e.toJson()).toList();
+    return write(StorageKey.kDeliveryList, deliveredListString);
+  }
+
   List<PartnerItem>? getPartnerList() {
     // read String data and convert to List<PartnerItem> list
     var partnerListString = read(StorageKey.kPartnerList);
@@ -139,6 +146,22 @@ class AppStorage extends GetxController {
         .cast<PartnerItem>();
 
     return partnerList;
+  }
+
+  List<DeliveryToItem>? getDeliveryToList() {
+    // read String data and convert to List<DeliveryToItem> list
+    var deliveryToListString = read(StorageKey.kDeliveryList);
+    if (deliveryToListString == null) {
+      return null;
+    }
+
+    List<dynamic> decodedData = deliveryToListString;
+    List<DeliveryToItem> deliveryToList = decodedData
+        .map((item) => DeliveryToItem.fromJson(item))
+        .toList()
+        .cast<DeliveryToItem>();
+
+    return deliveryToList;
   }
 
   Future<void> saveCarrierList(List<CarrierItem> carrierList) {
@@ -200,9 +223,37 @@ class AppStorage extends GetxController {
     return write(StorageKey.kMainCommodityList, commodityListString);
   }
 
+  Future<void> saveCteCommodityList(List<Commodity> cteCommodityList) {
+    // list to String
+    List<Map<String, dynamic>> commodityListString =
+        cteCommodityList.map((e) => e.toJson()).toList();
+    if (this.cteCommodityList == null) {
+      this.cteCommodityList = [];
+    }
+    this.cteCommodityList!.clear();
+    this.cteCommodityList!.addAll(cteCommodityList);
+    return write(StorageKey.kCteCommodityList, commodityListString);
+  }
+
   List<Commodity>? getMainCommodityList() {
     // read String data and convert to List<CommodityItem> list
     var commodityListString = read(StorageKey.kMainCommodityList);
+    if (commodityListString == null) {
+      return null;
+    }
+
+    List<dynamic> decodedData = commodityListString;
+    List<Commodity> commodityList = decodedData
+        .map((item) => Commodity.fromJson(item))
+        .toList()
+        .cast<Commodity>();
+
+    return commodityList;
+  }
+
+  List<Commodity>? getCteCommodityList() {
+    // read String data and convert to List<CommodityItem> list
+    var commodityListString = read(StorageKey.kCteCommodityList);
     if (commodityListString == null) {
       return null;
     }
@@ -413,9 +464,11 @@ class StorageKey {
   static const String kIsCSVDownloaded1 = 'isCSVDownloaded1';
   static const String kHeaderMap = 'headerMap';
   static const String kPartnerList = 'partnerList';
+  static const String kDeliveryList = 'deliveryList';
   static const String kCarrierList = 'carrierList';
   static const String kCommodityList = 'commodityList';
   static const String kMainCommodityList = 'mainCommodityList';
+  static const String kCteCommodityList = 'cteCommodityList';
   static const String kDefectList = 'defectList';
   static const String kSeverityDefectList = 'severityDefect';
   static const String kOfflineCommodityList = 'offlineCommodity';

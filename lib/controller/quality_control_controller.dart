@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:pverify/models/purchase_order_details.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/ui/delivered_from/delivered_from_screen.dart';
 import 'package:pverify/ui/supplier/choose_supplier.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -41,6 +42,7 @@ class QualityControlController extends GetxController {
   String sealNumber = '';
   String poNumber = '';
   String carrierName = '';
+  String productTransfer = "";
   int carrierID = 0;
 
   bool orderNoEnabled = true;
@@ -50,6 +52,13 @@ class QualityControlController extends GetxController {
       selectedTruckTempOK.value = value;
     } else if (type == 'Type') {
       selectedTypes.value = value;
+      if (value == 'Quality Assurance') {
+        productTransfer = 'QA';
+      } else if (value == 'Transfer') {
+        productTransfer = 'Transfer';
+      } else {
+        productTransfer = value;
+      }
     } else {
       // Load Types
       selectedLoadType.value = value;
@@ -154,6 +163,8 @@ class QualityControlController extends GetxController {
     String type = '';
     if (selectedTypes.value == 'Quality Assurance') {
       type = 'QA';
+    } else if (selectedTypes.value == 'Transfer') {
+      type = 'Transfer';
     } else {
       type = selectedTypes.value;
     }
@@ -204,21 +215,25 @@ class QualityControlController extends GetxController {
   }
 
   void showPurchaseOrder() {
+    // poNumber = orderNoTextController.value.text.trim();
+    // sealNumber = sealTextController.value.text.trim();
+
     if (callerActivity.isNotEmpty) {
       if (callerActivity == "QualityControlHeaderActivity") {
         // CallerActivity are blank now.
         Get.back();
       } else {
         if (selectedTypes.value == "Transfer") {
-          /*
-          Get.to(() => DeliveredFromActivity(), arguments: {
-            'poNumber': orderNoTextController.value.text,
-            'sealNumber': sealTextController.value.text,
-            'carrierName': 'carrierName', // Need to pass dynamic value
-            'carrierID': 'carrierID', // Need to pass dynamic value
-            'productTransfer': productTransfer,
-          });
-          */
+          Map<String, Object> passingData = {
+            Consts.PO_NUMBER: poNumber,
+            Consts.SEAL_NUMBER: sealNumber,
+            Consts.CARRIER_NAME: carrierName,
+            Consts.CARRIER_ID: carrierID,
+            Consts.PRODUCT_TRANSFER: productTransfer,
+            Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
+          };
+
+          Get.to(() => const DeliveredFromScreen(), arguments: passingData);
         } else if (selectedTypes.value == "CTE") {
           if (cteType == "Shipping") {
             /*
@@ -243,13 +258,15 @@ class QualityControlController extends GetxController {
           }
         } else {
           poNumber = orderNoTextController.value.text.trim();
-          Get.to(() => const SelectSupplierScreen(), arguments: {
+          var passingData = {
             Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
             Consts.CARRIER_ID: carrierID,
             Consts.CARRIER_NAME: carrierName,
             Consts.PO_NUMBER: poNumber,
             Consts.SEAL_NUMBER: sealNumber,
-          });
+          };
+
+          Get.to(() => const SelectSupplierScreen(), arguments: passingData);
           /*
           Get.to(() => PartnerActivity(), arguments: {
             'poNumber': orderNoTextController.value.text,

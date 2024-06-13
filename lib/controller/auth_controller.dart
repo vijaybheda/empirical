@@ -156,6 +156,7 @@ class AuthController extends GetxController {
                     context, AppStrings.error, AppStrings.accountInactive);
               } else {
                 await jsonFileOperations.offlineLoadSuppliersData();
+                await jsonFileOperations.offlineLoadDeliveredFrom();
                 await jsonFileOperations.offlineLoadCarriersData();
                 await jsonFileOperations.offlineLoadCommodityData();
                 await Utils.hideLoadingDialog();
