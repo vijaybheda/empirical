@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/models/specification_grade_tolerance.dart';
 import 'package:pverify/utils/app_storage.dart';
@@ -22,11 +21,23 @@ Widget tableDialog(BuildContext context) {
     ),
     title: null,
     contentPadding: const EdgeInsets.all(8),
-    content: SingleChildScrollView(
+    content: ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * .5,
+        minHeight: MediaQuery.of(context).size.height * .2,
+      ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          buildTable(specData),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  buildTable(specData),
+                ],
+              ),
+            ),
+          ),
           SizedBox(height: 40.h),
           closeDialogButton(context),
         ],
@@ -45,6 +56,20 @@ Widget buildTable(List<SpecificationGradeTolerance> specData) {
     categorizedData[spec.defectCategoryName]![spec.defectName]!.add(spec);
   }
 
+  // Extract entries and sort them
+  List<MapEntry<String, Map<String, List<SpecificationGradeTolerance>>>>
+      entries = categorizedData.entries.toList();
+
+  entries.sort((a, b) {
+    if (a.key.isEmpty) {
+      return 1;
+    } else if (b.key.isEmpty) {
+      return -1;
+    } else {
+      return a.key.compareTo(b.key);
+    }
+  });
+
   List<TableRow> rows = [
     TableRow(
       children: [
@@ -59,21 +84,23 @@ Widget buildTable(List<SpecificationGradeTolerance> specData) {
     ),
   ];
 
-  // TODO: sort
-  categorizedData.forEach((key, value) {
-    value.forEach((key, value) {
-      value.sort((a, b) {
-        return a.defectCategoryName!.compareTo(b.defectCategoryName!);
-      });
-    });
-  });
+  Map<String, Map<String, List<SpecificationGradeTolerance>>>
+      emptyKeyCategorizedData = {};
+
+  emptyKeyCategorizedData.addEntries(categorizedData.entries
+      .where((element) => element.key.isNotEmpty)
+      .toList());
+  categorizedData.removeWhere((key, value) => key.isNotEmpty);
+  emptyKeyCategorizedData.addAll(categorizedData);
 
   return Table(
     border: TableBorder.all(color: AppColors.white),
-    columnWidths: {0: FixedColumnWidth(160.w)},
+    columnWidths: {0: FixedColumnWidth(220.w)},
+    defaultColumnWidth: FlexColumnWidth(1.0),
     children: [
       ...rows,
-      ...categorizedData.entries.expand((categoryEntry) {
+      ...emptyKeyCategorizedData.entries.expand((categoryEntry) {
+        print('categoryEntry: ${categoryEntry.key}');
         return categoryEntry.value.entries.map((defectEntry) {
           return TableRow(
             children: [
@@ -86,49 +113,6 @@ Widget buildTable(List<SpecificationGradeTolerance> specData) {
           );
         });
       }),
-    ],
-  );
-}
-
-TableRow buildSpecRow(
-    String category, String defect, List<SpecificationGradeTolerance> specs) {
-  int? injury = specs
-      .firstWhereOrNull((s) => s.severityDefectName == "Injury")
-      ?.specTolerancePercentage;
-  int? damage = specs
-      .firstWhereOrNull((s) => s.severityDefectName == "Damage")
-      ?.specTolerancePercentage;
-  int? seriousDamage = specs
-      .firstWhereOrNull((s) => s.severityDefectName == "Serious Damage")
-      ?.specTolerancePercentage;
-  int? verySeriousDamage = specs
-      .firstWhereOrNull((s) => s.severityDefectName == "Very Serious Damage")
-      ?.specTolerancePercentage;
-  int? decay = specs
-      .firstWhereOrNull((s) => s.severityDefectName == "Decay")
-      ?.specTolerancePercentage;
-  int total = 0;
-  if (injury != null) {
-    total = injury;
-  } else if (damage != null) {
-    total = damage;
-  } else if (seriousDamage != null) {
-    total = seriousDamage;
-  } else if (verySeriousDamage != null) {
-    total = verySeriousDamage;
-  } else if (decay != null) {
-    total = decay;
-  }
-
-  return TableRow(
-    children: [
-      buildTableCell('$category - $defect'),
-      buildTableCell('${injury! > 0.0 ? injury : ""}'),
-      buildTableCell('${damage! > 0.0 ? damage : ""}'),
-      buildTableCell('${seriousDamage! > 0.0 ? seriousDamage : ""}'),
-      buildTableCell('${verySeriousDamage! > 0.0 ? verySeriousDamage : ""}'),
-      buildTableCell('${decay! > 0.0 ? decay : ""}'),
-      buildTableCell('${total > 0.0 ? total : ""}'),
     ],
   );
 }
@@ -168,16 +152,19 @@ List<Widget> _buildSeverityCells(List<SpecificationGradeTolerance> specs) {
 }
 
 Widget _contentCell(String text) {
-  return Container(
-    padding: EdgeInsets.all(8.w),
-    alignment: Alignment.center,
-    child: Text(text == 0.0.toString() ? '' : text,
-        textAlign: TextAlign.center,
-        style: GoogleFonts.poppins(
-          fontSize: 28.sp,
-          fontWeight: FontWeight.w400,
-          color: AppColors.white,
-        )),
+  return SizedBox(
+    width: 150,
+    child: Container(
+      padding: EdgeInsets.all(8.w),
+      alignment: Alignment.center,
+      child: Text(text == 0.0.toString() ? '' : text,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.poppins(
+            fontSize: 28.sp,
+            fontWeight: FontWeight.w400,
+            color: AppColors.white,
+          )),
+    ),
   );
 }
 

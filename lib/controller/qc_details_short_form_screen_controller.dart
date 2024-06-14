@@ -17,7 +17,6 @@ import 'package:pverify/models/specification_analytical.dart';
 import 'package:pverify/models/specification_analytical_request_item.dart';
 import 'package:pverify/models/specification_by_item_sku.dart';
 import 'package:pverify/models/uom_item.dart';
-import 'package:pverify/services/barcode_scanner.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
 import 'package:pverify/ui/defects/defects_screen.dart';
@@ -261,7 +260,9 @@ class QCDetailsShortFormScreenController extends GetxController {
   }
 
   String get lotNoString => lotNoController.text.trim();
+
   String get gtinString => gtinController.text.trim();
+
   String get glnString => glnController.text.trim();
 
   Future<void> specificationSelection() async {
@@ -317,8 +318,9 @@ class QCDetailsShortFormScreenController extends GetxController {
   Future<String?> scanBarcode({
     required Function(String scanResult)? onScanResult,
   }) async {
-    String? res = await BarcodeScanner.scanBarcode();
-    if (res != null && res.isNotEmpty && res != '-1') {
+    String? res = await FlutterBarcodeScanner.scanBarcode(
+        "#ff6666", 'Cancel', true, ScanMode.DEFAULT);
+    if (res.isNotEmpty && res != '-1') {
       if (onScanResult != null) {
         onScanResult(res);
       }
