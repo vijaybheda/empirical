@@ -543,7 +543,7 @@ class DeliveredFromController extends GetxController {
   Future<void> navigateToCommodityTransferScreen(
       BuildContext context, DeliveryToItem deliveryToItem) async {
     clearSearch();
-    Get.to(() => const CommodityTransferScreen(), arguments: {
+    var passingData = {
       Consts.PARTNER_ID: deliveryToItem.partnerID,
       Consts.PARTNER_NAME: deliveryToItem.partnerName,
       Consts.SEAL_NUMBER: sealNumber,
@@ -553,6 +553,7 @@ class DeliveredFromController extends GetxController {
       Consts.CTEType: cteType,
       Consts.PRODUCT_TRANSFER: productTransfer,
       Consts.CALLER_ACTIVITY: "DeliveredFromActivity",
-    });
+    };
+    Get.to(() => const CommodityTransferScreen(), arguments: passingData);
   }
 }

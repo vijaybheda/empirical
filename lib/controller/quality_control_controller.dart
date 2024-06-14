@@ -69,6 +69,7 @@ class QualityControlController extends GetxController {
   void onInit() {
     super.onInit();
     setArguments();
+    loadFieldsFromDB();
   }
 
   void setArguments() {
@@ -80,7 +81,6 @@ class QualityControlController extends GetxController {
       poNumber = args[Consts.PO_NUMBER] ?? '';
       sealNumber = args[Consts.SEAL_NUMBER] ?? '';
       callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
-
       if (poNumber.isNotEmpty) {
         orderNoTextController.value.text = poNumber;
         orderNoEnabled = false;
@@ -89,6 +89,27 @@ class QualityControlController extends GetxController {
   }
 
   // LOGIN SCREEN VALIDATION'S
+
+  void loadFieldsFromDB() async {
+    if (poNumber.isNotEmpty) {
+      qcHeaderDetails = await dao.findTempQCHeaderDetails(poNumber);
+    }
+
+    if (qcHeaderDetails != null) {
+      orderNoTextController.value.text = qcHeaderDetails!.poNo ?? '';
+      sealTextController.value.text = qcHeaderDetails!.sealNo ?? '';
+      certificateDepartureTextController.value.text =
+          qcHeaderDetails!.qchOpen1 ?? '';
+      factoryReferenceTextController.value.text =
+          qcHeaderDetails!.qchOpen2 ?? '';
+      usdaReferenceTextController.value.text = qcHeaderDetails!.qchOpen3 ?? '';
+      containerTextController.value.text = qcHeaderDetails!.qchOpen4 ?? '';
+      totalQuantityTextController.value.text = qcHeaderDetails!.qchOpen5 ?? '';
+      transportConditionTextController.value.text =
+          qcHeaderDetails!.qchOpen9 ?? '';
+      commentTextController.value.text = qcHeaderDetails!.qchOpen10 ?? '';
+    }
+  }
 
   bool isQualityControlFieldsValidate(BuildContext context) {
     if (isShortForm.value == true) {
@@ -170,41 +191,43 @@ class QualityControlController extends GetxController {
     }
     appStorage.currentSealNumber =
         sealTextController.value.text.trim().toString();
+
     if (qcHeaderDetails == null) {
       await dao.createTempQCHeaderDetails(
-          carrierID,
-          orderNoTextController.value.text,
-          sealTextController.value.text,
-          certificateDepartureTextController.value.text,
-          factoryReferenceTextController.value.text,
-          usdaReferenceTextController.value.text,
-          containerTextController.value.text,
-          totalQuantityTextController.value.text,
-          selectedLoadType.value,
-          transportConditionTextController.value.text,
-          commentTextController.value.text,
-          selectedTruckTempOK.value[0],
-          type,
-          cteType);
+        partnerID: carrierID,
+        poNo: orderNoTextController.value.text,
+        sealNo: sealTextController.value.text,
+        qchOpen1: certificateDepartureTextController.value.text,
+        qchOpen2: factoryReferenceTextController.value.text,
+        qchOpen3: usdaReferenceTextController.value.text,
+        qchOpen4: containerTextController.value.text,
+        qchOpen5: totalQuantityTextController.value.text,
+        qchOpen6: selectedLoadType.value,
+        qchOpen9: transportConditionTextController.value.text,
+        qchOpen10: commentTextController.value.text,
+        truckTempOk: selectedTruckTempOK.value[0],
+        cteType: cteType,
+        productTransfer: type,
+      );
       qcHeaderDetails =
           await dao.findTempQCHeaderDetails(orderNoTextController.value.text);
     } else {
       QCHeaderDetails? headerDetails = qcHeaderDetails;
       await dao.updateTempQCHeaderDetails(
-          headerDetails?.id ?? 0,
-          orderNoTextController.value.text,
-          sealTextController.value.text,
-          certificateDepartureTextController.value.text,
-          factoryReferenceTextController.value.text,
-          usdaReferenceTextController.value.text,
-          containerTextController.value.text,
-          containerTextController.value.text,
-          totalQuantityTextController.value.text,
-          selectedLoadType.value,
-          transportConditionTextController.value.text,
-          selectedTruckTempOK.value[0],
-          type,
-          cteType);
+          baseId: headerDetails?.id ?? 0,
+          poNo: orderNoTextController.value.text,
+          sealNo: sealTextController.value.text,
+          qchOpen1: certificateDepartureTextController.value.text,
+          qchOpen2: factoryReferenceTextController.value.text,
+          qchOpen3: usdaReferenceTextController.value.text,
+          qchOpen4: containerTextController.value.text,
+          qchOpen5: totalQuantityTextController.value.text,
+          qchOpen6: selectedLoadType.value,
+          qchOpen9: transportConditionTextController.value.text,
+          qchOpen10: commentTextController.value.text,
+          truckTempOk: selectedTruckTempOK.value[0],
+          cteType: cteType,
+          productTransfer: type);
     }
 
     if (purchaseOrderDetails.isNotEmpty) {
@@ -215,8 +238,8 @@ class QualityControlController extends GetxController {
   }
 
   void showPurchaseOrder() {
-    // poNumber = orderNoTextController.value.text.trim();
-    // sealNumber = sealTextController.value.text.trim();
+    poNumber = orderNoTextController.value.text.trim();
+    sealNumber = sealTextController.value.text.trim();
 
     if (callerActivity.isNotEmpty) {
       if (callerActivity == "QualityControlHeaderActivity") {
@@ -232,7 +255,6 @@ class QualityControlController extends GetxController {
             Consts.PRODUCT_TRANSFER: productTransfer,
             Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
           };
-
           Get.to(() => const DeliveredFromScreen(), arguments: passingData);
         } else if (selectedTypes.value == "CTE") {
           if (cteType == "Shipping") {

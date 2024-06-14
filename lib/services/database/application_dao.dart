@@ -1965,22 +1965,22 @@ class ApplicationDao {
     return inspIDs;
   }
 
-  Future<int?> createTempQCHeaderDetails(
-    int partnerID,
-    String poNo,
-    String sealNo,
-    String qchOpen1,
-    String qchOpen2,
-    String qchOpen3,
-    String qchOpen4,
-    String qchOpen5,
-    String qchOpen6,
-    String qchOpen9,
-    String qchOpen10,
-    String truckTempOk,
-    String productTransfer,
-    String cteType,
-  ) async {
+  Future<int?> createTempQCHeaderDetails({
+    required int partnerID,
+    required String poNo,
+    required String sealNo,
+    required String qchOpen1,
+    required String qchOpen2,
+    required String qchOpen3,
+    required String qchOpen4,
+    required String qchOpen5,
+    required String qchOpen6,
+    required String qchOpen9,
+    required String qchOpen10,
+    required String truckTempOk,
+    required String productTransfer,
+    required String cteType,
+  }) async {
     int? ttId;
     final Database _db = dbProvider.lazyDatabase;
     try {
@@ -2009,22 +2009,22 @@ class ApplicationDao {
     return ttId;
   }
 
-  Future<void> updateTempQCHeaderDetails(
-    int baseId,
-    String poNo,
-    String sealNo,
-    String qchOpen1,
-    String qchOpen2,
-    String qchOpen3,
-    String qchOpen4,
-    String qchOpen5,
-    String qchOpen6,
-    String qchOpen9,
-    String qchOpen10,
-    String truckTempOk,
-    String productTransfer,
-    String cteType,
-  ) async {
+  Future<void> updateTempQCHeaderDetails({
+    required int baseId,
+    required String poNo,
+    required String sealNo,
+    required String qchOpen1,
+    required String qchOpen2,
+    required String qchOpen3,
+    required String qchOpen4,
+    required String qchOpen5,
+    required String qchOpen6,
+    required String qchOpen9,
+    required String qchOpen10,
+    required String truckTempOk,
+    required String productTransfer,
+    required String cteType,
+  }) async {
     // Open the db
     final Database db = dbProvider.lazyDatabase;
 
@@ -2442,6 +2442,47 @@ class ApplicationDao {
       log('Error finding finished goods item SKU: $e');
       return null;
     }
+    return itemSKUList;
+  }
+
+  Future<List<FinishedGoodsItemSKU>?> getFinishedGoodItemSkuFromTableCTE(
+      int supplierId,
+      int commodityId,
+      String commodityName,
+      int supplier_id,
+      int headquarter_id) async {
+    List<FinishedGoodsItemSKU> itemSKUList = [];
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      bool hqUser = (supplier_id == headquarter_id);
+
+      String query2 =
+          'SELECT DISTINCT itemSku.SKU_ID, itemSku.Name, itemSku.Code '
+          'FROM Item_SKU itemSku '
+          'WHERE Commodity_ID = ?';
+
+      List<dynamic> args = [commodityId];
+
+      List<Map<String, dynamic>> results = await db.rawQuery(query2, args);
+
+      for (Map<String, dynamic> row in results) {
+        FinishedGoodsItemSKU item = FinishedGoodsItemSKU(
+          id: row['SKU_ID'],
+          name: row['Name'],
+          sku: row['Code'],
+          commodityID: commodityId,
+          commodityName: commodityName,
+          partnerId: supplierId,
+        );
+
+        itemSKUList.add(item);
+      }
+    } catch (e) {
+      debugPrint('DB 🔴 getFinishedGoodItemSkuFromTableCTE: $e');
+      return null;
+    }
+
     return itemSKUList;
   }
 
