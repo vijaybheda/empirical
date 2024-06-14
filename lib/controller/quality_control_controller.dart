@@ -215,8 +215,8 @@ class QualityControlController extends GetxController {
   }
 
   void showPurchaseOrder() {
-    // poNumber = orderNoTextController.value.text.trim();
-    // sealNumber = sealTextController.value.text.trim();
+    poNumber = orderNoTextController.value.text.trim();
+    sealNumber = sealTextController.value.text.trim();
 
     if (callerActivity.isNotEmpty) {
       if (callerActivity == "QualityControlHeaderActivity") {
@@ -232,7 +232,6 @@ class QualityControlController extends GetxController {
             Consts.PRODUCT_TRANSFER: productTransfer,
             Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
           };
-
           Get.to(() => const DeliveredFromScreen(), arguments: passingData);
         } else if (selectedTypes.value == "CTE") {
           if (cteType == "Shipping") {

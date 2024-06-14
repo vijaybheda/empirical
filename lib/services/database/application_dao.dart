@@ -2444,6 +2444,47 @@ class ApplicationDao {
     return itemSKUList;
   }
 
+  Future<List<FinishedGoodsItemSKU>?> getFinishedGoodItemSkuFromTableCTE(
+      int supplierId,
+      int commodityId,
+      String commodityName,
+      int supplier_id,
+      int headquarter_id) async {
+    List<FinishedGoodsItemSKU> itemSKUList = [];
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      bool hqUser = (supplier_id == headquarter_id);
+
+      String query2 =
+          'SELECT DISTINCT itemSku.SKU_ID, itemSku.Name, itemSku.Code '
+          'FROM Item_SKU itemSku '
+          'WHERE Commodity_ID = ?';
+
+      List<dynamic> args = [commodityId];
+
+      List<Map<String, dynamic>> results = await db.rawQuery(query2, args);
+
+      for (Map<String, dynamic> row in results) {
+        FinishedGoodsItemSKU item = FinishedGoodsItemSKU(
+          id: row['SKU_ID'],
+          name: row['Name'],
+          sku: row['Code'],
+          commodityID: commodityId,
+          commodityName: commodityName,
+          partnerId: supplierId,
+        );
+
+        itemSKUList.add(item);
+      }
+    } catch (e) {
+      debugPrint('DB 🔴 getFinishedGoodItemSkuFromTableCTE: $e');
+      return null;
+    }
+
+    return itemSKUList;
+  }
+
   Future<QualityControlItem?> findQualityControlDetails(
       int inspectionId) async {
     try {

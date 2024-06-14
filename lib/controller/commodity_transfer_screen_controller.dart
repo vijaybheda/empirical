@@ -61,6 +61,7 @@ class CommodityTransferScreenController extends GetxController {
     poNumber = args[Consts.PO_NUMBER] ?? '';
     callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
     cteType = args[Consts.CTEType] ?? '';
+    productTransfer = args[Consts.PRODUCT_TRANSFER] ?? '';
     super.onInit();
     assignInitialData();
   }
@@ -196,9 +197,9 @@ class CommodityTransferScreenController extends GetxController {
       Consts.SEAL_NUMBER: sealNumber,
       Consts.CTEType: cteType,
       Consts.CALLER_ACTIVITY: callerActivity,
+      Consts.PRODUCT_TRANSFER: productTransfer
     };
     final String tag = DateTime.now().millisecondsSinceEpoch.toString();
-
     Get.to(() => PurchaseOrderScreenCTE(tag: tag), arguments: passingData);
   }
 
