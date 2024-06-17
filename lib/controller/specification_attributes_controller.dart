@@ -73,6 +73,7 @@ class SpecificationAttributesController extends GetxController {
 
   final AppStorage _appStorage = AppStorage.instance;
   final ApplicationDao dao = ApplicationDao();
+
   @override
   void onInit() {
     Map<String, dynamic>? args = Get.arguments;
@@ -616,7 +617,8 @@ class SpecificationAttributesController extends GetxController {
         Get.offAll(() => Home(tag: tag), arguments: passingData);
       } else {
         if (callerActivity == "NewPurchaseOrderDetailsActivity") {
-          Get.to(() => const NewPurchaseOrderDetailsScreen(),
+          final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+          Get.to(() => NewPurchaseOrderDetailsScreen(tag: tag),
               arguments: passingData);
         } else {
           final String tag = DateTime.now().millisecondsSinceEpoch.toString();

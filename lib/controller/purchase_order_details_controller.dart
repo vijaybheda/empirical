@@ -267,8 +267,8 @@ class PurchaseOrderDetailsController extends GetxController {
   }
 
   Future<void> calculateResult() async {
-    int? totalQualityDefectId = 0;
-    int? totalConditionDefectId = 0;
+    int totalQualityDefectId = 0;
+    int totalConditionDefectId = 0;
 
     try {
       for (int i = 0; i < selectedItemSKUList.length; i++) {
@@ -306,12 +306,12 @@ class PurchaseOrderDetailsController extends GetxController {
                           .specificationGradeToleranceList ??
                       [])
                   .isNotEmpty) {
-                if (specificationGradeToleranceArrayList[abc]
+                if ((specificationGradeToleranceArrayList[abc]
                             .specificationNumber ==
-                        specificationNumber &&
-                    specificationGradeToleranceArrayList[abc]
+                        specificationNumber) &&
+                    (specificationGradeToleranceArrayList[abc]
                             .specificationVersion ==
-                        specificationVersion) {
+                        specificationVersion)) {
                   appStorage.specificationGradeToleranceList = appStorage
                       .specificationGradeToleranceArrayList![abc]
                       .specificationGradeToleranceList;
@@ -354,7 +354,7 @@ class PurchaseOrderDetailsController extends GetxController {
                               inspection.inspectionId!,
                               result,
                               "${dbobj.analyticalName} = N",
-                              dbobj.comment!);
+                              dbobj.comment ?? '');
                       int isPictureReqSpec =
                           await dao.createIsPictureReqSpecAttribute(
                         inspection.inspectionId!,
@@ -382,6 +382,14 @@ class PurchaseOrderDetailsController extends GetxController {
                     inspection.inspectionId!,
                     0,
                     qualityControlItems!.qtyShipped!);
+              } else {
+                QualityControlItem? qualityControlItems = await dao
+                    .findQualityControlDetails(inspection.inspectionId!);
+
+                if (qualityControlItems != null) {
+                  await dao.updateQuantityRejected(inspection.inspectionId!,
+                      qualityControlItems.qtyShipped!, 0);
+                }
               }
               int inspectionResult = await dao.updateInspectionResult(
                   inspection.inspectionId!, result);
@@ -418,7 +426,7 @@ class PurchaseOrderDetailsController extends GetxController {
                     for (DefectItem defectItem
                         in defectCategory.defectList ?? []) {
                       if (defectItem.name?.contains("Total Quality") ?? false) {
-                        totalQualityDefectId = defectItem.id;
+                        totalQualityDefectId = defectItem.id ?? 0;
                         break;
                       }
                     }
@@ -428,7 +436,7 @@ class PurchaseOrderDetailsController extends GetxController {
                         in defectCategory.defectList ?? []) {
                       if (defectItem.name?.contains("Total Condition") ??
                           false) {
-                        totalConditionDefectId = defectItem.id;
+                        totalConditionDefectId = defectItem.id ?? 0;
                         break;
                       }
                     }
@@ -447,7 +455,7 @@ class PurchaseOrderDetailsController extends GetxController {
                 int specTolerancePercentage =
                     gradeTolerance.specTolerancePercentage ?? 0;
                 int? defectID = gradeTolerance.defectID;
-                int severityDefectID = gradeTolerance.severityDefectID ?? 0;
+                int? severityDefectID = gradeTolerance.severityDefectID;
                 String tempSeverityDefectName = "";
                 String defectName = gradeTolerance.defectName ?? '';
 
@@ -502,9 +510,15 @@ class PurchaseOrderDetailsController extends GetxController {
                     if (defectList.isNotEmpty) {
                       if (defectID == null || defectID == 0) {
                         for (int k = 0; k < defectList.length; k++) {
-                          if (defectList.elementAt(k).defectCategory ==
+                          if (defectList
+                                      .elementAt(k)
+                                      .defectCategory
+                                      ?.toLowerCase() ==
                                   "quality" ||
-                              (defectList.elementAt(k).defectCategory ==
+                              (defectList
+                                      .elementAt(k)
+                                      .defectCategory
+                                      ?.toLowerCase() ==
                                   "condition")) {
                             if (defectList.elementAt(k).verySeriousDamageCnt! >
                                 0) {

@@ -24,11 +24,12 @@ class PurchaseOrderScreenController extends GetxController {
   late final String productTransfer;
 
   final TextEditingController searchController = TextEditingController();
+
   PurchaseOrderScreenController();
 
   final AppStorage appStorage = AppStorage.instance;
   final GlobalConfigController globalConfigController =
-      Get.find<GlobalConfigController>();
+  Get.find<GlobalConfigController>();
   final ApplicationDao dao = ApplicationDao();
 
   RxList<FinishedGoodsItemSKU> filteredItemSkuList =
@@ -66,9 +67,9 @@ class PurchaseOrderScreenController extends GetxController {
     if (userData != null) {
       if (filteredItemSkuList.isEmpty) {
         int? enterpriseId =
-            await dao.getEnterpriseIdByUserId(userData.userName!.toLowerCase());
+        await dao.getEnterpriseIdByUserId(userData.userName!.toLowerCase());
         List<FinishedGoodsItemSKU>? finishedGoodItems =
-            await dao.getFinishedGoodItemSkuFromTable(
+        await dao.getFinishedGoodItemSkuFromTable(
           partnerID,
           enterpriseId!,
           commodityID,
@@ -130,11 +131,15 @@ class PurchaseOrderScreenController extends GetxController {
     }
 
     int userId =
-        await dao.getHeadquarterIdByUserId(userData.userName!.toLowerCase());
+    await dao.getHeadquarterIdByUserId(userData.userName!.toLowerCase());
 
     if (appStorage.selectedItemSKUList.isNotEmpty) {
       if (userId == 4180) {
-        Get.to(() => const NewPurchaseOrderDetailsScreen(), arguments: {
+        final String tag = DateTime
+            .now()
+            .millisecondsSinceEpoch
+            .toString();
+        Map<String, dynamic> arguments = {
           Consts.PARTNER_NAME: partnerName,
           Consts.PARTNER_ID: partnerID,
           Consts.CARRIER_NAME: carrierName,
@@ -143,9 +148,14 @@ class PurchaseOrderScreenController extends GetxController {
           Consts.COMMODITY_NAME: commodityName,
           Consts.PO_NUMBER: poNumber,
           Consts.SEAL_NUMBER: sealNumber,
-        });
+        };
+        Get.to(() => NewPurchaseOrderDetailsScreen(tag: tag),
+            arguments: arguments);
       } else {
-        final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+        final String tag = DateTime
+            .now()
+            .millisecondsSinceEpoch
+            .toString();
         Get.to(() => PurchaseOrderDetailsScreen(tag: tag), arguments: {
           Consts.PARTNER_ID: partnerID,
           Consts.PARTNER_NAME: partnerName,

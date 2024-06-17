@@ -27,8 +27,12 @@ class LoginScreen extends GetView<AuthController> {
       builder: (authController) {
         if (kDebugMode) {
           authController.emailTextController.value.text =
-              'nirali.talavia@gmail.com';
-          authController.passwordTextController.value.text = 'Niralishah@1234';
+              'nirali.talavia@yahoo.com';
+          authController.passwordTextController.value.text = 'P@ssword1234';
+
+          // authController.emailTextController.value.text =
+          //     'nirali.talavia@gmail.com';
+          // authController.passwordTextController.value.text = 'Niralishah@1234';
         }
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.background,
