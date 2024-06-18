@@ -1018,7 +1018,8 @@ class DefectsScreenController extends GetxController {
         Get.offAll(() => Home(tag: tag), arguments: passingData);
       } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
         passingData[Consts.CALLER_ACTIVITY] = "NewPurchaseOrderDetailsActivity";
-        Get.off(() => const NewPurchaseOrderDetailsScreen(),
+        final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+        Get.off(() => NewPurchaseOrderDetailsScreen(tag: tag),
             arguments: passingData);
       } else {
         passingData[Consts.CALLER_ACTIVITY] = "PurchaseOrderDetailsActivity";

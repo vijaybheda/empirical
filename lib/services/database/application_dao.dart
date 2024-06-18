@@ -4366,4 +4366,32 @@ class ApplicationDao {
     }
     return false;
   }
+
+  Future<PartnerItemSKUInspections?> findPartnerItemSKUPOLine(
+      int partnerId, String itemSKU, int poLineNo, String poNo) async {
+    PartnerItemSKUInspections? item;
+
+    final Database db = dbProvider.lazyDatabase;
+    try {
+      const query = '''
+      SELECT * FROM ${DBTables.PARTNER_ITEMSKU}
+      WHERE ${PartnerItemSkuColumn.PARTNER_ID} = ?
+      AND ${PartnerItemSkuColumn.ITEM_SKU} = ?
+      AND ${PartnerItemSkuColumn.PO_LINE_NO} = ?
+      AND ${PartnerItemSkuColumn.PO_NO} = ?
+    ''';
+
+      List<Map> result =
+          await db.rawQuery(query, [partnerId, itemSKU, poLineNo, poNo]);
+
+      if (result.isNotEmpty) {
+        item = PartnerItemSKUInspections.fromMap(
+            result.first as Map<String, dynamic>);
+      }
+    } catch (e) {
+      print('Error has occurred while finding quality control items: $e');
+    }
+
+    return item;
+  }
 }

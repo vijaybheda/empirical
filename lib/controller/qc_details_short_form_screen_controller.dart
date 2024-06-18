@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pverify/controller/global_config_controller.dart';
@@ -1164,8 +1163,10 @@ class QCDetailsShortFormScreenController extends GetxController {
               Get.to(() => PurchaseOrderDetailsScreen(tag: tag),
                   arguments: passingData);
             } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+              final String tag =
+                  DateTime.now().millisecondsSinceEpoch.toString();
               Get.offAll(
-                () => const NewPurchaseOrderDetailsScreen(),
+                () => NewPurchaseOrderDetailsScreen(tag: tag),
                 arguments: passingData,
               );
             } else {
@@ -1290,7 +1291,8 @@ class QCDetailsShortFormScreenController extends GetxController {
       var res = await Get.to(() => PurchaseOrderDetailsScreen(tag: tag),
           arguments: bundle);
     } else if (callerActivity == 'NewPurchaseOrderDetailsActivity') {
-      var res = await Get.to(() => const NewPurchaseOrderDetailsScreen(),
+      final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+      var res = await Get.to(() => NewPurchaseOrderDetailsScreen(tag: tag),
           arguments: bundle);
     } else {
       final String tag = DateTime.now().millisecondsSinceEpoch.toString();
@@ -1382,7 +1384,8 @@ class QCDetailsShortFormScreenController extends GetxController {
         Get.offAll(() => Home(tag: tag), arguments: passingData);
       } else {
         if (callerActivity == "NewPurchaseOrderDetailsActivity") {
-          Get.offAll(() => const NewPurchaseOrderDetailsScreen(),
+          final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+          Get.offAll(() => NewPurchaseOrderDetailsScreen(tag: tag),
               arguments: passingData);
         } else {
           final String tag = DateTime.now().millisecondsSinceEpoch.toString();
@@ -1814,8 +1817,9 @@ class QCDetailsShortFormScreenController extends GetxController {
           final String tag = DateTime.now().millisecondsSinceEpoch.toString();
           Get.offAll(() => Home(tag: tag));
         } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+          final String tag = DateTime.now().millisecondsSinceEpoch.toString();
           Get.offAll(
-            () => const NewPurchaseOrderDetailsScreen(),
+            () => NewPurchaseOrderDetailsScreen(tag: tag),
             arguments: passingData,
           );
         } else {
