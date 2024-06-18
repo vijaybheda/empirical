@@ -475,7 +475,6 @@ class PurchaseOrderDetailsController extends GetxController {
                 }
 
                 int totalcount = 0;
-                int totalSampleSize = 0;
                 bool iscalculated = false;
                 int totalQualitycount = 0;
                 int totalQualityInjury = 0;
