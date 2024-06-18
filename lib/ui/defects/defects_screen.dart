@@ -709,8 +709,33 @@ class DefectsMergerTable extends StatelessWidget {
               ),
             )),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(circularDefectItem("VS")),
-      if (controller.hasSeverityDecay) MRow(circularDefectItem("DK")),
+        MRow(Container(
+          color: AppColors.defectBlue,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                    width: 35, height: 35, child: circularDefectItem("VS")),
+              ],
+            ),
+          ),
+        )),
+      if (controller.hasSeverityDecay)
+        MRow(Container(
+          color: AppColors.defectGreen,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                    width: 35, height: 35, child: circularDefectItem("DK")),
+              ],
+            ),
+          ),
+        )),
     ];
   }
 
@@ -737,8 +762,11 @@ class DefectsMergerTable extends StatelessWidget {
                 color: AppColors.defectOrange,
                 child: defaultTextItem('Defects'))),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(defaultTextItem('Defects')),
-      if (controller.hasSeverityDecay) MRow(defaultTextItem('Defects')),
+        MRow(Container(
+            color: AppColors.defectBlue, child: defaultTextItem('Defects'))),
+      if (controller.hasSeverityDecay)
+        MRow(Container(
+            color: AppColors.defectGreen, child: defaultTextItem('Defects'))),
     ];
     return rows;
   }
@@ -860,9 +888,13 @@ class DefectsMergerTable extends StatelessWidget {
                   getCount(sampleData?.name ?? '', i).toString()),
             )),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(defaultTextItem((sampleData?.vsdCnt ?? 0).toString())),
+        MRow(Container(
+            color: AppColors.defectBlue,
+            child: defaultTextItem((sampleData?.vsdCnt ?? 0).toString()))),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem((sampleData?.dcCnt ?? 0).toString())),
+        MRow(Container(
+            color: AppColors.defectGreen,
+            child: defaultTextItem((sampleData?.dcCnt ?? 0).toString()))),
       MRow(_createPicturesCell(sampleData)),
       MRow(_createCommentsCell(sampleData)),
     ];
@@ -905,9 +937,14 @@ class DefectsMergerTable extends StatelessWidget {
           );
         })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(defaultTextItem("${controller.totalQualityVerySeriousDamage}")),
+        MRow(Container(
+            color: AppColors.defectBlue,
+            child: defaultTextItem(
+                "${controller.totalQualityVerySeriousDamage}"))),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem("${controller.totalQualityDecay}")),
+        MRow(Container(
+            color: AppColors.defectGreen,
+            child: defaultTextItem("${controller.totalQualityDecay}"))),
     ];
   }
 
@@ -963,26 +1000,32 @@ class DefectsMergerTable extends StatelessWidget {
           );
         })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(Center(
-          child: Text(
-            "$percentVSDamage%",
-            textAlign: TextAlign.center,
-            style: textStyle().copyWith(
-              color: (controller.verySeriousDamageQualitySpec != null &&
-                      percentVSDamage >
-                          (controller.verySeriousDamageQualitySpec ?? 0.0))
-                  ? AppColors.red
-                  : AppColors.black,
+        MRow(Container(
+          color: AppColors.defectBlue,
+          child: Center(
+            child: Text(
+              "$percentVSDamage%",
+              textAlign: TextAlign.center,
+              style: textStyle().copyWith(
+                color: (controller.verySeriousDamageQualitySpec != null &&
+                        percentVSDamage >
+                            (controller.verySeriousDamageQualitySpec ?? 0.0))
+                    ? AppColors.red
+                    : AppColors.black,
+              ),
             ),
           ),
         )),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem(
-          "$percentDecay%",
-          color: (controller.decayQualitySpec != null &&
-                  percentDecay > (controller.decayQualitySpec ?? 0.0))
-              ? AppColors.red
-              : null,
+        MRow(Container(
+          color: AppColors.defectGreen,
+          child: defaultTextItem(
+            "$percentDecay%",
+            color: (controller.decayQualitySpec != null &&
+                    percentDecay > (controller.decayQualitySpec ?? 0.0))
+                ? AppColors.red
+                : null,
+          ),
         )),
     ];
   }
@@ -1022,9 +1065,14 @@ class DefectsMergerTable extends StatelessWidget {
           );
         })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(defaultTextItem("${controller.totalConditionVerySeriousDamage}")),
+        MRow(Container(
+            color: AppColors.defectBlue,
+            child: defaultTextItem(
+                "${controller.totalConditionVerySeriousDamage}"))),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem("${controller.totalConditionDecay}")),
+        MRow(Container(
+            color: AppColors.defectGreen,
+            child: defaultTextItem("${controller.totalConditionDecay}"))),
     ];
   }
 
@@ -1096,26 +1144,32 @@ class DefectsMergerTable extends StatelessWidget {
           );
         })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(Center(
-          child: Text(
-            "$percentCVSDamage%",
-            textAlign: TextAlign.center,
-            style: textStyle().copyWith(
-              color: (controller.verySeriousDamageConditionSpec != null &&
-                      percentCVSDamage >
-                          (controller.verySeriousDamageConditionSpec ?? 0.0))
-                  ? AppColors.red
-                  : AppColors.black,
+        MRow(Container(
+          color: AppColors.defectBlue,
+          child: Center(
+            child: Text(
+              "$percentCVSDamage%",
+              textAlign: TextAlign.center,
+              style: textStyle().copyWith(
+                color: (controller.verySeriousDamageConditionSpec != null &&
+                        percentCVSDamage >
+                            (controller.verySeriousDamageConditionSpec ?? 0.0))
+                    ? AppColors.red
+                    : AppColors.black,
+              ),
             ),
           ),
         )),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem(
-          "$percentCDecay%",
-          color: (controller.decayConditionSpec != null &&
-                  percentCDecay > (controller.decayConditionSpec ?? 0.0))
-              ? AppColors.red
-              : null,
+        MRow(Container(
+          color: AppColors.defectGreen,
+          child: defaultTextItem(
+            "$percentCDecay%",
+            color: (controller.decayConditionSpec != null &&
+                    percentCDecay > (controller.decayConditionSpec ?? 0.0))
+                ? AppColors.red
+                : null,
+          ),
         )),
     ];
   }
@@ -1162,9 +1216,13 @@ class DefectsMergerTable extends StatelessWidget {
           );
         })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(defaultTextItem("${controller.totalVerySeriousDamage}")),
+        MRow(Container(
+            color: AppColors.defectBlue,
+            child: defaultTextItem("${controller.totalVerySeriousDamage}"))),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem("${controller.totalDecay}")),
+        MRow(Container(
+            color: AppColors.defectGreen,
+            child: defaultTextItem("${controller.totalDecay}"))),
     ];
   }
 
@@ -1231,20 +1289,26 @@ class DefectsMergerTable extends StatelessWidget {
           );
         })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(defaultTextItem(
-          "$totalVerySeriousDamage%",
-          color: controller.verySeriousDamageSpec != null &&
-                  totalVerySeriousDamage >
-                      (controller.verySeriousDamageSpec ?? 0.0)
-              ? AppColors.red
-              : null,
+        MRow(Container(
+          color: AppColors.defectBlue,
+          child: defaultTextItem(
+            "$totalVerySeriousDamage%",
+            color: controller.verySeriousDamageSpec != null &&
+                    totalVerySeriousDamage >
+                        (controller.verySeriousDamageSpec ?? 0.0)
+                ? AppColors.red
+                : null,
+          ),
         )),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem("$totalDecay%",
-            color: (controller.decaySpec != null &&
-                    totalDecay > (controller.decaySpec ?? 0.0))
-                ? AppColors.red
-                : null)),
+        MRow(Container(
+          color: AppColors.defectGreen,
+          child: defaultTextItem("$totalDecay%",
+              color: (controller.decaySpec != null &&
+                      totalDecay > (controller.decaySpec ?? 0.0))
+                  ? AppColors.red
+                  : null),
+        )),
     ];
   }
 
@@ -1282,8 +1346,13 @@ class DefectsMergerTable extends StatelessWidget {
           );
         })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(defaultTextItem("$totalSizeVerySeriousDamage")),
-      if (controller.hasSeverityDecay) MRow(defaultTextItem("$totalSizeDecay")),
+        MRow(Container(
+            color: AppColors.defectBlue,
+            child: defaultTextItem("$totalSizeVerySeriousDamage"))),
+      if (controller.hasSeverityDecay)
+        MRow(Container(
+            color: AppColors.defectGreen,
+            child: defaultTextItem("$totalSizeDecay"))),
     ];
   }
 
@@ -1329,9 +1398,14 @@ class DefectsMergerTable extends StatelessWidget {
           );
         })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(Center(child: Text("$percentSizeVSDamage%", style: textStyle()))),
+        MRow(Container(
+            color: AppColors.defectBlue,
+            child: Center(
+                child: Text("$percentSizeVSDamage%", style: textStyle())))),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem("$percentSizeDecay%")),
+        MRow(Container(
+            color: AppColors.defectGreen,
+            child: defaultTextItem("$percentSizeDecay%"))),
     ];
   }
 
@@ -1369,9 +1443,13 @@ class DefectsMergerTable extends StatelessWidget {
           );
         })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(defaultTextItem("$totalColorVerySeriousDamage")),
+        MRow(Container(
+            color: AppColors.defectBlue,
+            child: defaultTextItem("$totalColorVerySeriousDamage"))),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem("$totalColorDecay")),
+        MRow(Container(
+            color: AppColors.defectGreen,
+            child: defaultTextItem("$totalColorDecay"))),
     ];
   }
 
@@ -1417,11 +1495,16 @@ class DefectsMergerTable extends StatelessWidget {
           );
         })),
       if (controller.hasSeverityVerySeriousDamage)
-        MRow(Center(
-            child:
-                Text("${percentColorVSDamage.round()}%", style: textStyle()))),
+        MRow(Container(
+          color: AppColors.defectBlue,
+          child: Center(
+              child:
+                  Text("${percentColorVSDamage.round()}%", style: textStyle())),
+        )),
       if (controller.hasSeverityDecay)
-        MRow(defaultTextItem("${percentColorDecay.round()}%")),
+        MRow(Container(
+            color: AppColors.defectGreen,
+            child: defaultTextItem("${percentColorDecay.round()}%"))),
     ];
   }
 
