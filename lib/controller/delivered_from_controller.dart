@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pverify/controller/global_config_controller.dart';
+import 'package:pverify/controller/json_file_operations.dart';
 import 'package:pverify/models/delivery_to_item.dart';
 import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/specification_supplier_gtin.dart';
@@ -27,10 +28,8 @@ class DeliveredFromController extends GetxController {
   final AppStorage appStorage = AppStorage.instance;
   final ApplicationDao dao = ApplicationDao();
 
-  RxList<DeliveryToItem> filteredDeliveryList = <DeliveryToItem>[].obs;
-  RxList<DeliveryToItem> deliveryList = <DeliveryToItem>[].obs;
-  RxList<DeliveryToItem> filteredNonOpenDeliveryList = <DeliveryToItem>[].obs;
-  RxList<DeliveryToItem> nonOpenDeliveryList = <DeliveryToItem>[].obs;
+  RxList<DeliveryToItem> filteredDeliveryToItemList = <DeliveryToItem>[].obs;
+  RxList<DeliveryToItem> deliveryToItemList = <DeliveryToItem>[].obs;
 
   final RxInt selectedIndex = RxInt(-1);
 
@@ -70,41 +69,37 @@ class DeliveredFromController extends GetxController {
     assignInitialData();
   }
 
-  void assignInitialData() {
+  Future<void> assignInitialData() async {
     List<DeliveryToItem>? storedDeliveryList = appStorage.getDeliveryToList();
-    if (storedDeliveryList == null) {
-      deliveryList.value = [];
-      filteredDeliveryList.value = [];
-      listAssigned.value = true;
+    if (storedDeliveryList != null && storedDeliveryList.isNotEmpty) {
+      await JsonFileOperations.instance.offlineLoadDeliveredFrom();
+      deliveryToItemList.clear();
+      filteredDeliveryToItemList.clear();
 
-      filteredNonOpenDeliveryList.clear();
-      nonOpenDeliveryList.clear();
-
-      update(['deliveryList']);
-    } else {
-      deliveryList.clear();
-      filteredDeliveryList.clear();
-
-      filteredNonOpenDeliveryList.clear();
-      nonOpenDeliveryList.clear();
-
-      deliveryList.addAll(storedDeliveryList);
-
-      List<DeliveryToItem> nonOpenPartners = storedDeliveryList
-          .where((element) => (element.partnerName != null &&
-              !(element.partnerName!.toLowerCase().contains("open"))))
-          .toList();
-      filteredNonOpenDeliveryList.addAll(nonOpenPartners);
-      nonOpenDeliveryList.addAll(nonOpenPartners);
-
-      deliveryList.sort((a, b) => a.partnerName!.compareTo(b.partnerName!));
-
-      filteredDeliveryList.addAll(storedDeliveryList);
-      filteredDeliveryList
+      storedDeliveryList
           .sort((a, b) => a.partnerName!.compareTo(b.partnerName!));
-      listAssigned.value = true;
-      update(['deliveryList']);
+
+      deliveryToItemList.addAll(storedDeliveryList);
+
+      if (appStorage.getUserData() != null &&
+          appStorage.getUserData()?.supplierId != 0) {
+        for (DeliveryToItem obj in deliveryToItemList) {
+          if (obj.partnerID == appStorage.getUserData()?.supplierId) {
+            deliveryToItemList.remove(obj);
+            break;
+          }
+        }
+      }
+      filteredDeliveryToItemList.addAll(deliveryToItemList);
+    } else {
+      deliveryToItemList.value = [];
+      filteredDeliveryToItemList.value = [];
     }
+    listAssigned.value = true;
+    update(['deliveryList']);
+    Future.delayed(const Duration(milliseconds: 500)).then((_) {
+      update();
+    });
   }
 
   void clearSearch() {
@@ -119,16 +114,16 @@ class DeliveredFromController extends GetxController {
   }
 
   void searchAndAssignPartner(String searchValue) {
-    filteredDeliveryList.clear();
+    filteredDeliveryToItemList.clear();
     if (searchValue.isEmpty) {
-      filteredDeliveryList.addAll(deliveryList);
+      filteredDeliveryToItemList.addAll(deliveryToItemList);
     } else {
-      List<DeliveryToItem> data = deliveryList
+      List<DeliveryToItem> data = deliveryToItemList
           .where((element) => element.partnerName!
               .toLowerCase()
               .contains(searchValue.toLowerCase()))
           .toList();
-      filteredDeliveryList.addAll(data);
+      filteredDeliveryToItemList.addAll(data);
     }
     update(['deliveryList']);
   }
@@ -500,7 +495,7 @@ class DeliveredFromController extends GetxController {
   List<String> getListOfAlphabets() {
     Set<String> uniqueAlphabets = {};
 
-    for (DeliveryToItem supplier in filteredDeliveryList) {
+    for (DeliveryToItem supplier in filteredDeliveryToItemList) {
       if (supplier.partnerName!.isNotEmpty &&
           supplier.partnerName![0]
               .toUpperCase()
@@ -513,7 +508,7 @@ class DeliveredFromController extends GetxController {
   }
 
   void scrollToSection(String letter, int index) {
-    int targetIndex = filteredDeliveryList
+    int targetIndex = filteredDeliveryToItemList
         .indexWhere((supplier) => supplier.partnerName!.startsWith(letter));
     if (targetIndex != -1) {
       scrollController.animateTo(
@@ -526,16 +521,16 @@ class DeliveredFromController extends GetxController {
 
   void searchAndAssignNonOpenPartner(String searchValue) {
     selectedIndex.value = -1;
-    filteredNonOpenDeliveryList.clear();
+    filteredDeliveryToItemList.clear();
     if (searchValue.isEmpty) {
-      filteredNonOpenDeliveryList.addAll(nonOpenDeliveryList);
+      filteredDeliveryToItemList.addAll(deliveryToItemList);
     } else {
-      List<DeliveryToItem> data = nonOpenDeliveryList
+      List<DeliveryToItem> data = deliveryToItemList
           .where((element) => element.partnerName!
               .toLowerCase()
               .contains(searchValue.toLowerCase()))
           .toList();
-      filteredNonOpenDeliveryList.addAll(data);
+      filteredDeliveryToItemList.addAll(data);
     }
     update(['nonOpenDeliveryList']);
   }

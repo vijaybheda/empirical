@@ -19,15 +19,17 @@ import 'package:pverify/utils/dialogs/update_data_dialog.dart';
 import 'package:pverify/utils/utils.dart';
 
 class CommodityTransferScreenController extends GetxController {
-  late final int partnerID;
-  late final String partnerName;
-  late final String sealNumber;
-  late final String poNumber;
-  late final String carrierName;
-  late final int carrierID;
-  late final String cteType;
-  late final String productTransfer;
-  late final String callerActivity;
+  int partnerID = 0;
+  String partnerName = '';
+  String sealNumber = '';
+  String poNumber = '';
+  String carrierName = '';
+  int carrierID = 0;
+  String cteType = '';
+  String productTransfer = '';
+  String callerActivity = '';
+  String toLocationName = '';
+  int toLocationID = 0;
 
   final TextEditingController searchController = TextEditingController();
 
@@ -56,6 +58,8 @@ class CommodityTransferScreenController extends GetxController {
     partnerName = args[Consts.PARTNER_NAME] ?? '';
     partnerID = args[Consts.PARTNER_ID] ?? 0;
     carrierName = args[Consts.CARRIER_NAME] ?? '';
+    toLocationName = args[Consts.ToLocationName] ?? '';
+    toLocationID = args[Consts.ToLocationId] ?? 0;
     carrierID = args[Consts.CARRIER_ID] ?? 0;
     sealNumber = args[Consts.SEAL_NUMBER] ?? '';
     poNumber = args[Consts.PO_NUMBER] ?? '';
@@ -191,12 +195,14 @@ class CommodityTransferScreenController extends GetxController {
       Consts.PARTNER_NAME: partnerName,
       Consts.CARRIER_NAME: carrierName,
       Consts.CARRIER_ID: carrierID,
+      Consts.ToLocationId: toLocationID,
+      Consts.ToLocationName: toLocationName,
       Consts.COMMODITY_ID: commodity.id,
       Consts.COMMODITY_NAME: commodity.name,
       Consts.PO_NUMBER: poNumber,
       Consts.SEAL_NUMBER: sealNumber,
       Consts.CTEType: cteType,
-      Consts.CALLER_ACTIVITY: callerActivity,
+      Consts.CALLER_ACTIVITY: "CommodityTransfer",
       Consts.PRODUCT_TRANSFER: productTransfer
     };
     final String tag = DateTime.now().millisecondsSinceEpoch.toString();

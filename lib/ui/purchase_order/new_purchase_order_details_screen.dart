@@ -134,6 +134,7 @@ class NewPurchaseOrderDetailsScreen
         return GetBuilder<NewPurchaseOrderDetailsController>(
             tag: tag,
             builder: (controller) {
+              return Container();
               /*return Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 10),

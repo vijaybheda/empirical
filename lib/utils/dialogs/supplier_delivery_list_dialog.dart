@@ -142,7 +142,7 @@ class DeliveryToListDialog {
                       if (controller.selectedIndex.value != -1) {
                         int index = controller.selectedIndex.value;
                         Get.back(
-                            result: controller.filteredNonOpenDeliveryList
+                            result: controller.filteredDeliveryToItemList
                                 .elementAt(index));
                       } else {
                         AppAlertDialog.validateAlerts(context, AppStrings.alert,

@@ -70,7 +70,7 @@ GetBuilder<DeliveredFromController> _partnerListSection(BuildContext context) {
             controller.listAssigned.value
                 ? Expanded(
                     flex: 10,
-                    child: controller.filteredDeliveryList.isNotEmpty
+                    child: controller.filteredDeliveryToItemList.isNotEmpty
                         ? partnerListView(context, controller)
                         : noDataFoundWidget(),
                   )
@@ -144,15 +144,15 @@ Widget partnerListView(
     BuildContext context, DeliveredFromController controller) {
   return ListView.builder(
     controller: controller.scrollController,
-    itemCount: controller.filteredDeliveryList.length,
+    itemCount: controller.filteredDeliveryToItemList.length,
     itemBuilder: (context, index) {
       DeliveryToItem deliverd =
-          controller.filteredDeliveryList.elementAt(index);
+          controller.filteredDeliveryToItemList.elementAt(index);
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
           children: [
-            getAlphabetContent(controller.filteredDeliveryList, index),
+            getAlphabetContent(controller.filteredDeliveryToItemList, index),
             SizedBox(
               height: controller.listHeight,
               child: GestureDetector(
