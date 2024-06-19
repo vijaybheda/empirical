@@ -109,9 +109,20 @@ class SupplierListDialog {
                               ),
                               value: index,
                               groupValue: controller.selectedIndex.value,
-                              onChanged: (value) {
+                              onChanged: (value) async {
                                 controller.selectedIndex.value = value;
                                 controller.update(['nonOpenPartnerList']);
+                                if (index == 0) {
+                                  controller.showCommentInputDialog(
+                                    context,
+                                    commentController:
+                                        controller.otherTextEdtingController,
+                                    onCommentSave: (comment) {
+                                      controller.otherTextEdtingController
+                                          .text = comment;
+                                    },
+                                  );
+                                }
                               },
                             );
                           },
@@ -137,12 +148,14 @@ class SupplierListDialog {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (controller.selectedIndex.value != -1) {
                         int index = controller.selectedIndex.value;
                         Get.back(
                             result: controller.filteredNonOpenPartnersList
                                 .elementAt(index));
+
+                        await controller.onSupplierSelected(context);
                       } else {
                         AppAlertDialog.validateAlerts(context, AppStrings.alert,
                             AppStrings.selectPartnerInfo);
