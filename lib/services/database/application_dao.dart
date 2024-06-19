@@ -2057,6 +2057,57 @@ class ApplicationDao {
     }
   }
 
+  Future<void> updateTempQCHeaderDetailComments({
+    required String poNo,
+    required String comments,
+  }) async {
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      await db.transaction((txn) async {
+        Map<String, dynamic> values = {};
+
+        if (comments.isNotEmpty) {
+          values[TempQcHeaderDetailsColumn.QCH_OPEN10] = comments;
+        }
+
+        await txn.update(
+          DBTables.TEMP_QC_HEADER_DETAILS,
+          values,
+          where: '${TempQcHeaderDetailsColumn.PO_NUMBER} = ?',
+          whereArgs: [poNo],
+        );
+      });
+    } catch (e) {
+      log('Update Temp QC Header Details Comments : $e');
+      throw e;
+    }
+  }
+
+  Future<String> getTempQCHeaderDetailsComments(String poNumber) async {
+    final Database db = dbProvider.lazyDatabase;
+
+    String comments = '';
+    List<dynamic> args = [poNumber];
+
+    try {
+      String query = '''
+      SELECT * FROM ${DBTables.TEMP_QC_HEADER_DETAILS} 
+      WHERE ${TempQcHeaderDetailsColumn.PO_NUMBER} = ?
+    ''';
+
+      List<Map<String, dynamic>> result = await db.rawQuery(query, args);
+
+      if (result.isNotEmpty) {
+        comments = result.first[TempQcHeaderDetailsColumn.QCH_OPEN10] ?? '';
+      }
+    } catch (e) {
+      log('Error Get Temp QC Header Details Comments: $e');
+    }
+
+    return comments;
+  }
+
   Future<List<SpecificationSupplierGTIN>?>
       getSpecificationSupplierGTINFromTable(String gtin) async {
     List<SpecificationSupplierGTIN> itemSKUList = [];
