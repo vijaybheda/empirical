@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,6 +18,7 @@ import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/dialogs/supplier_list_dialog.dart';
+import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
 
 class SelectSupplierScreenController extends GetxController {
@@ -35,6 +38,8 @@ class SelectSupplierScreenController extends GetxController {
       /*{required this.carrier, this.qcHeaderDetails}*/);
 
   final TextEditingController searchSuppController = TextEditingController();
+  final TextEditingController otherTextEdtingController =
+      TextEditingController();
 
   final TextEditingController searchNonOpenSuppController =
       TextEditingController();
@@ -102,6 +107,8 @@ class SelectSupplierScreenController extends GetxController {
       filteredNonOpenPartnersList.addAll(nonOpenPartners);
       nonOpenPartnersList.addAll(nonOpenPartners);
 
+      filteredNonOpenPartnersList.insert(0, PartnerItem(name: 'Other'));
+      nonOpenPartnersList.insert(0, PartnerItem(name: 'Other'));
       partnersList.sort((a, b) => a.name!.compareTo(b.name!));
 
       filteredPartnerList.addAll(storedPartnersList);
@@ -562,6 +569,10 @@ class SelectSupplierScreenController extends GetxController {
       }
     } else {
       clearSearch();
+      /* String comments = await dao.getTempQCHeaderDetailsComments(poNumber!);
+      comments += " ${partner.name}";
+      await dao.updateTempQCHeaderDetailComments(
+          poNo: poNumber!, comments: comments); */
       Get.to(() => const CommodityIDScreen(), arguments: {
         Consts.PARTNER_ID: partner.id,
         Consts.PARTNER_NAME: partner.name,
@@ -643,6 +654,120 @@ class SelectSupplierScreenController extends GetxController {
       return res;
     } else {
       return null;
+    }
+  }
+
+  Future<void> showCommentInputDialog(
+    BuildContext context, {
+    required TextEditingController commentController,
+    Function(String comment)? onCommentSave,
+    String? comment,
+  }) {
+    commentController.text = comment ?? '';
+    commentController.selection = TextSelection.fromPosition(
+      TextPosition(offset: commentController.text.length),
+    );
+
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          backgroundColor: Theme.of(context).colorScheme.background,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          title: Text(
+            AppStrings.comments,
+            style: Get.textTheme.titleMedium,
+          ),
+          content: TextField(
+            autofocus: false,
+            maxLines: null,
+            keyboardType: TextInputType.multiline,
+            controller: commentController,
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              focusedBorder: UnderlineInputBorder(),
+              disabledBorder: UnderlineInputBorder(),
+              enabledBorder: UnderlineInputBorder(),
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Get.back();
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(AppColors.primary),
+                foregroundColor: MaterialStateProperty.all(AppColors.primary),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                ),
+                minimumSize: MaterialStateProperty.all(const Size(100, 40)),
+              ),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                child: Text(
+                  AppStrings.cancel,
+                  style: Get.textTheme.labelLarge?.copyWith(
+                    color: AppColors.white,
+                  ),
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (onCommentSave != null) {
+                  onCommentSave(commentController.text.trim());
+                }
+                Navigator.of(context).pop();
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(AppColors.primary),
+                foregroundColor: MaterialStateProperty.all(AppColors.primary),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                ),
+                minimumSize: MaterialStateProperty.all(const Size(100, 40)),
+              ),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                child: Text(
+                  AppStrings.save,
+                  style: Get.textTheme.labelLarge?.copyWith(
+                    color: AppColors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+      barrierDismissible: false,
+    );
+  }
+
+  Future<void> onSupplierSelected(BuildContext context) async {
+    if (poNumber != null && poNumber!.isNotEmpty && selectedIndex.value != -1) {
+      String selectedOpenSupplier =
+          filteredNonOpenPartnersList.elementAt(selectedIndex.value).name!;
+      String comments = await dao.getTempQCHeaderDetailsComments(poNumber!);
+      if (selectedOpenSupplier == "Other") {
+        String newOpenSupplier = otherTextEdtingController.text.trim();
+        comments += " $newOpenSupplier";
+      } else {
+        comments += " $selectedOpenSupplier";
+      }
+      await dao.updateTempQCHeaderDetailComments(
+          poNo: poNumber!, comments: comments);
     }
   }
 }
