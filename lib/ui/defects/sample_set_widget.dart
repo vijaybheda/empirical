@@ -92,10 +92,8 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
             ],
           ),
         ),
-        // controller.sampleList[sampleIndex].defectItems.isNotEmpty
-        (controller.defectDataMap[controller.sampleList
-                        .elementAt(controller.sampleList.length - 1)
-                        .name] ??
+        (controller.defectDataMap[
+                        controller.sampleList.elementAt(sampleIndex).name] ??
                     [])
                 .isNotEmpty
             ? Column(

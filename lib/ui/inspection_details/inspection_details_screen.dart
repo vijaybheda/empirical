@@ -19,7 +19,7 @@ class InspectionDetailsScreen extends StatelessWidget {
     return GetBuilder<InspectionDetailsController>(
       init: InspectionDetailsController(),
       tag: uniqueTag,
-      builder: (controller) {
+      builder: (InspectionDetailsController controller) {
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.background,
           appBar: AppBar(

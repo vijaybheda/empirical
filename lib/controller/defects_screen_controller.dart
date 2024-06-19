@@ -390,6 +390,7 @@ class DefectsScreenController extends GetxController {
 
     sampleList.refresh();
     update();
+    unFocus();
   }
 
   void addDefectRow(BuildContext context, {required int sampleIndex}) {
