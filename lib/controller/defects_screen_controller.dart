@@ -233,41 +233,51 @@ class DefectsScreenController extends GetxController {
 
     Future.delayed(const Duration(milliseconds: 10)).then((value) async {
       populateSeverityList();
-      if (appStorage.severityList != null) {
+      /*if (appStorage.severityList != null) {
         for (var severity in appStorage.severityList!) {
           if (severity.name == "Injury" || severity.name == "Lesión") {
             hasSeverityInjury = true;
+            defectList.elementAt(pos).severityInjuryId = severity.id;
           } else if (severity.name == "Damage" || severity.name == "Daño") {
             hasSeverityDamage = true;
+            defectList.elementAt(pos).severityDamageId = severity.id;
           } else if (severity.name == "Serious Damage" ||
               severity.name == "Daño Serio") {
             hasSeveritySeriousDamage = true;
+            defectList.elementAt(pos).severitySeriousDamageId = severity.id;
           } else if (severity.name == "Very Serious Damage" ||
               severity.name == "Daño Muy Serio") {
             hasSeverityVerySeriousDamage = true;
+            defectList.elementAt(pos).severityVerySeriousDamageId = severity.id;
           } else if (severity.name == "Decay" || severity.name == "Pudrición") {
             hasSeverityDecay = true;
+            defectList.elementAt(pos).severityDecayId = severity.id;
           }
         }
-      }
+      }*/
       await setInit();
-      if (appStorage.severityList != null) {
-        for (var severity in appStorage.severityList!) {
+      /*if (appStorage.severityList != null) {
+        for (Severity severity in appStorage.severityList!) {
           if (severity.name == "Injury" || severity.name == "Lesión") {
             hasSeverityInjury = true;
+            defectList.elementAt(pos).severityInjuryId = severity.id;
           } else if (severity.name == "Damage" || severity.name == "Daño") {
             hasSeverityDamage = true;
+            defectList.elementAt(pos).severityDamageId = severity.id;
           } else if (severity.name == "Serious Damage" ||
               severity.name == "Daño Serio") {
             hasSeveritySeriousDamage = true;
+            defectList.elementAt(pos).severitySeriousDamageId = severity.id;
           } else if (severity.name == "Very Serious Damage" ||
               severity.name == "Daño Muy Serio") {
             hasSeverityVerySeriousDamage = true;
+            defectList.elementAt(pos).severityVerySeriousDamageId = severity.id;
           } else if (severity.name == "Decay" || severity.name == "Pudrición") {
             hasSeverityDecay = true;
+            defectList.elementAt(pos).severityDecayId = severity.id;
           }
         }
-      }
+      }*/
       update();
     });
   }
@@ -374,16 +384,31 @@ class DefectsScreenController extends GetxController {
       for (Severity severity in appStorage.severityList!) {
         if (severity.name == "Injury" || severity.name == "Lesión") {
           hasSeverityInjury = true;
+          if (defectDataMap.containsKey(dataName)) {
+            defectList.elementAt(pos).severityInjuryId = severity.id;
+          }
         } else if (severity.name == "Damage" || severity.name == "Daño") {
           hasSeverityDamage = true;
+          if (defectDataMap.containsKey(dataName)) {
+            defectList.elementAt(pos).severityDamageId = severity.id;
+          }
         } else if (severity.name == "Serious Damage" ||
             severity.name == "Daño Serio") {
           hasSeveritySeriousDamage = true;
+          if (defectDataMap.containsKey(dataName)) {
+            defectList.elementAt(pos).severitySeriousDamageId = severity.id;
+          }
         } else if (severity.name == "Very Serious Damage" ||
             severity.name == "Daño Muy Serio") {
           hasSeverityVerySeriousDamage = true;
+          if (defectDataMap.containsKey(dataName)) {
+            defectList.elementAt(pos).severityVerySeriousDamageId = severity.id;
+          }
         } else if (severity.name == "Decay" || severity.name == "Pudrición") {
           hasSeverityDecay = true;
+          if (defectDataMap.containsKey(dataName)) {
+            defectList.elementAt(pos).severityDecayId = severity.id;
+          }
         }
       }
     }
@@ -1497,6 +1522,29 @@ class DefectsScreenController extends GetxController {
   void loadDefectData(int i, List<InspectionDefect> defectList, String dataName,
       int sampleListPosition) {
     populateDefectSpinnerList();
+
+    if (appStorage.severityList != null) {
+      for (Severity severity in appStorage.severityList!) {
+        if (severity.name == "Injury" || severity.name == "Lesión") {
+          hasSeverityInjury = true;
+          defectList.elementAt(i).severityInjuryId = severity.id;
+        } else if (severity.name == "Damage" || severity.name == "Daño") {
+          hasSeverityDamage = true;
+          defectList.elementAt(i).severityDamageId = severity.id;
+        } else if (severity.name == "Serious Damage" ||
+            severity.name == "Daño Serio") {
+          hasSeveritySeriousDamage = true;
+          defectList.elementAt(i).severitySeriousDamageId = severity.id;
+        } else if (severity.name == "Very Serious Damage" ||
+            severity.name == "Daño Muy Serio") {
+          hasSeverityVerySeriousDamage = true;
+          defectList.elementAt(i).severityVerySeriousDamageId = severity.id;
+        } else if (severity.name == "Decay" || severity.name == "Pudrición") {
+          hasSeverityDecay = true;
+          defectList.elementAt(i).severityDecayId = severity.id;
+        }
+      }
+    }
   }
 
   Future<void> navigateToCameraScreen({
