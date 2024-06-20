@@ -2902,7 +2902,7 @@ class ApplicationDao {
     String result,
     String resultReason,
     bool isPictureRequired,
-    String comment,
+    // String comment,
   ) async {
     final Database db = dbProvider.lazyDatabase;
     int? inspectionId;
@@ -2927,7 +2927,7 @@ class ApplicationDao {
             ResultRejectionDetailsColumn.INSPECTION_ID: inspectionID,
             ResultRejectionDetailsColumn.RESULT: result,
             ResultRejectionDetailsColumn.RESULT_REASON: resultReason,
-            ResultRejectionDetailsColumn.DEFECT_COMMENTS: comment,
+            // ResultRejectionDetailsColumn.DEFECT_COMMENTS: comment,
           };
           inspectionId =
               await txn.insert(DBTables.RESULT_REJECTION_DETAILS, values);
@@ -2937,7 +2937,7 @@ class ApplicationDao {
           var values = <String, dynamic>{
             ResultRejectionDetailsColumn.RESULT: result,
             ResultRejectionDetailsColumn.RESULT_REASON: resultReason,
-            ResultRejectionDetailsColumn.DEFECT_COMMENTS: comment,
+            // ResultRejectionDetailsColumn.DEFECT_COMMENTS: comment,
           };
           await txn.update(DBTables.RESULT_REJECTION_DETAILS, values,
               where: "${ResultRejectionDetailsColumn.INSPECTION_ID} = ?",
