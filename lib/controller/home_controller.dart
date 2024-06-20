@@ -483,7 +483,7 @@ class HomeController extends GetxController {
       /*  final status = VersionStatus(
         localVersion: "1.0.0",
         storeVersion: "1.0.1",
-        appStoreLink: "www.javed.com",
+        appStoreLink: "www.java.com",
       ); */
       if (status != null) {
         debugPrint(status.releaseNotes);
