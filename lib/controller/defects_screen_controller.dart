@@ -615,7 +615,7 @@ class DefectsScreenController extends GetxController {
       AppAlertDialog.validateAlerts(
         context,
         AppStrings.alert,
-        '$fieldName - $dropDownValue ${AppStrings.cannotBeGreaterThenTheSampleSize} $sampleSize, ${AppStrings.pleaseEnterValidDefectCount}',
+        '${fieldName.replaceAll('\n', ' ')} - $dropDownValue ${AppStrings.cannotBeGreaterThenTheSampleSize} $sampleSize, ${AppStrings.pleaseEnterValidDefectCount}',
       );
     }
 
@@ -1410,8 +1410,8 @@ class DefectsScreenController extends GetxController {
                 decayCnt: decayCnt!,
                 severityInjuryId: severityInjuryId!,
                 severityDamageId: severityDamageId!,
-                severitySeriousDamageId: severityVerySeriousDamageId!,
-                severityVerySeriousDamageId: severityVerySeriousDamageId,
+                severitySeriousDamageId: severitySeriousDamageId!,
+                severityVerySeriousDamageId: severityVerySeriousDamageId!,
                 severityDecayId: severityDecayId!,
                 defectCategory: defectCategory,
               );
