@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:new_version_plus/new_version_plus.dart';
 import 'package:pverify/controller/dialog_progress_controller.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/inspection.dart';
@@ -72,6 +75,7 @@ class HomeController extends GetxController {
     }
     uploadCheckedList.value = [];
     getInspectionListOnInit();
+    inAppUpdateInit();
     // simulateEvents();
     // clearAnyDownloadedInspectionData();
   }
@@ -458,6 +462,49 @@ class HomeController extends GetxController {
       await dao.csvImportCommodityCTE();
     } catch (e) {
       log(" 🔴 IMPORT ALL CSV FILES ERROR ${e.toString()}");
+    }
+  }
+
+  void inAppUpdateInit() {
+    Timer(const Duration(seconds: 1), () {
+      inAppUpdate();
+    });
+  }
+
+  Future<void> inAppUpdate() async {
+    final newVersion = NewVersionPlus(
+        iOSAppStoreCountry: "IN",
+        iOSId: "com.trt.verify",
+        androidId: "com.trt.verify");
+
+    try {
+      final status = await newVersion.getVersionStatus();
+      //For Demo Purpose
+      /*  final status = VersionStatus(
+        localVersion: "1.0.0",
+        storeVersion: "1.0.1",
+        appStoreLink: "www.javed.com",
+      ); */
+      if (status != null) {
+        debugPrint(status.releaseNotes);
+        debugPrint("**AppStore Link ${status.appStoreLink}");
+        debugPrint(status.localVersion);
+        debugPrint(status.storeVersion);
+        debugPrint(status.canUpdate.toString());
+        if (status.canUpdate) {
+          newVersion.showUpdateDialog(
+            dismissButtonText: AppStrings.cancel,
+            context: Get.context!,
+            versionStatus: status,
+            dialogText: "New version is available, please upgrade this app.",
+          );
+        }
+      }
+    } on SocketException catch (_) {
+      AppSnackBar.error(message: "Please check your internet connection");
+    } catch (error) {
+      log("HEREEE IS ${error.toString()}");
+      // AppSnackBar.error(message: error.toString());
     }
   }
 }
