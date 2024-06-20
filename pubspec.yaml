@@ -47,7 +47,7 @@ dependencies:
   sqflite: ^2.3.2
   path: ^1.9.0
   flutter_internet_signal: ^0.0.30
-  package_info_plus: ^8.0.0
+  package_info_plus: ^4.0.2
   csv: ^6.0.0
   archive: ^3.4.10
   pointycastle: ^3.7.4
@@ -57,6 +57,7 @@ dependencies:
   sentry_flutter: ^8.2.0
   http: ^1.2.1
   flutter_image_compress: ^2.3.0
+  new_version_plus: ^0.0.10
 
 dev_dependencies:
   flutter_test:
