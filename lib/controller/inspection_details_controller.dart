@@ -950,7 +950,8 @@ class InspectionDetailsController extends GetxController {
                 SpecificationAnalyticalRequest? dbobj =
                     await dao.findSpecAnalyticalObj(
                         inspection!.inspectionId!, item.analyticalID);
-                if (dbobj != null && (dbobj.comply == 'N' || dbobj.comply == 'No')) {
+                if (dbobj != null &&
+                    (dbobj.comply == 'N' || dbobj.comply == 'No')) {
                   if (dbobj.inspectionResult != null &&
                       (dbobj.inspectionResult == 'No' ||
                           dbobj.inspectionResult == 'N')) {
@@ -971,7 +972,7 @@ class InspectionDetailsController extends GetxController {
                       result,
                       "${dbobj.analyticalName} = N",
                       dbobj.isPictureRequired!,
-                      dbobj.comment ?? '',
+                      // dbobj.comment ?? '',
                     );
                     break;
                   }
@@ -3067,8 +3068,7 @@ class InspectionDetailsController extends GetxController {
                         (qualpercentage <= specTolerancePercentage)) {
                       result = "A-";
                     }
-                  }
-                  else if (defectID != null &&
+                  } else if (defectID != null &&
                       totalConditionCount > 0 &&
                       defectID == totalConditionDefectId &&
                       tempSeverityDefectName == "") {
@@ -3092,8 +3092,7 @@ class InspectionDetailsController extends GetxController {
                       result = "A-";
                       setResult('A-');
                     }
-                  }
-                  else if (defectID != null &&
+                  } else if (defectID != null &&
                       totalSize > 0 &&
                       tempSeverityDefectName == "" &&
                       result != "RJ") {
@@ -3112,8 +3111,7 @@ class InspectionDetailsController extends GetxController {
                         sizePer <= specTolerancePercentage) {
                       result = "A-";
                     }
-                  }
-                  else if (defectID != null &&
+                  } else if (defectID != null &&
                       totalColor > 0 &&
                       tempSeverityDefectName == "" &&
                       result != "RJ") {
@@ -3142,20 +3140,16 @@ class InspectionDetailsController extends GetxController {
                       if (tempSeverityDefectName == "Very Serious Damage") {
                         qualpercentage = (totalQualityVerySeriousDamage * 100) /
                             totalSampleSize;
-                      }
-                      else if (tempSeverityDefectName == "Serious Damage") {
+                      } else if (tempSeverityDefectName == "Serious Damage") {
                         qualpercentage =
                             (totalQualitySeriousDamage * 100) / totalSampleSize;
-                      }
-                      else if (tempSeverityDefectName == "Damage") {
+                      } else if (tempSeverityDefectName == "Damage") {
                         qualpercentage =
                             (totalQualityDamage * 100) / totalSampleSize;
-                      }
-                      else if (tempSeverityDefectName == "Injury") {
+                      } else if (tempSeverityDefectName == "Injury") {
                         qualpercentage =
                             (totalQualityInjury * 100) / totalSampleSize;
-                      }
-                      else if (tempSeverityDefectName == "Decay") {
+                      } else if (tempSeverityDefectName == "Decay") {
                         qualpercentage =
                             (totalQualityDecay * 100) / totalSampleSize;
                       }
@@ -3177,14 +3171,12 @@ class InspectionDetailsController extends GetxController {
                             rejectReason,
                             "");
                         break;
-                      }
-                      else if ((qualpercentage >
+                      } else if ((qualpercentage >
                               specTolerancePercentage / 2) &&
                           (qualpercentage <= specTolerancePercentage)) {
                         result = "A-";
                       }
-                    }
-                    else if (defectID != null &&
+                    } else if (defectID != null &&
                         totalConditionDefectId != 0 &&
                         defectID == totalConditionDefectId) {
                       double condpercentage = 0;
@@ -3192,20 +3184,16 @@ class InspectionDetailsController extends GetxController {
                         condpercentage =
                             (totalConditionVerySeriousDamage * 100) /
                                 totalSampleSize;
-                      }
-                      else if (tempSeverityDefectName == "Serious Damage") {
+                      } else if (tempSeverityDefectName == "Serious Damage") {
                         condpercentage = (totalConditionSeriousDamage * 100) /
                             totalSampleSize;
-                      }
-                      else if (tempSeverityDefectName == "Damage") {
+                      } else if (tempSeverityDefectName == "Damage") {
                         condpercentage =
                             (totalConditionDamage * 100) / totalSampleSize;
-                      }
-                      else if (tempSeverityDefectName == "Injury") {
+                      } else if (tempSeverityDefectName == "Injury") {
                         condpercentage =
                             (totalConditionInjury * 100) / totalSampleSize;
-                      }
-                      else if (tempSeverityDefectName == "Decay") {
+                      } else if (tempSeverityDefectName == "Decay") {
                         condpercentage =
                             (totalConditionDecay * 100) / totalSampleSize;
                       }
@@ -3226,8 +3214,7 @@ class InspectionDetailsController extends GetxController {
                             rejectReason,
                             "");
                         break;
-                      }
-                      else if ((condpercentage >
+                      } else if ((condpercentage >
                               specTolerancePercentage / 2) &&
                           (condpercentage <= specTolerancePercentage)) {
                         result = "A-";
@@ -3259,8 +3246,7 @@ class InspectionDetailsController extends GetxController {
                       rejectReason += "Defects Severity % exceeds tolerance";
                       await dao.createOrUpdateResultReasonDetails(
                           inspection!.inspectionId!, result, rejectReason, "");
-                    }
-                    else if ((calpercentage > specTolerancePercentage / 2) &&
+                    } else if ((calpercentage > specTolerancePercentage / 2) &&
                         (calpercentage <= specTolerancePercentage)) {
                       result = "A-";
                       inspectionResultText = 'Accept';
@@ -3280,8 +3266,7 @@ class InspectionDetailsController extends GetxController {
                       setResult('AC');
                     }
                   }
-                }
-                else if (!iscalculated && result == "") {
+                } else if (!iscalculated && result == "") {
                   result = "AC";
                   inspectionResultText = 'Accept';
                   inspectionTextColor = AppColors.primary;
@@ -3343,7 +3328,8 @@ class InspectionDetailsController extends GetxController {
                     await dao.findSpecAnalyticalObj(
                         inspection!.inspectionId!, item.analyticalID!);
 
-                if (dbobj != null && (dbobj.comply == "N" || dbobj.comply == "No")) {
+                if (dbobj != null &&
+                    (dbobj.comply == "N" || dbobj.comply == "No")) {
                   if (dbobj.inspectionResult != null &&
                       (dbobj.inspectionResult == "No" ||
                           dbobj.inspectionResult == "N")) {
@@ -3373,14 +3359,12 @@ class InspectionDetailsController extends GetxController {
                 inspectionTextColor = AppColors.primary;
                 setResult('AC');
                 approvalLayout.value = false;
-              }
-              else if (result == "RJ") {
+              } else if (result == "RJ") {
                 inspectionResultText = AppStrings.reject;
                 inspectionTextColor = AppColors.red;
                 setResult('RJ');
                 approvalLayout.value = true;
-              }
-              else if (result == "A-") {
+              } else if (result == "A-") {
                 result = "A-";
                 inspectionResultText = 'A-';
                 inspectionTextColor = AppColors.primary;
@@ -3402,7 +3386,8 @@ class InspectionDetailsController extends GetxController {
             listString = "\u25BA $listString";
             await dao.updateInspectionResultReason(
                 inspection!.inspectionId!, listString);
-            await dao.updateQuantityRejected(inspection!.inspectionId!, qualityControlItem!.qtyShipped!, 0);
+            await dao.updateQuantityRejected(
+                inspection!.inspectionId!, qualityControlItem!.qtyShipped!, 0);
 
             OverriddenResult? overriddenResult =
                 await dao.getOverriddenResult(inspection!.inspectionId!);
@@ -3413,8 +3398,7 @@ class InspectionDetailsController extends GetxController {
                   .findQualityControlDetails(inspection!.inspectionId!);
               await dao.updateQuantityRejected(inspection!.inspectionId!, 0,
                   qualityControlItems!.qtyShipped!);
-            }
-            else {
+            } else {
               await dao.updateQuantityRejected(inspection!.inspectionId!,
                   qualityControlItem!.qtyShipped!, 0);
 

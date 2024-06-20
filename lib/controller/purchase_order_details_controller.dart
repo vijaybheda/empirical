@@ -335,11 +335,11 @@ class PurchaseOrderDetailsController extends GetxController {
                 !(specificationTypeName!.toLowerCase() ==
                     ("Raw Produce".toLowerCase())))) {
               if (appStorage.specificationAnalyticalList != null) {
-                for (var item
+                for (SpecificationAnalytical item
                     in (appStorage.specificationAnalyticalList ?? [])) {
                   SpecificationAnalyticalRequest? dbobj =
                       await dao.findSpecAnalyticalObj(
-                          inspection.inspectionId!, item.analyticalID);
+                          inspection.inspectionId!, item.analyticalID!);
                   if (dbobj != null &&
                       (dbobj.comply == 'N' || dbobj.comply == 'No')) {
                     if (dbobj.inspectionResult != null &&
@@ -362,7 +362,7 @@ class PurchaseOrderDetailsController extends GetxController {
                         result,
                         "${dbobj.analyticalName} = N",
                         dbobj.isPictureRequired!,
-                        dbobj.comment ?? '',
+                        // dbobj.comment ?? '',
                       );
                       break;
                     }
@@ -379,10 +379,12 @@ class PurchaseOrderDetailsController extends GetxController {
                 QualityControlItem? qualityControlItems = await dao
                     .findQualityControlDetails(inspection.inspectionId!);
 
-                bool isQuantityRejected = await dao.updateQuantityRejected(
-                    inspection.inspectionId!,
-                    0,
-                    qualityControlItems!.qtyShipped!);
+                if (qualityControlItems != null) {
+                  bool isQuantityRejected = await dao.updateQuantityRejected(
+                      inspection.inspectionId!,
+                      0,
+                      qualityControlItems.qtyShipped!);
+                }
               }
               /*else {
                 QualityControlItem? qualityControlItems = await dao
@@ -410,9 +412,7 @@ class PurchaseOrderDetailsController extends GetxController {
               Utils.setInspectionUploadStatus(
                   inspection.inspectionId!, Consts.INSPECTION_UPLOAD_READY);
               update();
-            }
-            //
-            else if (appStorage.specificationGradeToleranceList != null &&
+            } else if (appStorage.specificationGradeToleranceList != null &&
                 (appStorage.specificationGradeToleranceList ?? []).isNotEmpty) {
               int totalSampleSize = 0;
               List<InspectionSample> samples =
@@ -448,16 +448,14 @@ class PurchaseOrderDetailsController extends GetxController {
                 }
               }
 
-              /// START
-
               for (int n = 0;
                   n < appStorage.specificationGradeToleranceList!.length;
                   n++) {
                 SpecificationGradeTolerance gradeTolerance =
                     appStorage.specificationGradeToleranceList!.elementAt(n);
 
-                int specTolerancePercentage =
-                    gradeTolerance.specTolerancePercentage ?? 0;
+                double specTolerancePercentage =
+                    gradeTolerance.specTolerancePercentage?.toDouble() ?? 0.0;
                 int? defectID = gradeTolerance.defectID;
                 int? severityDefectID = gradeTolerance.severityDefectID;
                 String tempSeverityDefectName = "";
@@ -516,11 +514,11 @@ class PurchaseOrderDetailsController extends GetxController {
                     if (defectList.isNotEmpty) {
                       if (defectID == null || defectID == 0) {
                         for (int k = 0; k < defectList.length; k++) {
-                          if (defectList
+                          if ((defectList
                                       .elementAt(k)
                                       .defectCategory
                                       ?.toLowerCase() ==
-                                  "quality" ||
+                                  "quality") ||
                               (defectList
                                       .elementAt(k)
                                       .defectCategory
@@ -867,7 +865,8 @@ class PurchaseOrderDetailsController extends GetxController {
 
                         if (tempSeverityDefectName == "") {
                           double qualpercentage =
-                              (totalcount * 100) / totalSampleSize;
+                              ((totalcount * 100) / totalSampleSize)
+                                  .roundToDouble();
                           if (qualpercentage > specTolerancePercentage) {
                             if (rejectReason != "") {
                               rejectReason += ", ";
@@ -1416,14 +1415,12 @@ class PurchaseOrderDetailsController extends GetxController {
                                             totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
-                                      await dao
-                                          .createOrUpdateResultReasonDetails(
-                                              inspection.inspectionId!,
-                                              result,
-                                              "Total Quality - (VSD) " +
-                                                  " % exceeds tolerance",
-                                              defectList.elementAt(k).comment ??
-                                                  "");
+                                      await dao.createOrUpdateResultReasonDetails(
+                                          inspection.inspectionId!,
+                                          result,
+                                          "Total Quality - (VSD) % exceeds tolerance",
+                                          defectList.elementAt(k).comment ??
+                                              "");
                                     } else if ((vsdpercent >
                                             specTolerancePercentage / 2) &&
                                         (vsdpercent <=
@@ -1442,11 +1439,10 @@ class PurchaseOrderDetailsController extends GetxController {
                                     }
 
                                     rejectReasonArray.add(
-                                        "Total Quality - (VSD) " +
-                                            " % exceeds tolerance");
+                                        "Total Quality - (VSD) % exceeds tolerance");
 
-                                    rejectReason += "Total Quality - (VSD) " +
-                                        " % exceeds tolerance";
+                                    rejectReason +=
+                                        "Total Quality - (VSD) % exceeds tolerance";
                                     await dao.createOrUpdateResultReasonDetails(
                                         inspection.inspectionId!,
                                         "RJ",
@@ -1485,16 +1481,12 @@ class PurchaseOrderDetailsController extends GetxController {
                                       if (vsdpercent >
                                           specTolerancePercentage) {
                                         result = "RJ";
-                                        await dao
-                                            .createOrUpdateResultReasonDetails(
-                                                inspection.inspectionId!,
-                                                result,
-                                                "Total Quality - (SD) " +
-                                                    " % exceeds tolerance",
-                                                defectList
-                                                        .elementAt(k)
-                                                        .comment ??
-                                                    "");
+                                        await dao.createOrUpdateResultReasonDetails(
+                                            inspection.inspectionId!,
+                                            result,
+                                            "Total Quality - (SD) % exceeds tolerance",
+                                            defectList.elementAt(k).comment ??
+                                                "");
                                       } else if ((vsdpercent >
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
@@ -1512,11 +1504,10 @@ class PurchaseOrderDetailsController extends GetxController {
                                         rejectReason += ", ";
                                       }
                                       rejectReasonArray.add(
-                                          "Total Quality - (SD) " +
-                                              " % exceeds tolerance");
+                                          "Total Quality - (SD) % exceeds tolerance");
 
-                                      rejectReason += "Total Quality - (SD) " +
-                                          " % exceeds tolerance";
+                                      rejectReason +=
+                                          "Total Quality - (SD) % exceeds tolerance";
                                       await dao
                                           .createOrUpdateResultReasonDetails(
                                               inspection.inspectionId!,
@@ -1552,16 +1543,12 @@ class PurchaseOrderDetailsController extends GetxController {
                                       if (vsdpercent >
                                           specTolerancePercentage) {
                                         result = "RJ";
-                                        await dao
-                                            .createOrUpdateResultReasonDetails(
-                                                inspection.inspectionId!,
-                                                result,
-                                                "Total Quality - (Damage) " +
-                                                    " % exceeds tolerance",
-                                                defectList
-                                                        .elementAt(k)
-                                                        .comment ??
-                                                    "");
+                                        await dao.createOrUpdateResultReasonDetails(
+                                            inspection.inspectionId!,
+                                            result,
+                                            "Total Quality - (Damage) % exceeds tolerance",
+                                            defectList.elementAt(k).comment ??
+                                                "");
                                       } else if ((vsdpercent >
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
@@ -1579,12 +1566,10 @@ class PurchaseOrderDetailsController extends GetxController {
                                         rejectReason += ", ";
                                       }
                                       rejectReasonArray.add(
-                                          "Total Quality - (Damage) " +
-                                              " % exceeds tolerance");
+                                          "Total Quality - (Damage) % exceeds tolerance");
 
                                       rejectReason +=
-                                          "Total Quality - (Damage) " +
-                                              " % exceeds tolerance";
+                                          "Total Quality - (Damage) % exceeds tolerance";
                                       await dao
                                           .createOrUpdateResultReasonDetails(
                                               inspection.inspectionId!,
@@ -2333,8 +2318,7 @@ class PurchaseOrderDetailsController extends GetxController {
 
                                 if (sizepercent > specTolerancePercentage) {
                                   result = "RJ";
-                                  if (sizeDefectName != null &&
-                                      sizeDefectName != "") {
+                                  if (sizeDefectName != "") {
                                     await dao.createOrUpdateResultReasonDetails(
                                         inspection.inspectionId!,
                                         result,
@@ -2357,8 +2341,7 @@ class PurchaseOrderDetailsController extends GetxController {
                               double sizepercent1 =
                                   (totalSizecount * 100) / totalSampleSize;
                               if (sizepercent1 > specTolerancePercentage) {
-                                if (sizeDefectName != null &&
-                                    sizeDefectName != "") {
+                                if (sizeDefectName != "") {
                                   if (rejectReason != "") {
                                     rejectReason += ", ";
                                   }
@@ -2530,8 +2513,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                 if (colorpercent > specTolerancePercentage) {
                                   result = "RJ";
 
-                                  if (colorDefectName != null &&
-                                      colorDefectName != "") {
+                                  if (colorDefectName != "") {
                                     await dao.createOrUpdateResultReasonDetails(
                                         inspection.inspectionId!,
                                         result,
@@ -2929,14 +2911,10 @@ class PurchaseOrderDetailsController extends GetxController {
                   inspection.inspectionId!, Consts.INSPECTION_UPLOAD_READY);
 
               update();
-            }
-            //
-            else {
+            } else {
               AppAlertDialog.validateAlerts(Get.context!, AppStrings.alert,
                   AppStrings.noGradeTolarenceDataFound);
             }
-
-            // END
           }
         }
       }
