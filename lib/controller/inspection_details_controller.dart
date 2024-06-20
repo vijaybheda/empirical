@@ -132,7 +132,7 @@ class InspectionDetailsController extends GetxController {
     varietyName = args[Consts.VARIETY_NAME] ?? "";
     varietySize = args[Consts.VARIETY_SIZE] ?? "";
     varietyId = args[Consts.VARIETY_ID] ?? 0;
-    completed = args[Consts.COMPLETED];
+    completed = args[Consts.COMPLETED] ?? false;
     gradeId = args[Consts.GRADE_ID];
     gradeCommodityDetailId = args[Consts.GRADE_COMMODITY_DETAIL_ID] ?? -1;
     inspectionResult = args[Consts.INSPECTION_RESULT] ?? '';
@@ -152,7 +152,7 @@ class InspectionDetailsController extends GetxController {
     itemSkuName = args[Consts.ITEM_SKU_NAME] ?? '';
     sampleSizeByCount = args[Consts.SAMPLE_SIZE_BY_COUNT] ?? 0;
     partialCompleted = args[Consts.PARTIAL_COMPLETED] ?? false;
-    qualityComplete = args[Consts.QUALITY_COMPLETED];
+    qualityComplete = args[Consts.QUALITY_COMPLETED] ?? false;
     isMyInspectionScreen = args[Consts.IS_MY_INSPECTION_SCREEN] ?? false;
     callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
     fetchInspectionDetails(serverInspectionID);
@@ -829,6 +829,8 @@ class InspectionDetailsController extends GetxController {
 
       if (result == "RJ" || result == "Reject") {
         inspectionResult = "Reject";
+        inspectionResultText = "Reject";
+        inspectionTextColor = AppColors.red;
         approvalLayout.value = true;
         setResult("RJ");
         qualityControlItem = await dao.findQualityControlDetails(inspectionId);
@@ -838,14 +840,20 @@ class InspectionDetailsController extends GetxController {
         }
       } else if (result == "AC" || result == "Accept") {
         inspectionResult = "Accept";
+        inspectionResultText = "Accept";
+        inspectionTextColor = AppColors.primary;
         approvalLayout.value = false;
         setResult("AC");
       } else if (result == "A-") {
         inspectionResult = "A-";
+        inspectionResultText = "A-";
+        inspectionTextColor = AppColors.yellow;
         approvalLayout.value = false;
         setResult("A-");
       } else if (result == AppStrings.acceptCondition || result == "AW") {
         inspectionResult = AppStrings.acceptCondition;
+        inspectionResultText = "AW";
+        inspectionTextColor = AppColors.primary;
         approvalLayout.value = false;
         setResult("AW");
       }
