@@ -665,7 +665,7 @@ class QCDetailsShortFormScreenController extends GetxController {
           qcComments: '',
           qtyReceived: qtyShipped,
           uomQtyReceivedID: uomQtyReceivedID,
-          specificationName: selectedSpecification!,
+          specificationName: selectedSpecification ?? '',
           packDate: packDate,
           seal_no: _appStorage.currentSealNumber!,
           lot_no: lotNo,
