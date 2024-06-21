@@ -62,6 +62,7 @@ class OverriddenResultScreenController extends GetxController {
   RxString txtRejectionDetails = ''.obs;
   RxString txtDefectComment = ''.obs;
   String myInspectionResult = '';
+  String initialInspectionResult = '';
   RxBool layoutQtyRejectedVisibility = false.obs;
   RxBool rejectionDetailsVisibility = false.obs;
   RxBool defectCommentsVisibility = false.obs;
@@ -76,6 +77,7 @@ class OverriddenResultScreenController extends GetxController {
     commodityName = passingData[Consts.COMMODITY_NAME];
     itemSku = passingData[Consts.ITEM_SKU];
     myInspectionResult = passingData[Consts.INSPECTION_RESULT];
+    initialInspectionResult = passingData[Consts.INSPECTION_RESULT];
     partnerId = passingData[Consts.PARTNER_ID];
     carrierName = passingData[Consts.CARRIER_NAME];
     carrierId = passingData[Consts.CARRIER_ID];
@@ -369,7 +371,7 @@ class OverriddenResultScreenController extends GetxController {
           result,
           comments,
           DateTime.now().millisecondsSinceEpoch,
-          finalInspectionResult.value,
+          initialInspectionResult,
           orgQtyShipped,
           orgQtyRejected,
           qualityControlItems?.qtyShipped ?? 0,
@@ -382,7 +384,7 @@ class OverriddenResultScreenController extends GetxController {
           result,
           comments,
           DateTime.now().millisecondsSinceEpoch,
-          finalInspectionResult.value,
+          initialInspectionResult,
           orgQtyShipped,
           orgQtyRejected,
           orgQtyShipped,
