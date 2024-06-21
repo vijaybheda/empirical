@@ -649,9 +649,10 @@ class PurchaseOrderDetailsController extends GetxController {
 
                         if (result != "RJ" &&
                             tempSeverityDefectName == "Very Serious Damage") {
-                          double vsdpercent = totalSeverityVerySeriousDamage *
-                              100 /
-                              totalSampleSize;
+                          double vsdpercent =
+                              (totalSeverityVerySeriousDamage * 100)
+                                      .toDouble() /
+                                  totalSampleSize;
                           if (vsdpercent > specTolerancePercentage) {
                             result = "RJ";
                             //rejectReason += "Total Severity VSD % exceeds tolerance";
@@ -669,9 +670,10 @@ class PurchaseOrderDetailsController extends GetxController {
                         }
 
                         if (tempSeverityDefectName == "Very Serious Damage") {
-                          double vsdpercent = totalSeverityVerySeriousDamage *
-                              100 /
-                              totalSampleSize;
+                          double vsdpercent =
+                              (totalSeverityVerySeriousDamage * 100)
+                                      .toDouble() /
+                                  totalSampleSize;
                           if (vsdpercent > specTolerancePercentage) {
                             if (rejectReason != "") {
                               rejectReason += ", ";
@@ -692,9 +694,9 @@ class PurchaseOrderDetailsController extends GetxController {
 
                         if (result != "RJ" &&
                             tempSeverityDefectName == "Serious Damage") {
-                          double sdpercent = totalSeveritySeriousDamage *
-                              100 /
-                              totalSampleSize;
+                          double sdpercent =
+                              (totalSeveritySeriousDamage * 100).toDouble() /
+                                  totalSampleSize;
                           if (sdpercent > specTolerancePercentage) {
                             result = "RJ";
                             await dao.createOrUpdateResultReasonDetails(
@@ -710,9 +712,9 @@ class PurchaseOrderDetailsController extends GetxController {
                         }
 
                         if (tempSeverityDefectName == "Serious Damage") {
-                          double sdpercent = totalSeveritySeriousDamage *
-                              100 /
-                              totalSampleSize;
+                          double sdpercent =
+                              (totalSeveritySeriousDamage * 100).toDouble() /
+                                  totalSampleSize;
                           if (sdpercent > specTolerancePercentage) {
                             if (rejectReason != "") {
                               rejectReason += ", ";
@@ -733,7 +735,8 @@ class PurchaseOrderDetailsController extends GetxController {
                         if (result != "RJ" &&
                             tempSeverityDefectName == "Damage") {
                           double dpercent =
-                              totalSeverityDamage * 100 / totalSampleSize;
+                              (totalSeverityDamage * 100).toDouble() /
+                                  totalSampleSize;
                           if (dpercent > specTolerancePercentage) {
                             result = "RJ";
                             await dao.createOrUpdateResultReasonDetails(
@@ -749,7 +752,8 @@ class PurchaseOrderDetailsController extends GetxController {
 
                         if (tempSeverityDefectName == "Damage") {
                           double dpercent =
-                              totalSeverityDamage * 100 / totalSampleSize;
+                              (totalSeverityDamage * 100).toDouble() /
+                                  totalSampleSize;
                           if (dpercent > specTolerancePercentage) {
                             if (rejectReason != "") {
                               rejectReason += ", ";
@@ -770,7 +774,8 @@ class PurchaseOrderDetailsController extends GetxController {
                         if (result != "RJ" &&
                             tempSeverityDefectName == "Injury") {
                           double ipercent =
-                              totalSeverityInjury * 100 / totalSampleSize;
+                              (totalSeverityInjury * 100).toDouble() /
+                                  totalSampleSize;
                           if (ipercent > specTolerancePercentage) {
                             result = "RJ";
                             await dao.createOrUpdateResultReasonDetails(
@@ -787,7 +792,8 @@ class PurchaseOrderDetailsController extends GetxController {
 
                         if (tempSeverityDefectName == "Injury") {
                           double ipercent =
-                              totalSeverityInjury * 100 / totalSampleSize;
+                              (totalSeverityInjury * 100).toDouble() /
+                                  totalSampleSize;
                           if (ipercent > specTolerancePercentage) {
                             if (rejectReason != "") {
                               rejectReason += ", ";
@@ -808,7 +814,8 @@ class PurchaseOrderDetailsController extends GetxController {
                         if (result != "RJ" &&
                             tempSeverityDefectName == "Decay") {
                           double depercent =
-                              totalSeverityDecay * 100 / totalSampleSize;
+                              (totalSeverityDecay * 100).toDouble() /
+                                  totalSampleSize;
                           if (depercent > specTolerancePercentage) {
                             result = "RJ";
                             await dao.createOrUpdateResultReasonDetails(
@@ -825,7 +832,8 @@ class PurchaseOrderDetailsController extends GetxController {
 
                         if (tempSeverityDefectName == "Decay") {
                           double depercent =
-                              totalSeverityDecay * 100 / totalSampleSize;
+                              (totalSeverityDecay * 100).toDouble() /
+                                  totalSampleSize;
                           if (depercent > specTolerancePercentage) {
                             if (rejectReason != "") {
                               rejectReason += ", ";
@@ -847,8 +855,7 @@ class PurchaseOrderDetailsController extends GetxController {
                           // double qualpercentage =
                           //     (totalcount * 100) / totalSampleSize;
                           double qualpercentage =
-                              ((totalcount / totalSampleSize) * 100)
-                                  .roundToDouble();
+                              ((totalcount / totalSampleSize) * 100);
                           if (qualpercentage > specTolerancePercentage) {
                             result = "RJ";
                             await dao.createOrUpdateResultReasonDetails(
@@ -927,8 +934,8 @@ class PurchaseOrderDetailsController extends GetxController {
 
                                   if (result != "RJ") {
                                     double vsdpercent =
-                                        totalQualityVerySeriousDamage *
-                                            100 /
+                                        (totalQualityVerySeriousDamage * 100)
+                                                .toDouble() /
                                             totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
@@ -947,14 +954,14 @@ class PurchaseOrderDetailsController extends GetxController {
                                   }
 
                                   double vsdpercent1 =
-                                      totalQualityVerySeriousDamage *
-                                          100 /
+                                      (totalQualityVerySeriousDamage * 100)
+                                              .toDouble() /
                                           totalSampleSize;
 
                                   if (result != "RJ") {
                                     double vsdpercent =
-                                        totalConditionVerySeriousDamage *
-                                            100 /
+                                        (totalConditionVerySeriousDamage * 100)
+                                                .toDouble() /
                                             totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
@@ -973,8 +980,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                   }
 
                                   double vsdpercent2 =
-                                      totalConditionVerySeriousDamage *
-                                          100 /
+                                      (totalConditionVerySeriousDamage * 100)
+                                              .toDouble() /
                                           totalSampleSize;
                                 }
                               }
@@ -1031,8 +1038,8 @@ class PurchaseOrderDetailsController extends GetxController {
 
                                     if (result != "RJ") {
                                       double vsdpercent =
-                                          totalQualitySeriousDamage *
-                                              100 /
+                                          (totalQualitySeriousDamage * 100)
+                                                  .toDouble() /
                                               totalSampleSize;
                                       if (vsdpercent >
                                           specTolerancePercentage) {
@@ -1052,13 +1059,13 @@ class PurchaseOrderDetailsController extends GetxController {
                                     }
 
                                     double vsdpercent3 =
-                                        totalQualitySeriousDamage *
-                                            100 /
+                                        (totalQualitySeriousDamage * 100)
+                                                .toDouble() /
                                             totalSampleSize;
                                     if (result != "RJ") {
                                       double vsdpercent =
-                                          totalConditionSeriousDamage *
-                                              100 /
+                                          (totalConditionSeriousDamage * 100)
+                                                  .toDouble() /
                                               totalSampleSize;
                                       if (vsdpercent >
                                           specTolerancePercentage) {
@@ -1077,8 +1084,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                       }
                                     }
                                     double vsdpercent4 =
-                                        totalConditionSeriousDamage *
-                                            100 /
+                                        (totalConditionSeriousDamage * 100)
+                                                .toDouble() /
                                             totalSampleSize;
                                   }
                                 }
@@ -1127,9 +1134,9 @@ class PurchaseOrderDetailsController extends GetxController {
                                   }
                                 }
                                 if (result != "RJ") {
-                                  double vsdpercent = totalQualityDamage *
-                                      100 /
-                                      totalSampleSize;
+                                  double vsdpercent =
+                                      (totalQualityDamage * 100).toDouble() /
+                                          totalSampleSize;
                                   if (vsdpercent > specTolerancePercentage) {
                                     result = "RJ";
                                     await dao.createOrUpdateResultReasonDetails(
@@ -1145,11 +1152,12 @@ class PurchaseOrderDetailsController extends GetxController {
                                 }
 
                                 double vsdpercent5 =
-                                    totalQualityDamage * 100 / totalSampleSize;
+                                    (totalQualityDamage * 100).toDouble() /
+                                        totalSampleSize;
                                 if (result != "RJ") {
-                                  double vsdpercent = totalConditionDamage *
-                                      100 /
-                                      totalSampleSize;
+                                  double vsdpercent =
+                                      (totalConditionDamage * 100).toDouble() /
+                                          totalSampleSize;
                                   if (vsdpercent > specTolerancePercentage) {
                                     result = "RJ";
                                     await dao.createOrUpdateResultReasonDetails(
@@ -1164,9 +1172,9 @@ class PurchaseOrderDetailsController extends GetxController {
                                   }
                                 }
 
-                                double vsdpercent6 = totalConditionDamage *
-                                    100 /
-                                    totalSampleSize;
+                                double vsdpercent6 =
+                                    (totalConditionDamage * 100).toDouble() /
+                                        totalSampleSize;
                               }
                               if (tempSeverityDefectName == "Injury") {
                                 if (defectList.elementAt(k).injuryCnt! > 0) {
@@ -1203,9 +1211,10 @@ class PurchaseOrderDetailsController extends GetxController {
                                     }
 
                                     if (result != "RJ") {
-                                      double vsdpercent = totalQualityInjury *
-                                          100 /
-                                          totalSampleSize;
+                                      double vsdpercent =
+                                          (totalQualityInjury * 100)
+                                                  .toDouble() /
+                                              totalSampleSize;
                                       if (vsdpercent >
                                           specTolerancePercentage) {
                                         result = "RJ";
@@ -1222,14 +1231,15 @@ class PurchaseOrderDetailsController extends GetxController {
                                         result = "A-";
                                       }
                                     }
-                                    double vsdpercent7 = totalQualityInjury *
-                                        100 /
-                                        totalSampleSize;
+                                    double vsdpercent7 =
+                                        (totalQualityInjury * 100).toDouble() /
+                                            totalSampleSize;
 
                                     if (result != "RJ") {
-                                      double vsdpercent = totalConditionInjury *
-                                          100 /
-                                          totalSampleSize;
+                                      double vsdpercent =
+                                          (totalConditionInjury * 100)
+                                                  .toDouble() /
+                                              totalSampleSize;
                                       if (vsdpercent >
                                           specTolerancePercentage) {
                                         result = "RJ";
@@ -1247,9 +1257,10 @@ class PurchaseOrderDetailsController extends GetxController {
                                       }
                                     }
 
-                                    double vsdpercent8 = totalConditionInjury *
-                                        100 /
-                                        totalSampleSize;
+                                    double vsdpercent8 =
+                                        (totalConditionInjury * 100)
+                                                .toDouble() /
+                                            totalSampleSize;
                                   }
                                 }
                               }
@@ -1275,9 +1286,9 @@ class PurchaseOrderDetailsController extends GetxController {
                                   }
 
                                   if (result != "RJ") {
-                                    double vsdpercent = totalQualityDecay *
-                                        100 /
-                                        totalSampleSize;
+                                    double vsdpercent =
+                                        (totalQualityDecay * 100).toDouble() /
+                                            totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
                                       await dao.createOrUpdateResultReasonDetails(
@@ -1294,12 +1305,13 @@ class PurchaseOrderDetailsController extends GetxController {
                                     }
                                   }
                                   double vsdpercent9 =
-                                      totalQualityDecay * 100 / totalSampleSize;
+                                      (totalQualityDecay * 100).toDouble() /
+                                          totalSampleSize;
 
                                   if (result != "RJ") {
-                                    double vsdpercent = totalConditionDecay *
-                                        100 /
-                                        totalSampleSize;
+                                    double vsdpercent =
+                                        (totalConditionDecay * 100).toDouble() /
+                                            totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
                                       await dao.createOrUpdateResultReasonDetails(
@@ -1315,9 +1327,9 @@ class PurchaseOrderDetailsController extends GetxController {
                                       result = "A-";
                                     }
                                   }
-                                  double vsdpercent10 = totalConditionDecay *
-                                      100 /
-                                      totalSampleSize;
+                                  double vsdpercent10 =
+                                      (totalConditionDecay * 100).toDouble() /
+                                          totalSampleSize;
                                 }
                               }
                               if (tempSeverityDefectName == "") {
@@ -1373,7 +1385,8 @@ class PurchaseOrderDetailsController extends GetxController {
 
                                 if (result != "RJ") {
                                   double qualpercentage =
-                                      (totalcount * 100) / totalSampleSize;
+                                      (totalcount * 100).toDouble() /
+                                          totalSampleSize;
                                   if (qualpercentage >
                                       specTolerancePercentage) {
                                     result = "RJ";
@@ -1391,7 +1404,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                 }
 
                                 double qualpercentage =
-                                    (totalcount * 100) / totalSampleSize;
+                                    (totalcount * 100).toDouble() /
+                                        totalSampleSize;
                               }
                             } else if (defectName == "Total Quality (%)" &&
                                 (defectList.elementAt(k).defectCategory ==
@@ -1410,8 +1424,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                       .verySeriousDamageCnt!;
                                   if (result != "RJ") {
                                     double vsdpercent =
-                                        totalQualityVerySeriousDamage *
-                                            100 /
+                                        (totalQualityVerySeriousDamage * 100)
+                                                .toDouble() /
                                             totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
@@ -1430,8 +1444,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                   }
 
                                   double vsdpercent11 =
-                                      totalQualityVerySeriousDamage *
-                                          100 /
+                                      (totalQualityVerySeriousDamage * 100)
+                                              .toDouble() /
                                           totalSampleSize;
                                   if (vsdpercent11 > specTolerancePercentage) {
                                     if (rejectReason != "") {
@@ -1475,8 +1489,8 @@ class PurchaseOrderDetailsController extends GetxController {
 
                                     if (result != "RJ") {
                                       double vsdpercent =
-                                          totalQualitySeriousDamage *
-                                              100 /
+                                          (totalQualitySeriousDamage * 100)
+                                                  .toDouble() /
                                               totalSampleSize;
                                       if (vsdpercent >
                                           specTolerancePercentage) {
@@ -1495,8 +1509,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                       }
                                     }
                                     double vsdpercent12 =
-                                        totalQualitySeriousDamage *
-                                            100 /
+                                        (totalQualitySeriousDamage * 100)
+                                                .toDouble() /
                                             totalSampleSize;
                                     if (vsdpercent12 >
                                         specTolerancePercentage) {
@@ -1537,9 +1551,10 @@ class PurchaseOrderDetailsController extends GetxController {
                                                 .seriousDamageCnt!;
 
                                     if (result != "RJ") {
-                                      double vsdpercent = totalQualityDamage *
-                                          100 /
-                                          totalSampleSize;
+                                      double vsdpercent =
+                                          (totalQualityDamage * 100)
+                                                  .toDouble() /
+                                              totalSampleSize;
                                       if (vsdpercent >
                                           specTolerancePercentage) {
                                         result = "RJ";
@@ -1557,9 +1572,9 @@ class PurchaseOrderDetailsController extends GetxController {
                                       }
                                     }
 
-                                    double vsdpercent13 = totalQualityDamage *
-                                        100 /
-                                        totalSampleSize;
+                                    double vsdpercent13 =
+                                        (totalQualityDamage * 100).toDouble() /
+                                            totalSampleSize;
                                     if (vsdpercent13 >
                                         specTolerancePercentage) {
                                       if (rejectReason != "") {
@@ -1592,9 +1607,10 @@ class PurchaseOrderDetailsController extends GetxController {
                                         defectList.elementAt(k).injuryCnt! -
                                             defectList.elementAt(k).damageCnt!;
                                     if (result != "RJ") {
-                                      double vsdpercent = totalQualityInjury *
-                                          100 /
-                                          totalSampleSize;
+                                      double vsdpercent =
+                                          (totalQualityInjury * 100)
+                                                  .toDouble() /
+                                              totalSampleSize;
                                       if (vsdpercent >
                                           specTolerancePercentage) {
                                         result = "RJ";
@@ -1616,9 +1632,9 @@ class PurchaseOrderDetailsController extends GetxController {
                                       }
                                     }
 
-                                    double vsdpercent14 = totalQualityInjury *
-                                        100 /
-                                        totalSampleSize;
+                                    double vsdpercent14 =
+                                        (totalQualityInjury * 100).toDouble() /
+                                            totalSampleSize;
                                     if (vsdpercent14 >
                                         specTolerancePercentage) {
                                       if (rejectReason != "") {
@@ -1650,9 +1666,9 @@ class PurchaseOrderDetailsController extends GetxController {
                                       defectList.elementAt(k).decayCnt!;
 
                                   if (result != "RJ") {
-                                    double vsdpercent = totalQualityDecay *
-                                        100 /
-                                        totalSampleSize;
+                                    double vsdpercent =
+                                        (totalQualityDecay * 100).toDouble() /
+                                            totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
                                       await dao
@@ -1671,7 +1687,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                     }
                                   }
                                   double vsdpercent15 =
-                                      totalQualityDecay * 100 / totalSampleSize;
+                                      (totalQualityDecay * 100).toDouble() /
+                                          totalSampleSize;
                                   if (vsdpercent15 > specTolerancePercentage) {
                                     if (rejectReason != "") {
                                       rejectReason += ", ";
@@ -1741,7 +1758,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                 }
                                 if (result != "RJ") {
                                   double totalqualitypercent =
-                                      totalQualitycount * 100 / totalSampleSize;
+                                      (totalQualitycount * 100).toDouble() /
+                                          totalSampleSize;
                                   if (totalqualitypercent >
                                       specTolerancePercentage) {
                                     result = "RJ";
@@ -1758,7 +1776,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                   }
                                 }
                                 double totalqualitypercent1 =
-                                    totalQualitycount * 100 / totalSampleSize;
+                                    (totalQualitycount * 100).toDouble() /
+                                        totalSampleSize;
                                 if (totalqualitypercent1 >
                                     specTolerancePercentage) {
                                   if (rejectReason != "") {
@@ -1794,8 +1813,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                       .verySeriousDamageCnt!;
                                   if (result != "RJ") {
                                     double vsdpercent =
-                                        totalConditionVerySeriousDamage *
-                                            100 /
+                                        (totalConditionVerySeriousDamage * 100)
+                                                .toDouble() /
                                             totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
@@ -1815,8 +1834,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                     }
                                   }
                                   double vsdpercentT =
-                                      totalConditionVerySeriousDamage *
-                                          100 /
+                                      (totalConditionVerySeriousDamage * 100)
+                                              .toDouble() /
                                           totalSampleSize;
                                   if (vsdpercentT > specTolerancePercentage) {
                                     if (rejectReason != "") {
@@ -1860,8 +1879,8 @@ class PurchaseOrderDetailsController extends GetxController {
 
                                     if (result != "RJ") {
                                       double vsdpercent =
-                                          totalConditionSeriousDamage *
-                                              100 /
+                                          (totalConditionSeriousDamage * 100)
+                                                  .toDouble() /
                                               totalSampleSize;
                                       if (vsdpercent >
                                           specTolerancePercentage) {
@@ -1884,8 +1903,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                       }
                                     }
                                     double vsdpercentTT =
-                                        totalConditionSeriousDamage *
-                                            100 /
+                                        (totalConditionSeriousDamage * 100)
+                                                .toDouble() /
                                             totalSampleSize;
                                     if (vsdpercentTT >
                                         specTolerancePercentage) {
@@ -1927,9 +1946,10 @@ class PurchaseOrderDetailsController extends GetxController {
                                                 .elementAt(k)
                                                 .seriousDamageCnt!;
                                     if (result != "RJ") {
-                                      double vsdpercent = totalConditionDamage *
-                                          100 /
-                                          totalSampleSize;
+                                      double vsdpercent =
+                                          (totalConditionDamage * 100)
+                                                  .toDouble() /
+                                              totalSampleSize;
                                       if (vsdpercent >
                                           specTolerancePercentage) {
                                         result = "RJ";
@@ -1950,9 +1970,10 @@ class PurchaseOrderDetailsController extends GetxController {
                                         result = "A-";
                                       }
                                     }
-                                    double vsdpercentTB = totalConditionDamage *
-                                        100 /
-                                        totalSampleSize;
+                                    double vsdpercentTB =
+                                        (totalConditionDamage * 100)
+                                                .toDouble() /
+                                            totalSampleSize;
                                     if (vsdpercentTB >
                                         specTolerancePercentage) {
                                       if (rejectReason != "") {
@@ -1988,9 +2009,10 @@ class PurchaseOrderDetailsController extends GetxController {
                                             defectList.elementAt(k).damageCnt!;
 
                                     if (result != "RJ") {
-                                      double vsdpercent = totalConditionInjury *
-                                          100 /
-                                          totalSampleSize;
+                                      double vsdpercent =
+                                          (totalConditionInjury * 100)
+                                                  .toDouble() /
+                                              totalSampleSize;
                                       if (vsdpercent >
                                           specTolerancePercentage) {
                                         result = "RJ";
@@ -2011,9 +2033,10 @@ class PurchaseOrderDetailsController extends GetxController {
                                         result = "A-";
                                       }
                                     }
-                                    double vsdpercentTA = totalConditionInjury *
-                                        100 /
-                                        totalSampleSize;
+                                    double vsdpercentTA =
+                                        (totalConditionInjury * 100)
+                                                .toDouble() /
+                                            totalSampleSize;
                                     if (vsdpercentTA >
                                         specTolerancePercentage) {
                                       if (rejectReason != "") {
@@ -2044,9 +2067,9 @@ class PurchaseOrderDetailsController extends GetxController {
                                   totalConditionDecay +=
                                       defectList.elementAt(k).decayCnt!;
                                   if (result != "RJ") {
-                                    double vsdpercent = totalConditionDecay *
-                                        100 /
-                                        totalSampleSize;
+                                    double vsdpercent =
+                                        (totalConditionDecay * 100).toDouble() /
+                                            totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
                                       await dao
@@ -2064,9 +2087,9 @@ class PurchaseOrderDetailsController extends GetxController {
                                       result = "A-";
                                     }
                                   }
-                                  double vsdpercentAB = totalConditionDecay *
-                                      100 /
-                                      totalSampleSize;
+                                  double vsdpercentAB =
+                                      (totalConditionDecay * 100).toDouble() /
+                                          totalSampleSize;
                                   if (vsdpercentAB > specTolerancePercentage) {
                                     if (rejectReason != "") {
                                       rejectReason += ", ";
@@ -2137,9 +2160,9 @@ class PurchaseOrderDetailsController extends GetxController {
                                       defectList.elementAt(k).decayCnt!;
                                 }
                                 if (result != "RJ") {
-                                  double vsdpercent = totalConditionCount *
-                                      100 /
-                                      totalSampleSize;
+                                  double vsdpercent =
+                                      (totalConditionCount * 100).toDouble() /
+                                          totalSampleSize;
                                   if (vsdpercent > specTolerancePercentage) {
                                     result = "RJ";
                                     await dao.createOrUpdateResultReasonDetails(
@@ -2156,7 +2179,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                 }
 
                                 double vsdpercentAC =
-                                    totalConditionCount * 100 / totalSampleSize;
+                                    (totalConditionCount * 100).toDouble() /
+                                        totalSampleSize;
                                 if (vsdpercentAC > specTolerancePercentage) {
                                   if (rejectReason != "") {
                                     rejectReason += ", ";
@@ -2314,7 +2338,8 @@ class PurchaseOrderDetailsController extends GetxController {
                               iscalculated = true;
                               if (result != "RJ") {
                                 double sizepercent =
-                                    (totalSizecount * 100) / totalSampleSize;
+                                    (totalSizecount * 100).toDouble() /
+                                        totalSampleSize;
 
                                 if (sizepercent > specTolerancePercentage) {
                                   result = "RJ";
@@ -2339,7 +2364,8 @@ class PurchaseOrderDetailsController extends GetxController {
                               }
 
                               double sizepercent1 =
-                                  (totalSizecount * 100) / totalSampleSize;
+                                  (totalSizecount * 100).toDouble() /
+                                      totalSampleSize;
                               if (sizepercent1 > specTolerancePercentage) {
                                 if (sizeDefectName != "") {
                                   if (rejectReason != "") {
@@ -2508,7 +2534,8 @@ class PurchaseOrderDetailsController extends GetxController {
                               iscalculated = true;
                               if (result != "RJ") {
                                 double colorpercent =
-                                    (colorcount * 100) / totalSampleSize;
+                                    (colorcount * 100).toDouble() /
+                                        totalSampleSize;
 
                                 if (colorpercent > specTolerancePercentage) {
                                   result = "RJ";
@@ -2533,7 +2560,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                 }
                               }
                               double colorpercent1 =
-                                  (colorcount * 100) / totalSampleSize;
+                                  (colorcount * 100).toDouble() /
+                                      totalSampleSize;
                               if (colorpercent1 > specTolerancePercentage) {
                                 if (colorDefectName != null &&
                                     colorDefectName != "") {
@@ -2582,7 +2610,8 @@ class PurchaseOrderDetailsController extends GetxController {
                         defectID == totalQualityDefectId &&
                         tempSeverityDefectName == "") {
                       double qualpercentage =
-                          (totalQualitycount * 100) / totalSampleSize;
+                          (totalQualitycount * 100).toDouble() /
+                              totalSampleSize;
                       if (qualpercentage > specTolerancePercentage) {
                         result = "RJ";
                         if (rejectReason != "") {
@@ -2605,7 +2634,8 @@ class PurchaseOrderDetailsController extends GetxController {
                         defectID == totalConditionDefectId &&
                         tempSeverityDefectName == "") {
                       double condPercentage =
-                          (totalConditionCount * 100) / totalSampleSize;
+                          (totalConditionCount * 100).toDouble() /
+                              totalSampleSize;
                       if (condPercentage > specTolerancePercentage) {
                         result = "RJ";
                         if (rejectReason != "") {
@@ -2629,7 +2659,8 @@ class PurchaseOrderDetailsController extends GetxController {
                         tempSeverityDefectName == "" &&
                         result != "RJ") {
                       print("total size = $totalSize");
-                      double sizeper = (totalSize * 100) / totalSampleSize;
+                      double sizeper =
+                          (totalSize * 100).toDouble() / totalSampleSize;
 
                       print(
                           "size per = $sizeper spec tolerance - $specTolerancePercentage");
@@ -2653,7 +2684,8 @@ class PurchaseOrderDetailsController extends GetxController {
                         totalColor > 0 &&
                         tempSeverityDefectName == "" &&
                         result != "RJ") {
-                      double sizeper = (totalColor * 100) / totalSampleSize;
+                      double sizeper =
+                          (totalColor * 100).toDouble() / totalSampleSize;
                       if (sizeper > specTolerancePercentage) {
                         result = "RJ";
                         if (rejectReason != "") {
@@ -2679,20 +2711,24 @@ class PurchaseOrderDetailsController extends GetxController {
                         double qualpercentage = 0;
                         if (tempSeverityDefectName == "Very Serious Damage") {
                           qualpercentage =
-                              (totalQualityVerySeriousDamage * 100) /
+                              (totalQualityVerySeriousDamage * 100).toDouble() /
                                   totalSampleSize;
                         } else if (tempSeverityDefectName == "Serious Damage") {
-                          qualpercentage = (totalQualitySeriousDamage * 100) /
-                              totalSampleSize;
+                          qualpercentage =
+                              (totalQualitySeriousDamage * 100).toDouble() /
+                                  totalSampleSize;
                         } else if (tempSeverityDefectName == "Damage") {
                           qualpercentage =
-                              (totalQualityDamage * 100) / totalSampleSize;
+                              (totalQualityDamage * 100).toDouble() /
+                                  totalSampleSize;
                         } else if (tempSeverityDefectName == "Injury") {
                           qualpercentage =
-                              (totalQualityInjury * 100) / totalSampleSize;
+                              (totalQualityInjury * 100).toDouble() /
+                                  totalSampleSize;
                         } else if (tempSeverityDefectName == "Decay") {
                           qualpercentage =
-                              (totalQualityDecay * 100) / totalSampleSize;
+                              (totalQualityDecay * 100).toDouble() /
+                                  totalSampleSize;
                         }
 
                         if (qualpercentage > specTolerancePercentage) {
@@ -2723,20 +2759,25 @@ class PurchaseOrderDetailsController extends GetxController {
                         double condpercentage = 0;
                         if (tempSeverityDefectName == "Very Serious Damage") {
                           condpercentage =
-                              (totalConditionVerySeriousDamage * 100) /
+                              (totalConditionVerySeriousDamage * 100)
+                                      .toDouble() /
                                   totalSampleSize;
                         } else if (tempSeverityDefectName == "Serious Damage") {
-                          condpercentage = (totalConditionSeriousDamage * 100) /
-                              totalSampleSize;
+                          condpercentage =
+                              (totalConditionSeriousDamage * 100).toDouble() /
+                                  totalSampleSize;
                         } else if (tempSeverityDefectName == "Damage") {
                           condpercentage =
-                              (totalConditionDamage * 100) / totalSampleSize;
+                              (totalConditionDamage * 100).toDouble() /
+                                  totalSampleSize;
                         } else if (tempSeverityDefectName == "Injury") {
                           condpercentage =
-                              (totalConditionInjury * 100) / totalSampleSize;
+                              (totalConditionInjury * 100).toDouble() /
+                                  totalSampleSize;
                         } else if (tempSeverityDefectName == "Decay") {
                           condpercentage =
-                              (totalConditionDecay * 100) / totalSampleSize;
+                              (totalConditionDecay * 100).toDouble() /
+                                  totalSampleSize;
                         }
 
                         if (condpercentage > specTolerancePercentage) {
@@ -2763,7 +2804,8 @@ class PurchaseOrderDetailsController extends GetxController {
                       }
                     }
 
-                    double calpercentage = (totalcount * 100) / totalSampleSize;
+                    double calpercentage =
+                        (totalcount * 100).toDouble() / totalSampleSize;
                     if (result != "RJ" && totalcount > 0) {
                       if (calpercentage > specTolerancePercentage) {
                         List<String> exceptions = [

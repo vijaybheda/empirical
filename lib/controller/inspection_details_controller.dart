@@ -235,8 +235,10 @@ class InspectionDetailsController extends GetxController {
 
       textspecificationText = specificationName!;
 
-      if (!(specificationTypeName == "Finished Goods Produce" ||
-          specificationTypeName == "Raw Produce")) {
+      if (!(specificationTypeName?.toLowerCase() ==
+              "Finished Goods Produce".toLowerCase() ||
+          specificationTypeName?.toLowerCase() ==
+              "Raw Produce".toLowerCase())) {
         isShowDefectButton.value = false;
       } else {
         isShowDefectButton.value = true;
@@ -437,8 +439,14 @@ class InspectionDetailsController extends GetxController {
         //     sampleSizeByCount);
       }
 
-      if (!specificationTypeName!.contains("Finished Goods Produce") &&
-          !specificationTypeName!.contains("Raw Produce")) {
+      if (!(specificationTypeName
+                  ?.toLowerCase()
+                  .contains("Finished Goods Produce".toLowerCase()) ??
+              false) &&
+          !(specificationTypeName
+                  ?.toLowerCase()
+                  .contains("Raw Produce".toLowerCase()) ??
+              false)) {
         isShowDefectButton.value = false;
       } else {
         isShowDefectButton.value = true;
@@ -456,8 +464,10 @@ class InspectionDetailsController extends GetxController {
         specificationTypeName = inspection!.specificationTypeName;
       }
       if (specificationTypeName!.isNotEmpty &&
-          specificationTypeName != 'Finished Goods Produce' &&
-          specificationTypeName != 'Raw Produce') {
+          (specificationTypeName?.toLowerCase() !=
+                  'Finished Goods Produce'.toLowerCase() &&
+              specificationTypeName?.toLowerCase() !=
+                  'Raw Produce'.toLowerCase())) {
         isShowDefectButton.value = true;
       }
     }
@@ -948,9 +958,9 @@ class InspectionDetailsController extends GetxController {
               await dao.getSpecificationAnalyticalFromDB(
                   specificationNumber!, specificationVersion!);
           log("HERE IS SPECIFICATION TYPE NAME $specificationTypeName");
-          if ((!(specificationTypeName!.toLowerCase() ==
+          if ((!(specificationTypeName?.toLowerCase() ==
                   ("Finished Goods Produce".toLowerCase())) &&
-              !(specificationTypeName!.toLowerCase() ==
+              !(specificationTypeName?.toLowerCase() ==
                   ("Raw Produce".toLowerCase())))) {
             if (_appStorage.specificationAnalyticalList != null) {
               for (var item

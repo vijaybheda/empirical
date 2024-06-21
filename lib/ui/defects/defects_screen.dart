@@ -186,9 +186,7 @@ class DefectsScreen extends GetView<DefectsScreenController> {
           ],
         ),
       ),
-      SizedBox(
-        height: 60.h,
-      ),
+      SizedBox(height: 50.h),
       controller.activeTabIndex.value == 0
           ? Expanded(
               flex: 1,
@@ -200,6 +198,8 @@ class DefectsScreen extends GetView<DefectsScreenController> {
           : Expanded(
               flex: 1,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Padding(
                     padding: EdgeInsets.only(left: 50.w, right: 50.w),
@@ -271,11 +271,8 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 60.h,
-                  ),
+                  SizedBox(height: 40.h),
                   Expanded(
-                    flex: 1,
                     child: ListView.builder(
                         itemCount: controller.sampleList.length,
                         itemBuilder: (BuildContext context, int sampleIndex) {
@@ -819,6 +816,29 @@ class DefectsMergerTable extends StatelessWidget {
     );
   }
 
+  Widget defaultTextItemRightAligned(String title, {Color? color}) {
+    return SizedBox(
+      width: 100,
+      child: Container(
+        padding: const EdgeInsets.all(2),
+        // margin: EdgeInsets.symmetric(vertical: 5),
+        width: 100,
+        height: 50,
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: textStyle(),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget buildSeriousDefect({
     required BuildContext context,
     required int index,
@@ -866,11 +886,12 @@ class DefectsMergerTable extends StatelessWidget {
 
   List<BaseMRow> _getSampleRow(int index) {
     SampleData? a = controller.sampleList.elementAtOrNull(index);
-    SampleData? sampleData = controller.sampleDataMap[a?.sampleSize ?? 0];
+    SampleData? sampleData = controller.sampleDataMap[a?.setNumber ?? 0];
     return [
       MRow(Container(
           color: AppColors.white,
-          child: defaultTextItem((sampleData?.sampleSize ?? 0).toString()))),
+          child: defaultTextItemRightAligned(
+              (sampleData?.sampleSize ?? 0).toString()))),
       if (controller.hasSeverityInjury)
         MRow(Container(
             color: AppColors.defectBlue,
