@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pverify/controller/dialog_progress_controller.dart';
+import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/inspection_attachment.dart';
 import 'package:pverify/models/item_sku_data.dart';
@@ -12,6 +14,7 @@ import 'package:pverify/models/specification_grade_tolerance.dart';
 import 'package:pverify/models/specification_grade_tolerance_array.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
+import 'package:pverify/ui/cache_download_screen.dart';
 import 'package:pverify/ui/commodity/commodity_id_screen.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_screen.dart';
 import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
@@ -21,6 +24,7 @@ import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
+import 'package:pverify/utils/dialogs/update_data_dialog.dart';
 import 'package:pverify/utils/utils.dart';
 
 class NewPurchaseOrderDetailsController extends GetxController {
@@ -56,6 +60,8 @@ class NewPurchaseOrderDetailsController extends GetxController {
 
   final AppStorage appStorage = AppStorage.instance;
   final ApplicationDao dao = ApplicationDao();
+  final GlobalConfigController globalConfigController =
+      Get.find<GlobalConfigController>();
 
   NewPurchaseOrderDetailsController();
 
@@ -466,5 +472,96 @@ class NewPurchaseOrderDetailsController extends GetxController {
       () => PurchaseOrderScreen(tag: tag),
       arguments: passingData,
     );
+  }
+
+  Future<void> uploadAllInspections() async {
+    final List<int> uploadCheckedList =
+        await dao.findReadyToUploadInspectionIDs();
+
+    if (uploadCheckedList.isNotEmpty) {
+      final List<int> failedList = [];
+
+      for (int i = 0; i < uploadCheckedList.length; i++) {
+        final Inspection? inspection =
+            await dao.findInspectionByID(uploadCheckedList[i]);
+
+        if (inspection?.commodityId == 0) {
+          uploadCheckedList.removeAt(i);
+          failedList.add(uploadCheckedList[i]);
+        }
+      }
+
+      final ProgressController progressController =
+          Get.put(ProgressController());
+      Utils.showLinearProgressWithMessage(
+        message: AppStrings.uploadMessage,
+        progressController: progressController,
+        totalInspection: uploadCheckedList.length,
+      );
+
+      int numberOfInspections = uploadCheckedList.length;
+      int listIndex = 0;
+      int progressDialogStatus = 0;
+
+      while (progressDialogStatus < numberOfInspections) {
+        try {
+          await Utils().uploadInspection(uploadCheckedList[listIndex]);
+          progressDialogStatus = ++listIndex;
+
+          // Update the progress bar
+          progressController.updateProgress(progressDialogStatus.toDouble());
+          if (progressDialogStatus >= numberOfInspections) {
+            Get.back();
+          }
+        } catch (e) {
+          print('upload error = $e');
+        }
+      }
+    } else {
+      final List<int> incompleteInspectionList =
+          await dao.getAllIncompleteInspectionIDs();
+
+      for (int i = 0; i < incompleteInspectionList.length; i++) {
+        await dao.deleteInspection(incompleteInspectionList[i]);
+      }
+
+      await Get.to(() => const CacheDownloadScreen(), arguments: {
+        Consts.IS_QCDETAILSHORT_SCREEN: true,
+      });
+
+      await appStorage.setInt(
+          StorageKey.kCacheDate, DateTime.now().millisecondsSinceEpoch);
+      await appStorage.write(StorageKey.kIsCSVDownloaded1, true);
+    }
+  }
+
+  Future<void> downloadTap() async {
+    if (globalConfigController.hasStableInternet.value) {
+      UpdateDataAlert.showUpdateDataDialog(
+        Get.context!,
+        onOkPressed: () async {
+          bool checkInsp = await dao.checkInspections();
+          if (checkInsp) {
+            UpdateDataAlert.showUpdateDataDialog(Get.context!,
+                onOkPressed: () async {
+              await uploadAllInspections();
+            }, message: AppStrings.updateDataMessage);
+          } else {
+            debugPrint('Download button tap.');
+            await Get.off(
+              () => const CacheDownloadScreen(),
+              arguments: {
+                Consts.IS_QCDETAILSHORT_SCREEN: true,
+              },
+            );
+          }
+        },
+        message: AppStrings.updateDataConfirmation,
+      );
+    } else {
+      UpdateDataAlert.showUpdateDataDialog(Get.context!, onOkPressed: () {
+        debugPrint('Download button tap.');
+      }, message: AppStrings.downloadWifiError);
+    }
   }
 }
