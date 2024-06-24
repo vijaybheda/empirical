@@ -3323,12 +3323,12 @@ class ApplicationDao {
     required int packDate,
     required String seal_no,
     required String lot_no,
-    required String qcdOpen1,
+    required String? qcdOpen1,
     required String qcdOpen2,
     required String qcdOpen3,
     required String qcdOpen4,
     required int workDate,
-    required String gtin,
+    required String? gtin,
     required int lot_size,
     required int shipDate,
     required String dateType,
@@ -4444,5 +4444,51 @@ class ApplicationDao {
     }
 
     return item;
+  }
+
+  Future<void> updateSpecificationAttributeNumValue(
+      int inspectionId, int analyticalID, int rating, String comply) async {
+    final db = DatabaseHelper.instance.lazyDatabase;
+
+    try {
+      await db.transaction((txn) async {
+        await txn.update(
+          DBTables.SPECIFICATION_ATTRIBUTES,
+          {
+            SpecificationAttributesColumn.SAMPLE_VALUE: rating,
+            SpecificationAttributesColumn.COMPLY: comply,
+          },
+          where:
+              '${SpecificationAttributesColumn.INSPECTION_ID} = ? AND ${SpecificationAttributesColumn.ANALYTICAL_ID} = ?',
+          whereArgs: [inspectionId, analyticalID],
+        );
+      });
+    } catch (e) {
+      print('Error has occurred while updating an inspection: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateSpecificationAttributeBrandedValue(
+      int inspectionId, int analyticalID, String branded, String comply) async {
+    final db = DatabaseHelper.instance.lazyDatabase;
+
+    try {
+      await db.transaction((txn) async {
+        await txn.update(
+          DBTables.SPECIFICATION_ATTRIBUTES,
+          {
+            SpecificationAttributesColumn.SAMPLE_TEXT_VALUE: branded,
+            SpecificationAttributesColumn.COMPLY: comply,
+          },
+          where:
+              '${SpecificationAttributesColumn.INSPECTION_ID} = ? AND ${SpecificationAttributesColumn.ANALYTICAL_ID} = ?',
+          whereArgs: [inspectionId, analyticalID],
+        );
+      });
+    } catch (e) {
+      print('Error has occurred while updating an inspection: $e');
+      rethrow;
+    }
   }
 }

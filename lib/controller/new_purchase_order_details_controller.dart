@@ -55,7 +55,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
 
   RxList<NewPurchaseOrderItem> filteredInspectionsList =
       <NewPurchaseOrderItem>[].obs;
-  RxList<NewPurchaseOrderItem> itemSkuList = <NewPurchaseOrderItem>[].obs;
+  RxList<NewPurchaseOrderItem> inspectionsList = <NewPurchaseOrderItem>[].obs;
   RxBool listAssigned = false.obs;
 
   final AppStorage appStorage = AppStorage.instance;
@@ -120,9 +120,9 @@ class NewPurchaseOrderDetailsController extends GetxController {
   void searchAndAssignItems(String searchValue) {
     filteredInspectionsList.clear();
     if (searchValue.isEmpty) {
-      filteredInspectionsList.addAll(itemSkuList);
+      filteredInspectionsList.addAll(inspectionsList);
     } else {
-      var items = itemSkuList.where((element) {
+      var items = inspectionsList.where((element) {
         String? sku = element.sku;
         String searchKey = searchValue.toLowerCase();
 

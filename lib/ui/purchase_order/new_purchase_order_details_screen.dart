@@ -6,6 +6,7 @@ import 'package:pverify/models/new_purchase_order_item.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
+import 'package:pverify/ui/purchase_order/new_purchase_order_item.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -65,6 +66,9 @@ class NewPurchaseOrderDetailsScreen
                   _footerMenuView(controller),
                   FooterContentView(
                     hasLeftButton: false,
+                    onDownloadTap: () async {
+                      await controller.downloadTap();
+                    },
                   )
                 ],
               ),
@@ -125,18 +129,42 @@ class NewPurchaseOrderDetailsScreen
         return GetBuilder<NewPurchaseOrderDetailsController>(
             tag: tag,
             builder: (controller) {
-              return Container();
-              /*return Container(
+              return Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: NewPurchaseOrderListViewItem(
+                  controller: controller,
                   goodsItem: goodsItem,
                   partnerID: controller.partnerID,
                   position: index,
                   poNumber: controller.poNumber!,
                   sealNumber: controller.sealNumber,
+                  onRatingChanged: (rating) {
+                    // Handle rating change
+                  },
+                  onLotNumberChanged: (lotNumber) {
+                    // Handle lot number change
+                  },
+                  onPackDateChanged: (packDate) {
+                    // Handle pack date change
+                  },
+                  onQuantityShippedChanged: (qtyShipped) {
+                    // Handle quantity shipped change
+                  },
+                  onQuantityRejectedChanged: (qtyRejected) {
+                    // Handle quantity rejected change
+                  },
+                  onInspectPressed: () {
+                    // Handle inspect button press
+                  },
+                  onInfoPressed: () {
+                    // Handle info button press
+                  },
+                  onBrandedChanged: (isBranded) {
+                    // Handle branded change
+                  },
                 ),
-              );*/
+              );
             });
       },
       separatorBuilder: (BuildContext context, int index) {
