@@ -486,6 +486,7 @@ class TrailerTempController extends GetxController {
   void showPurchaseOrder() {
     if (callerActivity != null && callerActivity.isNotEmpty) {
       if (callerActivity == "PurchaseOrderDetailsActivity") {
+        Get.back();
         /*
       Get.offAll(() => PurchaseOrderDetailsActivity(), arguments: {
         "partnerName": partnerName,

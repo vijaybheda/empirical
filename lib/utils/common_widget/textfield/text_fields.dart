@@ -113,6 +113,7 @@ class BoxTextField1 extends StatelessWidget {
   final TextAlign? textalign;
   final Function(bool hasFocus)? onFocusChange;
   final FocusNode? focusNode;
+  final bool assign0;
 
   const BoxTextField1({
     super.key,
@@ -135,6 +136,7 @@ class BoxTextField1 extends StatelessWidget {
     this.textalign,
     this.onFocusChange,
     this.focusNode,
+    this.assign0 = false,
   });
 
   @override
@@ -153,7 +155,19 @@ class BoxTextField1 extends StatelessWidget {
         textAlign: textalign ?? TextAlign.left,
         // initialValue: intialValue,
         textAlignVertical: TextAlignVertical.center,
-        onChanged: onChanged,
+        onChanged: (_) {
+          if (_.isEmpty) {
+            controller?.text = 0.toString();
+          }
+          onChanged.call(_);
+        },
+        onTapOutside: (_) {
+          if (assign0) {
+            if (controller?.text.isEmpty ?? false) {
+              controller?.text = 0.toString();
+            }
+          }
+        },
         onEditingComplete: onEditingCompleted,
         autofocus: autofocus,
         minLines: isMulti ? 4 : 1,

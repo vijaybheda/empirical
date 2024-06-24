@@ -425,7 +425,8 @@ class PurchaseOrderDetailsController extends GetxController {
               if (appStorage.defectCategoriesList != null) {
                 for (DefectCategories defectCategory
                     in appStorage.defectCategoriesList ?? []) {
-                  if (defectCategory.name == "Quality" &&
+                  if (defectCategory.name?.toLowerCase() ==
+                          "quality".toLowerCase() &&
                       (defectCategory.defectList != null)) {
                     for (DefectItem defectItem
                         in defectCategory.defectList ?? []) {
@@ -434,7 +435,8 @@ class PurchaseOrderDetailsController extends GetxController {
                         break;
                       }
                     }
-                  } else if (defectCategory.name == "Condition" &&
+                  } else if (defectCategory.name?.toLowerCase() ==
+                          "condition".toLowerCase() &&
                       (defectCategory.defectList != null)) {
                     for (DefectItem defectItem
                         in defectCategory.defectList ?? []) {
@@ -665,7 +667,7 @@ class PurchaseOrderDetailsController extends GetxController {
                           } else if ((vsdpercent >
                                   specTolerancePercentage / 2) &&
                               (vsdpercent <= specTolerancePercentage)) {
-                            result = "A-";
+                            result = "A-1";
                           }
                         }
 
@@ -707,7 +709,7 @@ class PurchaseOrderDetailsController extends GetxController {
                           } else if ((sdpercent >
                                   specTolerancePercentage / 2) &&
                               (sdpercent <= specTolerancePercentage)) {
-                            result = "A-";
+                            result = "A-2";
                           }
                         }
 
@@ -746,7 +748,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                 "");
                           } else if ((dpercent > specTolerancePercentage / 2) &&
                               (dpercent <= specTolerancePercentage)) {
-                            result = "A-";
+                            result = "A-3";
                           }
                         }
 
@@ -786,7 +788,7 @@ class PurchaseOrderDetailsController extends GetxController {
                             break;
                           } else if ((ipercent > specTolerancePercentage / 2) &&
                               (ipercent <= specTolerancePercentage)) {
-                            result = "A-";
+                            result = "A-4";
                           }
                         }
 
@@ -826,7 +828,7 @@ class PurchaseOrderDetailsController extends GetxController {
                           } else if ((depercent >
                                   specTolerancePercentage / 2) &&
                               (depercent <= specTolerancePercentage)) {
-                            result = "A-";
+                            result = "A-5";
                           }
                         }
 
@@ -866,7 +868,7 @@ class PurchaseOrderDetailsController extends GetxController {
                           } else if ((qualpercentage >
                                   specTolerancePercentage / 2) &&
                               (qualpercentage <= specTolerancePercentage)) {
-                            result = "A-";
+                            result = "A-6";
                           }
                         }
 
@@ -892,9 +894,15 @@ class PurchaseOrderDetailsController extends GetxController {
                         }
                       } else {
                         for (int k = 0; k < defectList.length; k++) {
-                          if (defectList.elementAt(k).defectCategory ==
+                          if (defectList
+                                      .elementAt(k)
+                                      .defectCategory
+                                      ?.toLowerCase() ==
                                   "quality" ||
-                              defectList.elementAt(k).defectCategory ==
+                              defectList
+                                      .elementAt(k)
+                                      .defectCategory
+                                      ?.toLowerCase() ==
                                   "condition") {
                             if (defectID == defectList.elementAt(k).defectId) {
                               defectNameResult =
@@ -911,7 +919,10 @@ class PurchaseOrderDetailsController extends GetxController {
                                       .elementAt(k)
                                       .verySeriousDamageCnt!;
 
-                                  if (defectList.elementAt(k).defectCategory ==
+                                  if (defectList
+                                          .elementAt(k)
+                                          .defectCategory
+                                          ?.toLowerCase() ==
                                       "quality") {
                                     totalQualitycount += defectList
                                         .elementAt(k)
@@ -921,7 +932,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                         .verySeriousDamageCnt!;
                                   } else if (defectList
                                           .elementAt(k)
-                                          .defectCategory ==
+                                          .defectCategory
+                                          ?.toLowerCase() ==
                                       "condition") {
                                     totalConditionCount += defectList
                                         .elementAt(k)
@@ -949,7 +961,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                             specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
-                                      result = "A-";
+                                      result = "A-7";
                                     }
                                   }
 
@@ -975,7 +987,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                             specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
-                                      result = "A-";
+                                      result = "A-8";
                                     }
                                   }
 
@@ -1004,7 +1016,8 @@ class PurchaseOrderDetailsController extends GetxController {
 
                                     if (defectList
                                             .elementAt(k)
-                                            .defectCategory ==
+                                            .defectCategory
+                                            ?.toLowerCase() ==
                                         "quality") {
                                       totalQualitycount += defectList
                                               .elementAt(k)
@@ -1020,7 +1033,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                               .verySeriousDamageCnt!;
                                     } else if (defectList
                                             .elementAt(k)
-                                            .defectCategory ==
+                                            .defectCategory
+                                            ?.toLowerCase() ==
                                         "condition") {
                                       totalConditionCount += defectList
                                               .elementAt(k)
@@ -1054,7 +1068,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-";
+                                        result = "A-9";
                                       }
                                     }
 
@@ -1080,7 +1094,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-";
+                                        result = "A-10";
                                       }
                                     }
                                     double vsdpercent4 =
@@ -1104,7 +1118,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                     iscalculated = true;
                                     if (defectList
                                             .elementAt(k)
-                                            .defectCategory ==
+                                            .defectCategory
+                                            ?.toLowerCase() ==
                                         "quality") {
                                       totalQualitycount +=
                                           defectList.elementAt(k).damageCnt! -
@@ -1118,7 +1133,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                                   .seriousDamageCnt!;
                                     } else if (defectList
                                             .elementAt(k)
-                                            .defectCategory ==
+                                            .defectCategory
+                                            ?.toLowerCase() ==
                                         "condition") {
                                       totalConditionCount +=
                                           defectList.elementAt(k).damageCnt! -
@@ -1147,7 +1163,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                   } else if ((vsdpercent >
                                           specTolerancePercentage / 2) &&
                                       (vsdpercent <= specTolerancePercentage)) {
-                                    result = "A-";
+                                    result = "A-11";
                                   }
                                 }
 
@@ -1168,7 +1184,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                   } else if ((vsdpercent >
                                           specTolerancePercentage / 2) &&
                                       (vsdpercent <= specTolerancePercentage)) {
-                                    result = "A-";
+                                    result = "A-12";
                                   }
                                 }
 
@@ -1186,7 +1202,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                     iscalculated = true;
                                     if (defectList
                                             .elementAt(k)
-                                            .defectCategory ==
+                                            .defectCategory
+                                            ?.toLowerCase() ==
                                         "quality") {
                                       totalQualitycount += defectList
                                               .elementAt(k)
@@ -1198,7 +1215,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                           defectList.elementAt(k).damageCnt!;
                                     } else if (defectList
                                             .elementAt(k)
-                                            .defectCategory ==
+                                            .defectCategory
+                                            ?.toLowerCase() ==
                                         "condition") {
                                       totalConditionCount += defectList
                                               .elementAt(k)
@@ -1228,7 +1246,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-";
+                                        result = "A-13";
                                       }
                                     }
                                     double vsdpercent7 =
@@ -1253,7 +1271,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-";
+                                        result = "A-14";
                                       }
                                     }
 
@@ -1269,7 +1287,10 @@ class PurchaseOrderDetailsController extends GetxController {
                                   totalcount +=
                                       defectList.elementAt(k).decayCnt!;
                                   iscalculated = true;
-                                  if (defectList.elementAt(k).defectCategory ==
+                                  if (defectList
+                                          .elementAt(k)
+                                          .defectCategory
+                                          ?.toLowerCase() ==
                                       "quality") {
                                     totalQualitycount +=
                                         defectList.elementAt(k).decayCnt!;
@@ -1277,7 +1298,8 @@ class PurchaseOrderDetailsController extends GetxController {
                                         defectList.elementAt(k).decayCnt!;
                                   } else if (defectList
                                           .elementAt(k)
-                                          .defectCategory ==
+                                          .defectCategory
+                                          ?.toLowerCase() ==
                                       "condition") {
                                     totalConditionCount +=
                                         defectList.elementAt(k).decayCnt!;
@@ -1301,7 +1323,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                             specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
-                                      result = "A-";
+                                      result = "A-15";
                                     }
                                   }
                                   double vsdpercent9 =
@@ -1324,7 +1346,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                             specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
-                                      result = "A-";
+                                      result = "A-16";
                                     }
                                   }
                                   double vsdpercent10 =
@@ -1399,7 +1421,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                           specTolerancePercentage / 2) &&
                                       (qualpercentage <=
                                           specTolerancePercentage)) {
-                                    result = "A-";
+                                    result = "A-17";
                                   }
                                 }
 
@@ -1408,7 +1430,10 @@ class PurchaseOrderDetailsController extends GetxController {
                                         totalSampleSize;
                               }
                             } else if (defectName == "Total Quality (%)" &&
-                                (defectList.elementAt(k).defectCategory ==
+                                (defectList
+                                        .elementAt(k)
+                                        .defectCategory
+                                        ?.toLowerCase() ==
                                     "quality")) {
                               if (tempSeverityDefectName ==
                                   "Very Serious Damage") {
@@ -1439,7 +1464,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                             specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
-                                      result = "A-";
+                                      result = "A-18";
                                     }
                                   }
 
@@ -1505,7 +1530,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-";
+                                        result = "A-19";
                                       }
                                     }
                                     double vsdpercent12 =
@@ -1568,7 +1593,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-";
+                                        result = "A-20";
                                       }
                                     }
 
@@ -1628,7 +1653,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-";
+                                        result = "A-21";
                                       }
                                     }
 
@@ -1683,7 +1708,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                             specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
-                                      result = "A-";
+                                      result = "A-22";
                                     }
                                   }
                                   double vsdpercent15 =
@@ -1772,7 +1797,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                           specTolerancePercentage / 2) &&
                                       (totalqualitypercent <=
                                           specTolerancePercentage)) {
-                                    result = "A-";
+                                    result = "A-23";
                                   }
                                 }
                                 double totalqualitypercent1 =
@@ -1796,7 +1821,10 @@ class PurchaseOrderDetailsController extends GetxController {
                                 }
                               }
                               iscalculated = true;
-                            } else if (defectList.elementAt(k).defectCategory ==
+                            } else if (defectList
+                                        .elementAt(k)
+                                        .defectCategory
+                                        ?.toLowerCase() ==
                                     "condition" &&
                                 defectName == "Total Condition (%)") {
                               if (tempSeverityDefectName ==
@@ -1830,7 +1858,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                             specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
-                                      result = "A-";
+                                      result = "A-24";
                                     }
                                   }
                                   double vsdpercentT =
@@ -1899,7 +1927,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-";
+                                        result = "A-25";
                                       }
                                     }
                                     double vsdpercentTT =
@@ -1967,7 +1995,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-";
+                                        result = "A-26";
                                       }
                                     }
                                     double vsdpercentTB =
@@ -2030,7 +2058,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-";
+                                        result = "A-27";
                                       }
                                     }
                                     double vsdpercentTA =
@@ -2084,7 +2112,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                             specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
-                                      result = "A-";
+                                      result = "A-28";
                                     }
                                   }
                                   double vsdpercentAB =
@@ -2174,7 +2202,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                   } else if ((vsdpercent >
                                           specTolerancePercentage / 2) &&
                                       (vsdpercent <= specTolerancePercentage)) {
-                                    result = "A-";
+                                    result = "A-29";
                                   }
                                 }
 
@@ -2200,7 +2228,10 @@ class PurchaseOrderDetailsController extends GetxController {
                                 iscalculated = true;
                               }
                             }
-                          } else if (defectList.elementAt(k).defectCategory ==
+                          } else if (defectList
+                                  .elementAt(k)
+                                  .defectCategory
+                                  ?.toLowerCase() ==
                               "size") {
                             if (defectList.elementAt(k).defectId == defectID) {
                               sizeDefectName =
@@ -2359,7 +2390,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                 } else if ((sizepercent >
                                         specTolerancePercentage / 2) &&
                                     (sizepercent <= specTolerancePercentage)) {
-                                  result = "A-";
+                                  result = "A-30";
                                 }
                               }
 
@@ -2397,7 +2428,10 @@ class PurchaseOrderDetailsController extends GetxController {
                                 }
                               }
                             }
-                          } else if (defectList.elementAt(k).defectCategory ==
+                          } else if (defectList
+                                  .elementAt(k)
+                                  .defectCategory
+                                  ?.toLowerCase() ==
                               "color") {
                             if (defectList.elementAt(k).defectId == defectID) {
                               colorDefectName =
@@ -2556,7 +2590,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                 } else if ((colorpercent >
                                         specTolerancePercentage / 2) &&
                                     (colorpercent <= specTolerancePercentage)) {
-                                  result = "A-";
+                                  result = "A-31";
                                 }
                               }
                               double colorpercent1 =
@@ -2627,7 +2661,7 @@ class PurchaseOrderDetailsController extends GetxController {
                       } else if ((qualpercentage >
                               specTolerancePercentage / 2) &&
                           (qualpercentage <= specTolerancePercentage)) {
-                        result = "A-";
+                        result = "A-32";
                       }
                     } else if (defectID != null &&
                         totalConditionCount > 0 &&
@@ -2652,7 +2686,7 @@ class PurchaseOrderDetailsController extends GetxController {
                       } else if ((condPercentage >
                               specTolerancePercentage / 2) &&
                           (condPercentage <= specTolerancePercentage)) {
-                        result = "A-";
+                        result = "A-33";
                       }
                     } else if (defectID != null &&
                         totalSize > 0 &&
@@ -2678,7 +2712,7 @@ class PurchaseOrderDetailsController extends GetxController {
                         break;
                       } else if ((sizeper > specTolerancePercentage / 2) &&
                           (sizeper <= specTolerancePercentage)) {
-                        result = "A-";
+                        result = "A-34";
                       }
                     } else if (defectID != null &&
                         totalColor > 0 &&
@@ -2700,7 +2734,7 @@ class PurchaseOrderDetailsController extends GetxController {
                         break;
                       } else if ((sizeper > specTolerancePercentage / 2) &&
                           (sizeper <= specTolerancePercentage)) {
-                        result = "A-";
+                        result = "A-35";
                       }
                     }
 
@@ -2751,7 +2785,7 @@ class PurchaseOrderDetailsController extends GetxController {
                         } else if ((qualpercentage >
                                 specTolerancePercentage / 2) &&
                             (qualpercentage <= specTolerancePercentage)) {
-                          result = "A-";
+                          result = "A-36";
                         }
                       } else if (defectID != null &&
                           totalConditionDefectId != 0 &&
@@ -2799,7 +2833,7 @@ class PurchaseOrderDetailsController extends GetxController {
                         } else if ((condpercentage >
                                 specTolerancePercentage / 2) &&
                             (condpercentage <= specTolerancePercentage)) {
-                          result = "A-";
+                          result = "A-37";
                         }
                       }
                     }
@@ -2827,7 +2861,7 @@ class PurchaseOrderDetailsController extends GetxController {
                       } else if ((calpercentage >
                               specTolerancePercentage / 2) &&
                           (calpercentage <= specTolerancePercentage)) {
-                        result = "A-";
+                        result = "A-38";
                       }
 
                       if (result != "RJ" &&
@@ -3123,7 +3157,11 @@ class PurchaseOrderDetailsController extends GetxController {
     };
 
     await Get.to(() => const OverriddenResultScreen(), arguments: passingData);
-    await calculateButtonClick(Get.context!);
+    AppAlertDialog.confirmationAlert(
+        Get.context!, AppStrings.alert, 'Calculate results?',
+        onYesTap: () async {
+          await calculateButtonClick(Get.context!);
+        });
   }
 
   Future<String?> getFinalInspectionResult(
