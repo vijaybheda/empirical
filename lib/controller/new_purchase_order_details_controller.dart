@@ -55,7 +55,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
 
   RxList<NewPurchaseOrderItem> filteredInspectionsList =
       <NewPurchaseOrderItem>[].obs;
-  RxList<NewPurchaseOrderItem> inspectionsList = <NewPurchaseOrderItem>[].obs;
+  RxList<NewPurchaseOrderItem> originalData = <NewPurchaseOrderItem>[].obs;
   RxBool listAssigned = false.obs;
 
   final AppStorage appStorage = AppStorage.instance;
@@ -120,9 +120,9 @@ class NewPurchaseOrderDetailsController extends GetxController {
   void searchAndAssignItems(String searchValue) {
     filteredInspectionsList.clear();
     if (searchValue.isEmpty) {
-      filteredInspectionsList.addAll(inspectionsList);
+      filteredInspectionsList.addAll(originalData);
     } else {
-      var items = inspectionsList.where((element) {
+      var items = originalData.where((element) {
         String? sku = element.sku;
         String searchKey = searchValue.toLowerCase();
 
@@ -167,9 +167,11 @@ class NewPurchaseOrderDetailsController extends GetxController {
     return list;
   }
 
-  void onCreate() async {
+  Future<void> onCreate() async {
     List<FinishedGoodsItemSKU> selectedItemSKUList =
         await dao.getSelectedItemSKUList();
+    originalData.addAll(getPurchaseOrderData());
+    update();
   }
 
   Future<void> onResume() async {

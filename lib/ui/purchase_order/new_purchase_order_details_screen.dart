@@ -139,6 +139,10 @@ class NewPurchaseOrderDetailsScreen
                   position: index,
                   poNumber: controller.poNumber!,
                   sealNumber: controller.sealNumber,
+                  carrierID: controller.carrierID,
+                  commodityID: controller.commodityID,
+                  commodityName: controller.commodityName,
+                  carrierName: controller.carrierName,
                   onRatingChanged: (rating) {
                     // Handle rating change
                   },

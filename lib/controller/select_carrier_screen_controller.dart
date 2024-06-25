@@ -74,7 +74,7 @@ class SelectCarrierScreenController extends GetxController {
 
       if (filteredCarrierList.length == 1) {
         // FIXME: Demo purpose only: This is a temporary fix to navigate to QC Header if only one carrier is available
-        // navigateToQcHeader(filteredCarrierList.first);
+        navigateToQcHeader(filteredCarrierList.first);
       }
     }
   }
@@ -120,7 +120,7 @@ class SelectCarrierScreenController extends GetxController {
   }
 
   void navigateToQcHeader(CarrierItem carrier) {
-    Future.delayed(const Duration(milliseconds: 10), () {
+    Future.delayed(const Duration(milliseconds: 0), () {
       Get.off(() => QualityControlHeader(/*carrier: carrier*/), arguments: {
         Consts.CALLER_ACTIVITY: 'TrendingReportActivity',
         Consts.CARRIER_NAME: carrier.name,

@@ -13,3 +13,27 @@ extension StringExtension on String {
     return toLowerCase() == other?.toLowerCase();
   }
 }
+
+extension StringNullableExtension on String? {
+  bool isNullOrEmpty() {
+    return this == null || this!.isEmpty;
+  }
+
+  bool equals(String? other) {
+    return this == other;
+  }
+
+  bool equalsIgnoreCase(String? other) {
+    return other == other;
+  }
+}
+
+extension NullableIntExtension on int? {
+  bool isNull() {
+    return this == null;
+  }
+
+  bool equals(int? other) {
+    return this == other;
+  }
+}
