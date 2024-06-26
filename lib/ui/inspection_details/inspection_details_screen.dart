@@ -291,7 +291,7 @@ class InspectionDetailsScreen extends StatelessWidget {
                 ],
               ),
               Visibility(
-                visible: controller.rejectionLayout.value,
+                visible: controller.approvalLayout.value,
                 child: _commonRowTextFieldView(
                   context,
                   AppStrings.qtyRejected,
