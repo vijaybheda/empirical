@@ -547,7 +547,8 @@ class _NewPurchaseOrderListViewItemState
       arguments[Consts.SPECIFICATION_TYPE_NAME] = specificationTypeName;
 
       arguments[Consts.CALLER_ACTIVITY] = "NewPurchaseOrderDetailsActivity";
-      Get.to(() => const OverriddenResultScreen(), arguments: arguments);
+      await Get.to(() => const OverriddenResultScreen(), arguments: arguments);
+      controller.onResume();
     }
   }
 
@@ -1906,10 +1907,11 @@ class _NewPurchaseOrderListViewItemState
           bundle[Consts.IS1STTIMEACTIVITY] = "PurchaseOrderDetailsActivity";
 
           final String tag = DateTime.now().millisecondsSinceEpoch.toString();
-          Get.to(
+          await Get.to(
             () => QCDetailsShortFormScreen(tag: tag),
             arguments: bundle,
           );
+          controller.onResume();
         }
         //
         else {
