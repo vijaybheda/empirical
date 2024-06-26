@@ -6,6 +6,7 @@ import 'package:pverify/models/new_purchase_order_item.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
+import 'package:pverify/ui/purchase_order/new_purchase_order_item.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -24,17 +25,23 @@ class NewPurchaseOrderDetailsScreen
         builder: (controller) {
           return WillPopScope(
             onWillPop: () {
+              controller.onBackPress();
               return Future.value(false);
             },
             child: Scaffold(
-              backgroundColor: Theme.of(context).colorScheme.background,
+              backgroundColor: Theme
+                  .of(context)
+                  .colorScheme
+                  .background,
               resizeToAvoidBottomInset: false,
               appBar: AppBar(
                 toolbarHeight: 150.h,
                 leading: const Offstage(),
                 leadingWidth: 0,
                 centerTitle: false,
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: Theme
+                    .of(context)
+                    .primaryColor,
                 title: HeaderContentView(
                   title: AppStrings.beginInspection,
                   message: 'PO# ${controller.poNumber ?? '-'}',
@@ -60,17 +67,122 @@ class NewPurchaseOrderDetailsScreen
                     ),
                   ),
                   _SearchOrderItemsWidget(tag),
+                  dataHeaderWidget(),
                   Expanded(
                       flex: 10, child: _purchaseOrderItemSection(context, tag)),
                   _footerMenuView(controller),
                   FooterContentView(
                     hasLeftButton: false,
+                    onDownloadTap: () async {
+                      await controller.downloadTap();
+                    },
+                    onBackTap: controller.onBackPress,
                   )
                 ],
               ),
             ),
           );
         });
+  }
+
+  Widget dataHeaderWidget() {
+    return Column(
+      children: [
+        Container(
+          color: AppColors.grey2,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            children: [
+              // no
+              Expanded(
+                flex: flexList[0],
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 5.h),
+                  child: Text(
+                    "No",
+                    textAlign: TextAlign.start,
+                    style: Get.textTheme.titleLarge!.copyWith(
+                      fontSize: 28.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+
+              // name
+              Expanded(
+                flex: flexList[1],
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 5.h),
+                  child: Text(
+                    "Name",
+                    textAlign: TextAlign.start,
+                    style: Get.textTheme.titleLarge!.copyWith(
+                      fontSize: 28.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+
+              //branded
+              Expanded(
+                flex: flexList[2],
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 5.h),
+                  child: Text(
+                    "Branded",
+                    textAlign: TextAlign.start,
+                    style: Get.textTheme.titleLarge!.copyWith(
+                      fontSize: 28.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+
+              // rating
+              Expanded(
+                flex: flexList[3],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 5.h),
+                      child: Text(
+                        "Rating",
+                        textAlign: TextAlign.start,
+                        style: Get.textTheme.titleLarge!.copyWith(
+                          fontSize: 28.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 5.h),
+                      child: Text(
+                        "1\t2\t3\t4\t5",
+                        textAlign: TextAlign.center,
+                        style: Get.textTheme.titleLarge!.copyWith(
+                          fontSize: 28.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          width: double.infinity,
+          height: 1.5,
+          color: AppColors.greenButtonColor,
+        )
+      ],
+    );
   }
 
   GetBuilder<NewPurchaseOrderDetailsController> _purchaseOrderItemSection(
@@ -88,14 +200,14 @@ class NewPurchaseOrderDetailsScreen
             children: [
               controller.listAssigned.value
                   ? Expanded(
-                      flex: 10,
-                      child: controller.filteredInspectionsList.isNotEmpty
-                          ? _inspectionsListView(context, controller)
-                          : noDataFoundWidget(),
-                    )
+                flex: 10,
+                child: controller.filteredInspectionsList.isNotEmpty
+                    ? _inspectionsListView(context, controller)
+                    : noDataFoundWidget(),
+              )
                   : const Center(
-                      child: SizedBox(
-                          height: 25, width: 25, child: ProgressAdaptive())),
+                  child: SizedBox(
+                      height: 25, width: 25, child: ProgressAdaptive())),
             ],
           ),
         );
@@ -112,31 +224,50 @@ class NewPurchaseOrderDetailsScreen
     );
   }
 
-  Widget _inspectionsListView(
-    BuildContext context,
-    NewPurchaseOrderDetailsController controller,
-  ) {
+  Widget _inspectionsListView(BuildContext context,
+      NewPurchaseOrderDetailsController controller,) {
     return ListView.separated(
       itemCount: controller.filteredInspectionsList.length,
       padding: EdgeInsets.zero,
       itemBuilder: (context, index) {
         NewPurchaseOrderItem goodsItem =
-            controller.filteredInspectionsList.elementAt(index);
+        controller.filteredInspectionsList.elementAt(index);
         return GetBuilder<NewPurchaseOrderDetailsController>(
             tag: tag,
             builder: (controller) {
-              return Container();
-              /*return Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              return Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 child: NewPurchaseOrderListViewItem(
+                  controller: controller,
                   goodsItem: goodsItem,
                   partnerID: controller.partnerID,
                   position: index,
                   poNumber: controller.poNumber!,
                   sealNumber: controller.sealNumber,
+                  carrierID: controller.carrierID,
+                  commodityID: controller.commodityID,
+                  commodityName: controller.commodityName,
+                  carrierName: controller.carrierName,
+                  onRatingChanged: (rating) {
+                    // Handle rating change
+                  },
+                  onQuantityShippedChanged: (qtyShipped) {
+                    // Handle quantity shipped change
+                  },
+                  onQuantityRejectedChanged: (qtyRejected) {
+                    // Handle quantity rejected change
+                  },
+                  onInspectPressed: () {
+                    // Handle inspect button press
+                  },
+                  onInfoPressed: () {
+                    // Handle info button press
+                  },
+                  onBrandedChanged: (isBranded) {
+                    // Handle branded change
+                  },
                 ),
-              );*/
+              );
             });
       },
       separatorBuilder: (BuildContext context, int index) {
@@ -238,9 +369,11 @@ class _SearchOrderItemsWidget extends StatelessWidget {
             Get.find<NewPurchaseOrderDetailsController>(tag: tag)
                 .searchAndAssignItems(value);
           },
-          controller: Get.find<NewPurchaseOrderDetailsController>(
+          controller: Get
+              .find<NewPurchaseOrderDetailsController>(
             tag: tag,
-          ).searchController,
+          )
+              .searchController,
           decoration: InputDecoration(
             hintText: AppStrings.searchItem,
             hintStyle: Get.textTheme.titleLarge?.copyWith(
@@ -249,7 +382,7 @@ class _SearchOrderItemsWidget extends StatelessWidget {
             ),
             isDense: true,
             contentPadding:
-                EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
+            EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
             prefixIcon: Icon(
               Icons.search,
               color: AppColors.white,
@@ -267,21 +400,26 @@ class _SearchOrderItemsWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(color: AppColors.white),
             ),
-            suffixIcon: Get.find<NewPurchaseOrderDetailsController>(
+            suffixIcon: Get
+                .find<NewPurchaseOrderDetailsController>(
               tag: tag,
-            ).searchController.text.trim().isEmpty
+            )
+                .searchController
+                .text
+                .trim()
+                .isEmpty
                 ? const Offstage()
                 : IconButton(
-                    onPressed: () {
-                      Get.find<NewPurchaseOrderDetailsController>(
-                        tag: tag,
-                      ).clearSearch();
-                    },
-                    icon: Icon(
-                      Icons.clear,
-                      color: AppColors.white,
-                    ),
-                  ),
+              onPressed: () {
+                Get.find<NewPurchaseOrderDetailsController>(
+                  tag: tag,
+                ).clearSearch();
+              },
+              icon: Icon(
+                Icons.clear,
+                color: AppColors.white,
+              ),
+            ),
           ),
         ),
       ),
