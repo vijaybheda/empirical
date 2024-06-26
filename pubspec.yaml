@@ -58,6 +58,7 @@ dependencies:
   http: ^1.2.1
   flutter_image_compress: ^2.3.0
   new_version_plus: ^0.0.10
+  flutter_rating_bar: ^4.0.1
 
 dev_dependencies:
   flutter_test:

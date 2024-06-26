@@ -15,7 +15,12 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pverify/controller/dialog_progress_controller.dart';
 import 'package:pverify/controller/json_file_operations.dart';
+import 'package:pverify/models/inspection.dart';
+import 'package:pverify/models/inspection_defect_attachment.dart';
+import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/services/network_request_service/ws_upload_inspection.dart';
+import 'package:pverify/services/network_request_service/ws_upload_mobile_files.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -778,6 +783,42 @@ class Utils {
 
     overlay.insert(overlayEntry);
     Future.delayed(duration, () => overlayEntry.remove());
+  }
+
+  Future<bool> uploadInspection(int inspectionId) async {
+    final ApplicationDao dao = ApplicationDao();
+    Inspection? inspection = await dao.findInspectionByID(inspectionId);
+    if (inspection != null) {
+      QCHeaderDetails? qcHeaderDetails =
+          await dao.findTempQCHeaderDetails(inspection.poNumber!);
+      if (qcHeaderDetails != null &&
+          qcHeaderDetails.cteType != null &&
+          qcHeaderDetails.cteType != "") {
+        // TODO: Implement CTE flow
+      } else {
+        Map<String, dynamic>? jsonObject =
+            await WSUploadInspection().requestUpload(inspectionId);
+
+        if (jsonObject.isNotEmpty) {
+          List<InspectionDefectAttachment>? attachments =
+              await dao.findDefectAttachmentsByInspectionId(inspectionId);
+
+          var isApiCallSuccess = await WSUploadMobileFiles(
+            inspectionId,
+            attachments ?? [],
+            jsonObject,
+          ).requestUploadMobileFiles(
+            attachments ?? [],
+            jsonObject,
+            inspectionId,
+          );
+          if (isApiCallSuccess) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 }
 

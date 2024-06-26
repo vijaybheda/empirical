@@ -235,7 +235,7 @@ class QCDetailsShortFormScreenController extends GetxController {
             sampleSizeByCount: sampleSizeByCount,
             itemSKU: itemSKU!,
             itemSKUId: itemSkuId!,
-            po_number: poNumber!,
+            poNumber: poNumber!,
             lotNo: lotNoString,
             rating: 0,
             cteType: "",
@@ -1753,6 +1753,7 @@ class QCDetailsShortFormScreenController extends GetxController {
               await dao.deleteInspection(serverInspectionID);
               Get.back();
             });
+            return;
           }
         } else {
           await dao.deleteInspection(serverInspectionID);

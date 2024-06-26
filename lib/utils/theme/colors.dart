@@ -88,4 +88,7 @@ class AppColors {
   static Color defectOrange = const Color(0xffFECE9E);
   static Color defectGreen = const Color(0xffE4FFB5);
   static Color defectBlue = const Color(0xffC1DCFF);
+
+  static Color shareifyGold = const Color(0xffFFD632);
+  static Color shareifyGreen = const Color(0xff2BB558);
 }

@@ -45,7 +45,7 @@ import 'package:sqflite/sqflite.dart';
 class ApplicationDao {
   // instance
 
-  final dbProvider = DatabaseHelper.instance;
+  final DatabaseHelper dbProvider = DatabaseHelper.instance;
 
   final AppStorage _appStorage = AppStorage.instance;
 
@@ -362,7 +362,7 @@ class ApplicationDao {
 
   /*Future<int> createOrUpdateInspectionSpecification(
       InspectionSpecification spec) async {
-    final Database db = await DatabaseHelper.instance.lazyDatabase;
+    final Database db = await dbProvider.lazyDatabase;
     if (spec.id == null) {
       // If there's no ID, we insert a new record
       return await db.insert(DBTables.INSPECTION_SPECIFICATION, spec.toMap());
@@ -509,7 +509,7 @@ class ApplicationDao {
     required int? sampleSizeByCount,
     required String? itemSKU,
     required int? itemSKUId,
-    required String? po_number,
+    required String? poNumber,
     required String? lotNo,
     required int? rating,
     required String? cteType,
@@ -534,7 +534,7 @@ class ApplicationDao {
             InspectionColumn.SAMPLE_SIZE_BY_COUNT: sampleSizeByCount,
             InspectionColumn.ITEM_SKU: itemSKU,
             InspectionColumn.ITEM_SKU_ID: itemSKUId,
-            InspectionColumn.PO_NUMBER: po_number,
+            InspectionColumn.PO_NUMBER: poNumber,
             InspectionColumn.RATING: rating,
             InspectionColumn.CTE_TYPE: cteType,
             InspectionColumn.ITEM_SKU_NAME: itemSkuName,
@@ -945,9 +945,9 @@ class ApplicationDao {
     int? sampleId,
     int? defectId,
   ) async {
-    final Database database = dbProvider.lazyDatabase;
+    final Database db = dbProvider.lazyDatabase;
     try {
-      await database.transaction((txn) async {
+      await db.transaction((txn) async {
         var values = <String, dynamic>{};
         if (sampleId != null) {
           values[InspectionDefectAttachmentColumn.INSPECTION_SAMPLE_ID] =
@@ -1926,10 +1926,10 @@ class ApplicationDao {
       String poNumber, int inspectorSupplierId) async {
     List<PurchaseOrderDetails> purchaseOrderDetailsList = [];
 
-    final Database _db = dbProvider.lazyDatabase;
+    final Database db = dbProvider.lazyDatabase;
     print('DBRequest getPODetailsFromTable');
     try {
-      List<Map<String, dynamic>> results = await _db.rawQuery('''
+      List<Map<String, dynamic>> results = await db.rawQuery('''
       SELECT poh.PO_Number, poh.PO_Deliver_To_Id, poh.PO_Deliver_To_Name, poh.PO_Partner_Id,
       poh.PO_Partner_Name,
       pod.PO_Line_Number, pod.PO_Item_Sku_Id, pod.PO_Item_Sku_Code, pod.PO_Item_Sku_Name,
@@ -1951,9 +1951,9 @@ class ApplicationDao {
 
   Future<List<int>> getPartnerSKUInspectionIDsByPONo(String poNumber) async {
     List<int> inspIDs = [];
-    final Database _db = dbProvider.lazyDatabase;
+    final Database db = dbProvider.lazyDatabase;
     try {
-      List<Map<String, dynamic>> results = await _db.rawQuery('''
+      List<Map<String, dynamic>> results = await db.rawQuery('''
         SELECT ${PartnerItemSkuColumn.INSPECTION_ID} FROM ${DBTables.PARTNER_ITEMSKU} WHERE ${PartnerItemSkuColumn.PO_NO}=?
       ''', [poNumber]);
 
@@ -1983,9 +1983,9 @@ class ApplicationDao {
     required String cteType,
   }) async {
     int? ttId;
-    final Database _db = dbProvider.lazyDatabase;
+    final Database db = dbProvider.lazyDatabase;
     try {
-      await _db.transaction((txn) async {
+      await db.transaction((txn) async {
         ttId = await txn.insert(DBTables.TEMP_QC_HEADER_DETAILS, {
           TempQcHeaderDetailsColumn.PARTNER_ID: partnerID,
           TempQcHeaderDetailsColumn.PO_NUMBER: poNo,
@@ -2300,8 +2300,7 @@ class ApplicationDao {
   Future<TrailerTemperatureDetails> findTrailerTemperatureDetails(
       int inspectionId) async {
     TrailerTemperatureDetails trailerTempMap = TrailerTemperatureDetails();
-    final Database db = dbProvider
-        .lazyDatabase; // Assuming you have a dbProvider instance for database operations
+    final Database db = dbProvider.lazyDatabase;
 
     try {
       String query =
@@ -3324,12 +3323,12 @@ class ApplicationDao {
     required int packDate,
     required String seal_no,
     required String lot_no,
-    required String qcdOpen1,
+    required String? qcdOpen1,
     required String qcdOpen2,
     required String qcdOpen3,
     required String qcdOpen4,
     required int workDate,
-    required String gtin,
+    required String? gtin,
     required int lot_size,
     required int shipDate,
     required String dateType,
@@ -3589,12 +3588,12 @@ class ApplicationDao {
   Future<int?> createPartnerItemSKU(
     int partnerID,
     String itemSKU,
-    String lotNo,
+    String? lotNo,
     String packDate,
     int inspectionId,
     String lotSize,
     String uniqueId,
-    int poLineNo,
+    int? poLineNo,
     String poNo,
   ) async {
     final Database db = dbProvider.lazyDatabase;
@@ -4022,20 +4021,20 @@ class ApplicationDao {
     int qtyRejected,
   ) async {
     int? inspectionId;
-    Database database = dbProvider.lazyDatabase;
+    final Database db = dbProvider.lazyDatabase;
 
     try {
       String query =
           'SELECT ${OverriddenResultColumn.INSPECTION_ID} FROM ${DBTables.OVERRIDDEN_RESULT} WHERE ${OverriddenResultColumn.INSPECTION_ID} = ?';
       List<Map<String, dynamic>> result =
-          await database.rawQuery(query, [inspectionID]);
+          await db.rawQuery(query, [inspectionID]);
 
       if (result.isNotEmpty) {
         inspectionId = result.first[OverriddenResultColumn.INSPECTION_ID];
       }
 
       if (inspectionId == null) {
-        await database.transaction((txn) async {
+        await db.transaction((txn) async {
           var values = {
             OverriddenResultColumn.INSPECTION_ID: inspectionID,
             OverriddenResultColumn.OVERRIDDEN_BY: overriddenBy,
@@ -4051,7 +4050,7 @@ class ApplicationDao {
           inspectionId = await txn.insert(DBTables.OVERRIDDEN_RESULT, values);
         });
       } else {
-        await database.transaction((txn) async {
+        await db.transaction((txn) async {
           var values = {
             OverriddenResultColumn.OVERRIDDEN_BY: overriddenBy,
             OverriddenResultColumn.OVERRIDDEN_RESULT: overriddenResult,
@@ -4383,7 +4382,7 @@ class ApplicationDao {
   }
 
   Future<bool> isQCTIsComplete(int inspectionId) async {
-    final Database db = await dbProvider.database;
+    final Database db = dbProvider.lazyDatabase;
     List<Map<String, dynamic>> result;
 
     try {
@@ -4401,7 +4400,7 @@ class ApplicationDao {
   }
 
   Future<bool> isISTIsComplete(int inspectionId) async {
-    final Database db = await dbProvider.database;
+    final Database db = dbProvider.lazyDatabase;
     List<Map<String, dynamic>> result;
 
     try {
@@ -4420,7 +4419,7 @@ class ApplicationDao {
   }
 
   Future<PartnerItemSKUInspections?> findPartnerItemSKUPOLine(
-      int partnerId, String itemSKU, int poLineNo, String poNo) async {
+      int partnerId, String itemSKU, int? poLineNo, String poNo) async {
     PartnerItemSKUInspections? item;
 
     final Database db = dbProvider.lazyDatabase;
@@ -4486,5 +4485,92 @@ class ApplicationDao {
     }
 
     return item;
+  }
+
+  Future<void> updateSpecificationAttributeNumValue(
+      int inspectionId, int analyticalID, int rating, String comply) async {
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      await db.transaction((txn) async {
+        await txn.update(
+          DBTables.SPECIFICATION_ATTRIBUTES,
+          {
+            SpecificationAttributesColumn.SAMPLE_VALUE: rating,
+            SpecificationAttributesColumn.COMPLY: comply,
+          },
+          where:
+              '${SpecificationAttributesColumn.INSPECTION_ID} = ? AND ${SpecificationAttributesColumn.ANALYTICAL_ID} = ?',
+          whereArgs: [inspectionId, analyticalID],
+        );
+      });
+    } catch (e) {
+      print('Error has occurred while updating an inspection: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateSpecificationAttributeBrandedValue(
+      int inspectionId, int analyticalID, String branded, String comply) async {
+    final Database db = dbProvider.lazyDatabase;
+
+    try {
+      await db.transaction((txn) async {
+        await txn.update(
+          DBTables.SPECIFICATION_ATTRIBUTES,
+          {
+            SpecificationAttributesColumn.SAMPLE_TEXT_VALUE: branded,
+            SpecificationAttributesColumn.COMPLY: comply,
+          },
+          where:
+              '${SpecificationAttributesColumn.INSPECTION_ID} = ? AND ${SpecificationAttributesColumn.ANALYTICAL_ID} = ?',
+          whereArgs: [inspectionId, analyticalID],
+        );
+      });
+    } catch (e) {
+      print('Error has occurred while updating an inspection: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateQuantityShipped(
+      int inspectionID, int qtyShipped, int qtyReceived) async {
+    try {
+      final Database db = dbProvider.lazyDatabase;
+      await db.transaction((txn) async {
+        await txn.update(
+          'QUALITY_CONTROL_TABLE',
+          {
+            'QCT_QTY_SHIPPED': qtyShipped,
+            'QCT_QTY_RECEIVED': qtyReceived,
+          },
+          where: 'QCT_INSPECTION_ID = ?',
+          whereArgs: [inspectionID],
+        );
+      });
+    } catch (e) {
+      debugPrint('Error has occurred while updating an inspection: $e');
+      throw e;
+    }
+  }
+
+  Future<void> updateQualityControlComment(
+      int inspectionID, String comment) async {
+    try {
+      final Database db = dbProvider.lazyDatabase;
+      await db.transaction((txn) async {
+        await txn.update(
+          DBTables.QUALITY_CONTROL,
+          {
+            QualityControlColumn.QC_COMMENTS: comment,
+          },
+          where: '${QualityControlColumn.INSPECTION_ID} = ?',
+          whereArgs: [inspectionID],
+        );
+      });
+    } catch (e) {
+      print('Error has occurred while updating an inspection: $e');
+      rethrow;
+    }
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pverify/controller/dialog_progress_controller.dart';
+import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/models/defect_categories.dart';
 import 'package:pverify/models/defect_item.dart';
 import 'package:pverify/models/inspection.dart';
@@ -18,6 +20,7 @@ import 'package:pverify/models/specification_grade_tolerance.dart';
 import 'package:pverify/models/specification_grade_tolerance_array.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
+import 'package:pverify/ui/cache_download_screen.dart';
 import 'package:pverify/ui/commodity/commodity_id_screen.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_screen.dart';
 import 'package:pverify/ui/quality_control_header/quality_control_header.dart';
@@ -27,6 +30,7 @@ import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
+import 'package:pverify/utils/dialogs/update_data_dialog.dart';
 import 'package:pverify/utils/utils.dart';
 
 class NewPurchaseOrderDetailsController extends GetxController {
@@ -57,11 +61,13 @@ class NewPurchaseOrderDetailsController extends GetxController {
 
   RxList<NewPurchaseOrderItem> filteredInspectionsList =
       <NewPurchaseOrderItem>[].obs;
-  RxList<NewPurchaseOrderItem> itemSkuList = <NewPurchaseOrderItem>[].obs;
+  RxList<NewPurchaseOrderItem> originalData = <NewPurchaseOrderItem>[].obs;
   RxBool listAssigned = false.obs;
 
   final AppStorage appStorage = AppStorage.instance;
   final ApplicationDao dao = ApplicationDao();
+  final GlobalConfigController globalConfigController =
+      Get.find<GlobalConfigController>();
 
   NewPurchaseOrderDetailsController();
 
@@ -120,9 +126,9 @@ class NewPurchaseOrderDetailsController extends GetxController {
   void searchAndAssignItems(String searchValue) {
     filteredInspectionsList.clear();
     if (searchValue.isEmpty) {
-      filteredInspectionsList.addAll(itemSkuList);
+      filteredInspectionsList.addAll(originalData);
     } else {
-      var items = itemSkuList.where((element) {
+      var items = originalData.where((element) {
         String? sku = element.sku;
         String searchKey = searchValue.toLowerCase();
 
@@ -167,9 +173,13 @@ class NewPurchaseOrderDetailsController extends GetxController {
     return list;
   }
 
-  void onCreate() async {
+  Future<void> onCreate() async {
     List<FinishedGoodsItemSKU> selectedItemSKUList =
         await dao.getSelectedItemSKUList();
+    originalData.addAll(getPurchaseOrderData());
+    filteredInspectionsList.addAll(originalData);
+    listAssigned.value = true;
+    update();
   }
 
   List<FinishedGoodsItemSKU> get selectedItemSKUList =>
@@ -317,6 +327,52 @@ class NewPurchaseOrderDetailsController extends GetxController {
     }
   }
 
+  Future<void> onBackPress() async {
+    bool isValid = true;
+
+    for (int i = 0; i < appStorage.selectedItemSKUList.length; i++) {
+      bool isComplete = await dao.isInspectionComplete(
+          partnerID,
+          appStorage.selectedItemSKUList[i].sku!,
+          appStorage.selectedItemSKUList[i].uniqueItemId);
+
+      if (isComplete) {
+        PartnerItemSKUInspections? partnerItemSKU =
+        await dao.findPartnerItemSKU(
+            partnerID,
+            appStorage.selectedItemSKUList[i].sku!,
+            appStorage.selectedItemSKUList[i].uniqueItemId);
+
+        if (partnerItemSKU != null) {
+          Inspection? inspection =
+          await dao.findInspectionByID(partnerItemSKU.inspectionId!);
+          QualityControlItem? qualityControlItems =
+          await dao.findQualityControlDetails(partnerItemSKU.inspectionId!);
+
+          if (inspection != null &&
+              qualityControlItems != null &&
+              inspection.result != null &&
+              inspection.result == "RJ") {
+            if (qualityControlItems.qtyRejected! == 0 ||
+                qualityControlItems.qtyRejected! >
+                    qualityControlItems.qtyShipped!) {
+              isValid = false;
+
+              AppAlertDialog.validateAlerts(
+                Get.context!,
+                AppStrings.error,
+                AppStrings.pleaseEnterValidQtyRejected,
+              );
+            }
+          }
+        }
+      }
+    }
+    if (isValid) {
+      Get.back();
+    }
+  }
+
   Future<void> calculateResult() async {
     int totalQualityDefectId = 0;
     int totalConditionDefectId = 0;
@@ -329,12 +385,12 @@ class NewPurchaseOrderDetailsController extends GetxController {
 
         if (isComplete) {
           PartnerItemSKUInspections? partnerItemSKU =
-              await dao.findPartnerItemSKU(
-                  partnerID, itemSKU.sku!, itemSKU.uniqueItemId);
+          await dao.findPartnerItemSKU(
+              partnerID, itemSKU.sku!, itemSKU.uniqueItemId);
 
           if (partnerItemSKU != null) {
             Inspection? inspection =
-                await dao.findInspectionByID(partnerItemSKU.inspectionId!);
+            await dao.findInspectionByID(partnerItemSKU.inspectionId!);
             if (inspection == null) {
               return;
             }
@@ -348,20 +404,20 @@ class NewPurchaseOrderDetailsController extends GetxController {
               specificationVersion = inspection.specificationVersion!;
             }
             List<SpecificationGradeToleranceArray>
-                specificationGradeToleranceArrayList =
+            specificationGradeToleranceArrayList =
                 appStorage.specificationGradeToleranceArrayList ?? [];
             for (int abc = 0;
-                abc < specificationGradeToleranceArrayList.length;
-                abc++) {
+            abc < specificationGradeToleranceArrayList.length;
+            abc++) {
               if ((specificationGradeToleranceArrayList[abc]
-                          .specificationGradeToleranceList ??
-                      [])
+                  .specificationGradeToleranceList ??
+                  [])
                   .isNotEmpty) {
                 if ((specificationGradeToleranceArrayList[abc]
-                            .specificationNumber ==
-                        specificationNumber) &&
+                    .specificationNumber ==
+                    specificationNumber) &&
                     (specificationGradeToleranceArrayList[abc]
-                            .specificationVersion ==
+                        .specificationVersion ==
                         specificationVersion)) {
                   appStorage.specificationGradeToleranceList = appStorage
                       .specificationGradeToleranceArrayList![abc]
@@ -378,19 +434,19 @@ class NewPurchaseOrderDetailsController extends GetxController {
             List<String> defectNameReasonArray = [];
 
             appStorage.specificationAnalyticalList =
-                await dao.getSpecificationAnalyticalFromDB(
-                    specificationNumber!, specificationVersion!);
+            await dao.getSpecificationAnalyticalFromDB(
+                specificationNumber!, specificationVersion!);
 
             if ((!(specificationTypeName!.toLowerCase() ==
-                    ("Finished Goods Produce".toLowerCase())) &&
+                ("Finished Goods Produce".toLowerCase())) &&
                 !(specificationTypeName!.toLowerCase() ==
                     ("Raw Produce".toLowerCase())))) {
               if (appStorage.specificationAnalyticalList != null) {
                 for (SpecificationAnalytical item
-                    in (appStorage.specificationAnalyticalList ?? [])) {
+                in (appStorage.specificationAnalyticalList ?? [])) {
                   SpecificationAnalyticalRequest? dbobj =
-                      await dao.findSpecAnalyticalObj(
-                          inspection.inspectionId!, item.analyticalID!);
+                  await dao.findSpecAnalyticalObj(
+                      inspection.inspectionId!, item.analyticalID!);
                   if (dbobj != null &&
                       (dbobj.comply == 'N' || dbobj.comply == 'No')) {
                     if (dbobj.inspectionResult != null &&
@@ -402,13 +458,13 @@ class NewPurchaseOrderDetailsController extends GetxController {
                       rejectReason += "${dbobj.analyticalName} = N";
                       rejectReasonArray.add("${dbobj.analyticalName} = N");
                       int resultReason =
-                          await dao.createOrUpdateResultReasonDetails(
-                              inspection.inspectionId!,
-                              result,
-                              "${dbobj.analyticalName} = N",
-                              dbobj.comment ?? '');
+                      await dao.createOrUpdateResultReasonDetails(
+                          inspection.inspectionId!,
+                          result,
+                          "${dbobj.analyticalName} = N",
+                          dbobj.comment ?? '');
                       int isPictureReqSpec =
-                          await dao.createIsPictureReqSpecAttribute(
+                      await dao.createIsPictureReqSpecAttribute(
                         inspection.inspectionId!,
                         result,
                         "${dbobj.analyticalName} = N",
@@ -448,11 +504,11 @@ class NewPurchaseOrderDetailsController extends GetxController {
               int inspectionResult = await dao.updateInspectionResult(
                   inspection.inspectionId!, result);
               int inspectionSpecification =
-                  await dao.createOrUpdateInspectionSpecification(
-                      inspection.inspectionId!,
-                      specificationNumber,
-                      specificationVersion,
-                      specificationName);
+              await dao.createOrUpdateInspectionSpecification(
+                  inspection.inspectionId!,
+                  specificationNumber,
+                  specificationVersion,
+                  specificationName);
 
               int inspectionComplete = await dao.updateInspectionComplete(
                   inspection.inspectionId!, true);
@@ -466,7 +522,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                 (appStorage.specificationGradeToleranceList ?? []).isNotEmpty) {
               int totalSampleSize = 0;
               List<InspectionSample> samples =
-                  await dao.findInspectionSamples(inspection.inspectionId!);
+              await dao.findInspectionSamples(inspection.inspectionId!);
               if (samples.isNotEmpty) {
                 for (int a = 0; a < samples.length; a++) {
                   totalSampleSize += samples[a].setSize!;
@@ -474,11 +530,11 @@ class NewPurchaseOrderDetailsController extends GetxController {
               }
               if (appStorage.defectCategoriesList != null) {
                 for (DefectCategories defectCategory
-                    in appStorage.defectCategoriesList ?? []) {
+                in appStorage.defectCategoriesList ?? []) {
                   if (defectCategory.name == "Quality" &&
                       (defectCategory.defectList != null)) {
                     for (DefectItem defectItem
-                        in defectCategory.defectList ?? []) {
+                    in defectCategory.defectList ?? []) {
                       if (defectItem.name?.contains("Total Quality") ?? false) {
                         totalQualityDefectId = defectItem.id ?? 0;
                         break;
@@ -487,7 +543,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                   } else if (defectCategory.name == "Condition" &&
                       (defectCategory.defectList != null)) {
                     for (DefectItem defectItem
-                        in defectCategory.defectList ?? []) {
+                    in defectCategory.defectList ?? []) {
                       if (defectItem.name?.contains("Total Condition") ??
                           false) {
                         totalConditionDefectId = defectItem.id ?? 0;
@@ -499,10 +555,10 @@ class NewPurchaseOrderDetailsController extends GetxController {
               }
 
               for (int n = 0;
-                  n < appStorage.specificationGradeToleranceList!.length;
-                  n++) {
+              n < appStorage.specificationGradeToleranceList!.length;
+              n++) {
                 SpecificationGradeTolerance gradeTolerance =
-                    appStorage.specificationGradeToleranceList!.elementAt(n);
+                appStorage.specificationGradeToleranceList!.elementAt(n);
 
                 double specTolerancePercentage =
                     gradeTolerance.specTolerancePercentage?.toDouble() ?? 0.0;
@@ -513,8 +569,8 @@ class NewPurchaseOrderDetailsController extends GetxController {
 
                 if (appStorage.severityDefectsList != null) {
                   for (int m = 0;
-                      m < appStorage.severityDefectsList!.length;
-                      m++) {
+                  m < appStorage.severityDefectsList!.length;
+                  m++) {
                     if ((severityDefectID != null) &&
                         severityDefectID ==
                             appStorage.severityDefectsList!.elementAt(m).id) {
@@ -565,14 +621,14 @@ class NewPurchaseOrderDetailsController extends GetxController {
                       if (defectID == null || defectID == 0) {
                         for (int k = 0; k < defectList.length; k++) {
                           if ((defectList
-                                      .elementAt(k)
-                                      .defectCategory
-                                      ?.toLowerCase() ==
-                                  "quality") ||
+                              .elementAt(k)
+                              .defectCategory
+                              ?.toLowerCase() ==
+                              "quality") ||
                               (defectList
-                                      .elementAt(k)
-                                      .defectCategory
-                                      ?.toLowerCase() ==
+                                  .elementAt(k)
+                                  .defectCategory
+                                  ?.toLowerCase() ==
                                   "condition")) {
                             if (defectList.elementAt(k).verySeriousDamageCnt! >
                                 0) {
@@ -594,14 +650,14 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                         .elementAt(k)
                                         .verySeriousDamageCnt!) {
                                   totalcount += (defectList
-                                          .elementAt(k)
-                                          .seriousDamageCnt! -
+                                      .elementAt(k)
+                                      .seriousDamageCnt! -
                                       defectList
                                           .elementAt(k)
                                           .verySeriousDamageCnt!);
                                   totalSeveritySeriousDamage += defectList
-                                          .elementAt(k)
-                                          .seriousDamageCnt! -
+                                      .elementAt(k)
+                                      .seriousDamageCnt! -
                                       defectList
                                           .elementAt(k)
                                           .verySeriousDamageCnt!;
@@ -614,12 +670,12 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 if (defectList.elementAt(k).damageCnt! >
                                     defectList.elementAt(k).seriousDamageCnt!) {
                                   totalcount += defectList
-                                          .elementAt(k)
-                                          .damageCnt! -
+                                      .elementAt(k)
+                                      .damageCnt! -
                                       defectList.elementAt(k).seriousDamageCnt!;
                                   totalSeverityDamage += defectList
-                                          .elementAt(k)
-                                          .damageCnt! -
+                                      .elementAt(k)
+                                      .damageCnt! -
                                       defectList.elementAt(k).seriousDamageCnt!;
                                   iscalculated = true;
                                 }
@@ -643,7 +699,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                               if (tempSeverityDefectName == "Decay") {
                                 totalcount += defectList.elementAt(k).decayCnt!;
                                 totalSeverityDecay +=
-                                    defectList.elementAt(k).decayCnt!;
+                                defectList.elementAt(k).decayCnt!;
 
                                 iscalculated = true;
                               }
@@ -651,8 +707,8 @@ class NewPurchaseOrderDetailsController extends GetxController {
 
                             if (tempSeverityDefectName == "") {
                               if (defectList
-                                      .elementAt(k)
-                                      .verySeriousDamageCnt! >
+                                  .elementAt(k)
+                                  .verySeriousDamageCnt! >
                                   0) {
                                 totalcount += defectList
                                     .elementAt(k)
@@ -665,8 +721,8 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                         .elementAt(k)
                                         .verySeriousDamageCnt!) {
                                   totalcount += (defectList
-                                          .elementAt(k)
-                                          .seriousDamageCnt! -
+                                      .elementAt(k)
+                                      .seriousDamageCnt! -
                                       defectList
                                           .elementAt(k)
                                           .verySeriousDamageCnt!);
@@ -676,8 +732,8 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 if (defectList.elementAt(k).damageCnt! >
                                     defectList.elementAt(k).seriousDamageCnt!) {
                                   totalcount += defectList
-                                          .elementAt(k)
-                                          .damageCnt! -
+                                      .elementAt(k)
+                                      .damageCnt! -
                                       defectList.elementAt(k).seriousDamageCnt!;
                                 }
                               }
@@ -712,7 +768,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 "");
                             break;
                           } else if ((vsdpercent >
-                                  specTolerancePercentage / 2) &&
+                              specTolerancePercentage / 2) &&
                               (vsdpercent <= specTolerancePercentage)) {
                             result = "A-";
                           }
@@ -730,7 +786,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 .add("Total Severity VSD % exceeds tolerance");
 
                             rejectReason +=
-                                "Total Severity VSD % exceeds tolerance";
+                            "Total Severity VSD % exceeds tolerance";
 
                             await dao.createOrUpdateResultReasonDetails(
                                 inspection.inspectionId!,
@@ -753,7 +809,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 " Total Severity SD % exceeds tolerance",
                                 "");
                           } else if ((sdpercent >
-                                  specTolerancePercentage / 2) &&
+                              specTolerancePercentage / 2) &&
                               (sdpercent <= specTolerancePercentage)) {
                             result = "A-";
                           }
@@ -771,7 +827,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 .add("Total Severity SD % exceeds tolerance");
 
                             rejectReason +=
-                                " Total Severity SD % exceeds tolerance";
+                            " Total Severity SD % exceeds tolerance";
                             await dao.createOrUpdateResultReasonDetails(
                                 inspection.inspectionId!,
                                 "RJ",
@@ -808,7 +864,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 "Total Severity Damage % exceeds tolerance");
 
                             rejectReason +=
-                                " Total Severity Damage % exceeds tolerance";
+                            " Total Severity Damage % exceeds tolerance";
                             await dao.createOrUpdateResultReasonDetails(
                                 inspection.inspectionId!,
                                 "RJ",
@@ -846,7 +902,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 "Total Severity Injury % exceeds tolerance");
 
                             rejectReason +=
-                                "Total Severity Injury % exceeds tolerance";
+                            "Total Severity Injury % exceeds tolerance";
                             await dao.createOrUpdateResultReasonDetails(
                                 inspection.inspectionId!,
                                 "RJ",
@@ -867,7 +923,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 " Total Severity Decay % exceeds tolerance",
                                 "");
                           } else if ((depercent >
-                                  specTolerancePercentage / 2) &&
+                              specTolerancePercentage / 2) &&
                               (depercent <= specTolerancePercentage)) {
                             result = "A-";
                           }
@@ -884,7 +940,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 "Total Severity Decay % exceeds tolerance");
 
                             rejectReason +=
-                                " Total Severity Decay % exceeds tolerance";
+                            " Total Severity Decay % exceeds tolerance";
                             await dao.createOrUpdateResultReasonDetails(
                                 inspection.inspectionId!,
                                 "RJ",
@@ -897,8 +953,8 @@ class NewPurchaseOrderDetailsController extends GetxController {
                           // double qualpercentage =
                           //     (totalcount * 100) / totalSampleSize;
                           double qualpercentage =
-                              ((totalcount / totalSampleSize) * 100)
-                                  .roundToDouble();
+                          ((totalcount / totalSampleSize) * 100)
+                              .roundToDouble();
                           if (qualpercentage > specTolerancePercentage) {
                             result = "RJ";
                             await dao.createOrUpdateResultReasonDetails(
@@ -907,7 +963,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 "Total Severity % exceeds tolerance",
                                 "");
                           } else if ((qualpercentage >
-                                  specTolerancePercentage / 2) &&
+                              specTolerancePercentage / 2) &&
                               (qualpercentage <= specTolerancePercentage)) {
                             result = "A-";
                           }
@@ -915,8 +971,8 @@ class NewPurchaseOrderDetailsController extends GetxController {
 
                         if (tempSeverityDefectName == "") {
                           double qualpercentage =
-                              ((totalcount * 100) / totalSampleSize)
-                                  .roundToDouble();
+                          ((totalcount * 100) / totalSampleSize)
+                              .roundToDouble();
                           if (qualpercentage > specTolerancePercentage) {
                             if (rejectReason != "") {
                               rejectReason += ", ";
@@ -925,7 +981,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 .add("Total Severity % exceeds tolerance");
 
                             rejectReason +=
-                                "Total Severity % exceeds tolerance";
+                            "Total Severity % exceeds tolerance";
                             await dao.createOrUpdateResultReasonDetails(
                                 inspection.inspectionId!,
                                 "RJ",
@@ -936,18 +992,18 @@ class NewPurchaseOrderDetailsController extends GetxController {
                       } else {
                         for (int k = 0; k < defectList.length; k++) {
                           if (defectList.elementAt(k).defectCategory ==
-                                  "quality" ||
+                              "quality" ||
                               defectList.elementAt(k).defectCategory ==
                                   "condition") {
                             if (defectID == defectList.elementAt(k).defectId) {
                               defectNameResult =
-                                  defectList.elementAt(k).spinnerSelection!;
+                              defectList.elementAt(k).spinnerSelection!;
 
                               if (tempSeverityDefectName ==
                                   "Very Serious Damage") {
                                 if (defectList
-                                        .elementAt(k)
-                                        .verySeriousDamageCnt! >
+                                    .elementAt(k)
+                                    .verySeriousDamageCnt! >
                                     0) {
                                   iscalculated = true;
                                   totalcount += defectList
@@ -963,16 +1019,16 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                         .elementAt(k)
                                         .verySeriousDamageCnt!;
                                   } else if (defectList
-                                          .elementAt(k)
-                                          .defectCategory ==
+                                      .elementAt(k)
+                                      .defectCategory ==
                                       "condition") {
                                     totalConditionCount += defectList
                                         .elementAt(k)
                                         .verySeriousDamageCnt!;
                                     totalConditionVerySeriousDamage +=
-                                        defectList
-                                            .elementAt(k)
-                                            .verySeriousDamageCnt!;
+                                    defectList
+                                        .elementAt(k)
+                                        .verySeriousDamageCnt!;
                                   }
 
                                   if (result != "RJ") {
@@ -989,7 +1045,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                           defectList.elementAt(k).comment ??
                                               "");
                                     } else if ((vsdpercent >
-                                            specTolerancePercentage / 2) &&
+                                        specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
                                       result = "A-";
@@ -1015,7 +1071,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                           defectList.elementAt(k).comment ??
                                               "");
                                     } else if ((vsdpercent >
-                                            specTolerancePercentage / 2) &&
+                                        specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
                                       result = "A-";
@@ -1032,48 +1088,48 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 if (defectList.elementAt(k).seriousDamageCnt! >
                                     0) {
                                   if (defectList
-                                          .elementAt(k)
-                                          .seriousDamageCnt! >
+                                      .elementAt(k)
+                                      .seriousDamageCnt! >
                                       defectList
                                           .elementAt(k)
                                           .verySeriousDamageCnt!) {
                                     totalcount += (defectList
-                                            .elementAt(k)
-                                            .seriousDamageCnt! -
+                                        .elementAt(k)
+                                        .seriousDamageCnt! -
                                         defectList
                                             .elementAt(k)
                                             .verySeriousDamageCnt!);
                                     iscalculated = true;
 
                                     if (defectList
-                                            .elementAt(k)
-                                            .defectCategory ==
+                                        .elementAt(k)
+                                        .defectCategory ==
                                         "quality") {
                                       totalQualitycount += defectList
-                                              .elementAt(k)
-                                              .seriousDamageCnt! -
+                                          .elementAt(k)
+                                          .seriousDamageCnt! -
                                           defectList
                                               .elementAt(k)
                                               .verySeriousDamageCnt!;
                                       totalQualitySeriousDamage += defectList
-                                              .elementAt(k)
-                                              .seriousDamageCnt! -
+                                          .elementAt(k)
+                                          .seriousDamageCnt! -
                                           defectList
                                               .elementAt(k)
                                               .verySeriousDamageCnt!;
                                     } else if (defectList
-                                            .elementAt(k)
-                                            .defectCategory ==
+                                        .elementAt(k)
+                                        .defectCategory ==
                                         "condition") {
                                       totalConditionCount += defectList
-                                              .elementAt(k)
-                                              .seriousDamageCnt! -
+                                          .elementAt(k)
+                                          .seriousDamageCnt! -
                                           defectList
                                               .elementAt(k)
                                               .verySeriousDamageCnt!;
                                       totalConditionSeriousDamage += defectList
-                                              .elementAt(k)
-                                              .seriousDamageCnt! -
+                                          .elementAt(k)
+                                          .seriousDamageCnt! -
                                           defectList
                                               .elementAt(k)
                                               .verySeriousDamageCnt!;
@@ -1094,7 +1150,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                             defectList.elementAt(k).comment ??
                                                 "");
                                       } else if ((vsdpercent >
-                                              specTolerancePercentage / 2) &&
+                                          specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
                                         result = "A-";
@@ -1120,7 +1176,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                             defectList.elementAt(k).comment ??
                                                 "");
                                       } else if ((vsdpercent >
-                                              specTolerancePercentage / 2) &&
+                                          specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
                                         result = "A-";
@@ -1140,14 +1196,14 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                           .elementAt(k)
                                           .seriousDamageCnt!) {
                                     totalcount +=
-                                        (defectList.elementAt(k).damageCnt! -
-                                            defectList
-                                                .elementAt(k)
-                                                .seriousDamageCnt!);
+                                    (defectList.elementAt(k).damageCnt! -
+                                        defectList
+                                            .elementAt(k)
+                                            .seriousDamageCnt!);
                                     iscalculated = true;
                                     if (defectList
-                                            .elementAt(k)
-                                            .defectCategory ==
+                                        .elementAt(k)
+                                        .defectCategory ==
                                         "quality") {
                                       totalQualitycount +=
                                           defectList.elementAt(k).damageCnt! -
@@ -1160,8 +1216,8 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                                   .elementAt(k)
                                                   .seriousDamageCnt!;
                                     } else if (defectList
-                                            .elementAt(k)
-                                            .defectCategory ==
+                                        .elementAt(k)
+                                        .defectCategory ==
                                         "condition") {
                                       totalConditionCount +=
                                           defectList.elementAt(k).damageCnt! -
@@ -1188,7 +1244,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                         "$defectNameResult - Quality (Damage)  % exceeds tolerance",
                                         defectList.elementAt(k).comment ?? "");
                                   } else if ((vsdpercent >
-                                          specTolerancePercentage / 2) &&
+                                      specTolerancePercentage / 2) &&
                                       (vsdpercent <= specTolerancePercentage)) {
                                     result = "A-";
                                   }
@@ -1208,7 +1264,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                         "$defectNameResult - Condition (Damage)  % exceeds tolerance",
                                         defectList.elementAt(k).comment ?? "");
                                   } else if ((vsdpercent >
-                                          specTolerancePercentage / 2) &&
+                                      specTolerancePercentage / 2) &&
                                       (vsdpercent <= specTolerancePercentage)) {
                                     result = "A-";
                                   }
@@ -1223,32 +1279,32 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                   if (defectList.elementAt(k).injuryCnt! >
                                       defectList.elementAt(k).damageCnt!) {
                                     totalcount +=
-                                        (defectList.elementAt(k).injuryCnt! -
-                                            defectList.elementAt(k).damageCnt!);
+                                    (defectList.elementAt(k).injuryCnt! -
+                                        defectList.elementAt(k).damageCnt!);
                                     iscalculated = true;
                                     if (defectList
-                                            .elementAt(k)
-                                            .defectCategory ==
+                                        .elementAt(k)
+                                        .defectCategory ==
                                         "quality") {
                                       totalQualitycount += defectList
-                                              .elementAt(k)
-                                              .injuryCnt! -
+                                          .elementAt(k)
+                                          .injuryCnt! -
                                           defectList.elementAt(k).damageCnt!;
                                       totalQualityInjury += defectList
-                                              .elementAt(k)
-                                              .injuryCnt! -
+                                          .elementAt(k)
+                                          .injuryCnt! -
                                           defectList.elementAt(k).damageCnt!;
                                     } else if (defectList
-                                            .elementAt(k)
-                                            .defectCategory ==
+                                        .elementAt(k)
+                                        .defectCategory ==
                                         "condition") {
                                       totalConditionCount += defectList
-                                              .elementAt(k)
-                                              .injuryCnt! -
+                                          .elementAt(k)
+                                          .injuryCnt! -
                                           defectList.elementAt(k).damageCnt!;
                                       totalConditionInjury += defectList
-                                              .elementAt(k)
-                                              .injuryCnt! -
+                                          .elementAt(k)
+                                          .injuryCnt! -
                                           defectList.elementAt(k).damageCnt!;
                                     }
 
@@ -1266,7 +1322,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                             defectList.elementAt(k).comment ??
                                                 "");
                                       } else if ((vsdpercent >
-                                              specTolerancePercentage / 2) &&
+                                          specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
                                         result = "A-";
@@ -1290,7 +1346,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                             defectList.elementAt(k).comment ??
                                                 "");
                                       } else if ((vsdpercent >
-                                              specTolerancePercentage / 2) &&
+                                          specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
                                         result = "A-";
@@ -1306,22 +1362,22 @@ class NewPurchaseOrderDetailsController extends GetxController {
                               if (tempSeverityDefectName == "Decay") {
                                 if (defectList.elementAt(k).decayCnt! > 0) {
                                   totalcount +=
-                                      defectList.elementAt(k).decayCnt!;
+                                  defectList.elementAt(k).decayCnt!;
                                   iscalculated = true;
                                   if (defectList.elementAt(k).defectCategory ==
                                       "quality") {
                                     totalQualitycount +=
-                                        defectList.elementAt(k).decayCnt!;
+                                    defectList.elementAt(k).decayCnt!;
                                     totalQualityDecay +=
-                                        defectList.elementAt(k).decayCnt!;
+                                    defectList.elementAt(k).decayCnt!;
                                   } else if (defectList
-                                          .elementAt(k)
-                                          .defectCategory ==
+                                      .elementAt(k)
+                                      .defectCategory ==
                                       "condition") {
                                     totalConditionCount +=
-                                        defectList.elementAt(k).decayCnt!;
+                                    defectList.elementAt(k).decayCnt!;
                                     totalConditionDecay +=
-                                        defectList.elementAt(k).decayCnt!;
+                                    defectList.elementAt(k).decayCnt!;
                                   }
 
                                   if (result != "RJ") {
@@ -1337,7 +1393,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                           defectList.elementAt(k).comment ??
                                               "");
                                     } else if ((vsdpercent >
-                                            specTolerancePercentage / 2) &&
+                                        specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
                                       result = "A-";
@@ -1359,7 +1415,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                           defectList.elementAt(k).comment ??
                                               "");
                                     } else if ((vsdpercent >
-                                            specTolerancePercentage / 2) &&
+                                        specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
                                       result = "A-";
@@ -1372,8 +1428,8 @@ class NewPurchaseOrderDetailsController extends GetxController {
                               }
                               if (tempSeverityDefectName == "") {
                                 if (defectList
-                                        .elementAt(k)
-                                        .verySeriousDamageCnt! >
+                                    .elementAt(k)
+                                    .verySeriousDamageCnt! >
                                     0) {
                                   totalcount += defectList
                                       .elementAt(k)
@@ -1382,14 +1438,14 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 if (defectList.elementAt(k).seriousDamageCnt! >
                                     0) {
                                   if (defectList
-                                          .elementAt(k)
-                                          .seriousDamageCnt! >
+                                      .elementAt(k)
+                                      .seriousDamageCnt! >
                                       defectList
                                           .elementAt(k)
                                           .verySeriousDamageCnt!) {
                                     totalcount += (defectList
-                                            .elementAt(k)
-                                            .seriousDamageCnt! -
+                                        .elementAt(k)
+                                        .seriousDamageCnt! -
                                         defectList
                                             .elementAt(k)
                                             .verySeriousDamageCnt!);
@@ -1401,23 +1457,23 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                           .elementAt(k)
                                           .seriousDamageCnt!) {
                                     totalcount +=
-                                        (defectList.elementAt(k).damageCnt! -
-                                            defectList
-                                                .elementAt(k)
-                                                .seriousDamageCnt!);
+                                    (defectList.elementAt(k).damageCnt! -
+                                        defectList
+                                            .elementAt(k)
+                                            .seriousDamageCnt!);
                                   }
                                 }
                                 if (defectList.elementAt(k).injuryCnt! > 0) {
                                   if (defectList.elementAt(k).injuryCnt! >
                                       defectList.elementAt(k).damageCnt!) {
                                     totalcount +=
-                                        (defectList.elementAt(k).injuryCnt! -
-                                            defectList.elementAt(k).damageCnt!);
+                                    (defectList.elementAt(k).injuryCnt! -
+                                        defectList.elementAt(k).damageCnt!);
                                   }
                                 }
                                 if (defectList.elementAt(k).decayCnt! > 0) {
                                   totalcount +=
-                                      defectList.elementAt(k).decayCnt!;
+                                  defectList.elementAt(k).decayCnt!;
                                 }
                                 iscalculated = true;
 
@@ -1433,7 +1489,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                         "$defectNameResult Total Defects % exceeds tolerance",
                                         defectList.elementAt(k).comment ?? "");
                                   } else if ((qualpercentage >
-                                          specTolerancePercentage / 2) &&
+                                      specTolerancePercentage / 2) &&
                                       (qualpercentage <=
                                           specTolerancePercentage)) {
                                     result = "A-";
@@ -1449,8 +1505,8 @@ class NewPurchaseOrderDetailsController extends GetxController {
                               if (tempSeverityDefectName ==
                                   "Very Serious Damage") {
                                 if (defectList
-                                        .elementAt(k)
-                                        .verySeriousDamageCnt! >
+                                    .elementAt(k)
+                                    .verySeriousDamageCnt! >
                                     0) {
                                   totalQualitycount += defectList
                                       .elementAt(k)
@@ -1472,7 +1528,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                           defectList.elementAt(k).comment ??
                                               "");
                                     } else if ((vsdpercent >
-                                            specTolerancePercentage / 2) &&
+                                        specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
                                       result = "A-";
@@ -1492,7 +1548,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                         "Total Quality - (VSD) % exceeds tolerance");
 
                                     rejectReason +=
-                                        "Total Quality - (VSD) % exceeds tolerance";
+                                    "Total Quality - (VSD) % exceeds tolerance";
                                     await dao.createOrUpdateResultReasonDetails(
                                         inspection.inspectionId!,
                                         "RJ",
@@ -1505,20 +1561,20 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 if (defectList.elementAt(k).seriousDamageCnt! >
                                     0) {
                                   if (defectList
-                                          .elementAt(k)
-                                          .seriousDamageCnt! >
+                                      .elementAt(k)
+                                      .seriousDamageCnt! >
                                       defectList
                                           .elementAt(k)
                                           .verySeriousDamageCnt!) {
                                     totalQualitycount += defectList
-                                            .elementAt(k)
-                                            .seriousDamageCnt! -
+                                        .elementAt(k)
+                                        .seriousDamageCnt! -
                                         defectList
                                             .elementAt(k)
                                             .verySeriousDamageCnt!;
                                     totalQualitySeriousDamage += defectList
-                                            .elementAt(k)
-                                            .seriousDamageCnt! -
+                                        .elementAt(k)
+                                        .seriousDamageCnt! -
                                         defectList
                                             .elementAt(k)
                                             .verySeriousDamageCnt!;
@@ -1538,7 +1594,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                             defectList.elementAt(k).comment ??
                                                 "");
                                       } else if ((vsdpercent >
-                                              specTolerancePercentage / 2) &&
+                                          specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
                                         result = "A-";
@@ -1557,14 +1613,14 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                           "Total Quality - (SD) % exceeds tolerance");
 
                                       rejectReason +=
-                                          "Total Quality - (SD) % exceeds tolerance";
+                                      "Total Quality - (SD) % exceeds tolerance";
                                       await dao
                                           .createOrUpdateResultReasonDetails(
-                                              inspection.inspectionId!,
-                                              "RJ",
-                                              rejectReason,
-                                              defectList.elementAt(k).comment ??
-                                                  "");
+                                          inspection.inspectionId!,
+                                          "RJ",
+                                          rejectReason,
+                                          defectList.elementAt(k).comment ??
+                                              "");
                                     }
                                   }
                                 }
@@ -1600,7 +1656,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                             defectList.elementAt(k).comment ??
                                                 "");
                                       } else if ((vsdpercent >
-                                              specTolerancePercentage / 2) &&
+                                          specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
                                         result = "A-";
@@ -1619,14 +1675,14 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                           "Total Quality - (Damage) % exceeds tolerance");
 
                                       rejectReason +=
-                                          "Total Quality - (Damage) % exceeds tolerance";
+                                      "Total Quality - (Damage) % exceeds tolerance";
                                       await dao
                                           .createOrUpdateResultReasonDetails(
-                                              inspection.inspectionId!,
-                                              "RJ",
-                                              rejectReason,
-                                              defectList.elementAt(k).comment ??
-                                                  "");
+                                          inspection.inspectionId!,
+                                          "RJ",
+                                          rejectReason,
+                                          defectList.elementAt(k).comment ??
+                                              "");
                                     }
                                   }
                                 }
@@ -1650,16 +1706,16 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                         result = "RJ";
                                         await dao
                                             .createOrUpdateResultReasonDetails(
-                                                inspection.inspectionId!,
-                                                result,
-                                                "Total Quality - (Injury) " +
-                                                    " % exceeds tolerance",
-                                                defectList
-                                                        .elementAt(k)
-                                                        .comment ??
-                                                    "");
+                                            inspection.inspectionId!,
+                                            result,
+                                            "Total Quality - (Injury) " +
+                                                " % exceeds tolerance",
+                                            defectList
+                                                .elementAt(k)
+                                                .comment ??
+                                                "");
                                       } else if ((vsdpercent >
-                                              specTolerancePercentage / 2) &&
+                                          specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
                                         result = "A-";
@@ -1683,11 +1739,11 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                               " % exceeds tolerance";
                                       await dao
                                           .createOrUpdateResultReasonDetails(
-                                              inspection.inspectionId!,
-                                              "RJ",
-                                              rejectReason,
-                                              defectList.elementAt(k).comment ??
-                                                  "");
+                                          inspection.inspectionId!,
+                                          "RJ",
+                                          rejectReason,
+                                          defectList.elementAt(k).comment ??
+                                              "");
                                     }
                                   }
                                 }
@@ -1695,9 +1751,9 @@ class NewPurchaseOrderDetailsController extends GetxController {
                               if (tempSeverityDefectName == "Decay") {
                                 if (defectList.elementAt(k).decayCnt! > 0) {
                                   totalQualitycount +=
-                                      defectList.elementAt(k).decayCnt!;
+                                  defectList.elementAt(k).decayCnt!;
                                   totalQualityDecay +=
-                                      defectList.elementAt(k).decayCnt!;
+                                  defectList.elementAt(k).decayCnt!;
 
                                   if (result != "RJ") {
                                     double vsdpercent = totalQualityDecay *
@@ -1707,14 +1763,14 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                       result = "RJ";
                                       await dao
                                           .createOrUpdateResultReasonDetails(
-                                              inspection.inspectionId!,
-                                              result,
-                                              "Total Quality - (Decay) " +
-                                                  " % exceeds tolerance",
-                                              defectList.elementAt(k).comment ??
-                                                  "");
+                                          inspection.inspectionId!,
+                                          result,
+                                          "Total Quality - (Decay) " +
+                                              " % exceeds tolerance",
+                                          defectList.elementAt(k).comment ??
+                                              "");
                                     } else if ((vsdpercent >
-                                            specTolerancePercentage / 2) &&
+                                        specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
                                       result = "A-";
@@ -1742,8 +1798,8 @@ class NewPurchaseOrderDetailsController extends GetxController {
                               }
                               if (tempSeverityDefectName == "") {
                                 if (defectList
-                                        .elementAt(k)
-                                        .verySeriousDamageCnt! >
+                                    .elementAt(k)
+                                    .verySeriousDamageCnt! >
                                     0) {
                                   totalQualitycount += defectList
                                       .elementAt(k)
@@ -1752,14 +1808,14 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 if (defectList.elementAt(k).seriousDamageCnt! >
                                     0) {
                                   if (defectList
-                                          .elementAt(k)
-                                          .seriousDamageCnt! >
+                                      .elementAt(k)
+                                      .seriousDamageCnt! >
                                       defectList
                                           .elementAt(k)
                                           .verySeriousDamageCnt!) {
                                     totalQualitycount += (defectList
-                                            .elementAt(k)
-                                            .seriousDamageCnt! -
+                                        .elementAt(k)
+                                        .seriousDamageCnt! -
                                         defectList
                                             .elementAt(k)
                                             .verySeriousDamageCnt!);
@@ -1787,7 +1843,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 }
                                 if (defectList.elementAt(k).decayCnt! > 0) {
                                   totalQualitycount +=
-                                      defectList.elementAt(k).decayCnt!;
+                                  defectList.elementAt(k).decayCnt!;
                                 }
                                 if (result != "RJ") {
                                   double totalqualitypercent =
@@ -1801,7 +1857,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                         "Total Quality" + "% exceeds tolerance",
                                         defectList.elementAt(k).comment ?? "");
                                   } else if ((totalqualitypercent >
-                                          specTolerancePercentage / 2) &&
+                                      specTolerancePercentage / 2) &&
                                       (totalqualitypercent <=
                                           specTolerancePercentage)) {
                                     result = "A-";
@@ -1828,13 +1884,13 @@ class NewPurchaseOrderDetailsController extends GetxController {
                               }
                               iscalculated = true;
                             } else if (defectList.elementAt(k).defectCategory ==
-                                    "condition" &&
+                                "condition" &&
                                 defectName == "Total Condition (%)") {
                               if (tempSeverityDefectName ==
                                   "Very Serious Damage") {
                                 if (defectList
-                                        .elementAt(k)
-                                        .verySeriousDamageCnt! >
+                                    .elementAt(k)
+                                    .verySeriousDamageCnt! >
                                     0) {
                                   totalConditionCount += defectList
                                       .elementAt(k)
@@ -1851,14 +1907,14 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                       result = "RJ";
                                       await dao
                                           .createOrUpdateResultReasonDetails(
-                                              inspection.inspectionId!,
-                                              result,
-                                              "Total Condition - (VSD) " +
-                                                  " % exceeds tolerance",
-                                              defectList.elementAt(k).comment ??
-                                                  "");
+                                          inspection.inspectionId!,
+                                          result,
+                                          "Total Condition - (VSD) " +
+                                              " % exceeds tolerance",
+                                          defectList.elementAt(k).comment ??
+                                              "");
                                     } else if ((vsdpercent >
-                                            specTolerancePercentage / 2) &&
+                                        specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
                                       result = "A-";
@@ -1890,20 +1946,20 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 if (defectList.elementAt(k).seriousDamageCnt! >
                                     0) {
                                   if (defectList
-                                          .elementAt(k)
-                                          .seriousDamageCnt! >
+                                      .elementAt(k)
+                                      .seriousDamageCnt! >
                                       defectList
                                           .elementAt(k)
                                           .verySeriousDamageCnt!) {
                                     totalConditionCount += defectList
-                                            .elementAt(k)
-                                            .seriousDamageCnt! -
+                                        .elementAt(k)
+                                        .seriousDamageCnt! -
                                         defectList
                                             .elementAt(k)
                                             .verySeriousDamageCnt!;
                                     totalConditionSeriousDamage += defectList
-                                            .elementAt(k)
-                                            .seriousDamageCnt! -
+                                        .elementAt(k)
+                                        .seriousDamageCnt! -
                                         defectList
                                             .elementAt(k)
                                             .verySeriousDamageCnt!;
@@ -1918,16 +1974,16 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                         result = "RJ";
                                         await dao
                                             .createOrUpdateResultReasonDetails(
-                                                inspection.inspectionId!,
-                                                result,
-                                                "Total Condition - (SD) " +
-                                                    " % exceeds tolerance",
-                                                defectList
-                                                        .elementAt(k)
-                                                        .comment ??
-                                                    "");
+                                            inspection.inspectionId!,
+                                            result,
+                                            "Total Condition - (SD) " +
+                                                " % exceeds tolerance",
+                                            defectList
+                                                .elementAt(k)
+                                                .comment ??
+                                                "");
                                       } else if ((vsdpercent >
-                                              specTolerancePercentage / 2) &&
+                                          specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
                                         result = "A-";
@@ -1951,11 +2007,11 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                               " % exceeds tolerance";
                                       await dao
                                           .createOrUpdateResultReasonDetails(
-                                              inspection.inspectionId!,
-                                              "RJ",
-                                              rejectReason,
-                                              defectList.elementAt(k).comment ??
-                                                  "");
+                                          inspection.inspectionId!,
+                                          "RJ",
+                                          rejectReason,
+                                          defectList.elementAt(k).comment ??
+                                              "");
                                     }
                                   }
                                 }
@@ -1985,16 +2041,16 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                         result = "RJ";
                                         await dao
                                             .createOrUpdateResultReasonDetails(
-                                                inspection.inspectionId!,
-                                                result,
-                                                "Total Condition - (Damage) " +
-                                                    " % exceeds tolerance",
-                                                defectList
-                                                        .elementAt(k)
-                                                        .comment ??
-                                                    "");
+                                            inspection.inspectionId!,
+                                            result,
+                                            "Total Condition - (Damage) " +
+                                                " % exceeds tolerance",
+                                            defectList
+                                                .elementAt(k)
+                                                .comment ??
+                                                "");
                                       } else if ((vsdpercent >
-                                              specTolerancePercentage / 2) &&
+                                          specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
                                         result = "A-";
@@ -2017,11 +2073,11 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                               " % exceeds tolerance";
                                       await dao
                                           .createOrUpdateResultReasonDetails(
-                                              inspection.inspectionId!,
-                                              "RJ",
-                                              rejectReason,
-                                              defectList.elementAt(k).comment ??
-                                                  "");
+                                          inspection.inspectionId!,
+                                          "RJ",
+                                          rejectReason,
+                                          defectList.elementAt(k).comment ??
+                                              "");
                                     }
                                   }
                                 }
@@ -2046,16 +2102,16 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                         result = "RJ";
                                         await dao
                                             .createOrUpdateResultReasonDetails(
-                                                inspection.inspectionId!,
-                                                result,
-                                                "Total Condition - (Injury) " +
-                                                    " % exceeds tolerance",
-                                                defectList
-                                                        .elementAt(k)
-                                                        .comment ??
-                                                    "");
+                                            inspection.inspectionId!,
+                                            result,
+                                            "Total Condition - (Injury) " +
+                                                " % exceeds tolerance",
+                                            defectList
+                                                .elementAt(k)
+                                                .comment ??
+                                                "");
                                       } else if ((vsdpercent >
-                                              specTolerancePercentage / 2) &&
+                                          specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
                                         result = "A-";
@@ -2078,11 +2134,11 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                               " % exceeds tolerance";
                                       await dao
                                           .createOrUpdateResultReasonDetails(
-                                              inspection.inspectionId!,
-                                              "RJ",
-                                              rejectReason,
-                                              defectList.elementAt(k).comment ??
-                                                  "");
+                                          inspection.inspectionId!,
+                                          "RJ",
+                                          rejectReason,
+                                          defectList.elementAt(k).comment ??
+                                              "");
                                     }
                                   }
                                 }
@@ -2090,9 +2146,9 @@ class NewPurchaseOrderDetailsController extends GetxController {
                               if (tempSeverityDefectName == "Decay") {
                                 if (defectList.elementAt(k).decayCnt! > 0) {
                                   totalConditionCount +=
-                                      defectList.elementAt(k).decayCnt!;
+                                  defectList.elementAt(k).decayCnt!;
                                   totalConditionDecay +=
-                                      defectList.elementAt(k).decayCnt!;
+                                  defectList.elementAt(k).decayCnt!;
                                   if (result != "RJ") {
                                     double vsdpercent = totalConditionDecay *
                                         100 /
@@ -2101,14 +2157,14 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                       result = "RJ";
                                       await dao
                                           .createOrUpdateResultReasonDetails(
-                                              inspection.inspectionId!,
-                                              result,
-                                              "Total Condition - (Decay) " +
-                                                  " % exceeds tolerance",
-                                              defectList.elementAt(k).comment ??
-                                                  "");
+                                          inspection.inspectionId!,
+                                          result,
+                                          "Total Condition - (Decay) " +
+                                              " % exceeds tolerance",
+                                          defectList.elementAt(k).comment ??
+                                              "");
                                     } else if ((vsdpercent >
-                                            specTolerancePercentage / 2) &&
+                                        specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
                                       result = "A-";
@@ -2139,8 +2195,8 @@ class NewPurchaseOrderDetailsController extends GetxController {
                               }
                               if (tempSeverityDefectName == "") {
                                 if (defectList
-                                        .elementAt(k)
-                                        .verySeriousDamageCnt! >
+                                    .elementAt(k)
+                                    .verySeriousDamageCnt! >
                                     0) {
                                   totalConditionCount += defectList
                                       .elementAt(k)
@@ -2149,14 +2205,14 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 if (defectList.elementAt(k).seriousDamageCnt! >
                                     0) {
                                   if (defectList
-                                          .elementAt(k)
-                                          .seriousDamageCnt! >
+                                      .elementAt(k)
+                                      .seriousDamageCnt! >
                                       defectList
                                           .elementAt(k)
                                           .verySeriousDamageCnt!) {
                                     totalConditionCount += (defectList
-                                            .elementAt(k)
-                                            .seriousDamageCnt! -
+                                        .elementAt(k)
+                                        .seriousDamageCnt! -
                                         defectList
                                             .elementAt(k)
                                             .verySeriousDamageCnt!);
@@ -2184,7 +2240,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 }
                                 if (defectList.elementAt(k).decayCnt! > 0) {
                                   totalConditionCount +=
-                                      defectList.elementAt(k).decayCnt!;
+                                  defectList.elementAt(k).decayCnt!;
                                 }
                                 if (result != "RJ") {
                                   double vsdpercent = totalConditionCount *
@@ -2199,7 +2255,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                             "% exceeds tolerance",
                                         defectList.elementAt(k).comment ?? "");
                                   } else if ((vsdpercent >
-                                          specTolerancePercentage / 2) &&
+                                      specTolerancePercentage / 2) &&
                                       (vsdpercent <= specTolerancePercentage)) {
                                     result = "A-";
                                   }
@@ -2249,14 +2305,14 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                         .elementAt(k)
                                         .verySeriousDamageCnt!) {
                                   totalSizecount += defectList
-                                          .elementAt(k)
-                                          .seriousDamageCnt! -
+                                      .elementAt(k)
+                                      .seriousDamageCnt! -
                                       defectList
                                           .elementAt(k)
                                           .verySeriousDamageCnt!;
                                   totalSize += defectList
-                                          .elementAt(k)
-                                          .seriousDamageCnt! -
+                                      .elementAt(k)
+                                      .seriousDamageCnt! -
                                       defectList
                                           .elementAt(k)
                                           .verySeriousDamageCnt!;
@@ -2266,12 +2322,12 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 if (defectList.elementAt(k).damageCnt! >
                                     defectList.elementAt(k).seriousDamageCnt!) {
                                   totalSizecount += defectList
-                                          .elementAt(k)
-                                          .damageCnt! -
+                                      .elementAt(k)
+                                      .damageCnt! -
                                       defectList.elementAt(k).seriousDamageCnt!;
                                   totalSize += defectList
-                                          .elementAt(k)
-                                          .damageCnt! -
+                                      .elementAt(k)
+                                      .damageCnt! -
                                       defectList.elementAt(k).seriousDamageCnt!;
                                 }
                               }
@@ -2288,14 +2344,14 @@ class NewPurchaseOrderDetailsController extends GetxController {
                               }
                               if (tempSeverityDefectName == "Decay") {
                                 totalSizecount +=
-                                    defectList.elementAt(k).decayCnt!;
+                                defectList.elementAt(k).decayCnt!;
                                 totalSize += defectList.elementAt(k).decayCnt!;
                               }
 
                               if (tempSeverityDefectName == "") {
                                 if (defectList
-                                        .elementAt(k)
-                                        .verySeriousDamageCnt! >
+                                    .elementAt(k)
+                                    .verySeriousDamageCnt! >
                                     0) {
                                   totalSizecount += defectList
                                       .elementAt(k)
@@ -2307,20 +2363,20 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 if (defectList.elementAt(k).seriousDamageCnt! >
                                     0) {
                                   if (defectList
-                                          .elementAt(k)
-                                          .seriousDamageCnt! >
+                                      .elementAt(k)
+                                      .seriousDamageCnt! >
                                       defectList
                                           .elementAt(k)
                                           .verySeriousDamageCnt!) {
                                     totalSizecount += (defectList
-                                            .elementAt(k)
-                                            .seriousDamageCnt! -
+                                        .elementAt(k)
+                                        .seriousDamageCnt! -
                                         defectList
                                             .elementAt(k)
                                             .verySeriousDamageCnt!);
                                     totalSize += (defectList
-                                            .elementAt(k)
-                                            .seriousDamageCnt! -
+                                        .elementAt(k)
+                                        .seriousDamageCnt! -
                                         defectList
                                             .elementAt(k)
                                             .verySeriousDamageCnt!);
@@ -2332,33 +2388,33 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                           .elementAt(k)
                                           .seriousDamageCnt!) {
                                     totalSizecount +=
-                                        (defectList.elementAt(k).damageCnt! -
-                                            defectList
-                                                .elementAt(k)
-                                                .seriousDamageCnt!);
+                                    (defectList.elementAt(k).damageCnt! -
+                                        defectList
+                                            .elementAt(k)
+                                            .seriousDamageCnt!);
                                     totalSize +=
-                                        (defectList.elementAt(k).damageCnt! -
-                                            defectList
-                                                .elementAt(k)
-                                                .seriousDamageCnt!);
+                                    (defectList.elementAt(k).damageCnt! -
+                                        defectList
+                                            .elementAt(k)
+                                            .seriousDamageCnt!);
                                   }
                                 }
                                 if (defectList.elementAt(k).injuryCnt! > 0) {
                                   if (defectList.elementAt(k).injuryCnt! >
                                       defectList.elementAt(k).damageCnt!) {
                                     totalSizecount +=
-                                        (defectList.elementAt(k).injuryCnt! -
-                                            defectList.elementAt(k).damageCnt!);
+                                    (defectList.elementAt(k).injuryCnt! -
+                                        defectList.elementAt(k).damageCnt!);
                                     totalSize +=
-                                        (defectList.elementAt(k).injuryCnt! -
-                                            defectList.elementAt(k).damageCnt!);
+                                    (defectList.elementAt(k).injuryCnt! -
+                                        defectList.elementAt(k).damageCnt!);
                                   }
                                 }
                                 if (defectList.elementAt(k).decayCnt! > 0) {
                                   totalSizecount +=
-                                      defectList.elementAt(k).decayCnt!;
+                                  defectList.elementAt(k).decayCnt!;
                                   totalSize +=
-                                      defectList.elementAt(k).decayCnt!;
+                                  defectList.elementAt(k).decayCnt!;
                                 }
                               }
                               iscalculated = true;
@@ -2382,7 +2438,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                         defectList.elementAt(k).comment ?? "");
                                   }
                                 } else if ((sizepercent >
-                                        specTolerancePercentage / 2) &&
+                                    specTolerancePercentage / 2) &&
                                     (sizepercent <= specTolerancePercentage)) {
                                   result = "A-";
                                 }
@@ -2398,7 +2454,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                   // rejectReasonArray.add(sizeDefectName + " : Size % exceeds tolerance");
 
                                   rejectReason +=
-                                      "$sizeDefectName : Size % exceeds tolerance";
+                                  "$sizeDefectName : Size % exceeds tolerance";
                                   await dao.createOrUpdateResultReasonDetails(
                                       inspection.inspectionId!,
                                       "RJ",
@@ -2445,14 +2501,14 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                         .elementAt(k)
                                         .verySeriousDamageCnt!) {
                                   colorcount += defectList
-                                          .elementAt(k)
-                                          .seriousDamageCnt! -
+                                      .elementAt(k)
+                                      .seriousDamageCnt! -
                                       defectList
                                           .elementAt(k)
                                           .verySeriousDamageCnt!;
                                   totalColor += defectList
-                                          .elementAt(k)
-                                          .seriousDamageCnt! -
+                                      .elementAt(k)
+                                      .seriousDamageCnt! -
                                       defectList
                                           .elementAt(k)
                                           .verySeriousDamageCnt!;
@@ -2462,12 +2518,12 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 if (defectList.elementAt(k).damageCnt! >
                                     defectList.elementAt(k).seriousDamageCnt!) {
                                   colorcount += defectList
-                                          .elementAt(k)
-                                          .damageCnt! -
+                                      .elementAt(k)
+                                      .damageCnt! -
                                       defectList.elementAt(k).seriousDamageCnt!;
                                   totalColor += defectList
-                                          .elementAt(k)
-                                          .damageCnt! -
+                                      .elementAt(k)
+                                      .damageCnt! -
                                       defectList.elementAt(k).seriousDamageCnt!;
                                 }
                               }
@@ -2488,8 +2544,8 @@ class NewPurchaseOrderDetailsController extends GetxController {
                               }
                               if (tempSeverityDefectName == "") {
                                 if (defectList
-                                        .elementAt(k)
-                                        .verySeriousDamageCnt! >
+                                    .elementAt(k)
+                                    .verySeriousDamageCnt! >
                                     0) {
                                   colorcount += defectList
                                       .elementAt(k)
@@ -2501,20 +2557,20 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                 if (defectList.elementAt(k).seriousDamageCnt! >
                                     0) {
                                   if (defectList
-                                          .elementAt(k)
-                                          .seriousDamageCnt! >
+                                      .elementAt(k)
+                                      .seriousDamageCnt! >
                                       defectList
                                           .elementAt(k)
                                           .verySeriousDamageCnt!) {
                                     colorcount += (defectList
-                                            .elementAt(k)
-                                            .seriousDamageCnt! -
+                                        .elementAt(k)
+                                        .seriousDamageCnt! -
                                         defectList
                                             .elementAt(k)
                                             .verySeriousDamageCnt!);
                                     totalColor += (defectList
-                                            .elementAt(k)
-                                            .seriousDamageCnt! -
+                                        .elementAt(k)
+                                        .seriousDamageCnt! -
                                         defectList
                                             .elementAt(k)
                                             .verySeriousDamageCnt!);
@@ -2526,33 +2582,33 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                           .elementAt(k)
                                           .seriousDamageCnt!) {
                                     colorcount +=
-                                        (defectList.elementAt(k).damageCnt! -
-                                            defectList
-                                                .elementAt(k)
-                                                .seriousDamageCnt!);
+                                    (defectList.elementAt(k).damageCnt! -
+                                        defectList
+                                            .elementAt(k)
+                                            .seriousDamageCnt!);
                                     totalColor +=
-                                        (defectList.elementAt(k).damageCnt! -
-                                            defectList
-                                                .elementAt(k)
-                                                .seriousDamageCnt!);
+                                    (defectList.elementAt(k).damageCnt! -
+                                        defectList
+                                            .elementAt(k)
+                                            .seriousDamageCnt!);
                                   }
                                 }
                                 if (defectList.elementAt(k).injuryCnt! > 0) {
                                   if (defectList.elementAt(k).injuryCnt! >
                                       defectList.elementAt(k).damageCnt!) {
                                     colorcount +=
-                                        (defectList.elementAt(k).injuryCnt! -
-                                            defectList.elementAt(k).damageCnt!);
+                                    (defectList.elementAt(k).injuryCnt! -
+                                        defectList.elementAt(k).damageCnt!);
                                     totalColor +=
-                                        (defectList.elementAt(k).injuryCnt! -
-                                            defectList.elementAt(k).damageCnt!);
+                                    (defectList.elementAt(k).injuryCnt! -
+                                        defectList.elementAt(k).damageCnt!);
                                   }
                                 }
                                 if (defectList.elementAt(k).decayCnt! > 0) {
                                   colorcount +=
-                                      defectList.elementAt(k).decayCnt!;
+                                  defectList.elementAt(k).decayCnt!;
                                   totalColor +=
-                                      defectList.elementAt(k).decayCnt!;
+                                  defectList.elementAt(k).decayCnt!;
                                 }
                               }
                               iscalculated = true;
@@ -2577,7 +2633,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                         defectList.elementAt(k).comment ?? "");
                                   }
                                 } else if ((colorpercent >
-                                        specTolerancePercentage / 2) &&
+                                    specTolerancePercentage / 2) &&
                                     (colorpercent <= specTolerancePercentage)) {
                                   result = "A-";
                                 }
@@ -2593,7 +2649,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                                   //rejectReasonArray.add(colorDefectName + " : Color % exceeds tolerance");
 
                                   rejectReason +=
-                                      "$colorDefectName : Color % exceeds tolerance";
+                                  "$colorDefectName : Color % exceeds tolerance";
                                   await dao.createOrUpdateResultReasonDetails(
                                       inspection.inspectionId!,
                                       "RJ",
@@ -2642,11 +2698,11 @@ class NewPurchaseOrderDetailsController extends GetxController {
                             .add("Total Quality Defects % exceeds tolerance");
 
                         rejectReason +=
-                            "Total Quality Defects % exceeds tolerance";
+                        "Total Quality Defects % exceeds tolerance";
                         await dao.createOrUpdateResultReasonDetails(
                             inspection.inspectionId!, result, rejectReason, "");
                       } else if ((qualpercentage >
-                              specTolerancePercentage / 2) &&
+                          specTolerancePercentage / 2) &&
                           (qualpercentage <= specTolerancePercentage)) {
                         result = "A-";
                       }
@@ -2665,12 +2721,12 @@ class NewPurchaseOrderDetailsController extends GetxController {
                             .add("Total Condition Defects % exceeds tolerance");
 
                         rejectReason +=
-                            "Total Condition Defects % exceeds tolerance";
+                        "Total Condition Defects % exceeds tolerance";
                         await dao.createOrUpdateResultReasonDetails(
                             inspection.inspectionId!, result, rejectReason, "");
                         break;
                       } else if ((condPercentage >
-                              specTolerancePercentage / 2) &&
+                          specTolerancePercentage / 2) &&
                           (condPercentage <= specTolerancePercentage)) {
                         result = "A-";
                       }
@@ -2754,7 +2810,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                               .add("Total Quality Defects % exceeds tolerance");
 
                           rejectReason +=
-                              " Total Quality Defects % exceeds tolerance";
+                          " Total Quality Defects % exceeds tolerance";
 
                           await dao.createOrUpdateResultReasonDetails(
                               inspection.inspectionId!,
@@ -2763,7 +2819,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                               "");
                           break;
                         } else if ((qualpercentage >
-                                specTolerancePercentage / 2) &&
+                            specTolerancePercentage / 2) &&
                             (qualpercentage <= specTolerancePercentage)) {
                           result = "A-";
                         }
@@ -2798,7 +2854,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                               "Total Condition Defects % exceeds tolerance");
 
                           rejectReason +=
-                              " Total Condition Defects % exceeds tolerance";
+                          " Total Condition Defects % exceeds tolerance";
                           await dao.createOrUpdateResultReasonDetails(
                               inspection.inspectionId!,
                               result,
@@ -2806,7 +2862,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                               "");
                           break;
                         } else if ((condpercentage >
-                                specTolerancePercentage / 2) &&
+                            specTolerancePercentage / 2) &&
                             (condpercentage <= specTolerancePercentage)) {
                           result = "A-";
                         }
@@ -2833,7 +2889,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                         await dao.createOrUpdateResultReasonDetails(
                             inspection.inspectionId!, result, rejectReason, "");
                       } else if ((calpercentage >
-                              specTolerancePercentage / 2) &&
+                          specTolerancePercentage / 2) &&
                           (calpercentage <= specTolerancePercentage)) {
                         result = "A-";
                       }
@@ -2855,7 +2911,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
               if (result != "RJ") {
                 if (appStorage.specificationAnalyticalList != null) {
                   for (SpecificationAnalytical item
-                      in appStorage.specificationAnalyticalList ?? []) {
+                  in appStorage.specificationAnalyticalList ?? []) {
                     SpecificationAnalyticalRequest? dbobj;
 
                     dbobj = await dao.findSpecAnalyticalObj(
@@ -2890,10 +2946,10 @@ class NewPurchaseOrderDetailsController extends GetxController {
 
               if (appStorage.specificationAnalyticalList != null) {
                 for (SpecificationAnalytical item
-                    in appStorage.specificationAnalyticalList!) {
+                in appStorage.specificationAnalyticalList!) {
                   SpecificationAnalyticalRequest? dbobj =
-                      await dao.findSpecAnalyticalObj(
-                          inspection.inspectionId!, item.analyticalID!);
+                  await dao.findSpecAnalyticalObj(
+                      inspection.inspectionId!, item.analyticalID!);
 
                   if (dbobj != null &&
                       (dbobj.comply == "N" || dbobj.comply == "No")) {
@@ -2945,7 +3001,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                   inspection.inspectionId!, listString);
 
               OverriddenResult? overriddenResult =
-                  await dao.getOverriddenResult(inspection.inspectionId!);
+              await dao.getOverriddenResult(inspection.inspectionId!);
 
               if ((result == "A-" || result == "AC") &&
                   overriddenResult == null) {
@@ -2982,7 +3038,6 @@ class NewPurchaseOrderDetailsController extends GetxController {
       debugPrint("Calculate Result :- $e");
     }
   }
-
   Future<void> onHomeMenuTap() async {
     bool isValid = true;
     bool isValid2 = true;
@@ -2998,7 +3053,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
           await dao.findPartnerItemSKUPOLine(
               partnerID,
               appStorage.selectedItemSKUList[i].sku!,
-              appStorage.selectedItemSKUList[i].poLineNo!,
+              appStorage.selectedItemSKUList[i].poLineNo,
               poNumber!);
 
       if (partnerItemSKU != null) {
@@ -3140,5 +3195,96 @@ class NewPurchaseOrderDetailsController extends GetxController {
       () => PurchaseOrderScreen(tag: tag),
       arguments: passingData,
     );
+  }
+
+  Future<void> uploadAllInspections() async {
+    final List<int> uploadCheckedList =
+        await dao.findReadyToUploadInspectionIDs();
+
+    if (uploadCheckedList.isNotEmpty) {
+      final List<int> failedList = [];
+
+      for (int i = 0; i < uploadCheckedList.length; i++) {
+        final Inspection? inspection =
+            await dao.findInspectionByID(uploadCheckedList[i]);
+
+        if (inspection?.commodityId == 0) {
+          uploadCheckedList.removeAt(i);
+          failedList.add(uploadCheckedList[i]);
+        }
+      }
+
+      final ProgressController progressController =
+          Get.put(ProgressController());
+      Utils.showLinearProgressWithMessage(
+        message: AppStrings.uploadMessage,
+        progressController: progressController,
+        totalInspection: uploadCheckedList.length,
+      );
+
+      int numberOfInspections = uploadCheckedList.length;
+      int listIndex = 0;
+      int progressDialogStatus = 0;
+
+      while (progressDialogStatus < numberOfInspections) {
+        try {
+          await Utils().uploadInspection(uploadCheckedList[listIndex]);
+          progressDialogStatus = ++listIndex;
+
+          // Update the progress bar
+          progressController.updateProgress(progressDialogStatus.toDouble());
+          if (progressDialogStatus >= numberOfInspections) {
+            Get.back();
+          }
+        } catch (e) {
+          print('upload error = $e');
+        }
+      }
+    } else {
+      final List<int> incompleteInspectionList =
+          await dao.getAllIncompleteInspectionIDs();
+
+      for (int i = 0; i < incompleteInspectionList.length; i++) {
+        await dao.deleteInspection(incompleteInspectionList[i]);
+      }
+
+      await Get.to(() => const CacheDownloadScreen(), arguments: {
+        Consts.IS_QCDETAILSHORT_SCREEN: true,
+      });
+
+      await appStorage.setInt(
+          StorageKey.kCacheDate, DateTime.now().millisecondsSinceEpoch);
+      await appStorage.write(StorageKey.kIsCSVDownloaded1, true);
+    }
+  }
+
+  Future<void> downloadTap() async {
+    if (globalConfigController.hasStableInternet.value) {
+      UpdateDataAlert.showUpdateDataDialog(
+        Get.context!,
+        onOkPressed: () async {
+          bool checkInsp = await dao.checkInspections();
+          if (checkInsp) {
+            UpdateDataAlert.showUpdateDataDialog(Get.context!,
+                onOkPressed: () async {
+              await uploadAllInspections();
+            }, message: AppStrings.updateDataMessage);
+          } else {
+            debugPrint('Download button tap.');
+            await Get.off(
+              () => const CacheDownloadScreen(),
+              arguments: {
+                Consts.IS_QCDETAILSHORT_SCREEN: true,
+              },
+            );
+          }
+        },
+        message: AppStrings.updateDataConfirmation,
+      );
+    } else {
+      UpdateDataAlert.showUpdateDataDialog(Get.context!, onOkPressed: () {
+        debugPrint('Download button tap.');
+      }, message: AppStrings.downloadWifiError);
+    }
   }
 }
