@@ -667,7 +667,7 @@ class PurchaseOrderDetailsController extends GetxController {
                           } else if ((vsdpercent >
                                   specTolerancePercentage / 2) &&
                               (vsdpercent <= specTolerancePercentage)) {
-                            result = "A-1";
+                            result = "A-";
                           }
                         }
 
@@ -709,7 +709,7 @@ class PurchaseOrderDetailsController extends GetxController {
                           } else if ((sdpercent >
                                   specTolerancePercentage / 2) &&
                               (sdpercent <= specTolerancePercentage)) {
-                            result = "A-2";
+                            result = "A-";
                           }
                         }
 
@@ -748,7 +748,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                 "");
                           } else if ((dpercent > specTolerancePercentage / 2) &&
                               (dpercent <= specTolerancePercentage)) {
-                            result = "A-3";
+                            result = "A-";
                           }
                         }
 
@@ -788,7 +788,7 @@ class PurchaseOrderDetailsController extends GetxController {
                             break;
                           } else if ((ipercent > specTolerancePercentage / 2) &&
                               (ipercent <= specTolerancePercentage)) {
-                            result = "A-4";
+                            result = "A-";
                           }
                         }
 
@@ -828,7 +828,7 @@ class PurchaseOrderDetailsController extends GetxController {
                           } else if ((depercent >
                                   specTolerancePercentage / 2) &&
                               (depercent <= specTolerancePercentage)) {
-                            result = "A-5";
+                            result = "A-";
                           }
                         }
 
@@ -868,7 +868,7 @@ class PurchaseOrderDetailsController extends GetxController {
                           } else if ((qualpercentage >
                                   specTolerancePercentage / 2) &&
                               (qualpercentage <= specTolerancePercentage)) {
-                            result = "A-6";
+                            result = "A-";
                           }
                         }
 
@@ -961,7 +961,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                             specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
-                                      result = "A-7";
+                                      result = "A-";
                                     }
                                   }
 
@@ -987,7 +987,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                             specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
-                                      result = "A-8";
+                                      result = "A-";
                                     }
                                   }
 
@@ -1068,7 +1068,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-9";
+                                        result = "A-";
                                       }
                                     }
 
@@ -1094,7 +1094,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-10";
+                                        result = "A-";
                                       }
                                     }
                                     double vsdpercent4 =
@@ -1163,7 +1163,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                   } else if ((vsdpercent >
                                           specTolerancePercentage / 2) &&
                                       (vsdpercent <= specTolerancePercentage)) {
-                                    result = "A-11";
+                                    result = "A-";
                                   }
                                 }
 
@@ -1184,7 +1184,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                   } else if ((vsdpercent >
                                           specTolerancePercentage / 2) &&
                                       (vsdpercent <= specTolerancePercentage)) {
-                                    result = "A-12";
+                                    result = "A-";
                                   }
                                 }
 
@@ -1246,7 +1246,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-13";
+                                        result = "A-";
                                       }
                                     }
                                     double vsdpercent7 =
@@ -1271,7 +1271,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-14";
+                                        result = "A-";
                                       }
                                     }
 
@@ -1323,7 +1323,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                             specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
-                                      result = "A-15";
+                                      result = "A-";
                                     }
                                   }
                                   double vsdpercent9 =
@@ -1346,7 +1346,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                             specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
-                                      result = "A-16";
+                                      result = "A-";
                                     }
                                   }
                                   double vsdpercent10 =
@@ -1421,7 +1421,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                           specTolerancePercentage / 2) &&
                                       (qualpercentage <=
                                           specTolerancePercentage)) {
-                                    result = "A-17";
+                                    result = "A-";
                                   }
                                 }
 
@@ -1464,7 +1464,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                             specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
-                                      result = "A-18";
+                                      result = "A-";
                                     }
                                   }
 
@@ -1530,7 +1530,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-19";
+                                        result = "A-";
                                       }
                                     }
                                     double vsdpercent12 =
@@ -1593,7 +1593,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-20";
+                                        result = "A-";
                                       }
                                     }
 
@@ -1653,7 +1653,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-21";
+                                        result = "A-";
                                       }
                                     }
 
@@ -1708,7 +1708,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                             specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
-                                      result = "A-22";
+                                      result = "A-";
                                     }
                                   }
                                   double vsdpercent15 =
@@ -1797,7 +1797,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                           specTolerancePercentage / 2) &&
                                       (totalqualitypercent <=
                                           specTolerancePercentage)) {
-                                    result = "A-23";
+                                    result = "A-";
                                   }
                                 }
                                 double totalqualitypercent1 =
@@ -1858,7 +1858,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                             specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
-                                      result = "A-24";
+                                      result = "A-";
                                     }
                                   }
                                   double vsdpercentT =
@@ -1927,7 +1927,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-25";
+                                        result = "A-";
                                       }
                                     }
                                     double vsdpercentTT =
@@ -1995,7 +1995,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-26";
+                                        result = "A-";
                                       }
                                     }
                                     double vsdpercentTB =
@@ -2058,7 +2058,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                               specTolerancePercentage / 2) &&
                                           (vsdpercent <=
                                               specTolerancePercentage)) {
-                                        result = "A-27";
+                                        result = "A-";
                                       }
                                     }
                                     double vsdpercentTA =
@@ -2112,7 +2112,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                             specTolerancePercentage / 2) &&
                                         (vsdpercent <=
                                             specTolerancePercentage)) {
-                                      result = "A-28";
+                                      result = "A-";
                                     }
                                   }
                                   double vsdpercentAB =
@@ -2202,7 +2202,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                   } else if ((vsdpercent >
                                           specTolerancePercentage / 2) &&
                                       (vsdpercent <= specTolerancePercentage)) {
-                                    result = "A-29";
+                                    result = "A-";
                                   }
                                 }
 
@@ -2390,7 +2390,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                 } else if ((sizepercent >
                                         specTolerancePercentage / 2) &&
                                     (sizepercent <= specTolerancePercentage)) {
-                                  result = "A-30";
+                                  result = "A-";
                                 }
                               }
 
@@ -2590,7 +2590,7 @@ class PurchaseOrderDetailsController extends GetxController {
                                 } else if ((colorpercent >
                                         specTolerancePercentage / 2) &&
                                     (colorpercent <= specTolerancePercentage)) {
-                                  result = "A-31";
+                                  result = "A-";
                                 }
                               }
                               double colorpercent1 =
@@ -2661,7 +2661,7 @@ class PurchaseOrderDetailsController extends GetxController {
                       } else if ((qualpercentage >
                               specTolerancePercentage / 2) &&
                           (qualpercentage <= specTolerancePercentage)) {
-                        result = "A-32";
+                        result = "A-";
                       }
                     } else if (defectID != null &&
                         totalConditionCount > 0 &&
@@ -2686,7 +2686,7 @@ class PurchaseOrderDetailsController extends GetxController {
                       } else if ((condPercentage >
                               specTolerancePercentage / 2) &&
                           (condPercentage <= specTolerancePercentage)) {
-                        result = "A-33";
+                        result = "A-";
                       }
                     } else if (defectID != null &&
                         totalSize > 0 &&
@@ -2712,7 +2712,7 @@ class PurchaseOrderDetailsController extends GetxController {
                         break;
                       } else if ((sizeper > specTolerancePercentage / 2) &&
                           (sizeper <= specTolerancePercentage)) {
-                        result = "A-34";
+                        result = "A-";
                       }
                     } else if (defectID != null &&
                         totalColor > 0 &&
@@ -2734,7 +2734,7 @@ class PurchaseOrderDetailsController extends GetxController {
                         break;
                       } else if ((sizeper > specTolerancePercentage / 2) &&
                           (sizeper <= specTolerancePercentage)) {
-                        result = "A-35";
+                        result = "A-";
                       }
                     }
 
@@ -2785,7 +2785,7 @@ class PurchaseOrderDetailsController extends GetxController {
                         } else if ((qualpercentage >
                                 specTolerancePercentage / 2) &&
                             (qualpercentage <= specTolerancePercentage)) {
-                          result = "A-36";
+                          result = "A-";
                         }
                       } else if (defectID != null &&
                           totalConditionDefectId != 0 &&
@@ -2833,7 +2833,7 @@ class PurchaseOrderDetailsController extends GetxController {
                         } else if ((condpercentage >
                                 specTolerancePercentage / 2) &&
                             (condpercentage <= specTolerancePercentage)) {
-                          result = "A-37";
+                          result = "A-";
                         }
                       }
                     }
@@ -2861,7 +2861,7 @@ class PurchaseOrderDetailsController extends GetxController {
                       } else if ((calpercentage >
                               specTolerancePercentage / 2) &&
                           (calpercentage <= specTolerancePercentage)) {
-                        result = "A-38";
+                        result = "A-";
                       }
 
                       if (result != "RJ" &&
@@ -3160,8 +3160,8 @@ class PurchaseOrderDetailsController extends GetxController {
     AppAlertDialog.confirmationAlert(
         Get.context!, AppStrings.alert, 'Calculate results?',
         onYesTap: () async {
-          await calculateButtonClick(Get.context!);
-        });
+      await calculateButtonClick(Get.context!);
+    });
   }
 
   Future<String?> getFinalInspectionResult(

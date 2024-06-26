@@ -3587,12 +3587,12 @@ class ApplicationDao {
   Future<int?> createPartnerItemSKU(
     int partnerID,
     String itemSKU,
-    String lotNo,
+    String? lotNo,
     String packDate,
     int inspectionId,
     String lotSize,
     String uniqueId,
-    int poLineNo,
+    int? poLineNo,
     String poNo,
   ) async {
     final Database db = dbProvider.lazyDatabase;
@@ -4418,7 +4418,7 @@ class ApplicationDao {
   }
 
   Future<PartnerItemSKUInspections?> findPartnerItemSKUPOLine(
-      int partnerId, String itemSKU, int poLineNo, String poNo) async {
+      int partnerId, String itemSKU, int? poLineNo, String poNo) async {
     PartnerItemSKUInspections? item;
 
     final Database db = dbProvider.lazyDatabase;

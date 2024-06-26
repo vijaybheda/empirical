@@ -171,6 +171,8 @@ class NewPurchaseOrderDetailsController extends GetxController {
     List<FinishedGoodsItemSKU> selectedItemSKUList =
         await dao.getSelectedItemSKUList();
     originalData.addAll(getPurchaseOrderData());
+    filteredInspectionsList.addAll(originalData);
+    listAssigned.value = true;
     update();
   }
 
@@ -317,6 +319,52 @@ class NewPurchaseOrderDetailsController extends GetxController {
     }
   }
 
+  Future<void> onBackPress() async {
+    bool isValid = true;
+
+    for (int i = 0; i < appStorage.selectedItemSKUList.length; i++) {
+      bool isComplete = await dao.isInspectionComplete(
+          partnerID,
+          appStorage.selectedItemSKUList[i].sku!,
+          appStorage.selectedItemSKUList[i].uniqueItemId);
+
+      if (isComplete) {
+        PartnerItemSKUInspections? partnerItemSKU =
+            await dao.findPartnerItemSKU(
+                partnerID,
+                appStorage.selectedItemSKUList[i].sku!,
+                appStorage.selectedItemSKUList[i].uniqueItemId);
+
+        if (partnerItemSKU != null) {
+          Inspection? inspection =
+              await dao.findInspectionByID(partnerItemSKU.inspectionId!);
+          QualityControlItem? qualityControlItems =
+              await dao.findQualityControlDetails(partnerItemSKU.inspectionId!);
+
+          if (inspection != null &&
+              qualityControlItems != null &&
+              inspection.result != null &&
+              inspection.result == "RJ") {
+            if (qualityControlItems.qtyRejected! == 0 ||
+                qualityControlItems.qtyRejected! >
+                    qualityControlItems.qtyShipped!) {
+              isValid = false;
+
+              AppAlertDialog.validateAlerts(
+                Get.context!,
+                AppStrings.error,
+                AppStrings.pleaseEnterValidQtyRejected,
+              );
+            }
+          }
+        }
+      }
+    }
+    if (isValid) {
+      Get.back();
+    }
+  }
+
   Future<void> onHomeMenuTap() async {
     bool isValid = true;
     bool isValid2 = true;
@@ -332,7 +380,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
           await dao.findPartnerItemSKUPOLine(
               partnerID,
               appStorage.selectedItemSKUList[i].sku!,
-              appStorage.selectedItemSKUList[i].poLineNo!,
+              appStorage.selectedItemSKUList[i].poLineNo,
               poNumber!);
 
       if (partnerItemSKU != null) {

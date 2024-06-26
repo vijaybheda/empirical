@@ -20,11 +20,13 @@ import 'package:pverify/models/specification_by_item_sku.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/inspection_photos/inspection_photos_screen.dart';
 import 'package:pverify/ui/overridden_result/overridden_result_screen.dart';
+import 'package:pverify/ui/qc_short_form/qc_details_short_form_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/extensions/int_extension.dart';
+import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
 
@@ -33,8 +35,6 @@ class NewPurchaseOrderListViewItem extends StatefulWidget {
     super.key,
     required this.goodsItem,
     required this.onRatingChanged,
-    required this.onLotNumberChanged,
-    required this.onPackDateChanged,
     required this.onQuantityShippedChanged,
     required this.onQuantityRejectedChanged,
     required this.onInspectPressed,
@@ -52,8 +52,6 @@ class NewPurchaseOrderListViewItem extends StatefulWidget {
   });
 
   final Function(double) onRatingChanged;
-  final Function(String) onLotNumberChanged;
-  final Function(String) onPackDateChanged;
   final Function(int) onQuantityShippedChanged;
   final Function(int) onQuantityRejectedChanged;
   final Function() onInspectPressed;
@@ -85,10 +83,10 @@ class _NewPurchaseOrderListViewItemState
 
   Color layoutPurchaseOrderColor = Colors.transparent;
 
-  String lotNoString = '';
-
   bool editPencilEnabled = false;
   bool qtyRejectedEnabled = false;
+
+  bool hasComment = false;
 
   NewPurchaseOrderDetailsController get controller => widget.controller;
 
@@ -116,21 +114,11 @@ class _NewPurchaseOrderListViewItemState
 
   Inspection? inspection;
   bool informationIconEnabled = false;
-  String? resultButton;
-  bool resultButtonVisibility = false;
   bool layoutQuantityRejectedVisibility = false;
-  String packDateString = '';
   String poNumberString = '';
   bool poNumberVisibility = true;
   String isBranded = '';
 
-  Color resultButtonColor = AppColors.white;
-
-  Icon informationIcon = Icon(
-    Icons.info_rounded,
-    color: AppColors.white,
-    size: 40,
-  );
   Icon inspectButtonIcon = Icon(
     Icons.play_arrow_rounded,
     color: AppColors.white,
@@ -145,11 +133,10 @@ class _NewPurchaseOrderListViewItemState
   String? specificationVersion;
   String? specificationName;
   String? specificationTypeName;
+  int? sampleSizeByCount;
   RxBool valueAssigned = false.obs;
   bool fromSetState = false;
 
-  late TextEditingController _lotNumberController;
-  late TextEditingController _packDateController;
   late TextEditingController _qtyShippedController;
   late TextEditingController _qtyRejectedController;
 
@@ -157,15 +144,9 @@ class _NewPurchaseOrderListViewItemState
 
   @override
   void initState() {
-    poLineNo = controller.filteredInspectionsList[position].poLineNo ?? 0;
-    packDateString = controller.filteredInspectionsList[position].packDate ??
-        DateTime.now().toIso8601String();
+    poLineNo = currentInspectionsItem.poLineNo ?? 0;
+    DateTime.now().toIso8601String();
     isCheckedList = List<bool>.filled(controller.originalData.length, false);
-    _lotNumberController =
-        TextEditingController(text: widget.goodsItem.lotNumber);
-    lotNoString = (widget.goodsItem.lotNumber ?? '').toString();
-    _packDateController =
-        TextEditingController(text: widget.goodsItem.packDate);
     _qtyShippedController = TextEditingController();
     _qtyRejectedController = TextEditingController();
 
@@ -185,8 +166,8 @@ class _NewPurchaseOrderListViewItemState
 
   @override
   void dispose() {
-    _lotNumberController.dispose();
-    _packDateController.dispose();
+    // _lotNumberController.dispose();
+    // _packDateController.dispose();
     _qtyShippedController.dispose();
     _qtyRejectedController.dispose();
     super.dispose();
@@ -208,144 +189,378 @@ class _NewPurchaseOrderListViewItemState
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-      child: Obx(() {
-        if (!valueAssigned.value) {
-          return buildShimmer();
-        }
-        return Card(
-          color: _getBackgroundColor(),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Obx(() {
+      if (!valueAssigned.value) {
+        return buildShimmer();
+      }
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            color: layoutPurchaseOrderColor,
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  widget.goodsItem.description ?? '',
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
+                Expanded(
+                  flex: flexList[0],
+                  child: GestureDetector(
+                    onTap: () async {
+                      await onSkuTap();
+                    },
+                    child: Text(
+                      widget.goodsItem.sku ?? '',
+                      textAlign: TextAlign.start,
+                      style: const TextStyle(
+                          fontSize: 16, decoration: TextDecoration.underline),
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'SKU: ${widget.goodsItem.sku}',
-                  style: const TextStyle(
-                      fontSize: 16, decoration: TextDecoration.underline),
+                Expanded(
+                  flex: flexList[1],
+                  child: Text(
+                    widget.goodsItem.description ?? '',
+                    textAlign: TextAlign.start,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                 ),
-                if (widget.goodsItem.ftl == "1")
-                  const Text('FTL', style: TextStyle(fontSize: 16)),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _lotNumberController,
-                        decoration:
-                            const InputDecoration(labelText: 'Lot Number'),
-                        onChanged: widget.onLotNumberChanged,
+                Expanded(
+                  flex: flexList[2],
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Radio<String>(
+                            value: "Yes",
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            visualDensity: VisualDensity.compact,
+                            groupValue: isBranded,
+                            onChanged: (value) {
+                              onRadioButtonChange("Yes");
+                              widget.onBrandedChanged(value == "Yes");
+                            },
+                            activeColor: AppColors.white,
+                            fillColor:
+                                MaterialStateProperty.all(AppColors.white),
+                            focusColor: AppColors.white,
+                            hoverColor: AppColors.white,
+                            overlayColor:
+                                MaterialStateProperty.all(AppColors.white),
+                          ),
+                          const Text('Y'),
+                        ],
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        controller: _packDateController,
-                        decoration:
-                            const InputDecoration(labelText: 'Pack Date'),
-                        onChanged: widget.onPackDateChanged,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Radio<String>(
+                            value: "No",
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            visualDensity: VisualDensity.compact,
+                            groupValue: isBranded,
+                            onChanged: (value) {
+                              onRadioButtonChange("No");
+                              widget.onBrandedChanged(value == "No");
+                            },
+                            activeColor: AppColors.white,
+                            fillColor:
+                                MaterialStateProperty.all(AppColors.white),
+                            focusColor: AppColors.white,
+                            hoverColor: AppColors.white,
+                            overlayColor:
+                                MaterialStateProperty.all(AppColors.white),
+                          ),
+                          const Text('N'),
+                        ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _qtyShippedController,
-                        decoration:
-                            const InputDecoration(labelText: 'Qty Shipped'),
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) => widget
-                            .onQuantityShippedChanged(int.tryParse(value) ?? 0),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        controller: _qtyRejectedController,
-                        decoration:
-                            const InputDecoration(labelText: 'Qty Rejected'),
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) => widget.onQuantityRejectedChanged(
-                            int.tryParse(value) ?? 0),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    RatingBar.builder(
-                      initialRating: ratings,
-                      minRating: 0,
-                      direction: Axis.horizontal,
-                      allowHalfRating: false,
-                      itemCount: 5,
-                      itemSize: 30,
-                      itemBuilder: (context, _) => const Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                      ),
-                      onRatingUpdate: (value) async {
-                        onRatingUpdate(value);
-                      },
-                    ),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.camera_alt),
-                          onPressed: widget.onInfoPressed,
+                Expanded(
+                  flex: flexList[3],
+                  child: Row(
+                    children: [
+                      RatingBar.builder(
+                        initialRating: ratings,
+                        minRating: 0,
+                        direction: Axis.horizontal,
+                        allowHalfRating: false,
+                        itemCount: 5,
+                        itemSize: 30,
+                        itemBuilder: (context, _) => Icon(
+                          Icons.star,
+                          color: AppColors.yellow,
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: widget.onInspectPressed,
+                        onRatingUpdate: (value) async {
+                          onRatingUpdate(value);
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.camera_alt,
+                          color: AppColors.white,
+                          size: 40,
                         ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Text('Branded: '),
-                    Radio<bool>(
-                      value: isBranded == "Yes",
-                      groupValue: true,
-                      onChanged: (value) => widget.onBrandedChanged(value!),
-                    ),
-                    const Text('Yes'),
-                    Radio<bool>(
-                      value: isBranded == "No",
-                      groupValue: false,
-                      onChanged: (value) => widget.onBrandedChanged(value!),
-                    ),
-                    const Text('No'),
-                  ],
+                        onPressed: cameraIconTap,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-        );
-      }),
-    );
+          const SizedBox(height: 8),
+          if (layoutQuantityRejectedVisibility)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Row(
+                      children: [
+                        Text('Qty Shipped *',
+                            style: Get.textTheme.bodyMedium?.copyWith(
+                              fontSize: 28.sp,
+                              color: AppColors.white,
+                              fontWeight: FontWeight.w600,
+                            )),
+                        Expanded(
+                          child: SizedBox(
+                            width: 80,
+                            child: TextField(
+                              controller: _qtyShippedController,
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.number,
+                              style: Get.textTheme.bodyMedium?.copyWith(
+                                fontSize: 28.sp,
+                                color: AppColors.white,
+                                fontWeight: FontWeight.normal,
+                              ),
+                              decoration: InputDecoration(
+                                enabled: etQtyShippedEnabled,
+                                isDense: true,
+                                border: const UnderlineInputBorder(),
+                                focusedBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                disabledBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                enabledBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                errorBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.red),
+                                ),
+                                focusedErrorBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                suffixIcon: _qtyShippedController.text
+                                        .trim()
+                                        .isEmpty
+                                    ? IconButton(
+                                        icon: const Icon(Icons.info_outlined,
+                                            color: Colors.red),
+                                        onPressed: () {
+                                          Utils.showSnackBar(
+                                            context: Get.overlayContext!,
+                                            message:
+                                                'Please enter a valid value',
+                                            backgroundColor: Colors.red,
+                                            duration:
+                                                const Duration(seconds: 2),
+                                          );
+                                        },
+                                      )
+                                    : null,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text('Qty Rejected *',
+                            style: Get.textTheme.bodyMedium?.copyWith(
+                              fontSize: 28.sp,
+                              color: AppColors.white,
+                              fontWeight: FontWeight.w600,
+                            )),
+                        Expanded(
+                          child: SizedBox(
+                            width: 80,
+                            child: TextField(
+                              controller: _qtyRejectedController,
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.number,
+                              style: Get.textTheme.bodyMedium?.copyWith(
+                                fontSize: 28.sp,
+                                color: AppColors.white,
+                                fontWeight: FontWeight.normal,
+                              ),
+                              onChanged: (value) =>
+                                  widget.onQuantityRejectedChanged(
+                                      int.tryParse(value) ?? 0),
+                              decoration: InputDecoration(
+                                isDense: true,
+                                border: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                focusedBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                disabledBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                enabledBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                errorBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.red),
+                                ),
+                                focusedErrorBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                suffixIcon: _qtyRejectedController.text
+                                        .trim()
+                                        .isEmpty
+                                    ? IconButton(
+                                        icon: const Icon(Icons.info_outlined,
+                                            color: Colors.red),
+                                        onPressed: () {
+                                          Utils.showSnackBar(
+                                            context: Get.overlayContext!,
+                                            message:
+                                                'Please enter a valid value',
+                                            backgroundColor: Colors.red,
+                                            duration:
+                                                const Duration(seconds: 2),
+                                          );
+                                        },
+                                      )
+                                    : null,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () async {
+                            await onComment();
+                          },
+                          child: Image.asset(
+                            hasComment
+                                ? AppImages.ic_specCommentsAdded
+                                : AppImages.ic_specComments,
+                            width: 80.w,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.edit,
+                            color: AppColors.white,
+                            size: 40,
+                          ),
+                          onPressed: () async {
+                            await onEditPressed();
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          if (etQtyShippedEnabled) const SizedBox(height: 8),
+        ],
+      );
+    });
+  }
+
+  Future<void> onEditPressed() async {
+    Inspection? inspection = await dao.findInspectionByID(inspectionId);
+    if (inspection != null && inspection.result != null) {
+      Map<String, dynamic> arguments = {
+        Consts.SERVER_INSPECTION_ID: inspection.inspectionId,
+        Consts.PARTNER_NAME:
+            appStorage.selectedItemSKUList.elementAt(position).partnerName,
+        Consts.PARTNER_ID:
+            appStorage.selectedItemSKUList.elementAt(position).partnerId,
+        Consts.CARRIER_NAME: carrierName,
+        Consts.CARRIER_ID: carrierID,
+        Consts.COMMODITY_NAME:
+            appStorage.selectedItemSKUList.elementAt(position).commodityName,
+        Consts.COMMODITY_ID:
+            appStorage.selectedItemSKUList.elementAt(position).commodityID,
+        Consts.INSPECTION_RESULT: inspection.result,
+        Consts.ITEM_SKU: currentNewPurchaseItem.sku,
+        Consts.PO_NUMBER: poNumberString,
+      };
+
+      appStorage.specificationByItemSKUList =
+          await dao.getSpecificationByItemSKUFromTable(
+        currentNewPurchaseItem.partnerId!,
+        currentNewPurchaseItem.sku!,
+        currentNewPurchaseItem.sku!,
+      );
+
+      if (appStorage.specificationByItemSKUList != null &&
+          (appStorage.specificationByItemSKUList ?? []).isNotEmpty) {
+        specificationNumber = appStorage.specificationByItemSKUList
+            ?.elementAt(0)
+            .specificationNumber;
+        specificationVersion = appStorage.specificationByItemSKUList
+            ?.elementAt(0)
+            .specificationVersion;
+        specificationName = appStorage.specificationByItemSKUList
+            ?.elementAt(0)
+            .specificationName;
+        specificationTypeName = appStorage.specificationByItemSKUList
+            ?.elementAt(0)
+            .specificationTypeName;
+      }
+
+      arguments[Consts.SPECIFICATION_NUMBER] = specificationNumber;
+      arguments[Consts.SPECIFICATION_VERSION] = specificationVersion;
+      arguments[Consts.SPECIFICATION_NAME] = specificationName;
+      arguments[Consts.SPECIFICATION_TYPE_NAME] = specificationTypeName;
+
+      arguments[Consts.CALLER_ACTIVITY] = "NewPurchaseOrderDetailsActivity";
+      Get.to(() => const OverriddenResultScreen(), arguments: arguments);
+    }
   }
 
   int get position => widget.position;
 
-  double get ratings => (inspection?.rating ?? 0).toInt().toDouble();
+  double _ratings = 0.0;
+
+  double get ratings => _ratings;
+
+  // double get ratings => (inspection?.rating ?? 0).toInt().toDouble();
 
   set ratings(double ratings) {
+    _ratings = ratings;
     inspection?.rating = ratings.toInt();
   }
 
@@ -359,7 +574,7 @@ class _NewPurchaseOrderListViewItemState
           children: [
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
@@ -375,10 +590,6 @@ class _NewPurchaseOrderListViewItemState
                 ],
               ),
             ),
-            IconButton(
-              onPressed: () {},
-              icon: informationIcon,
-            ),
           ],
         ),
         Row(
@@ -402,97 +613,25 @@ class _NewPurchaseOrderListViewItemState
             ),
           ],
         ),
-        if (resultButton != null || editPencilVisibility)
+        if (editPencilVisibility)
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              if (resultButton != null)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: resultButtonColor,
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                  child: Text(
-                    resultButton ?? '',
-                    style: Get.textTheme.bodyMedium?.copyWith(
-                      fontSize: 28.sp,
-                    ),
-                  ),
+              GestureDetector(
+                onTap: () {},
+                child: Icon(
+                  Icons.comment,
+                  size: 40,
+                  color: Colors.white,
                 ),
+              ),
               const SizedBox(width: 12),
               if (editPencilVisibility)
                 IconButton(
-                  onPressed: () async {
-                    Inspection? inspection =
-                        await dao.findInspectionByID(inspectionId);
-                    if (inspection != null && inspection.result != null) {
-                      Map<String, dynamic> arguments = {
-                        Consts.SERVER_INSPECTION_ID: inspection.inspectionId,
-                        Consts.PARTNER_NAME: appStorage.selectedItemSKUList
-                            .elementAt(position)
-                            .partnerName,
-                        Consts.PARTNER_ID: appStorage.selectedItemSKUList
-                            .elementAt(position)
-                            .partnerId,
-                        Consts.CARRIER_NAME: carrierName,
-                        Consts.CARRIER_ID: carrierID,
-                        Consts.COMMODITY_NAME: appStorage.selectedItemSKUList
-                            .elementAt(position)
-                            .commodityName,
-                        Consts.COMMODITY_ID: appStorage.selectedItemSKUList
-                            .elementAt(position)
-                            .commodityID,
-                        Consts.INSPECTION_RESULT: inspection.result,
-                        Consts.ITEM_SKU: currentNewPurchaseItem.sku,
-                        Consts.PO_NUMBER: poNumberString,
-                      };
-
-                      appStorage.specificationByItemSKUList =
-                          await dao.getSpecificationByItemSKUFromTable(
-                        currentNewPurchaseItem.partnerId!,
-                        currentNewPurchaseItem.sku!,
-                        currentNewPurchaseItem.sku!,
-                      );
-
-                      if (appStorage.specificationByItemSKUList != null &&
-                          (appStorage.specificationByItemSKUList ?? [])
-                              .isNotEmpty) {
-                        specificationNumber = appStorage
-                            .specificationByItemSKUList
-                            ?.elementAt(0)
-                            .specificationNumber;
-                        specificationVersion = appStorage
-                            .specificationByItemSKUList
-                            ?.elementAt(0)
-                            .specificationVersion;
-                        specificationName = appStorage
-                            .specificationByItemSKUList
-                            ?.elementAt(0)
-                            .specificationName;
-                        specificationTypeName = appStorage
-                            .specificationByItemSKUList
-                            ?.elementAt(0)
-                            .specificationTypeName;
-                      }
-
-                      arguments[Consts.SPECIFICATION_NUMBER] =
-                          specificationNumber;
-                      arguments[Consts.SPECIFICATION_VERSION] =
-                          specificationVersion;
-                      arguments[Consts.SPECIFICATION_NAME] = specificationName;
-                      arguments[Consts.SPECIFICATION_TYPE_NAME] =
-                          specificationTypeName;
-
-                      arguments[Consts.CALLER_ACTIVITY] =
-                          "NewPurchaseOrderDetailsActivity";
-                      Get.to(() => const OverriddenResultScreen(),
-                          arguments: arguments);
-                    }
-                  },
+                  onPressed: () {},
                   icon: Icon(
                     Icons.edit_outlined,
-                    size: 30,
+                    size: 40,
                     color: AppColors.white,
                   ),
                 ),
@@ -524,23 +663,27 @@ class _NewPurchaseOrderListViewItemState
     return dateTypeDesc;
   }
 
-  void onComment() {
-    // todo: implement below
-    String comment = '';
-    bool hasComment = false;
+  Future<void> onComment() async {
+    QualityControlItem? qualityControlItems =
+        await dao.findQualityControlDetails(inspectionId);
+    String commentStr = qualityControlItems?.qcComments ?? '';
+    hasComment = commentStr.trim().isNotEmpty;
     AppAlertDialog.textfiAlert(
       context,
       AppStrings.enterComment,
       '',
-      value: hasComment ? comment : null,
+      value: hasComment ? commentStr : null,
       onYesTap: (value) async {
-        String commentStr = (value ?? '').trim();
+        String newComment = (value ?? '').trim();
 
-        QualityControlItem? qualityControlItems2 =
-            await dao.findQualityControlDetails(inspectionId);
+        if (commentStr != newComment) {
+          QualityControlItem? qualityControlItems2 =
+              await dao.findQualityControlDetails(inspectionId);
 
-        if (qualityControlItems2 != null) {
-          await dao.updateQualityControlComment(inspectionId, commentStr);
+          if (qualityControlItems2 != null) {
+            await dao.updateQualityControlComment(inspectionId, newComment);
+          }
+          hasComment = newComment.trim().isNotEmpty;
         }
         setState(() {});
       },
@@ -635,7 +778,7 @@ class _NewPurchaseOrderListViewItemState
       partnerItemSKU = await dao.findPartnerItemSKUPOLine(
           selectedItem.partnerId!,
           selectedItem.sku!,
-          selectedItem.poLineNo!,
+          selectedItem.poLineNo,
           poNumber);
 
       appStorage.specificationByItemSKUList =
@@ -704,7 +847,6 @@ class _NewPurchaseOrderListViewItemState
       if (lot_no != null) {
         appStorage.selectedItemSKUList.elementAt(position).lotNo = lot_no;
         await dao.updateLotNoPartnerItemSKU(inspectionId, lot_no);
-        lotNoString = lot_no;
       }
 
       int time = await dao.getPackDateFromQCDetails(inspectionId);
@@ -716,8 +858,8 @@ class _NewPurchaseOrderListViewItemState
         appStorage.selectedItemSKUList.elementAt(position).packDate =
             formattedDateString;
         dao.updatePackdatePartnerItemSKU(inspectionId, formattedDateString);
-        packDateString = formattedDateString;
-        _packDateController.text = formattedDateString;
+        // packDateString = formattedDateString;
+        // _packDateController.text = formattedDateString;
       }
 
       Inspection? inspection =
@@ -838,18 +980,7 @@ class _NewPurchaseOrderListViewItemState
     }
 
     if (picsFromDB.isEmpty) {
-      informationIcon = Icon(
-        Icons.camera_alt,
-        color: AppColors.white,
-        size: 40,
-      );
-    } else {
-      informationIcon = Icon(
-        Icons.photo_size_select_actual_outlined,
-        color: AppColors.white,
-        size: 40,
-      );
-    }
+    } else {}
 
     valueAssigned.value = true;
     setState(() {});
@@ -877,8 +1008,8 @@ class _NewPurchaseOrderListViewItemState
   Future<void> createNewInspection(
     String itemSKU,
     int itemSKUId,
-    String lotNo,
-    String packDate,
+    String? lotNo,
+    String? packDate,
     String specificationNumber,
     String specificationVersion,
     String specificationName,
@@ -945,7 +1076,7 @@ class _NewPurchaseOrderListViewItemState
     //
     String brandedResult = "";
     ratings = value.ceilToDouble();
-
+    _ratings = value.ceilToDouble();
     List<SpecificationByItemSKU> specificationByItemSKUList =
         await dao.getSpecificationByItemSKUFromTable(
       appStorage.selectedItemSKUList[position].partnerId!,
@@ -970,8 +1101,8 @@ class _NewPurchaseOrderListViewItemState
           await createNewInspection(
             currentNewPurchaseItem.sku!,
             appStorage.selectedItemSKUList.elementAt(position).id!,
-            currentNewPurchaseItem.lotNumber!,
-            currentNewPurchaseItem.packDate!,
+            currentNewPurchaseItem.lotNumber,
+            currentNewPurchaseItem.packDate,
             specificationNumber!,
             specificationVersion!,
             specificationName!,
@@ -1178,12 +1309,12 @@ class _NewPurchaseOrderListViewItemState
       await dao.createPartnerItemSKU(
           appStorage.selectedItemSKUList.elementAt(position).partnerId!,
           appStorage.selectedItemSKUList.elementAt(position).sku!,
-          currentNewPurchaseItem.lotNumber!,
+          currentNewPurchaseItem.lotNumber,
           "",
           inspectionId,
           "",
           appStorage.selectedItemSKUList.elementAt(position).uniqueItemId!,
-          appStorage.selectedItemSKUList.elementAt(position).poLineNo!,
+          appStorage.selectedItemSKUList.elementAt(position).poLineNo,
           poNumber);
 
       await dao
@@ -1208,7 +1339,8 @@ class _NewPurchaseOrderListViewItemState
       }
       // No quality control id, create a new one in the database.
       if (qcID == null) {
-        if (appStorage.selectedItemSKUList.elementAt(position).quantity! > 0) {
+        if ((appStorage.selectedItemSKUList.elementAt(position).quantity ?? 0) >
+            0) {
           qtyShipped =
               appStorage.selectedItemSKUList.elementAt(position).quantity!;
 
@@ -1475,14 +1607,15 @@ class _NewPurchaseOrderListViewItemState
       AppAlertDialog.validateAlerts(
         context,
         AppStrings.alert,
-        'No specification found for item ${controller.originalData[position].sku}',
+        'No specification found for item ${controller.filteredInspectionsList[position].sku}',
       );
     }
     //
     widget.onRatingChanged(value);
+    setState(() {});
   }
 
-  void informationIconTap() {
+  void cameraIconTap() {
     Map<String, dynamic> arguments = {
       Consts.PARTNER_NAME: appStorage.selectedItemSKUList[position].partnerName,
       Consts.PARTNER_ID: appStorage.selectedItemSKUList[position].partnerId,
@@ -1510,7 +1643,9 @@ class _NewPurchaseOrderListViewItemState
     if (selectedValue == "Yes") {
       isBranded = "Yes";
       comply = "Y";
-    } else if (selectedValue == "No") {
+    }
+    //
+    else if (selectedValue == "No") {
       isBranded = "No";
       comply = "N";
     }
@@ -1570,12 +1705,12 @@ class _NewPurchaseOrderListViewItemState
                     rejectReason.isNotEmpty &&
                     !rejectReason.contains("Branded = N")) {
                   rejectReason += "\n Branded = N";
-                  dao.createOrUpdateResultReasonDetails(
+                  await dao.createOrUpdateResultReasonDetails(
                       inspectionId, "RJ", rejectReason, "");
                 }
               } else {
-                dao.updateInspectionResult(inspectionId, "RJ");
-                dao.createOrUpdateResultReasonDetails(
+                await dao.updateInspectionResult(inspectionId, "RJ");
+                await dao.createOrUpdateResultReasonDetails(
                     inspectionId, "RJ", "Branded = N", "");
               }
 
@@ -1585,7 +1720,7 @@ class _NewPurchaseOrderListViewItemState
 
               qtyRejectedEnabled = true;
               if (qualityControlItems != null) {
-                dao.updateQuantityRejected(
+                await dao.updateQuantityRejected(
                     inspectionId, qualityControlItems.qtyShipped!, 0);
                 _qtyRejectedController.text =
                     (qualityControlItems.qtyShipped ?? '').toString();
@@ -1604,8 +1739,8 @@ class _NewPurchaseOrderListViewItemState
                 if (resultRejectionDetail?.resultReason.equals("Branded = N") ??
                     false) {
                   result = "AC";
-                  dao.updateInspectionResult(inspectionId, "AC");
-                  dao.createOrUpdateResultReasonDetails(
+                  await dao.updateInspectionResult(inspectionId, "AC");
+                  await dao.createOrUpdateResultReasonDetails(
                       inspectionId, "AC", "", "");
                 } else {
                   result = "RJ";
@@ -1630,5 +1765,166 @@ class _NewPurchaseOrderListViewItemState
         }
       }
     }
+    setState(() {});
   }
+
+  Future<void> onSkuTap() async {
+    bool checkItemSKUAndLot = false;
+    bool isValid = true;
+
+    Inspection? inspection = await dao.findInspectionByID(inspectionId);
+
+    if (inspection != null) {
+      if (appStorage.specificationAnalyticalList != null) {
+        for (final SpecificationAnalytical item
+            in (appStorage.specificationAnalyticalList ?? [])) {
+          if (item.analyticalName?.contains("Branded") ?? false) {
+            final SpecificationAnalyticalRequest? dbobj = await dao
+                .findSpecAnalyticalObj(inspectionId, item.analyticalID!);
+
+            if (dbobj == null) {
+              isValid = false;
+
+              AppAlertDialog.validateAlerts(
+                  Get.context!,
+                  AppStrings.alert,
+                  "The inspected row require Branded Y/N. " +
+                      "\n\nIs the product in a PFG private label box?" +
+                      "\n(White box for Peak or Brown box for Growers Choice)");
+            }
+            break;
+          }
+        }
+      }
+    }
+
+    if (isValid) {
+      if (isComplete || isPartialComplete || !checkItemSKUAndLot) {
+        String? current_lot_number = currentInspectionsItem.lotNumber;
+        String? current_Item_SKU = currentInspectionsItem.sku;
+        String? current_Item_SKU_Name = currentInspectionsItem.description;
+        String? current_pack_Date = currentInspectionsItem.packDate;
+        int? current_Item_SKU_Id = appStorage.selectedItemSKUList[position].id;
+        String? current_unique_id =
+            appStorage.selectedItemSKUList[position].uniqueItemId;
+        int? current_commodity_id =
+            appStorage.selectedItemSKUList[position].commodityID;
+        String? current_commodity_name =
+            appStorage.selectedItemSKUList[position].commodityName;
+        String? current_gtin = appStorage.selectedItemSKUList[position].gtin;
+        int? poLineNo = appStorage.selectedItemSKUList[position].poLineNo;
+
+        Map<String, dynamic> bundle = {
+          "current_lot_number": current_lot_number,
+          "current_Item_SKU": current_Item_SKU,
+          "current_Item_SKU_Name": current_Item_SKU_Name,
+          "current_pack_Date": current_pack_Date,
+          "current_Item_SKU_Id": current_Item_SKU_Id,
+          // "current_lot_size": current_lot_size,
+          "current_unique_id": current_unique_id,
+          "current_gtin": current_gtin,
+          Consts.COMMODITY_ID: current_commodity_id,
+          Consts.COMMODITY_NAME: current_commodity_name
+        };
+
+        if (!isComplete && !isPartialComplete) {
+          appStorage.selectedItemSKUList[position].lotNo = current_lot_number;
+          appStorage.selectedItemSKUList[position].poNo =
+              currentInspectionsItem.poNumber;
+        }
+
+        appStorage.specificationByItemSKUList =
+            await dao.getSpecificationByItemSKUFromTable(
+                currentInspectionsItem.partnerId!,
+                currentInspectionsItem.sku!,
+                currentInspectionsItem.sku!);
+
+        if (appStorage.specificationByItemSKUList != null &&
+            (appStorage.specificationByItemSKUList ?? []).isNotEmpty) {
+          specificationNumber = appStorage.specificationByItemSKUList
+              ?.elementAt(0)
+              .specificationNumber;
+          specificationVersion = appStorage.specificationByItemSKUList
+              ?.elementAt(0)
+              .specificationVersion;
+          specificationName = appStorage.specificationByItemSKUList
+              ?.elementAt(0)
+              .specificationName;
+          specificationTypeName = appStorage.specificationByItemSKUList
+              ?.elementAt(0)
+              .specificationTypeName;
+
+          sampleSizeByCount = appStorage.specificationByItemSKUList
+              ?.elementAt(0)
+              .sampleSizeByCount;
+        }
+
+        if (appStorage.specificationByItemSKUList != null &&
+            (appStorage.specificationByItemSKUList ?? []).isNotEmpty) {
+          bool isComplete = await dao.isInspectionComplete(
+              currentInspectionsItem.partnerId!,
+              current_Item_SKU!,
+              current_unique_id);
+          bool ispartialComplete = await dao.isInspectionPartialComplete(
+              currentInspectionsItem.partnerId!,
+              current_Item_SKU,
+              current_unique_id!);
+
+          Map<String, dynamic> bundle = {};
+          if (inspectionId <= 0) {
+            bundle[Consts.SERVER_INSPECTION_ID] = -1;
+          } else {
+            bundle[Consts.SERVER_INSPECTION_ID] = inspectionId;
+            bundle[Consts.SPECIFICATION_NUMBER] = specificationNumber;
+            bundle[Consts.SPECIFICATION_VERSION] = specificationVersion;
+            bundle[Consts.SPECIFICATION_NAME] = specificationName;
+            bundle[Consts.SPECIFICATION_TYPE_NAME] = specificationTypeName;
+          }
+          bundle[Consts.PO_NUMBER] = poNumber;
+          bundle[Consts.SEAL_NUMBER] = widget.sealNumber;
+          bundle[Consts.PARTNER_NAME] =
+              appStorage.selectedItemSKUList[position].partnerName;
+          bundle[Consts.PARTNER_ID] =
+              appStorage.selectedItemSKUList[position].partnerId;
+          bundle[Consts.CARRIER_NAME] = carrierName;
+          bundle[Consts.CARRIER_ID] = carrierID;
+          bundle[Consts.LOT_NO] = current_lot_number;
+          bundle[Consts.ITEM_SKU] = current_Item_SKU;
+          bundle[Consts.ITEM_SKU_NAME] = current_Item_SKU_Name;
+          bundle[Consts.ITEM_SKU_ID] = current_Item_SKU_Id;
+          bundle[Consts.PACK_DATE] = current_pack_Date;
+          bundle[Consts.COMPLETED] = isComplete;
+          bundle[Consts.PARTIAL_COMPLETED] = ispartialComplete;
+          //bundle[Consts.LOT_SIZE] = current_lot_size;
+          bundle[Consts.COMMODITY_ID] = current_commodity_id;
+          bundle[Consts.COMMODITY_NAME] = current_commodity_name;
+          bundle[Consts.ITEM_UNIQUE_ID] = current_unique_id;
+          bundle[Consts.GTIN] = current_gtin;
+          bundle[Consts.PO_LINE_NO] = poLineNo;
+
+          bundle[Consts.CALLER_ACTIVITY] = "NewPurchaseOrderDetailsActivity";
+          bundle[Consts.IS1STTIMEACTIVITY] = "PurchaseOrderDetailsActivity";
+
+          final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+          Get.to(
+            () => QCDetailsShortFormScreen(tag: tag),
+            arguments: bundle,
+          );
+        }
+        //
+        else {
+          AppAlertDialog.validateAlerts(
+            context,
+            AppStrings.alert,
+            'No specification found for item ${controller.filteredInspectionsList[position].sku}',
+          );
+        }
+      }
+    }
+  }
+
+  NewPurchaseOrderItem get currentInspectionsItem =>
+      controller.filteredInspectionsList[position];
 }
+
+final List<int> flexList = [1, 4, 2, 3];

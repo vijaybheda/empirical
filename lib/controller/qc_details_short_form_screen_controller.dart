@@ -1753,6 +1753,7 @@ class QCDetailsShortFormScreenController extends GetxController {
               await dao.deleteInspection(serverInspectionID);
               Get.back();
             });
+            return;
           }
         } else {
           await dao.deleteInspection(serverInspectionID);
