@@ -19,6 +19,7 @@ import 'package:pverify/models/overridden_result_item.dart';
 import 'package:pverify/models/partner_item.dart';
 import 'package:pverify/models/partner_item_sku_inspections.dart';
 import 'package:pverify/models/purchase_order_details.dart';
+import 'package:pverify/models/purchase_order_header.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/models/quality_control_item.dart';
 import 'package:pverify/models/result_rejection_details.dart';
@@ -4441,6 +4442,47 @@ class ApplicationDao {
       }
     } catch (e) {
       print('Error has occurred while finding quality control items: $e');
+    }
+
+    return item;
+  }
+
+  Future<List<PurchaseOrderHeader>> getPOHeaderListFromTable() async {
+    final Database db = dbProvider.lazyDatabase;
+    List<PurchaseOrderHeader> purchaseOrderDetailsList = [];
+
+    try {
+      String query =
+          "SELECT poh.PO_Number, poh.PO_Partner_Id, poh.PO_Partner_Name from PO_Header poh";
+      List<Map<String, dynamic>> cursor = await db.rawQuery(query);
+
+      for (Map<String, dynamic> row in cursor) {
+        PurchaseOrderHeader item = PurchaseOrderHeader.fromMap(row);
+        purchaseOrderDetailsList.add(item);
+      }
+    } catch (e) {
+      debugPrint('Error has occurred while finding quality control items: $e');
+      return [];
+    }
+
+    return purchaseOrderDetailsList;
+  }
+
+  Future<PartnerItemSKUInspections?> findPartnerItemSKUPONumber(
+      int inspectionId, String poNo) async {
+    final Database db = dbProvider.lazyDatabase;
+    PartnerItemSKUInspections? item;
+
+    String query = '''
+    SELECT * FROM Partner_ItemSKU 
+    WHERE ${PartnerItemSkuColumn.INSPECTION_ID} = ? AND ${PartnerItemSkuColumn.PO_NO} = ?
+  ''';
+
+    List<Map<String, dynamic>> result =
+        await db.rawQuery(query, [inspectionId, poNo]);
+
+    if (result.isNotEmpty) {
+      item = PartnerItemSKUInspections.fromMap(result.first);
     }
 
     return item;

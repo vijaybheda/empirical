@@ -80,6 +80,7 @@ class AppStrings {
   static const String delete = 'Delete';
   static const String title = 'Title';
   static const String info = 'Info';
+  static const String selectPoNumber = 'Select PO Number';
 
   static const String saveInspectionButton = 'Save Inspection';
   static const String inspectionCalculateResultButton = 'Calculate Result';
