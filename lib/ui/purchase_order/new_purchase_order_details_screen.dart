@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/new_purchase_order_details_controller.dart';
 import 'package:pverify/models/new_purchase_order_item.dart';
-import 'package:pverify/ui/components/bottom_custom_button_view.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
 import 'package:pverify/ui/components/progress_adaptive.dart';
@@ -63,14 +62,6 @@ class NewPurchaseOrderDetailsScreen
                   _SearchOrderItemsWidget(tag),
                   Expanded(
                       flex: 10, child: _purchaseOrderItemSection(context, tag)),
-                  BottomCustomButtonView(
-                    title: AppStrings.inspectionCalculateResultButton,
-                    backgroundColor: AppColors.orange,
-                    onPressed: () async {
-                      await controller.calculateButtonClick();
-                      controller.update();
-                    },
-                  ),
                   _footerMenuView(controller),
                   FooterContentView(
                     hasLeftButton: false,

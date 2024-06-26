@@ -71,7 +71,7 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
                 flex: 8,
                 child: Container(
                   alignment: Alignment.center,
-                  color: sampleIndex % 2 == 0
+                  color: sampleIndex % 2 != 0
                       ? AppColors.orange
                       : AppColors.textFieldText_Color,
                   child: Text(
@@ -81,7 +81,7 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
                       fontSize: 30.sp,
                       fontWeight: FontWeight.w400,
                       textStyle: TextStyle(
-                        color: sampleIndex % 2 == 0
+                        color: sampleIndex % 2 != 0
                             ? AppColors.black
                             : AppColors.white,
                       ),

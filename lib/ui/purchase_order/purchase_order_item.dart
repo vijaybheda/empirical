@@ -158,6 +158,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
 
   @override
   Widget build(BuildContext context) {
+    getPoNumber(widget.position);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
       child: Obx(() {

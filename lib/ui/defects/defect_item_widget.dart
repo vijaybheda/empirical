@@ -169,6 +169,7 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                           context: context,
                         );
                       },
+                      assign0: true,
                     ),
                   )
                 : const SizedBox(),
@@ -219,6 +220,7 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                           context: context,
                         );
                       },
+                      assign0: true,
                     ),
                   )
                 : const SizedBox(),
@@ -270,6 +272,7 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                           context: context,
                         );
                       },
+                      assign0: true,
                     ),
                   )
                 : const SizedBox(),
@@ -323,6 +326,7 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                           context: context,
                         );
                       },
+                      assign0: true,
                     ),
                   )
                 : const SizedBox(),
@@ -373,6 +377,7 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
                           context: context,
                         );
                       },
+                      assign0: true,
                     ),
                   )
                 : const SizedBox(),

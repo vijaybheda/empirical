@@ -1,4 +1,5 @@
 import 'package:pverify/services/database/column_names.dart';
+import 'package:pverify/utils/utils.dart';
 
 class SpecificationGradeTolerance {
   String? specificationNumber;
@@ -65,7 +66,7 @@ class SpecificationGradeTolerance {
           json[SpecificationGradeToleranceColumn.GRADE_TOLERANCE_PERCENTAGE],
       specTolerancePercentage:
           json[SpecificationGradeToleranceColumn.GRADE_TOLERANCE_PERCENTAGE],
-      severityDefectID: int.tryParse(
+      severityDefectID: parseIntOrReturnNull(
           json[SpecificationGradeToleranceColumn.SEVERITY_DEFECT_ID]),
       defectID: json[SpecificationGradeToleranceColumn.DEFECT_ID],
       overridden: json[SpecificationGradeToleranceColumn.OVERRIDDEN],

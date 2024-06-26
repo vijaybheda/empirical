@@ -628,31 +628,47 @@ class DefectsScreenController extends GetxController {
           defectItem.injuryTextEditingController.text = value.toString();
           break;
         case AppStrings.damage:
-          defectItem.injuryCnt = value;
+          if (hasSeverityInjury) {
+            defectItem.injuryCnt = value;
+            defectItem.injuryTextEditingController.text = value.toString();
+          }
+
           defectItem.damageCnt = value;
           defectItem.damageTextEditingController.text = value.toString();
-          defectItem.injuryTextEditingController.text = value.toString();
           break;
         case AppStrings.seriousDamage:
-          defectItem.injuryCnt = value;
-          defectItem.damageCnt = value;
+          if (hasSeverityInjury) {
+            defectItem.injuryCnt = value;
+            defectItem.injuryTextEditingController.text = value.toString();
+          }
+          if (hasSeverityDamage) {
+            defectItem.damageCnt = value;
+            defectItem.damageTextEditingController.text = value.toString();
+          }
+
           defectItem.seriousDamageCnt = value;
           defectItem.sDamageTextEditingController.text = value.toString();
-          defectItem.damageTextEditingController.text = value.toString();
-          defectItem.injuryTextEditingController.text = value.toString();
           break;
         case AppStrings.verySeriousDamage:
-          defectItem.injuryCnt = value;
-          defectItem.damageCnt = value;
-          defectItem.seriousDamageCnt = value;
+          if (hasSeverityInjury) {
+            defectItem.injuryCnt = value;
+            defectItem.injuryTextEditingController.text = value.toString();
+          }
+          if (hasSeverityDamage) {
+            defectItem.damageCnt = value;
+            defectItem.damageTextEditingController.text = value.toString();
+          }
+          if (hasSeveritySeriousDamage) {
+            defectItem.seriousDamageCnt = value;
+            defectItem.sDamageTextEditingController.text = value.toString();
+          }
+
           defectItem.verySeriousDamageCnt = value;
           defectItem.vsDamageTextEditingController.text = value.toString();
-          defectItem.sDamageTextEditingController.text = value.toString();
-          defectItem.damageTextEditingController.text = value.toString();
-          defectItem.injuryTextEditingController.text = value.toString();
           break;
         case AppStrings.decay:
           defectItem.decayCnt = value;
+          defectItem.decayTextEditingController.text = value.toString();
           break;
       }
 
@@ -1474,16 +1490,16 @@ class DefectsScreenController extends GetxController {
   }
 
   int getIndexFromKey(String name) {
-    return extractNumberFromBeginning(name);
+    return extractNumberAtEnd(name);
   }
 
-  int extractNumberFromBeginning(String input) {
-    RegExp regExp = RegExp(r'^(\d+)');
+  int extractNumberAtEnd(String input) {
+    RegExp regExp = RegExp(r'#(\d+)');
 
-    Match? match = regExp.firstMatch(input);
+    final Match? match = regExp.firstMatch(input);
 
-    if (match != null) {
-      return int.parse(match.group(1)!);
+    if (match != null && match.groupCount > 0) {
+      return int.tryParse(match.group(1)!) ?? -1;
     } else {
       return -1;
     }

@@ -235,8 +235,10 @@ class InspectionDetailsController extends GetxController {
 
       textspecificationText = specificationName!;
 
-      if (!(specificationTypeName == "Finished Goods Produce" ||
-          specificationTypeName == "Raw Produce")) {
+      if (!(specificationTypeName?.toLowerCase() ==
+              "Finished Goods Produce".toLowerCase() ||
+          specificationTypeName?.toLowerCase() ==
+              "Raw Produce".toLowerCase())) {
         isShowDefectButton.value = false;
       } else {
         isShowDefectButton.value = true;
@@ -437,8 +439,14 @@ class InspectionDetailsController extends GetxController {
         //     sampleSizeByCount);
       }
 
-      if (!specificationTypeName!.contains("Finished Goods Produce") &&
-          !specificationTypeName!.contains("Raw Produce")) {
+      if (!(specificationTypeName
+                  ?.toLowerCase()
+                  .contains("Finished Goods Produce".toLowerCase()) ??
+              false) &&
+          !(specificationTypeName
+                  ?.toLowerCase()
+                  .contains("Raw Produce".toLowerCase()) ??
+              false)) {
         isShowDefectButton.value = false;
       } else {
         isShowDefectButton.value = true;
@@ -456,8 +464,10 @@ class InspectionDetailsController extends GetxController {
         specificationTypeName = inspection!.specificationTypeName;
       }
       if (specificationTypeName!.isNotEmpty &&
-          specificationTypeName != 'Finished Goods Produce' &&
-          specificationTypeName != 'Raw Produce') {
+          (specificationTypeName?.toLowerCase() !=
+                  'Finished Goods Produce'.toLowerCase() &&
+              specificationTypeName?.toLowerCase() !=
+                  'Raw Produce'.toLowerCase())) {
         isShowDefectButton.value = true;
       }
     }
@@ -948,9 +958,9 @@ class InspectionDetailsController extends GetxController {
               await dao.getSpecificationAnalyticalFromDB(
                   specificationNumber!, specificationVersion!);
           log("HERE IS SPECIFICATION TYPE NAME $specificationTypeName");
-          if ((!(specificationTypeName!.toLowerCase() ==
+          if ((!(specificationTypeName?.toLowerCase() ==
                   ("Finished Goods Produce".toLowerCase())) &&
-              !(specificationTypeName!.toLowerCase() ==
+              !(specificationTypeName?.toLowerCase() ==
                   ("Raw Produce".toLowerCase())))) {
             if (_appStorage.specificationAnalyticalList != null) {
               for (var item
@@ -1038,20 +1048,28 @@ class InspectionDetailsController extends GetxController {
             if (_appStorage.defectCategoriesList != null) {
               for (DefectCategories defectCategory
                   in _appStorage.defectCategoriesList ?? []) {
-                if (defectCategory.name == "Quality" &&
+                if (defectCategory.name?.toLowerCase() ==
+                        "Quality".toLowerCase() &&
                     (defectCategory.defectList != null)) {
                   for (DefectItem defectItem
                       in defectCategory.defectList ?? []) {
-                    if (defectItem.name?.contains("Total Quality") ?? false) {
+                    if (defectItem.name
+                            ?.toLowerCase()
+                            .contains("Total Quality".toLowerCase()) ??
+                        false) {
                       totalQualityDefectId = defectItem.id ?? 0;
                       break;
                     }
                   }
-                } else if (defectCategory.name == "Condition" &&
+                } else if (defectCategory.name?.toLowerCase() ==
+                        "Condition".toLowerCase() &&
                     (defectCategory.defectList != null)) {
                   for (DefectItem defectItem
                       in defectCategory.defectList ?? []) {
-                    if (defectItem.name?.contains("Total Condition") ?? false) {
+                    if (defectItem.name
+                            ?.toLowerCase()
+                            .contains("Total Condition".toLowerCase()) ??
+                        false) {
                       totalConditionDefectId = defectItem.id ?? 0;
                       break;
                     }
@@ -1125,9 +1143,15 @@ class InspectionDetailsController extends GetxController {
                   if (defectList.isNotEmpty) {
                     if (defectID == null || defectID == 0) {
                       for (int k = 0; k < defectList.length; k++) {
-                        if (defectList.elementAt(k).defectCategory ==
+                        if (defectList
+                                    .elementAt(k)
+                                    .defectCategory
+                                    ?.toLowerCase() ==
                                 "quality" ||
-                            (defectList.elementAt(k).defectCategory ==
+                            (defectList
+                                    .elementAt(k)
+                                    .defectCategory
+                                    ?.toLowerCase() ==
                                 "condition")) {
                           if (defectList.elementAt(k).verySeriousDamageCnt! >
                               0) {
@@ -1245,9 +1269,9 @@ class InspectionDetailsController extends GetxController {
 //---------------------------------------------------------------------------------------------------------------------------------
                       if (result != "RJ" &&
                           tempSeverityDefectName == "Very Serious Damage") {
-                        double vsdpercent = totalSeverityVerySeriousDamage *
-                            100 /
-                            totalSampleSize;
+                        double vsdpercent =
+                            (totalSeverityVerySeriousDamage * 100) /
+                                totalSampleSize;
                         if (vsdpercent > specTolerancePercentage) {
                           result = "RJ";
                           //rejectReason += "Total Severity VSD % exceeds tolerance";
@@ -1264,9 +1288,9 @@ class InspectionDetailsController extends GetxController {
                       }
 
                       if (tempSeverityDefectName == "Very Serious Damage") {
-                        double vsdpercent = totalSeverityVerySeriousDamage *
-                            100 /
-                            totalSampleSize;
+                        double vsdpercent =
+                            (totalSeverityVerySeriousDamage * 100) /
+                                totalSampleSize;
                         if (vsdpercent > specTolerancePercentage) {
                           if (rejectReason != "") {
                             rejectReason += ", ";
@@ -1287,8 +1311,8 @@ class InspectionDetailsController extends GetxController {
 
                       if (result != "RJ" &&
                           tempSeverityDefectName == "Serious Damage") {
-                        double sdpercent =
-                            totalSeveritySeriousDamage * 100 / totalSampleSize;
+                        double sdpercent = (totalSeveritySeriousDamage * 100) /
+                            totalSampleSize;
                         if (sdpercent > specTolerancePercentage) {
                           result = "RJ";
                           await dao.createOrUpdateResultReasonDetails(
@@ -1303,8 +1327,8 @@ class InspectionDetailsController extends GetxController {
                       }
 
                       if (tempSeverityDefectName == "Serious Damage") {
-                        double sdpercent =
-                            totalSeveritySeriousDamage * 100 / totalSampleSize;
+                        double sdpercent = (totalSeveritySeriousDamage * 100) /
+                            totalSampleSize;
                         if (sdpercent > specTolerancePercentage) {
                           if (rejectReason != "") {
                             rejectReason += ", ";
@@ -1325,7 +1349,7 @@ class InspectionDetailsController extends GetxController {
                       if (result != "RJ" &&
                           tempSeverityDefectName == "Damage") {
                         double dpercent =
-                            totalSeverityDamage * 100 / totalSampleSize;
+                            (totalSeverityDamage * 100) / totalSampleSize;
                         if (dpercent > specTolerancePercentage) {
                           result = "RJ";
                           await dao.createOrUpdateResultReasonDetails(
@@ -1341,7 +1365,7 @@ class InspectionDetailsController extends GetxController {
 
                       if (tempSeverityDefectName == "Damage") {
                         double dpercent =
-                            totalSeverityDamage * 100 / totalSampleSize;
+                            (totalSeverityDamage * 100) / totalSampleSize;
                         if (dpercent > specTolerancePercentage) {
                           if (rejectReason != "") {
                             rejectReason += ", ";
@@ -1362,7 +1386,7 @@ class InspectionDetailsController extends GetxController {
                       if (result != "RJ" &&
                           tempSeverityDefectName == "Injury") {
                         double ipercent =
-                            totalSeverityInjury * 100 / totalSampleSize;
+                            (totalSeverityInjury * 100) / totalSampleSize;
                         if (ipercent > specTolerancePercentage) {
                           result = "RJ";
                           await dao.createOrUpdateResultReasonDetails(
@@ -1379,7 +1403,7 @@ class InspectionDetailsController extends GetxController {
 
                       if (tempSeverityDefectName == "Injury") {
                         double ipercent =
-                            totalSeverityInjury * 100 / totalSampleSize;
+                            (totalSeverityInjury * 100) / totalSampleSize;
                         if (ipercent > specTolerancePercentage) {
                           if (rejectReason != "") {
                             rejectReason += ", ";
@@ -1399,7 +1423,7 @@ class InspectionDetailsController extends GetxController {
 
                       if (result != "RJ" && tempSeverityDefectName == "Decay") {
                         double depercent =
-                            totalSeverityDecay * 100 / totalSampleSize;
+                            (totalSeverityDecay * 100) / totalSampleSize;
                         if (depercent > specTolerancePercentage) {
                           result = "RJ";
                           await dao.createOrUpdateResultReasonDetails(
@@ -1415,7 +1439,7 @@ class InspectionDetailsController extends GetxController {
 
                       if (tempSeverityDefectName == "Decay") {
                         double depercent =
-                            totalSeverityDecay * 100 / totalSampleSize;
+                            (totalSeverityDecay * 100) / totalSampleSize;
                         if (depercent > specTolerancePercentage) {
                           if (rejectReason != "") {
                             rejectReason += ", ";
@@ -1471,9 +1495,15 @@ class InspectionDetailsController extends GetxController {
                       //------------------------------------------------------------------------------------------------------------------------------------
                     } else {
                       for (int k = 0; k < defectList.length; k++) {
-                        if (defectList.elementAt(k).defectCategory ==
+                        if (defectList
+                                    .elementAt(k)
+                                    .defectCategory
+                                    ?.toLowerCase() ==
                                 "quality" ||
-                            defectList.elementAt(k).defectCategory ==
+                            defectList
+                                    .elementAt(k)
+                                    .defectCategory
+                                    ?.toLowerCase() ==
                                 "condition") {
                           if (defectID == defectList.elementAt(k).defectId) {
                             defectNameResult =
@@ -1490,7 +1520,10 @@ class InspectionDetailsController extends GetxController {
                                     .elementAt(k)
                                     .verySeriousDamageCnt!;
 
-                                if (defectList.elementAt(k).defectCategory ==
+                                if (defectList
+                                        .elementAt(k)
+                                        .defectCategory
+                                        ?.toLowerCase() ==
                                     "quality") {
                                   totalQualitycount += defectList
                                       .elementAt(k)
@@ -1500,7 +1533,8 @@ class InspectionDetailsController extends GetxController {
                                       .verySeriousDamageCnt!;
                                 } else if (defectList
                                         .elementAt(k)
-                                        .defectCategory ==
+                                        .defectCategory
+                                        ?.toLowerCase() ==
                                     "condition") {
                                   totalConditionCount += defectList
                                       .elementAt(k)
@@ -1512,8 +1546,7 @@ class InspectionDetailsController extends GetxController {
 
                                 if (result != "RJ") {
                                   double vsdpercent =
-                                      totalQualityVerySeriousDamage *
-                                          100 /
+                                      (totalQualityVerySeriousDamage * 100) /
                                           totalSampleSize;
                                   if (vsdpercent > specTolerancePercentage) {
                                     result = "RJ";
@@ -1530,14 +1563,12 @@ class InspectionDetailsController extends GetxController {
                                 }
 
                                 double vsdpercent1 =
-                                    totalQualityVerySeriousDamage *
-                                        100 /
+                                    (totalQualityVerySeriousDamage * 100) /
                                         totalSampleSize;
                                 debugPrint("$vsdpercent1");
                                 if (result != "RJ") {
                                   double vsdpercent =
-                                      totalConditionVerySeriousDamage *
-                                          100 /
+                                      (totalConditionVerySeriousDamage * 100) /
                                           totalSampleSize;
                                   if (vsdpercent > specTolerancePercentage) {
                                     result = "RJ";
@@ -1554,8 +1585,7 @@ class InspectionDetailsController extends GetxController {
                                 }
 
                                 double vsdpercent2 =
-                                    totalConditionVerySeriousDamage *
-                                        100 /
+                                    (totalConditionVerySeriousDamage * 100) /
                                         totalSampleSize;
                                 debugPrint("$vsdpercent2");
                               }
@@ -1575,7 +1605,10 @@ class InspectionDetailsController extends GetxController {
                                           .verySeriousDamageCnt!);
                                   iscalculated = true;
 
-                                  if (defectList.elementAt(k).defectCategory ==
+                                  if (defectList
+                                          .elementAt(k)
+                                          .defectCategory
+                                          ?.toLowerCase() ==
                                       "quality") {
                                     totalQualitycount += defectList
                                             .elementAt(k)
@@ -1591,7 +1624,8 @@ class InspectionDetailsController extends GetxController {
                                             .verySeriousDamageCnt!;
                                   } else if (defectList
                                           .elementAt(k)
-                                          .defectCategory ==
+                                          .defectCategory
+                                          ?.toLowerCase() ==
                                       "condition") {
                                     totalConditionCount += defectList
                                             .elementAt(k)
@@ -1609,8 +1643,7 @@ class InspectionDetailsController extends GetxController {
 
                                   if (result != "RJ") {
                                     double vsdpercent =
-                                        totalQualitySeriousDamage *
-                                            100 /
+                                        (totalQualitySeriousDamage * 100) /
                                             totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
@@ -1629,14 +1662,12 @@ class InspectionDetailsController extends GetxController {
                                   }
 
                                   double vsdpercent3 =
-                                      totalQualitySeriousDamage *
-                                          100 /
+                                      (totalQualitySeriousDamage * 100) /
                                           totalSampleSize;
                                   debugPrint("$vsdpercent3");
                                   if (result != "RJ") {
                                     double vsdpercent =
-                                        totalConditionSeriousDamage *
-                                            100 /
+                                        (totalConditionSeriousDamage * 100) /
                                             totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
@@ -1654,8 +1685,7 @@ class InspectionDetailsController extends GetxController {
                                     }
                                   }
                                   double vsdpercent4 =
-                                      totalConditionSeriousDamage *
-                                          100 /
+                                      (totalConditionSeriousDamage * 100) /
                                           totalSampleSize;
                                   debugPrint("$vsdpercent4");
                                 }
@@ -1671,7 +1701,10 @@ class InspectionDetailsController extends GetxController {
                                               .elementAt(k)
                                               .seriousDamageCnt!);
                                   iscalculated = true;
-                                  if (defectList.elementAt(k).defectCategory ==
+                                  if (defectList
+                                          .elementAt(k)
+                                          .defectCategory
+                                          ?.toLowerCase() ==
                                       "quality") {
                                     totalQualitycount +=
                                         defectList.elementAt(k).damageCnt! -
@@ -1685,7 +1718,8 @@ class InspectionDetailsController extends GetxController {
                                                 .seriousDamageCnt!;
                                   } else if (defectList
                                           .elementAt(k)
-                                          .defectCategory ==
+                                          .defectCategory
+                                          ?.toLowerCase() ==
                                       "condition") {
                                     totalConditionCount +=
                                         defectList.elementAt(k).damageCnt! -
@@ -1701,8 +1735,8 @@ class InspectionDetailsController extends GetxController {
                                 }
                               }
                               if (result != "RJ") {
-                                double vsdpercent =
-                                    totalQualityDamage * 100 / totalSampleSize;
+                                double vsdpercent = (totalQualityDamage * 100) /
+                                    totalSampleSize;
                                 if (vsdpercent > specTolerancePercentage) {
                                   result = "RJ";
                                   await dao.createOrUpdateResultReasonDetails(
@@ -1718,12 +1752,12 @@ class InspectionDetailsController extends GetxController {
                               }
 
                               double vsdpercent5 =
-                                  totalQualityDamage * 100 / totalSampleSize;
+                                  (totalQualityDamage * 100) / totalSampleSize;
                               debugPrint("$vsdpercent5");
                               if (result != "RJ") {
-                                double vsdpercent = totalConditionDamage *
-                                    100 /
-                                    totalSampleSize;
+                                double vsdpercent =
+                                    (totalConditionDamage * 100) /
+                                        totalSampleSize;
                                 if (vsdpercent > specTolerancePercentage) {
                                   result = "RJ";
                                   await dao.createOrUpdateResultReasonDetails(
@@ -1739,7 +1773,8 @@ class InspectionDetailsController extends GetxController {
                               }
 
                               double vsdpercent6 =
-                                  totalConditionDamage * 100 / totalSampleSize;
+                                  (totalConditionDamage * 100) /
+                                      totalSampleSize;
                               debugPrint("$vsdpercent6");
                             }
                             if (tempSeverityDefectName == "Injury") {
@@ -1750,7 +1785,10 @@ class InspectionDetailsController extends GetxController {
                                       (defectList.elementAt(k).injuryCnt! -
                                           defectList.elementAt(k).damageCnt!);
                                   iscalculated = true;
-                                  if (defectList.elementAt(k).defectCategory ==
+                                  if (defectList
+                                          .elementAt(k)
+                                          .defectCategory
+                                          ?.toLowerCase() ==
                                       "quality") {
                                     totalQualitycount +=
                                         defectList.elementAt(k).injuryCnt! -
@@ -1760,7 +1798,8 @@ class InspectionDetailsController extends GetxController {
                                             defectList.elementAt(k).damageCnt!;
                                   } else if (defectList
                                           .elementAt(k)
-                                          .defectCategory ==
+                                          .defectCategory
+                                          ?.toLowerCase() ==
                                       "condition") {
                                     totalConditionCount +=
                                         defectList.elementAt(k).injuryCnt! -
@@ -1771,9 +1810,9 @@ class InspectionDetailsController extends GetxController {
                                   }
 
                                   if (result != "RJ") {
-                                    double vsdpercent = totalQualityInjury *
-                                        100 /
-                                        totalSampleSize;
+                                    double vsdpercent =
+                                        (totalQualityInjury * 100) /
+                                            totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
                                       await dao.createOrUpdateResultReasonDetails(
@@ -1789,14 +1828,14 @@ class InspectionDetailsController extends GetxController {
                                       result = "A-";
                                     }
                                   }
-                                  double vsdpercent7 = totalQualityInjury *
-                                      100 /
-                                      totalSampleSize;
+                                  double vsdpercent7 =
+                                      (totalQualityInjury * 100) /
+                                          totalSampleSize;
                                   debugPrint("$vsdpercent7");
                                   if (result != "RJ") {
-                                    double vsdpercent = totalConditionInjury *
-                                        100 /
-                                        totalSampleSize;
+                                    double vsdpercent =
+                                        (totalConditionInjury * 100) /
+                                            totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
                                       await dao.createOrUpdateResultReasonDetails(
@@ -1813,9 +1852,9 @@ class InspectionDetailsController extends GetxController {
                                     }
                                   }
 
-                                  double vsdpercent8 = totalConditionInjury *
-                                      100 /
-                                      totalSampleSize;
+                                  double vsdpercent8 =
+                                      (totalConditionInjury * 100) /
+                                          totalSampleSize;
                                   debugPrint("$vsdpercent8");
                                 }
                               }
@@ -1824,7 +1863,10 @@ class InspectionDetailsController extends GetxController {
                               if (defectList.elementAt(k).decayCnt! > 0) {
                                 totalcount += defectList.elementAt(k).decayCnt!;
                                 iscalculated = true;
-                                if (defectList.elementAt(k).defectCategory ==
+                                if (defectList
+                                        .elementAt(k)
+                                        .defectCategory
+                                        ?.toLowerCase() ==
                                     "quality") {
                                   totalQualitycount +=
                                       defectList.elementAt(k).decayCnt!;
@@ -1832,7 +1874,8 @@ class InspectionDetailsController extends GetxController {
                                       defectList.elementAt(k).decayCnt!;
                                 } else if (defectList
                                         .elementAt(k)
-                                        .defectCategory ==
+                                        .defectCategory
+                                        ?.toLowerCase() ==
                                     "condition") {
                                   totalConditionCount +=
                                       defectList.elementAt(k).decayCnt!;
@@ -1842,7 +1885,8 @@ class InspectionDetailsController extends GetxController {
 
                                 if (result != "RJ") {
                                   double vsdpercent =
-                                      totalQualityDecay * 100 / totalSampleSize;
+                                      (totalQualityDecay * 100) /
+                                          totalSampleSize;
                                   if (vsdpercent > specTolerancePercentage) {
                                     result = "RJ";
                                     await dao.createOrUpdateResultReasonDetails(
@@ -1857,12 +1901,12 @@ class InspectionDetailsController extends GetxController {
                                   }
                                 }
                                 double vsdpercent9 =
-                                    totalQualityDecay * 100 / totalSampleSize;
+                                    (totalQualityDecay * 100) / totalSampleSize;
                                 debugPrint("$vsdpercent9");
                                 if (result != "RJ") {
-                                  double vsdpercent = totalConditionDecay *
-                                      100 /
-                                      totalSampleSize;
+                                  double vsdpercent =
+                                      (totalConditionDecay * 100) /
+                                          totalSampleSize;
                                   if (vsdpercent > specTolerancePercentage) {
                                     result = "RJ";
                                     await dao.createOrUpdateResultReasonDetails(
@@ -1877,7 +1921,8 @@ class InspectionDetailsController extends GetxController {
                                   }
                                 }
                                 double vsdpercent10 =
-                                    totalConditionDecay * 100 / totalSampleSize;
+                                    (totalConditionDecay * 100) /
+                                        totalSampleSize;
                                 debugPrint("$vsdpercent10");
                               }
                             }
@@ -1950,7 +1995,10 @@ class InspectionDetailsController extends GetxController {
                               debugPrint("$qualpercentage");
                             }
                           } else if (defectName == "Total Quality (%)" &&
-                              (defectList.elementAt(k).defectCategory ==
+                              (defectList
+                                      .elementAt(k)
+                                      .defectCategory
+                                      ?.toLowerCase() ==
                                   "quality")) {
                             if (tempSeverityDefectName ==
                                 "Very Serious Damage") {
@@ -1966,8 +2014,7 @@ class InspectionDetailsController extends GetxController {
                                     .verySeriousDamageCnt!;
                                 if (result != "RJ") {
                                   double vsdpercent =
-                                      totalQualityVerySeriousDamage *
-                                          100 /
+                                      (totalQualityVerySeriousDamage * 100) /
                                           totalSampleSize;
                                   if (vsdpercent > specTolerancePercentage) {
                                     result = "RJ";
@@ -1985,8 +2032,7 @@ class InspectionDetailsController extends GetxController {
                                 }
 
                                 double vsdpercent11 =
-                                    totalQualityVerySeriousDamage *
-                                        100 /
+                                    (totalQualityVerySeriousDamage * 100) /
                                         totalSampleSize;
                                 if (vsdpercent11 > specTolerancePercentage) {
                                   if (rejectReason != "") {
@@ -2029,8 +2075,7 @@ class InspectionDetailsController extends GetxController {
 
                                   if (result != "RJ") {
                                     double vsdpercent =
-                                        totalQualitySeriousDamage *
-                                            100 /
+                                        (totalQualitySeriousDamage * 100) /
                                             totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
@@ -2050,8 +2095,7 @@ class InspectionDetailsController extends GetxController {
                                     }
                                   }
                                   double vsdpercent12 =
-                                      totalQualitySeriousDamage *
-                                          100 /
+                                      (totalQualitySeriousDamage * 100) /
                                           totalSampleSize;
                                   if (vsdpercent12 > specTolerancePercentage) {
                                     if (rejectReason != "") {
@@ -2086,9 +2130,9 @@ class InspectionDetailsController extends GetxController {
                                       defectList.elementAt(k).seriousDamageCnt!;
 
                                   if (result != "RJ") {
-                                    double vsdpercent = totalQualityDamage *
-                                        100 /
-                                        totalSampleSize;
+                                    double vsdpercent =
+                                        (totalQualityDamage * 100) /
+                                            totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
                                       await dao
@@ -2107,9 +2151,9 @@ class InspectionDetailsController extends GetxController {
                                     }
                                   }
 
-                                  double vsdpercent13 = totalQualityDamage *
-                                      100 /
-                                      totalSampleSize;
+                                  double vsdpercent13 =
+                                      (totalQualityDamage * 100) /
+                                          totalSampleSize;
                                   if (vsdpercent13 > specTolerancePercentage) {
                                     if (rejectReason != "") {
                                       rejectReason += ", ";
@@ -2141,9 +2185,9 @@ class InspectionDetailsController extends GetxController {
                                       defectList.elementAt(k).injuryCnt! -
                                           defectList.elementAt(k).damageCnt!;
                                   if (result != "RJ") {
-                                    double vsdpercent = totalQualityInjury *
-                                        100 /
-                                        totalSampleSize;
+                                    double vsdpercent =
+                                        (totalQualityInjury * 100) /
+                                            totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
                                       await dao
@@ -2162,9 +2206,9 @@ class InspectionDetailsController extends GetxController {
                                     }
                                   }
 
-                                  double vsdpercent14 = totalQualityInjury *
-                                      100 /
-                                      totalSampleSize;
+                                  double vsdpercent14 =
+                                      (totalQualityInjury * 100) /
+                                          totalSampleSize;
                                   if (vsdpercent14 > specTolerancePercentage) {
                                     if (rejectReason != "") {
                                       rejectReason += ", ";
@@ -2194,7 +2238,8 @@ class InspectionDetailsController extends GetxController {
 
                                 if (result != "RJ") {
                                   double vsdpercent =
-                                      totalQualityDecay * 100 / totalSampleSize;
+                                      (totalQualityDecay * 100) /
+                                          totalSampleSize;
                                   if (vsdpercent > specTolerancePercentage) {
                                     result = "RJ";
                                     await dao.createOrUpdateResultReasonDetails(
@@ -2210,7 +2255,7 @@ class InspectionDetailsController extends GetxController {
                                   }
                                 }
                                 double vsdpercent15 =
-                                    totalQualityDecay * 100 / totalSampleSize;
+                                    (totalQualityDecay * 100) / totalSampleSize;
                                 if (vsdpercent15 > specTolerancePercentage) {
                                   if (rejectReason != "") {
                                     rejectReason += ", ";
@@ -2275,7 +2320,7 @@ class InspectionDetailsController extends GetxController {
                               }
                               if (result != "RJ") {
                                 double totalqualitypercent =
-                                    totalQualitycount * 100 / totalSampleSize;
+                                    (totalQualitycount * 100) / totalSampleSize;
                                 if (totalqualitypercent >
                                     specTolerancePercentage) {
                                   result = "RJ";
@@ -2292,7 +2337,7 @@ class InspectionDetailsController extends GetxController {
                                 }
                               }
                               double totalqualitypercent1 =
-                                  totalQualitycount * 100 / totalSampleSize;
+                                  (totalQualitycount * 100) / totalSampleSize;
                               if (totalqualitypercent1 >
                                   specTolerancePercentage) {
                                 if (rejectReason != "") {
@@ -2311,7 +2356,10 @@ class InspectionDetailsController extends GetxController {
                               }
                             }
                             iscalculated = true;
-                          } else if (defectList.elementAt(k).defectCategory ==
+                          } else if (defectList
+                                      .elementAt(k)
+                                      .defectCategory
+                                      ?.toLowerCase() ==
                                   "condition" &&
                               defectName == "Total Condition (%)") {
                             if (tempSeverityDefectName ==
@@ -2328,8 +2376,7 @@ class InspectionDetailsController extends GetxController {
                                     .verySeriousDamageCnt!;
                                 if (result != "RJ") {
                                   double vsdpercent =
-                                      totalConditionVerySeriousDamage *
-                                          100 /
+                                      (totalConditionVerySeriousDamage * 100) /
                                           totalSampleSize;
                                   if (vsdpercent > specTolerancePercentage) {
                                     result = "RJ";
@@ -2346,8 +2393,7 @@ class InspectionDetailsController extends GetxController {
                                   }
                                 }
                                 double vsdpercentT =
-                                    totalConditionVerySeriousDamage *
-                                        100 /
+                                    (totalConditionVerySeriousDamage * 100) /
                                         totalSampleSize;
                                 if (vsdpercentT > specTolerancePercentage) {
                                   if (rejectReason != "") {
@@ -2389,8 +2435,7 @@ class InspectionDetailsController extends GetxController {
 
                                   if (result != "RJ") {
                                     double vsdpercent =
-                                        totalConditionSeriousDamage *
-                                            100 /
+                                        (totalConditionSeriousDamage * 100) /
                                             totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
@@ -2410,8 +2455,7 @@ class InspectionDetailsController extends GetxController {
                                     }
                                   }
                                   double vsdpercentTT =
-                                      totalConditionSeriousDamage *
-                                          100 /
+                                      (totalConditionSeriousDamage * 100) /
                                           totalSampleSize;
                                   if (vsdpercentTT > specTolerancePercentage) {
                                     if (rejectReason != "") {
@@ -2445,9 +2489,9 @@ class InspectionDetailsController extends GetxController {
                                           .damageCnt! -
                                       defectList.elementAt(k).seriousDamageCnt!;
                                   if (result != "RJ") {
-                                    double vsdpercent = totalConditionDamage *
-                                        100 /
-                                        totalSampleSize;
+                                    double vsdpercent =
+                                        (totalConditionDamage * 100) /
+                                            totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
                                       await dao
@@ -2465,9 +2509,9 @@ class InspectionDetailsController extends GetxController {
                                       result = "A-";
                                     }
                                   }
-                                  double vsdpercentTB = totalConditionDamage *
-                                      100 /
-                                      totalSampleSize;
+                                  double vsdpercentTB =
+                                      (totalConditionDamage * 100) /
+                                          totalSampleSize;
                                   if (vsdpercentTB > specTolerancePercentage) {
                                     if (rejectReason != "") {
                                       rejectReason += ", ";
@@ -2500,9 +2544,9 @@ class InspectionDetailsController extends GetxController {
                                           defectList.elementAt(k).damageCnt!;
 
                                   if (result != "RJ") {
-                                    double vsdpercent = totalConditionInjury *
-                                        100 /
-                                        totalSampleSize;
+                                    double vsdpercent =
+                                        (totalConditionInjury * 100) /
+                                            totalSampleSize;
                                     if (vsdpercent > specTolerancePercentage) {
                                       result = "RJ";
                                       await dao
@@ -2520,9 +2564,9 @@ class InspectionDetailsController extends GetxController {
                                       result = "A-";
                                     }
                                   }
-                                  double vsdpercentTA = totalConditionInjury *
-                                      100 /
-                                      totalSampleSize;
+                                  double vsdpercentTA =
+                                      (totalConditionInjury * 100) /
+                                          totalSampleSize;
                                   if (vsdpercentTA > specTolerancePercentage) {
                                     if (rejectReason != "") {
                                       rejectReason += ", ";
@@ -2550,9 +2594,9 @@ class InspectionDetailsController extends GetxController {
                                 totalConditionDecay +=
                                     defectList.elementAt(k).decayCnt!;
                                 if (result != "RJ") {
-                                  double vsdpercent = totalConditionDecay *
-                                      100 /
-                                      totalSampleSize;
+                                  double vsdpercent =
+                                      (totalConditionDecay * 100) /
+                                          totalSampleSize;
                                   if (vsdpercent > specTolerancePercentage) {
                                     result = "RJ";
                                     await dao.createOrUpdateResultReasonDetails(
@@ -2568,7 +2612,8 @@ class InspectionDetailsController extends GetxController {
                                   }
                                 }
                                 double vsdpercentAB =
-                                    totalConditionDecay * 100 / totalSampleSize;
+                                    (totalConditionDecay * 100) /
+                                        totalSampleSize;
                                 if (vsdpercentAB > specTolerancePercentage) {
                                   if (rejectReason != "") {
                                     rejectReason += ", ";
@@ -2634,7 +2679,8 @@ class InspectionDetailsController extends GetxController {
                               }
                               if (result != "RJ") {
                                 double vsdpercent =
-                                    totalConditionCount * 100 / totalSampleSize;
+                                    (totalConditionCount * 100) /
+                                        totalSampleSize;
                                 if (vsdpercent > specTolerancePercentage) {
                                   result = "RJ";
                                   await dao.createOrUpdateResultReasonDetails(
@@ -2651,7 +2697,7 @@ class InspectionDetailsController extends GetxController {
                               }
 
                               double vsdpercentAC =
-                                  totalConditionCount * 100 / totalSampleSize;
+                                  (totalConditionCount * 100) / totalSampleSize;
                               if (vsdpercentAC > specTolerancePercentage) {
                                 if (rejectReason != "") {
                                   rejectReason += ", ";
@@ -2671,7 +2717,10 @@ class InspectionDetailsController extends GetxController {
                               iscalculated = true;
                             }
                           }
-                        } else if (defectList.elementAt(k).defectCategory ==
+                        } else if (defectList
+                                .elementAt(k)
+                                .defectCategory
+                                ?.toLowerCase() ==
                             "size") {
                           if (defectList.elementAt(k).defectId == defectID) {
                             sizeDefectName =
@@ -2858,7 +2907,10 @@ class InspectionDetailsController extends GetxController {
                               }
                             }
                           }
-                        } else if (defectList.elementAt(k).defectCategory ==
+                        } else if (defectList
+                                .elementAt(k)
+                                .defectCategory
+                                ?.toLowerCase() ==
                             "color") {
                           if (defectList.elementAt(k).defectId == defectID) {
                             colorDefectName =
