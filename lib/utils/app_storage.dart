@@ -19,6 +19,7 @@ import 'package:pverify/models/last_inspections_item.dart';
 import 'package:pverify/models/my_inspection_48hour_item.dart';
 import 'package:pverify/models/offline_commodity.dart';
 import 'package:pverify/models/partner_item.dart';
+import 'package:pverify/models/purchase_order_header.dart';
 import 'package:pverify/models/reason_item.dart';
 import 'package:pverify/models/severity.dart';
 import 'package:pverify/models/severity_defect.dart';
@@ -72,7 +73,7 @@ class AppStorage extends GetxController {
   List<DefectCategories>? defectCategoriesList;
   List<SpecificationByItemSKU>? specificationByItemSKUList;
   List<FinishedGoodsItemSKU> tempSelectedItemSKUList = [];
-
+  List<PurchaseOrderHeader>? purchaseOrderHeaderList;
   CommodityVarietyData? commodityVarietyData;
   List<CommodityVarietyData>? commodityVarietyDataList;
 
