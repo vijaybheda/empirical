@@ -74,7 +74,7 @@ class SelectCarrierScreenController extends GetxController {
 
       if (filteredCarrierList.length == 1) {
         // FIXME: Demo purpose only: This is a temporary fix to navigate to QC Header if only one carrier is available
-        navigateToQcHeader(filteredCarrierList.first);
+        // navigateToQcHeader(filteredCarrierList.first);
       }
     }
   }

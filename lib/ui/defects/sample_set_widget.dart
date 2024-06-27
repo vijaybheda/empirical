@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/defects_screen_controller.dart';
 import 'package:pverify/models/inspection_defect.dart';
+import 'package:pverify/models/sample_data.dart';
 import 'package:pverify/ui/defects/defect_item_widget.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
@@ -136,7 +137,9 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
         GestureDetector(
           onTap: () {
             controller.hideKeypad(context);
-            controller.addDefectRow(context, sampleIndex: sampleIndex);
+            SampleData sampleData = controller.sampleList[sampleIndex];
+            controller.addDefectRow(context,
+                sampleIndex: sampleIndex, sampleData: sampleData);
           },
           child: Text(
             AppStrings.addDefect,

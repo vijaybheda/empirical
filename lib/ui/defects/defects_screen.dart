@@ -36,7 +36,10 @@ class DefectsScreen extends GetView<DefectsScreenController> {
         tag: tag,
         builder: (controller) {
           return Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.background,
+            backgroundColor: Theme
+                .of(context)
+                .colorScheme
+                .background,
             resizeToAvoidBottomInset: true,
             appBar: AppBar(
               toolbarHeight: 150.h,
@@ -44,7 +47,9 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               automaticallyImplyLeading: false,
               leading: const Offstage(),
               centerTitle: false,
-              backgroundColor: Theme.of(context).primaryColor,
+              backgroundColor: Theme
+                  .of(context)
+                  .primaryColor,
               titleSpacing: 0,
               title: DrawerHeaderContentView(
                 title: controller.partnerName,
@@ -114,7 +119,8 @@ class DefectsScreen extends GetView<DefectsScreenController> {
           ],
         ),
       ),
-      Obx(() => Container(
+      Obx(() =>
+          Container(
             padding: EdgeInsets.only(left: 40.w, right: 40.w),
             color: AppColors.black,
             height: 150.h,
@@ -123,35 +129,39 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               children: [
                 controller.sampleList.isNotEmpty
                     ? GestureDetector(
-                        onTap: () {
-                          controller.setSampleAndDefectCounts();
-                          controller.activeTabIndex.value = 0;
-                          controller.populateSeverityList();
-                          Future.delayed(const Duration(milliseconds: 500))
-                              .then((_) {
-                            controller.update();
-                          });
-                        },
-                        child: customViewDefectsView(
-                          100.h,
-                          320.w,
-                          AppStrings.defectsTable,
-                          context,
-                          controller.activeTabIndex.value == 0,
-                        ),
-                      )
+                  onTap: () {
+                    controller.setSampleAndDefectCounts();
+                    controller.activeTabIndex.value = 0;
+                    controller.populateSeverityList();
+                    Future.delayed(const Duration(milliseconds: 500))
+                        .then((_) {
+                      controller.update();
+                    });
+                  },
+                  child: customViewDefectsView(
+                    100.h,
+                    320.w,
+                    AppStrings.defectsTable,
+                    context,
+                    controller.activeTabIndex.value == 0,
+                  ),
+                )
                     : const SizedBox(),
                 controller.sampleList.isNotEmpty
                     ? Container(
-                        width: 3.w,
-                        height: 100.h,
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).canvasColor),
-                        ),
-                      )
+                  width: 3.w,
+                  height: 100.h,
+                  decoration: BoxDecoration(
+                      color: Theme
+                          .of(context)
+                          .primaryColor),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Theme
+                            .of(context)
+                            .canvasColor),
+                  ),
+                )
                     : const SizedBox(),
                 GestureDetector(
                   onTap: () {
@@ -189,118 +199,116 @@ class DefectsScreen extends GetView<DefectsScreenController> {
       SizedBox(height: 50.h),
       controller.activeTabIndex.value == 0
           ? Expanded(
-              flex: 1,
-              child: SingleChildScrollView(
-                child: DefectsMergerTable(
-                  controller: controller,
-                ),
-              ))
+          flex: 1,
+          child: SingleChildScrollView(
+            child: DefectsMergerTable(
+              controller: controller,
+            ),
+          ))
           : Expanded(
-              flex: 1,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 50.w, right: 50.w),
-                    child: SizedBox(
-                      height: 150.h,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                  color: AppColors.lightSky,
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(20.r),
-                                      bottomLeft: Radius.circular(20.r))),
-                              child: Container(
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: BoxTextField1(
-                                  textColor: AppColors.textFieldText_Color,
-                                  hintColor: AppColors.textFieldText_Color,
-                                  isMulti: false,
-                                  controller:
-                                      controller.sizeOfNewSetTextController,
-                                  onTap: () {},
-                                  textalign: TextAlign.center,
-                                  errorText: '',
-                                  onEditingCompleted: () {
-                                    FocusScope.of(context).unfocus();
-                                  },
-                                  onChanged: (value) {},
-                                  keyboardType: TextInputType.number,
-                                  hintText: AppStrings.sizeOfNewSample,
-                                  isPasswordField: true,
-                                ),
-                              ),
-                            ),
+        flex: 1,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 50.w, right: 50.w),
+              child: SizedBox(
+                height: 150.h,
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                            color: AppColors.lightSky,
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20.r),
+                                bottomLeft: Radius.circular(20.r))),
+                        child: Container(
+                          margin:
+                          const EdgeInsets.symmetric(horizontal: 20),
+                          child: BoxTextField1(
+                            textColor: AppColors.textFieldText_Color,
+                            hintColor: AppColors.textFieldText_Color,
+                            isMulti: false,
+                            controller:
+                            controller.sizeOfNewSetTextController,
+                            onTap: () {},
+                            textalign: TextAlign.center,
+                            errorText: '',
+                            onEditingCompleted: () {
+                              FocusScope.of(context).unfocus();
+                            },
+                            onChanged: (value) {},
+                            keyboardType: TextInputType.number,
+                            hintText: AppStrings.sizeOfNewSample,
+                            isPasswordField: true,
                           ),
-                          Expanded(
-                            flex: 2,
-                            child: GestureDetector(
-                              onTap: () {
-                                if (controller.isValid(context)) {
-                                  controller.addSample();
-                                }
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(10),
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                    color: AppColors.primary,
-                                    borderRadius: BorderRadius.only(
-                                        bottomRight: Radius.circular(20.r),
-                                        topRight: Radius.circular(20.r))),
-                                child: Text(
-                                  AppStrings.addSample,
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 30.sp,
-                                      fontWeight: FontWeight.w400,
-                                      color: AppColors.white),
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 40.h),
-                  Expanded(
-                    child: ListView.builder(
-                        itemCount: controller.sampleList.length,
-                        itemBuilder: (BuildContext context, int sampleIndex) {
-                          return SampleSetWidget(
-                            sampleIndex: sampleIndex,
-                            controller: controller,
-                            onRemoveAll: () {
-                              controller.update();
-                            },
-                          );
-                        }),
-                  )
-                ],
+                    Expanded(
+                      flex: 2,
+                      child: GestureDetector(
+                        onTap: () {
+                          if (controller.isValid(context)) {
+                            controller.addSample();
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.only(
+                                  bottomRight: Radius.circular(20.r),
+                                  topRight: Radius.circular(20.r))),
+                          child: Text(
+                            AppStrings.addSample,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                                fontSize: 30.sp,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.white),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
+            SizedBox(height: 40.h),
+            Expanded(
+              child: ListView.builder(
+                  itemCount: controller.sampleList.length,
+                  itemBuilder: (BuildContext context, int sampleIndex) {
+                    return SampleSetWidget(
+                      sampleIndex: sampleIndex,
+                      controller: controller,
+                      onRemoveAll: () {
+                        controller.update();
+                      },
+                    );
+                  }),
+            )
+          ],
+        ),
+      ),
       bottomContent(context, controller)
     ]);
   }
 
 // DEFECTS VIEW
 
-  Widget customViewDefectsView(
-    double height,
-    double width,
-    String title,
-    BuildContext context,
-    bool isActive,
-  ) {
+  Widget customViewDefectsView(double height,
+      double width,
+      String title,
+      BuildContext context,
+      bool isActive,) {
     return Row(
       children: [
         Container(
@@ -308,14 +316,16 @@ class DefectsScreen extends GetView<DefectsScreenController> {
           height: height,
           width: width,
           decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
+            color: Theme
+                .of(context)
+                .primaryColor,
             border: isActive
                 ? Border(
-                    bottom: BorderSide(
-                      color: AppColors.blue,
-                      width: 3,
-                    ),
-                  )
+              bottom: BorderSide(
+                color: AppColors.blue,
+                width: 3,
+              ),
+            )
                 : null,
           ),
           child: Text(
@@ -370,8 +380,8 @@ class DefectsScreen extends GetView<DefectsScreenController> {
 
 // BOTTOM CONTENTS
 
-  Widget bottomContent(
-      BuildContext context, DefectsScreenController controller) {
+  Widget bottomContent(BuildContext context,
+      DefectsScreenController controller) {
     return Column(
       children: [
         Container(
@@ -384,7 +394,10 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               customButton(
                   backgroundColor: AppColors.white,
                   title: AppStrings.defectDiscard,
-                  width: (MediaQuery.of(context).size.width / 2.3),
+                  width: (MediaQuery
+                      .of(context)
+                      .size
+                      .width / 2.3),
                   height: 115,
                   fontStyle: GoogleFonts.poppins(
                       fontSize: 35.sp,
@@ -400,7 +413,10 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               customButton(
                   backgroundColor: AppColors.white,
                   title: AppStrings.saveInspectionButton,
-                  width: (MediaQuery.of(context).size.width / 2.3),
+                  width: (MediaQuery
+                      .of(context)
+                      .size
+                      .width / 2.3),
                   height: 115,
                   fontStyle: GoogleFonts.poppins(
                       fontSize: 35.sp,
@@ -422,7 +438,10 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               customButton(
                 backgroundColor: AppColors.white,
                 title: AppStrings.specException,
-                width: (MediaQuery.of(context).size.width / 4.5),
+                width: (MediaQuery
+                    .of(context)
+                    .size
+                    .width / 4.5),
                 height: 320.h,
                 fontStyle: GoogleFonts.poppins(
                     fontSize: 28.sp,
@@ -447,7 +466,10 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               customButton(
                 backgroundColor: AppColors.white,
                 title: AppStrings.specification,
-                width: (MediaQuery.of(context).size.width / 4.5),
+                width: (MediaQuery
+                    .of(context)
+                    .size
+                    .width / 4.5),
                 height: 320.h,
                 fontStyle: GoogleFonts.poppins(
                     fontSize: 28.sp,
@@ -455,9 +477,9 @@ class DefectsScreen extends GetView<DefectsScreenController> {
                     color: AppColors.textFieldText_Color),
                 onClickAction: () async {
                   controller.appStorage.specificationGradeToleranceTable =
-                      await controller.dao.getSpecificationGradeToleranceTable(
-                          controller.specificationNumber!,
-                          controller.specificationVersion!);
+                  await controller.dao.getSpecificationGradeToleranceTable(
+                      controller.specificationNumber!,
+                      controller.specificationVersion!);
                   if (controller
                       .appStorage.specificationGradeToleranceTable.isNotEmpty) {
                     await controller.onSpecificationTap();
@@ -471,7 +493,10 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               customButton(
                   backgroundColor: AppColors.white,
                   title: AppStrings.grade,
-                  width: (MediaQuery.of(context).size.width / 4.5),
+                  width: (MediaQuery
+                      .of(context)
+                      .size
+                      .width / 4.5),
                   height: 320.h,
                   fontStyle: GoogleFonts.poppins(
                     fontSize: 28.sp,
@@ -489,7 +514,10 @@ class DefectsScreen extends GetView<DefectsScreenController> {
               customButton(
                   backgroundColor: AppColors.white,
                   title: AppStrings.specInstrunction,
-                  width: (MediaQuery.of(context).size.width / 4.5),
+                  width: (MediaQuery
+                      .of(context)
+                      .size
+                      .width / 4.5),
                   height: 320.h,
                   fontStyle: GoogleFonts.poppins(
                       fontSize: 28.sp,
@@ -597,7 +625,7 @@ class DefectsMergerTable extends StatelessWidget {
     rows.add(_createDefectTableHeaderRow());
     rows.add(_getRowSeverity());
 
-    for (int i = 0; i < numberSamples; i++) {
+    for (int i = numberSamples - 1; i >= 0; i--) {
       rows.add(_getSampleRow(i));
     }
 
@@ -973,9 +1001,9 @@ class DefectsMergerTable extends StatelessWidget {
   List<BaseMRow> _getTotalQualityDefectsPercentRow() {
     int percentDecay = (totalQualityDecay / totalSamples * 100).round();
     int percentVSDamage =
-        (totalQualityVerySeriousDamage / totalSamples * 100).round();
+    (totalQualityVerySeriousDamage / totalSamples * 100).round();
     int percentSDamage =
-        (totalQualitySeriousDamage / totalSamples * 100).round();
+    (totalQualitySeriousDamage / totalSamples * 100).round();
     int percentDamage = (totalQualityDamage / totalSamples * 100).round();
     int percentInjury = (totalQualityInjury / totalSamples * 100).round();
     return [
@@ -1010,8 +1038,8 @@ class DefectsMergerTable extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: textStyle().copyWith(
                     color: (controller.seriousDamageQualitySpec != null &&
-                            percentSDamage >
-                                (controller.seriousDamageQualitySpec ?? 0.0))
+                        percentSDamage >
+                            (controller.seriousDamageQualitySpec ?? 0.0))
                         ? AppColors.red
                         : AppColors.black,
                   ),
@@ -1029,8 +1057,8 @@ class DefectsMergerTable extends StatelessWidget {
               textAlign: TextAlign.center,
               style: textStyle().copyWith(
                 color: (controller.verySeriousDamageQualitySpec != null &&
-                        percentVSDamage >
-                            (controller.verySeriousDamageQualitySpec ?? 0.0))
+                    percentVSDamage >
+                        (controller.verySeriousDamageQualitySpec ?? 0.0))
                     ? AppColors.red
                     : AppColors.black,
               ),
@@ -1043,7 +1071,7 @@ class DefectsMergerTable extends StatelessWidget {
           child: defaultTextItem(
             "$percentDecay%",
             color: (controller.decayQualitySpec != null &&
-                    percentDecay > (controller.decayQualitySpec ?? 0.0))
+                percentDecay > (controller.decayQualitySpec ?? 0.0))
                 ? AppColors.red
                 : null,
           ),
@@ -1101,9 +1129,9 @@ class DefectsMergerTable extends StatelessWidget {
   List<BaseMRow> _getTotalConditionDefectsPercentRow() {
     int percentCDecay = (totalConditionDecay / totalSamples * 100).round();
     int percentCVSDamage =
-        (totalConditionVerySeriousDamage / totalSamples * 100).round();
+    (totalConditionVerySeriousDamage / totalSamples * 100).round();
     int percentSCDamage =
-        (totalConditionSeriousDamage / totalSamples * 100).round();
+    (totalConditionSeriousDamage / totalSamples * 100).round();
     int percentCDamage = (totalConditionDamage / totalSamples * 100).round();
     int percentCInjury = (totalConditionInjury / totalSamples * 100).round();
 
@@ -1117,7 +1145,7 @@ class DefectsMergerTable extends StatelessWidget {
           child: defaultTextItem(
             "$percentCInjury%",
             color: (controller.injuryConditionSpec != null &&
-                    percentCInjury > (controller.injuryConditionSpec ?? 0.0))
+                percentCInjury > (controller.injuryConditionSpec ?? 0.0))
                 ? AppColors.red
                 : null,
           ),
@@ -1128,7 +1156,7 @@ class DefectsMergerTable extends StatelessWidget {
           child: defaultTextItem(
             "$percentCDamage%",
             color: (controller.damageConditionSpec != null &&
-                    percentCDamage > (controller.damageConditionSpec ?? 0.0))
+                percentCDamage > (controller.damageConditionSpec ?? 0.0))
                 ? AppColors.red
                 : null,
           ),
@@ -1154,8 +1182,8 @@ class DefectsMergerTable extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: textStyle().copyWith(
                     color: (controller.seriousDamageConditionSpec != null &&
-                            percentSCDamage >
-                                (controller.seriousDamageConditionSpec ?? 0.0))
+                        percentSCDamage >
+                            (controller.seriousDamageConditionSpec ?? 0.0))
                         ? AppColors.red
                         : AppColors.black,
                   ),
@@ -1173,8 +1201,8 @@ class DefectsMergerTable extends StatelessWidget {
               textAlign: TextAlign.center,
               style: textStyle().copyWith(
                 color: (controller.verySeriousDamageConditionSpec != null &&
-                        percentCVSDamage >
-                            (controller.verySeriousDamageConditionSpec ?? 0.0))
+                    percentCVSDamage >
+                        (controller.verySeriousDamageConditionSpec ?? 0.0))
                     ? AppColors.red
                     : AppColors.black,
               ),
@@ -1187,7 +1215,7 @@ class DefectsMergerTable extends StatelessWidget {
           child: defaultTextItem(
             "$percentCDecay%",
             color: (controller.decayConditionSpec != null &&
-                    percentCDecay > (controller.decayConditionSpec ?? 0.0))
+                percentCDecay > (controller.decayConditionSpec ?? 0.0))
                 ? AppColors.red
                 : null,
           ),
@@ -1228,7 +1256,7 @@ class DefectsMergerTable extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: textStyle().copyWith(
                       color: (controller.seriousDamageSpec != null &&
-                              percent > (controller.seriousDamageSpec ?? 0.0))
+                          percent > (controller.seriousDamageSpec ?? 0.0))
                           ? AppColors.red
                           : AppColors.black,
                     ),
@@ -1253,7 +1281,7 @@ class DefectsMergerTable extends StatelessWidget {
     int totalDamage = (controller.totalDamage / totalSamples * 100).round();
     int totalInjury = (controller.totalInjury / totalSamples * 100).round();
     int totalVerySeriousDamage =
-        (controller.totalVerySeriousDamage / totalSamples * 100).round();
+    (controller.totalVerySeriousDamage / totalSamples * 100).round();
     return [
       MRow(Container(
           color: AppColors.white, child: defaultTextItem("Total Severity %"))),
@@ -1263,7 +1291,7 @@ class DefectsMergerTable extends StatelessWidget {
           child: defaultTextItem(
             "$totalInjury%",
             color: (controller.injurySpec != null &&
-                    totalInjury > (controller.injurySpec ?? 0.0))
+                totalInjury > (controller.injurySpec ?? 0.0))
                 ? AppColors.red
                 : null,
           ),
@@ -1274,7 +1302,7 @@ class DefectsMergerTable extends StatelessWidget {
           child: defaultTextItem(
             "$totalDamage%",
             color: (controller.damageSpec != null &&
-                    totalDamage > (controller.damageSpec ?? 0.0))
+                totalDamage > (controller.damageSpec ?? 0.0))
                 ? AppColors.red
                 : null,
           ),
@@ -1301,7 +1329,7 @@ class DefectsMergerTable extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: textStyle().copyWith(
                       color: (controller.seriousDamageSpec != null &&
-                              percent > (controller.seriousDamageSpec ?? 0.0))
+                          percent > (controller.seriousDamageSpec ?? 0.0))
                           ? AppColors.red
                           : AppColors.black,
                     ),
@@ -1315,8 +1343,8 @@ class DefectsMergerTable extends StatelessWidget {
           child: defaultTextItem(
             "$totalVerySeriousDamage%",
             color: controller.verySeriousDamageSpec != null &&
-                    totalVerySeriousDamage >
-                        (controller.verySeriousDamageSpec ?? 0.0)
+                totalVerySeriousDamage >
+                    (controller.verySeriousDamageSpec ?? 0.0)
                 ? AppColors.red
                 : null,
           ),
@@ -1326,7 +1354,7 @@ class DefectsMergerTable extends StatelessWidget {
           color: AppColors.defectGreen,
           child: defaultTextItem("$totalDecay%",
               color: (controller.decaySpec != null &&
-                      totalDecay > (controller.decaySpec ?? 0.0))
+                  totalDecay > (controller.decaySpec ?? 0.0))
                   ? AppColors.red
                   : null),
         )),
@@ -1381,7 +1409,7 @@ class DefectsMergerTable extends StatelessWidget {
   List<BaseMRow> _getTotalSizeDefectsPercentRow() {
     int percentSizeDecay = (totalSizeDecay / totalSamples * 100).round();
     int percentSizeVSDamage =
-        (totalSizeVerySeriousDamage / totalSamples * 100).round();
+    (totalSizeVerySeriousDamage / totalSamples * 100).round();
     int percentSizeDamage = (totalSizeDamage / totalSamples * 100).round();
     int percentSizeInjury = (totalSizeInjury / totalSamples * 100).round();
     return [
@@ -1400,7 +1428,7 @@ class DefectsMergerTable extends StatelessWidget {
           String value = "";
           if (index == 0) {
             int percentSCDamage =
-                (totalSizeSeriousDamage / totalSamples * 100).round();
+            (totalSizeSeriousDamage / totalSamples * 100).round();
             value = "$percentSCDamage%";
           }
           if (value.isEmpty) {
@@ -1478,7 +1506,7 @@ class DefectsMergerTable extends StatelessWidget {
   List<BaseMRow> _getTotalColorDefectsPercentRow() {
     double percentColorDecay = (totalColorDecay / totalSamples * 100);
     double percentColorVSDamage =
-        (totalColorVerySeriousDamage / totalSamples * 100);
+    (totalColorVerySeriousDamage / totalSamples * 100);
     int percentColorDamage = (totalColorDamage / totalSamples * 100).round();
     int percentColorInjury = (totalColorInjury / totalSamples * 100).round();
     return [
@@ -1497,7 +1525,7 @@ class DefectsMergerTable extends StatelessWidget {
           String value = "";
           if (index == 0) {
             int percentSColorDamage =
-                (totalColorSeriousDamage / totalSamples * 100).round();
+            (totalColorSeriousDamage / totalSamples * 100).round();
             value = "$percentSColorDamage%";
           }
           if (value.isEmpty) {
@@ -1520,7 +1548,7 @@ class DefectsMergerTable extends StatelessWidget {
           color: AppColors.defectBlue,
           child: Center(
               child:
-                  Text("${percentColorVSDamage.round()}%", style: textStyle())),
+              Text("${percentColorVSDamage.round()}%", style: textStyle())),
         )),
       if (controller.hasSeverityDecay)
         MRow(Container(
@@ -1555,7 +1583,9 @@ class DefectsMergerTable extends StatelessWidget {
         );
       },
       child: Image.asset(
-        comment.trim().isNotEmpty
+        comment
+            .trim()
+            .isNotEmpty
             ? AppImages.ic_specCommentsAdded
             : AppImages.ic_specComments,
         width: 80.w,
