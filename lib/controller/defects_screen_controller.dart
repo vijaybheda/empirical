@@ -34,7 +34,7 @@ class DefectsScreenController extends GetxController {
   final ApplicationDao dao = ApplicationDao();
   final JsonFileOperations jsonFileOperations = JsonFileOperations.instance;
   final TextEditingController sizeOfNewSetTextController =
-  TextEditingController();
+      TextEditingController();
   bool isFirstTime = true;
 
   bool isDefectEntry = true;
@@ -132,15 +132,14 @@ class DefectsScreenController extends GetxController {
   bool isMyInspectionScreen = false;
 
   Map<String, List<InspectionDefect>> defectDataMap =
-  <String, List<InspectionDefect>>{};
+      <String, List<InspectionDefect>>{};
   Map<int, SampleData> sampleDataMap = <int, SampleData>{};
   List<int> sampleDataMapIndexList = [];
   List<String> seriousDefectList = [];
   Map<String, int> seriousDefectCountMap = <String, int>{};
   Map<int, String>? defectCategoriesMap;
 
-  String poNumber = '',
-      sealNumber = '';
+  String poNumber = '', sealNumber = '';
 
   String? lotNo, itemSku, itemUniqueId, lotSize;
   DateTime? packDate;
@@ -286,8 +285,8 @@ class DefectsScreenController extends GetxController {
     await jsonFileOperations.offlineLoadSeverities(commodityID.toString());
     await jsonFileOperations.offlineLoadDefectCategories();
     appStorage.specificationGradeToleranceList =
-    await dao.getSpecificationGradeTolerance(
-        specificationNumber!, specificationVersion!);
+        await dao.getSpecificationGradeTolerance(
+            specificationNumber!, specificationVersion!);
     getDefectCategories();
 
     loadSamplesAndDefectsFromDB();
@@ -298,7 +297,7 @@ class DefectsScreenController extends GetxController {
 
     // Load samples from DB
     List<InspectionSample> samples =
-    await dao.findInspectionSamples(inspectionId!);
+        await dao.findInspectionSamples(inspectionId!);
     if (samples.isNotEmpty) {
       numberSamples = samples.length;
       for (int i = 0; i < samples.length; i++) {
@@ -315,7 +314,7 @@ class DefectsScreenController extends GetxController {
         sampleList.add(temp);
 
         List<InspectionDefect> defectList =
-        await dao.findInspectionDefects(temp.sampleId!);
+            await dao.findInspectionDefects(temp.sampleId!);
         if (defectList.isNotEmpty) {
           hasDefects = true;
           defectDataMap[temp.name] = defectList;
@@ -334,9 +333,7 @@ class DefectsScreenController extends GetxController {
   }
 
   bool isValid(BuildContext context) {
-    if (sizeOfNewSetTextController.value.text
-        .trim()
-        .isEmpty) {
+    if (sizeOfNewSetTextController.value.text.trim().isEmpty) {
       AppAlertDialog.validateAlerts(
           context, AppStrings.error, AppStrings.errorEnterSize);
       return false;
@@ -350,9 +347,7 @@ class DefectsScreenController extends GetxController {
     final int index = sampleList.length + 1;
 
     final String name = "$setsValue Samples Set #$index";
-    final int timeStamp = DateTime
-        .now()
-        .millisecondsSinceEpoch;
+    final int timeStamp = DateTime.now().millisecondsSinceEpoch;
     SampleData sampleData = SampleData(
       sampleSize: setsValue,
       name: name,
@@ -381,41 +376,31 @@ class DefectsScreenController extends GetxController {
         if (severity.name == "Injury" || severity.name == "Lesión") {
           hasSeverityInjury = true;
           if (defectDataMap.containsKey(name)) {
-            defectList
-                .elementAt((index - 1))
-                .severityInjuryId = severity.id;
+            defectList.elementAt((index - 1)).severityInjuryId = severity.id;
           }
         } else if (severity.name == "Damage" || severity.name == "Daño") {
           hasSeverityDamage = true;
           if (defectDataMap.containsKey(name)) {
-            defectList
-                .elementAt((index - 1))
-                .severityDamageId = severity.id;
+            defectList.elementAt((index - 1)).severityDamageId = severity.id;
           }
         } else if (severity.name == "Serious Damage" ||
             severity.name == "Daño Serio") {
           hasSeveritySeriousDamage = true;
           if (defectDataMap.containsKey(name)) {
-            defectList
-                .elementAt((index - 1))
-                .severitySeriousDamageId =
+            defectList.elementAt((index - 1)).severitySeriousDamageId =
                 severity.id;
           }
         } else if (severity.name == "Very Serious Damage" ||
             severity.name == "Daño Muy Serio") {
           hasSeverityVerySeriousDamage = true;
           if (defectDataMap.containsKey(name)) {
-            defectList
-                .elementAt((index - 1))
-                .severityVerySeriousDamageId =
+            defectList.elementAt((index - 1)).severityVerySeriousDamageId =
                 severity.id;
           }
         } else if (severity.name == "Decay" || severity.name == "Pudrición") {
           hasSeverityDecay = true;
           if (defectDataMap.containsKey(name)) {
-            defectList
-                .elementAt((index - 1))
-                .severityDecayId = severity.id;
+            defectList.elementAt((index - 1)).severityDecayId = severity.id;
           }
         }
       }
@@ -436,9 +421,7 @@ class DefectsScreenController extends GetxController {
       defectList = defectDataMap[dataName]!;
 
       InspectionDefect inspectionDefect = InspectionDefect(
-        createdTime: DateTime
-            .now()
-            .millisecondsSinceEpoch,
+        createdTime: DateTime.now().millisecondsSinceEpoch,
         comment: "",
         attachmentIds: [],
         defectCategory: '',
@@ -499,9 +482,7 @@ class DefectsScreenController extends GetxController {
       defectList = [];
 
       InspectionDefect inspectionDefect = InspectionDefect(
-        createdTime: DateTime
-            .now()
-            .millisecondsSinceEpoch,
+        createdTime: DateTime.now().millisecondsSinceEpoch,
         comment: "",
         attachmentIds: [],
         defectCategory: '',
@@ -530,9 +511,9 @@ class DefectsScreenController extends GetxController {
 
     int defectItemIndex = (sampleList[sampleIndex].defectItems.length - 1);
     String dropDownValue = sampleList[sampleIndex]
-        .defectItems
-        .elementAtOrNull(defectItemIndex)
-        ?.spinnerSelection ??
+            .defectItems
+            .elementAtOrNull(defectItemIndex)
+            ?.spinnerSelection ??
         defectSpinnerNames.first;
 
     onDropDownChange(
@@ -615,9 +596,9 @@ class DefectsScreenController extends GetxController {
     int value = int.tryParse(textData) ?? 0;
     int sampleSize = sampleList[sampleIndex].sampleSize;
     String dropDownValue = sampleList[sampleIndex]
-        .defectItems
-        .elementAtOrNull(defectIndex)
-        ?.spinnerSelection ??
+            .defectItems
+            .elementAtOrNull(defectIndex)
+            ?.spinnerSelection ??
         defectSpinnerNames.first;
 
     String dataName = sampleList[sampleIndex].name;
@@ -627,14 +608,12 @@ class DefectsScreenController extends GetxController {
       AppAlertDialog.validateAlerts(
         context,
         AppStrings.alert,
-        '${fieldName.replaceAll('\n', ' ')} - $dropDownValue ${AppStrings
-            .cannotBeGreaterThenTheSampleSize} $sampleSize, ${AppStrings
-            .pleaseEnterValidDefectCount}',
+        '${fieldName.replaceAll('\n', ' ')} - $dropDownValue ${AppStrings.cannotBeGreaterThenTheSampleSize} $sampleSize, ${AppStrings.pleaseEnterValidDefectCount}',
       );
     }
 
     InspectionDefect defectItem =
-    sampleList[sampleIndex].defectItems[defectIndex];
+        sampleList[sampleIndex].defectItems[defectIndex];
     if (!isError) {
       switch (fieldName) {
         case AppStrings.injury:
@@ -893,7 +872,7 @@ class DefectsScreenController extends GetxController {
         appStorage.getCommodityList()!.isNotEmpty) {
       item = appStorage.getCommodityList()?.firstWhere(
             (commodity) => commodity.id == commodityId,
-      );
+          );
     } else {
       // Populate with default list if commodity list is empty
       // populateWithDefaultList();
@@ -933,7 +912,7 @@ class DefectsScreenController extends GetxController {
         appStorage.getCommodityList()!.isNotEmpty) {
       item = appStorage.getCommodityList()?.firstWhere(
             (commodity) => commodity.id == commodityId,
-      );
+          );
     } else {
       // Populate with default list if commodity list is empty
       // populateWithDefaultList();
@@ -1004,7 +983,7 @@ class DefectsScreenController extends GetxController {
   Future onSpecialInstrMenuTap() async {
     CustomListViewDialog customDialog = CustomListViewDialog(
       // Get.context!,
-          (selectedValue) {},
+      (selectedValue) {},
     );
     customDialog.setCanceledOnTouchOutside(false);
     customDialog.show();
@@ -1012,8 +991,8 @@ class DefectsScreenController extends GetxController {
 
   Future onSpecificationTap() async {
     appStorage.specificationGradeToleranceTable =
-    await dao.getSpecificationGradeToleranceTable(
-        specificationNumber!, specificationVersion!);
+        await dao.getSpecificationGradeToleranceTable(
+            specificationNumber!, specificationVersion!);
     showDialog(
         context: Get.context!,
         builder: (BuildContext context) {
@@ -1034,10 +1013,7 @@ class DefectsScreenController extends GetxController {
       Consts.PO_NUMBER: poNumber,
     };
     passingData[Consts.FOR_DEFECT_ATTACHMENT] = true;
-    final String tag = DateTime
-        .now()
-        .millisecondsSinceEpoch
-        .toString();
+    final String tag = DateTime.now().millisecondsSinceEpoch.toString();
     await Get.to(() => InspectionPhotos(tag: tag), arguments: passingData);
   }
 
@@ -1072,20 +1048,14 @@ class DefectsScreenController extends GetxController {
       passingData[Consts.IS_MY_INSPECTION_SCREEN] = isMyInspectionScreen;
       passingData[Consts.PRODUCT_TRANSFER] = productTransfer;
 
-      final String tag = DateTime
-          .now()
-          .millisecondsSinceEpoch
-          .toString();
+      final String tag = DateTime.now().millisecondsSinceEpoch.toString();
 
       if (callerActivity == "TrendingReportActivity") {
         passingData[Consts.CALLER_ACTIVITY] = "TrendingReportActivity";
         Get.offAll(() => Home(tag: tag), arguments: passingData);
       } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
         passingData[Consts.CALLER_ACTIVITY] = "NewPurchaseOrderDetailsActivity";
-        final String tag = DateTime
-            .now()
-            .millisecondsSinceEpoch
-            .toString();
+        final String tag = DateTime.now().millisecondsSinceEpoch.toString();
         Get.off(() => NewPurchaseOrderDetailsScreen(tag: tag),
             arguments: passingData);
       } else {
@@ -1265,7 +1235,7 @@ class DefectsScreenController extends GetxController {
             Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
             Consts.LOT_NO: lotNo,
             Consts.GTIN: gtin,
-            Consts.PACK_DATE: packDate,
+            Consts.PACK_DATE: packDateString,
             Consts.LOT_SIZE: lotSize,
             Consts.ITEM_UNIQUE_ID: itemUniqueId,
             Consts.ITEM_SKU: itemSku,
@@ -1282,10 +1252,7 @@ class DefectsScreenController extends GetxController {
             bundle['callerActivity'] = 'PurchaseOrderDetailsActivity';
           }
 
-          final String tag = DateTime
-              .now()
-              .millisecondsSinceEpoch
-              .toString();
+          final String tag = DateTime.now().millisecondsSinceEpoch.toString();
           Get.to(() => QCDetailsShortFormScreen(tag: tag), arguments: bundle);
         } else {
           AppAlertDialog.validateAlerts(
@@ -1336,7 +1303,7 @@ class DefectsScreenController extends GetxController {
             Consts.ITEM_SKU_ID: itemSkuId,
             Consts.LOT_NO: lotNo,
             Consts.GTIN: gtin,
-            Consts.PACK_DATE: packDate,
+            Consts.PACK_DATE: packDateString,
             Consts.ITEM_UNIQUE_ID: itemUniqueId,
             Consts.LOT_SIZE: lotSize,
             Consts.ITEM_SKU_NAME: itemSkuName,
@@ -1344,10 +1311,7 @@ class DefectsScreenController extends GetxController {
             Consts.PRODUCT_TRANSFER: productTransfer,
           };
 
-          final String tag = DateTime
-              .now()
-              .millisecondsSinceEpoch
-              .toString();
+          final String tag = DateTime.now().millisecondsSinceEpoch.toString();
           Get.off(() => PurchaseOrderDetailsScreen(tag: tag),
               arguments: bundle);
         } else {
@@ -1394,7 +1358,7 @@ class DefectsScreenController extends GetxController {
           ));
           sample = sample.copyWith(sampleId: sampleId);
           int ind =
-          sampleList.indexWhere((element) => element.name == sampleName);
+              sampleList.indexWhere((element) => element.name == sampleName);
           sampleList[ind] = sample;
         } catch (e) {
           debugPrint(e.toString());
@@ -1566,39 +1530,29 @@ class DefectsScreenController extends GetxController {
     FocusScope.of(context).unfocus();
   }
 
-  void loadDefectData(int i, List<InspectionDefect> defectList,
-      String dataName) {
+  void loadDefectData(
+      int i, List<InspectionDefect> defectList, String dataName) {
     populateDefectSpinnerList();
 
     if (appStorage.severityList != null) {
       for (Severity severity in appStorage.severityList!) {
         if (severity.name == "Injury" || severity.name == "Lesión") {
           hasSeverityInjury = true;
-          defectList
-              .elementAt(i)
-              .severityInjuryId = severity.id;
+          defectList.elementAt(i).severityInjuryId = severity.id;
         } else if (severity.name == "Damage" || severity.name == "Daño") {
           hasSeverityDamage = true;
-          defectList
-              .elementAt(i)
-              .severityDamageId = severity.id;
+          defectList.elementAt(i).severityDamageId = severity.id;
         } else if (severity.name == "Serious Damage" ||
             severity.name == "Daño Serio") {
           hasSeveritySeriousDamage = true;
-          defectList
-              .elementAt(i)
-              .severitySeriousDamageId = severity.id;
+          defectList.elementAt(i).severitySeriousDamageId = severity.id;
         } else if (severity.name == "Very Serious Damage" ||
             severity.name == "Daño Muy Serio") {
           hasSeverityVerySeriousDamage = true;
-          defectList
-              .elementAt(i)
-              .severityVerySeriousDamageId = severity.id;
+          defectList.elementAt(i).severityVerySeriousDamageId = severity.id;
         } else if (severity.name == "Decay" || severity.name == "Pudrición") {
           hasSeverityDecay = true;
-          defectList
-              .elementAt(i)
-              .severityDecayId = severity.id;
+          defectList.elementAt(i).severityDecayId = severity.id;
         }
       }
     }
@@ -1637,17 +1591,12 @@ class DefectsScreenController extends GetxController {
 
     passingData[Consts.FOR_DEFECT_ATTACHMENT] = true;
 
-    final String tag = DateTime
-        .now()
-        .millisecondsSinceEpoch
-        .toString();
+    final String tag = DateTime.now().millisecondsSinceEpoch.toString();
     var result =
-    await Get.to(() => InspectionPhotos(tag: tag), arguments: passingData);
+        await Get.to(() => InspectionPhotos(tag: tag), arguments: passingData);
     if (result != null) {
       try {
-        String dataName = sampleList
-            .elementAt(sampleIndex)
-            .name;
+        String dataName = sampleList.elementAt(sampleIndex).name;
         List<InspectionDefect>? inspection = defectDataMap[dataName];
         inspection![defectItemIndex].attachmentIds = appStorage.attachmentIds;
         defectDataMap[dataName] = inspection;
@@ -1680,10 +1629,7 @@ class DefectsScreenController extends GetxController {
     passingData[Consts.FOR_DEFECT_ATTACHMENT] = true;
     passingData[Consts.IS_VIEW_ONLY_MODE] = true;
 
-    final String tag = DateTime
-        .now()
-        .millisecondsSinceEpoch
-        .toString();
+    final String tag = DateTime.now().millisecondsSinceEpoch.toString();
     Get.to(() => InspectionPhotos(tag: tag), arguments: passingData);
   }
 
@@ -1749,9 +1695,7 @@ class DefectsScreenController extends GetxController {
         name: key,
         complete: false,
         setNumber: 0,
-        timeCreated: DateTime
-            .now()
-            .millisecondsSinceEpoch,
+        timeCreated: DateTime.now().millisecondsSinceEpoch,
         sampleId: 0,
       );
 
@@ -1873,8 +1817,7 @@ class DefectsScreenController extends GetxController {
     if (totalColorVerySeriousDamage == 0 || totalSamples == 0) {
       return '0';
     }
-    return "${((totalColorVerySeriousDamage / totalSamples) * 100)
-        .toStringAsFixed(2)}%";
+    return "${((totalColorVerySeriousDamage / totalSamples) * 100).toStringAsFixed(2)}%";
   }
 
   String getTotalColorSeriousDamage(int i) {
@@ -1882,8 +1825,7 @@ class DefectsScreenController extends GetxController {
       return '0';
     }
     return i == 0
-        ? "${((totalColorSeriousDamage / totalSamples) * 100).toStringAsFixed(
-        2)}%"
+        ? "${((totalColorSeriousDamage / totalSamples) * 100).toStringAsFixed(2)}%"
         : '';
   }
 
@@ -1912,8 +1854,7 @@ class DefectsScreenController extends GetxController {
     if (totalSizeVerySeriousDamage == 0 || totalSamples == 0) {
       return '0';
     }
-    return "${((totalSizeVerySeriousDamage / totalSamples) * 100)
-        .toStringAsFixed(2)}%";
+    return "${((totalSizeVerySeriousDamage / totalSamples) * 100).toStringAsFixed(2)}%";
   }
 
   String getTotalSizeSeriousDamage(int i) {
@@ -1921,8 +1862,7 @@ class DefectsScreenController extends GetxController {
       return '0';
     }
     return i == 0
-        ? "${((totalSizeSeriousDamage / totalSamples) * 100).toStringAsFixed(
-        2)}%"
+        ? "${((totalSizeSeriousDamage / totalSamples) * 100).toStringAsFixed(2)}%"
         : '';
   }
 
@@ -1980,8 +1920,7 @@ class DefectsScreenController extends GetxController {
     if (totalConditionVerySeriousDamage == 0 || totalSamples == 0) {
       return '0';
     }
-    return "${((totalConditionVerySeriousDamage / totalSamples) * 100)
-        .round()}%";
+    return "${((totalConditionVerySeriousDamage / totalSamples) * 100).round()}%";
   }
 
   String getTotalConditionSeriousDamage(int i) {
@@ -2069,15 +2008,12 @@ class DefectsScreenController extends GetxController {
       Consts.PO_LINE_NO: poLineNo,
       Consts.PRODUCT_TRANSFER: productTransfer,
       Consts.CALLER_ACTIVITY:
-      (callerActivity == "NewPurchaseOrderDetailsActivity")
-          ? "NewPurchaseOrderDetailsActivity"
-          : "PurchaseOrderDetailsActivity",
+          (callerActivity == "NewPurchaseOrderDetailsActivity")
+              ? "NewPurchaseOrderDetailsActivity"
+              : "PurchaseOrderDetailsActivity",
     };
 
-    final String tag = DateTime
-        .now()
-        .millisecondsSinceEpoch
-        .toString();
+    final String tag = DateTime.now().millisecondsSinceEpoch.toString();
     Get.off(() => QCDetailsShortFormScreen(tag: tag), arguments: args);
     return;
   }
