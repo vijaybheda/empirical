@@ -475,6 +475,7 @@ class InspectionDetailsController extends GetxController {
 
   // QC Header Button OnClick Event
   void onQcHeaderButtonClick() {
+    callerActivity = 'QualityControlHeaderActivity';
     Map<String, dynamic> passingData = {
       Consts.PARTNER_NAME: partnerName,
       Consts.PARTNER_ID: partnerID,
@@ -483,7 +484,7 @@ class InspectionDetailsController extends GetxController {
       Consts.COMMODITY_ID: commodityID,
       Consts.COMMODITY_NAME: commodityName,
       Consts.PO_NUMBER: poNumber,
-      "callerActivity": "QualityControlHeaderActivity",
+      Consts.CALLER_ACTIVITY: "QualityControlHeaderActivity",
     };
     Get.to(() => const QualityControlHeader(), arguments: passingData);
   }
@@ -902,7 +903,7 @@ class InspectionDetailsController extends GetxController {
             await dao.findTempQCHeaderDetails(inspection!.poNumber!);
 
         if (qcHeaderDetails != null && qcHeaderDetails.truckTempOk == 'N') {
-          result = 'RJ';
+          result = "RJ";
 
           inspectionTextColor = AppColors.red;
           inspectionResultText = AppStrings.reject;
@@ -976,6 +977,10 @@ class InspectionDetailsController extends GetxController {
                     // Do nothing
                   } else {
                     result = "RJ";
+                    inspectionResultText = AppStrings.reject;
+                    inspectionTextColor = AppColors.red;
+                    approvalLayout.value = true;
+                    setResult("RJ");
                     rejectReason += "${dbobj.analyticalName} = N";
                     rejectReasonArray.add("${dbobj.analyticalName} = N");
 
@@ -1744,6 +1749,11 @@ class InspectionDetailsController extends GetxController {
                                       result,
                                       "$defectNameResult - Quality (Damage)  % exceeds tolerance",
                                       defectList.elementAt(k).comment ?? "");
+                                  // inspectionResultText = AppStrings.reject;
+                                  // inspectionTextColor = AppColors.red;
+                                  // approvalLayout.value = true;
+                                  // setResult("RJ");
+                                  // break;
                                 } else if ((vsdpercent >
                                         specTolerancePercentage / 2) &&
                                     (vsdpercent <= specTolerancePercentage)) {
@@ -2689,6 +2699,11 @@ class InspectionDetailsController extends GetxController {
                                       "Total Condition " +
                                           "% exceeds tolerance",
                                       defectList.elementAt(k).comment ?? "");
+                                  inspectionResultText = AppStrings.reject;
+                                  inspectionTextColor = AppColors.red;
+                                  approvalLayout.value = true;
+                                  setResult("RJ");
+                                  //break;
                                 } else if ((vsdpercent >
                                         specTolerancePercentage / 2) &&
                                     (vsdpercent <= specTolerancePercentage)) {
@@ -2712,6 +2727,10 @@ class InspectionDetailsController extends GetxController {
                                     "RJ",
                                     rejectReason,
                                     defectList.elementAt(k).comment ?? "");
+                                inspectionResultText = AppStrings.reject;
+                                inspectionTextColor = AppColors.red;
+                                approvalLayout.value = true;
+                                setResult("RJ");
                               }
 
                               iscalculated = true;
@@ -2866,6 +2885,10 @@ class InspectionDetailsController extends GetxController {
                                       "Size % exceeds tolerance",
                                       defectList.elementAt(k).comment ?? "");
                                 }
+                                inspectionResultText = AppStrings.reject;
+                                inspectionTextColor = AppColors.red;
+                                approvalLayout.value = true;
+                                setResult("RJ");
                               } else if ((sizepercent >
                                       specTolerancePercentage / 2) &&
                                   (sizepercent <= specTolerancePercentage)) {
@@ -2905,6 +2928,10 @@ class InspectionDetailsController extends GetxController {
                                     rejectReason,
                                     defectList.elementAt(k).comment ?? "");
                               }
+                              inspectionResultText = AppStrings.reject;
+                              inspectionTextColor = AppColors.red;
+                              approvalLayout.value = true;
+                              setResult("RJ");
                             }
                           }
                         } else if (defectList
@@ -3040,7 +3067,10 @@ class InspectionDetailsController extends GetxController {
 
                               if (colorpercent > specTolerancePercentage) {
                                 result = "RJ";
-
+                                inspectionResultText = AppStrings.reject;
+                                inspectionTextColor = AppColors.red;
+                                approvalLayout.value = true;
+                                setResult("RJ");
                                 if (colorDefectName != null &&
                                     colorDefectName != "") {
                                   await dao.createOrUpdateResultReasonDetails(
@@ -3091,6 +3121,10 @@ class InspectionDetailsController extends GetxController {
                                     rejectReason,
                                     defectList.elementAt(k).comment ?? "");
                               }
+                              inspectionResultText = AppStrings.reject;
+                              inspectionTextColor = AppColors.red;
+                              approvalLayout.value = true;
+                              setResult("RJ");
                             }
                           }
                         }
@@ -3114,6 +3148,10 @@ class InspectionDetailsController extends GetxController {
                         (totalQualitycount * 100) / totalSampleSize;
                     if (qualpercentage > specTolerancePercentage) {
                       result = "RJ";
+                      inspectionResultText = AppStrings.reject;
+                      inspectionTextColor = AppColors.red;
+                      approvalLayout.value = true;
+                      setResult("RJ");
                       if (rejectReason != "") {
                         rejectReason += ", ";
                       }
@@ -3127,6 +3165,10 @@ class InspectionDetailsController extends GetxController {
                     } else if ((qualpercentage > specTolerancePercentage / 2) &&
                         (qualpercentage <= specTolerancePercentage)) {
                       result = "A-";
+                      inspectionResultText = AppStrings.accept;
+                      inspectionTextColor = AppColors.primary;
+                      approvalLayout.value = false;
+                      setResult("A-");
                     }
                   } else if (defectID != null &&
                       totalConditionCount > 0 &&
@@ -3136,6 +3178,10 @@ class InspectionDetailsController extends GetxController {
                         (totalConditionCount * 100) / totalSampleSize;
                     if (condPercentage > specTolerancePercentage) {
                       result = "RJ";
+                      inspectionResultText = AppStrings.reject;
+                      inspectionTextColor = AppColors.red;
+                      approvalLayout.value = true;
+                      setResult("RJ");
                       if (rejectReason != "") {
                         rejectReason += ", ";
                       }
@@ -3150,6 +3196,10 @@ class InspectionDetailsController extends GetxController {
                     } else if ((condPercentage > specTolerancePercentage / 2) &&
                         (condPercentage <= specTolerancePercentage)) {
                       result = "A-";
+                      inspectionResultText = AppStrings.accept;
+                      inspectionTextColor = AppColors.primary;
+                      approvalLayout.value = false;
+
                       setResult('A-');
                     }
                   } else if (defectID != null &&
@@ -3159,6 +3209,10 @@ class InspectionDetailsController extends GetxController {
                     double sizePer = (totalSize * 100) / totalSampleSize;
                     if (sizePer > specTolerancePercentage) {
                       result = "RJ";
+                      inspectionResultText = AppStrings.reject;
+                      inspectionTextColor = AppColors.red;
+                      approvalLayout.value = true;
+                      setResult("RJ");
                       if (rejectReason != "") {
                         rejectReason += ", ";
                       }
@@ -3170,6 +3224,11 @@ class InspectionDetailsController extends GetxController {
                     } else if (sizePer > specTolerancePercentage / 2 &&
                         sizePer <= specTolerancePercentage) {
                       result = "A-";
+                      inspectionResultText = AppStrings.accept;
+                      inspectionTextColor = AppColors.primary;
+                      approvalLayout.value = false;
+
+                      setResult('A-');
                     }
                   } else if (defectID != null &&
                       totalColor > 0 &&
@@ -3178,6 +3237,10 @@ class InspectionDetailsController extends GetxController {
                     double sizePer = (totalColor * 100) / totalSampleSize;
                     if (sizePer > specTolerancePercentage) {
                       result = "RJ";
+                      inspectionResultText = AppStrings.reject;
+                      inspectionTextColor = AppColors.red;
+                      approvalLayout.value = true;
+                      setResult("RJ");
                       if (rejectReason != "") {
                         rejectReason += ", ";
                       }
@@ -3189,6 +3252,11 @@ class InspectionDetailsController extends GetxController {
                     } else if (sizePer > specTolerancePercentage / 2 &&
                         sizePer <= specTolerancePercentage) {
                       result = "A-";
+                      inspectionResultText = AppStrings.accept;
+                      inspectionTextColor = AppColors.primary;
+                      approvalLayout.value = false;
+
+                      setResult('A-');
                     }
                   }
 
@@ -3216,6 +3284,10 @@ class InspectionDetailsController extends GetxController {
 
                       if (qualpercentage > specTolerancePercentage) {
                         result = "RJ";
+                        inspectionResultText = AppStrings.reject;
+                        inspectionTextColor = AppColors.red;
+                        approvalLayout.value = true;
+                        setResult("RJ");
                         if (rejectReason != "") {
                           rejectReason += ", ";
                         }
@@ -3235,6 +3307,11 @@ class InspectionDetailsController extends GetxController {
                               specTolerancePercentage / 2) &&
                           (qualpercentage <= specTolerancePercentage)) {
                         result = "A-";
+                        inspectionResultText = AppStrings.accept;
+                        inspectionTextColor = AppColors.primary;
+                        approvalLayout.value = false;
+
+                        setResult('A-');
                       }
                     } else if (defectID != null &&
                         totalConditionDefectId != 0 &&
@@ -3260,6 +3337,10 @@ class InspectionDetailsController extends GetxController {
 
                       if (condpercentage > specTolerancePercentage) {
                         result = "RJ";
+                        inspectionResultText = AppStrings.reject;
+                        inspectionTextColor = AppColors.red;
+                        approvalLayout.value = true;
+                        setResult("RJ");
                         if (rejectReason != "") {
                           rejectReason += ", ";
                         }
@@ -3292,10 +3373,10 @@ class InspectionDetailsController extends GetxController {
                       ];
                       debugPrint("$exceptions");
                       result = "RJ";
-                      inspectionResultText = 'Reject';
+                      inspectionResultText = AppStrings.reject;
                       inspectionTextColor = AppColors.red;
-                      setResult('RJ');
                       approvalLayout.value = true;
+                      setResult("RJ");
 
                       if (rejectReason != "") {
                         rejectReason += ", ";
@@ -3417,6 +3498,7 @@ class InspectionDetailsController extends GetxController {
                 result = "AC";
                 inspectionResultText = 'Accept';
                 inspectionTextColor = AppColors.primary;
+                approvalLayout.value = false;
                 setResult('AC');
                 approvalLayout.value = false;
               } else if (result == "RJ") {
