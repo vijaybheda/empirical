@@ -365,12 +365,14 @@ class OverriddenResultScreen
               items: items.map((selectedType) {
                 return DropdownMenuItem<String>(
                   value: selectedType,
-                  child: Text(selectedType,
-                      style: Get.textTheme.titleLarge!.copyWith(
-                        fontSize: 32.sp,
-                        fontWeight: FontWeight.normal,
-                        color: AppColors.hintColor,
-                      )),
+                  child: Text(
+                    selectedType,
+                    style: Get.textTheme.bodyMedium!.copyWith(
+                      fontSize: 26.sp,
+                      fontWeight: FontWeight.normal,
+                      color: AppColors.hintColor,
+                    ),
+                  ),
                 );
               }).toList(),
               value: controller.newResultAccept.value,

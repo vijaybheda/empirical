@@ -475,6 +475,7 @@ class InspectionDetailsController extends GetxController {
 
   // QC Header Button OnClick Event
   void onQcHeaderButtonClick() {
+    callerActivity = 'QualityControlHeaderActivity';
     Map<String, dynamic> passingData = {
       Consts.PARTNER_NAME: partnerName,
       Consts.PARTNER_ID: partnerID,
@@ -483,7 +484,7 @@ class InspectionDetailsController extends GetxController {
       Consts.COMMODITY_ID: commodityID,
       Consts.COMMODITY_NAME: commodityName,
       Consts.PO_NUMBER: poNumber,
-      "callerActivity": "QualityControlHeaderActivity",
+      Consts.CALLER_ACTIVITY: "QualityControlHeaderActivity",
     };
     Get.to(() => const QualityControlHeader(), arguments: passingData);
   }
@@ -902,7 +903,7 @@ class InspectionDetailsController extends GetxController {
             await dao.findTempQCHeaderDetails(inspection!.poNumber!);
 
         if (qcHeaderDetails != null && qcHeaderDetails.truckTempOk == 'N') {
-          result = 'RJ';
+          result = "RJ";
 
           inspectionTextColor = AppColors.red;
           inspectionResultText = AppStrings.reject;
@@ -1748,10 +1749,10 @@ class InspectionDetailsController extends GetxController {
                                       result,
                                       "$defectNameResult - Quality (Damage)  % exceeds tolerance",
                                       defectList.elementAt(k).comment ?? "");
-                                  inspectionResultText = AppStrings.reject;
-                                  inspectionTextColor = AppColors.red;
-                                  approvalLayout.value = true;
-                                  setResult("RJ");
+                                  // inspectionResultText = AppStrings.reject;
+                                  // inspectionTextColor = AppColors.red;
+                                  // approvalLayout.value = true;
+                                  // setResult("RJ");
                                   // break;
                                 } else if ((vsdpercent >
                                         specTolerancePercentage / 2) &&
