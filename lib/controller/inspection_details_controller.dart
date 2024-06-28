@@ -1089,7 +1089,7 @@ class InspectionDetailsController extends GetxController {
               SpecificationGradeTolerance gradeTolerance =
                   _appStorage.specificationGradeToleranceList!.elementAt(n);
 
-              int specTolerancePercentage =
+              num specTolerancePercentage =
                   gradeTolerance.specTolerancePercentage ?? 0;
               int? defectID = gradeTolerance.defectID;
               int severityDefectID = gradeTolerance.severityDefectID ?? 0;

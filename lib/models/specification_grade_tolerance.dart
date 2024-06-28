@@ -4,8 +4,8 @@ import 'package:pverify/utils/utils.dart';
 class SpecificationGradeTolerance {
   String? specificationNumber;
   String? specificationVersion;
-  int? gradeTolerancePercentage;
-  int? specTolerancePercentage;
+  double? gradeTolerancePercentage;
+  double? specTolerancePercentage;
   int? severityDefectID;
   int? defectID;
   int? overridden;
@@ -26,12 +26,12 @@ class SpecificationGradeTolerance {
     this.defectCategoryName,
   });
 
-// copyWith method
+  // copyWith method
   SpecificationGradeTolerance copyWith({
     String? specificationNumber,
     String? specificationVersion,
-    int? gradeTolerancePercentage,
-    int? specTolerancePercentage,
+    double? gradeTolerancePercentage,
+    double? specTolerancePercentage,
     int? severityDefectID,
     int? defectID,
     int? overridden,
@@ -57,19 +57,22 @@ class SpecificationGradeTolerance {
 
 // fromJson method
   factory SpecificationGradeTolerance.fromJson(Map<String, dynamic> json) {
+    printKeysAndValueTypes(json);
     return SpecificationGradeTolerance(
       specificationNumber:
           json[SpecificationGradeToleranceColumn.NUMBER_SPECIFICATION],
       specificationVersion:
           json[SpecificationGradeToleranceColumn.VERSION_SPECIFICATION],
-      gradeTolerancePercentage:
-          json[SpecificationGradeToleranceColumn.GRADE_TOLERANCE_PERCENTAGE],
-      specTolerancePercentage:
-          json[SpecificationGradeToleranceColumn.GRADE_TOLERANCE_PERCENTAGE],
+      gradeTolerancePercentage: parseDoubleOrReturnNull(
+          json[SpecificationGradeToleranceColumn.GRADE_TOLERANCE_PERCENTAGE]),
+      specTolerancePercentage: parseDoubleOrReturnNull(
+          json[SpecificationGradeToleranceColumn.GRADE_TOLERANCE_PERCENTAGE]),
       severityDefectID: parseIntOrReturnNull(
           json[SpecificationGradeToleranceColumn.SEVERITY_DEFECT_ID]),
-      defectID: json[SpecificationGradeToleranceColumn.DEFECT_ID],
-      overridden: json[SpecificationGradeToleranceColumn.OVERRIDDEN],
+      defectID: parseIntOrReturnNull(
+          json[SpecificationGradeToleranceColumn.DEFECT_ID]),
+      overridden: parseIntOrReturnNull(
+          json[SpecificationGradeToleranceColumn.OVERRIDDEN]),
       defectName: json[SpecificationGradeToleranceColumn.DEFECT_NAME],
       severityDefectName:
           json[SpecificationGradeToleranceColumn.SEVERITY_DEFECT_NAME],
