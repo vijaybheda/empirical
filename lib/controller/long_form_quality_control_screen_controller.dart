@@ -554,7 +554,7 @@ class LongFormQualityControlScreenController extends GetxController {
           : qualityControlItems?.claimFiledAgainst ?? "No Claim";
       selectedClaimField.value = clamifiedValue;
 
-      String tempRecorderValue = qualityControlItems!.qcdOpen1!.isEmpty
+      String tempRecorderValue = (qualityControlItems?.qcdOpen1 ?? '').isEmpty
           ? "Yes"
           : qualityControlItems?.qcdOpen1 ?? "Yes";
       selectedTempRecorder.value = tempRecorderValue;

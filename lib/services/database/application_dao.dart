@@ -2467,7 +2467,7 @@ class ApplicationDao {
       if (hqUser) {
         args = [supplierId, headquarterId, commodityId];
       } else {
-        args = [supplierId, headquarterId, supplierId, commodityId];
+        args = [supplierId, headquarterId, supplier_Id, commodityId];
       }
       final Database db = dbProvider.lazyDatabase;
 
@@ -2639,7 +2639,7 @@ class ApplicationDao {
         'FG',
         'AC',
         headquarterId,
-        supplierId,
+        supplierIdParam,
         'A'
       ];
       String query1 =

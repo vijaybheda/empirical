@@ -45,12 +45,12 @@ class PurchaseOrderScreenController extends GetxController {
       throw Exception('Arguments required!');
     }
 
-    poNumber = args[Consts.PO_NUMBER] ?? '';
-    sealNumber = args[Consts.SEAL_NUMBER] ?? '';
     partnerName = args[Consts.PARTNER_NAME] ?? '';
     partnerID = args[Consts.PARTNER_ID] ?? 0;
     carrierName = args[Consts.CARRIER_NAME] ?? '';
     carrierID = args[Consts.CARRIER_ID] ?? 0;
+    poNumber = args[Consts.PO_NUMBER] ?? '';
+    sealNumber = args[Consts.SEAL_NUMBER] ?? '';
     commodityID = args[Consts.COMMODITY_ID] ?? 0;
     commodityName = args[Consts.COMMODITY_NAME] ?? '';
     productTransfer = args[Consts.PRODUCT_TRANSFER] ?? '';
@@ -78,6 +78,9 @@ class PurchaseOrderScreenController extends GetxController {
           userData.headquarterSupplierId!,
           partnerName,
         );
+
+        appStorage.finishedGoodsItemSKUList?.clear();
+        appStorage.finishedGoodsItemSKUList = finishedGoodItems ?? [];
 
         itemSkuList.addAll(finishedGoodItems ?? []);
         filteredItemSkuList.addAll(itemSkuList);

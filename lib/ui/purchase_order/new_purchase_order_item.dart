@@ -1162,9 +1162,8 @@ class _NewPurchaseOrderListViewItemState
               if ((item.isPictureRequired ?? false) &&
                   (ratings > 0 && ratings <= 2)) {
                 AppAlertDialog.confirmationAlert(Get.context!, AppStrings.alert,
-                    "At least one picture is required", onYesTap: () {
-                  Get.back();
-                });
+                    "At least one picture is required",
+                    onYesTap: () {});
               }
             }
 

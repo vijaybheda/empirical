@@ -159,71 +159,60 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
       color: Colors.white,
       fontSize: 32.sp,
     );
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 50.w),
-      child: Row(
-        children: [
-          Flexible(flex: 5, child: Container()),
-          const SizedBox(width: 15),
-          Flexible(flex: 4, child: Container()),
-          SizedBox(
-              width: defectsScreenController.hasSeveritySeriousDamage ? 0 : 15),
-          defectsScreenController.hasSeverityInjury
-              ? Flexible(
-                  flex: 1,
-                  child: defectCategoryTag(
-                    tag: AppStrings.injuryIcon,
-                    textStyle: textStyle,
-                  ),
-                )
-              : const Flexible(flex: 1, child: SizedBox()),
-          const SizedBox(width: 15),
-          defectsScreenController.hasSeverityDamage
-              ? Flexible(
-                  flex: 1,
-                  child: defectCategoryTag(
-                    tag: AppStrings.damageIcon,
-                    textStyle: textStyle,
-                  ),
-                )
-              : const Flexible(flex: 1, child: SizedBox()),
-          const SizedBox(width: 15),
-          defectsScreenController.hasSeriousDamage
-              ? Flexible(
-                  flex: 1,
-                  child: defectCategoryTag(
-                    tag: AppStrings.verySeriousDamageIcon,
-                    textStyle: textStyle,
-                  ),
-                )
-              : const Flexible(flex: 1, child: SizedBox()),
-          SizedBox(
-              width: defectsScreenController.hasSeveritySeriousDamage ? 0 : 15),
-          defectsScreenController.hasSeveritySeriousDamage
-              ? Flexible(
-                  flex: 1,
-                  child: defectCategoryTag(
-                    tag: AppStrings.seriousDamageIcon,
-                    textStyle: textStyle,
-                  ),
-                )
-              : const Flexible(flex: 1, child: SizedBox()),
-          const SizedBox(width: 15),
-          defectsScreenController.hasSeverityDecay
-              ? Flexible(
-                  flex: 1,
-                  child: defectCategoryTag(
-                    tag: AppStrings.decayIcon,
-                    textStyle: textStyle,
-                  ),
-                )
-              : const Flexible(flex: 1, child: SizedBox()),
-          const SizedBox(width: 20),
-          Flexible(child: Container()),
-          const SizedBox(width: 10),
-          Flexible(child: Container()),
-        ],
-      ),
+    return Row(
+      children: [
+        Flexible(flex: 6, child: Container()),
+        Flexible(
+            flex: defectsScreenController.hasSeverityInjury ? 1 : 0,
+            child: Visibility(
+              visible: defectsScreenController.hasSeverityInjury,
+              child: defectCategoryTag(
+                tag: AppStrings.injuryIcon,
+                textStyle: textStyle,
+              ),
+            )),
+        SizedBox(width: 10.w),
+        Flexible(
+            flex: defectsScreenController.hasSeverityDamage ? 1 : 0,
+            child: Visibility(
+              visible: defectsScreenController.hasSeverityDamage,
+              child: defectCategoryTag(
+                tag: AppStrings.damageIcon,
+                textStyle: textStyle,
+              ),
+            )),
+        SizedBox(width: 10.w),
+        Flexible(
+            flex: defectsScreenController.hasSeriousDamage ? 1 : 0,
+            child: Visibility(
+              visible: defectsScreenController.hasSeriousDamage,
+              child: defectCategoryTag(
+                tag: AppStrings.verySeriousDamageIcon,
+                textStyle: textStyle,
+              ),
+            )),
+        SizedBox(width: 10.w),
+        Flexible(
+            flex: defectsScreenController.hasSeveritySeriousDamage ? 1 : 0,
+            child: Visibility(
+              visible: defectsScreenController.hasSeveritySeriousDamage,
+              child: defectCategoryTag(
+                tag: AppStrings.seriousDamageIcon,
+                textStyle: textStyle,
+              ),
+            )),
+        SizedBox(width: 10.w),
+        Flexible(
+            flex: defectsScreenController.hasSeverityDecay ? 1 : 0,
+            child: Visibility(
+              visible: defectsScreenController.hasSeverityDecay,
+              child: defectCategoryTag(
+                tag: AppStrings.decayIcon,
+                textStyle: textStyle,
+              ),
+            )),
+        Container(width: 280.w),
+      ],
     );
   }
 
