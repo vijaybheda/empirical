@@ -14,8 +14,9 @@ import 'package:pverify/utils/theme/colors.dart';
 class NewPurchaseOrderDetailsScreen
     extends GetWidget<NewPurchaseOrderDetailsController> {
   final String tag;
+  final List<int> flexList = [1, 3, 1, 2];
 
-  const NewPurchaseOrderDetailsScreen({super.key, required this.tag});
+  NewPurchaseOrderDetailsScreen({super.key, required this.tag});
 
   @override
   Widget build(BuildContext context) {
@@ -29,19 +30,14 @@ class NewPurchaseOrderDetailsScreen
               return Future.value(false);
             },
             child: Scaffold(
-              backgroundColor: Theme
-                  .of(context)
-                  .colorScheme
-                  .background,
+              backgroundColor: Theme.of(context).colorScheme.background,
               resizeToAvoidBottomInset: false,
               appBar: AppBar(
                 toolbarHeight: 150.h,
                 leading: const Offstage(),
                 leadingWidth: 0,
                 centerTitle: false,
-                backgroundColor: Theme
-                    .of(context)
-                    .primaryColor,
+                backgroundColor: Theme.of(context).primaryColor,
                 title: HeaderContentView(
                   title: AppStrings.beginInspection,
                   message: 'PO# ${controller.poNumber ?? '-'}',
@@ -200,14 +196,14 @@ class NewPurchaseOrderDetailsScreen
             children: [
               controller.listAssigned.value
                   ? Expanded(
-                flex: 10,
-                child: controller.filteredInspectionsList.isNotEmpty
-                    ? _inspectionsListView(context, controller)
-                    : noDataFoundWidget(),
-              )
+                      flex: 10,
+                      child: controller.filteredInspectionsList.isNotEmpty
+                          ? _inspectionsListView(context, controller)
+                          : noDataFoundWidget(),
+                    )
                   : const Center(
-                  child: SizedBox(
-                      height: 25, width: 25, child: ProgressAdaptive())),
+                      child: SizedBox(
+                          height: 25, width: 25, child: ProgressAdaptive())),
             ],
           ),
         );
@@ -224,14 +220,16 @@ class NewPurchaseOrderDetailsScreen
     );
   }
 
-  Widget _inspectionsListView(BuildContext context,
-      NewPurchaseOrderDetailsController controller,) {
+  Widget _inspectionsListView(
+    BuildContext context,
+    NewPurchaseOrderDetailsController controller,
+  ) {
     return ListView.separated(
       itemCount: controller.filteredInspectionsList.length,
       padding: EdgeInsets.zero,
       itemBuilder: (context, index) {
         NewPurchaseOrderItem goodsItem =
-        controller.filteredInspectionsList.elementAt(index);
+            controller.filteredInspectionsList.elementAt(index);
         return GetBuilder<NewPurchaseOrderDetailsController>(
             tag: tag,
             builder: (controller) {
@@ -369,11 +367,9 @@ class _SearchOrderItemsWidget extends StatelessWidget {
             Get.find<NewPurchaseOrderDetailsController>(tag: tag)
                 .searchAndAssignItems(value);
           },
-          controller: Get
-              .find<NewPurchaseOrderDetailsController>(
+          controller: Get.find<NewPurchaseOrderDetailsController>(
             tag: tag,
-          )
-              .searchController,
+          ).searchController,
           decoration: InputDecoration(
             hintText: AppStrings.searchItem,
             hintStyle: Get.textTheme.titleLarge?.copyWith(
@@ -382,7 +378,7 @@ class _SearchOrderItemsWidget extends StatelessWidget {
             ),
             isDense: true,
             contentPadding:
-            EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
+                EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
             prefixIcon: Icon(
               Icons.search,
               color: AppColors.white,
@@ -400,26 +396,21 @@ class _SearchOrderItemsWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(color: AppColors.white),
             ),
-            suffixIcon: Get
-                .find<NewPurchaseOrderDetailsController>(
+            suffixIcon: Get.find<NewPurchaseOrderDetailsController>(
               tag: tag,
-            )
-                .searchController
-                .text
-                .trim()
-                .isEmpty
+            ).searchController.text.trim().isEmpty
                 ? const Offstage()
                 : IconButton(
-              onPressed: () {
-                Get.find<NewPurchaseOrderDetailsController>(
-                  tag: tag,
-                ).clearSearch();
-              },
-              icon: Icon(
-                Icons.clear,
-                color: AppColors.white,
-              ),
-            ),
+                    onPressed: () {
+                      Get.find<NewPurchaseOrderDetailsController>(
+                        tag: tag,
+                      ).clearSearch();
+                    },
+                    icon: Icon(
+                      Icons.clear,
+                      color: AppColors.white,
+                    ),
+                  ),
           ),
         ),
       ),

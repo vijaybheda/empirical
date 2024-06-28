@@ -88,6 +88,8 @@ class _NewPurchaseOrderListViewItemState
 
   bool hasComment = false;
 
+  final List<int> flexList = [1, 4, 1, 2];
+
   NewPurchaseOrderDetailsController get controller => widget.controller;
 
   AppStorage get appStorage => controller.appStorage;
@@ -145,7 +147,6 @@ class _NewPurchaseOrderListViewItemState
   @override
   void initState() {
     poLineNo = currentInspectionsItem.poLineNo ?? 0;
-    DateTime.now().toIso8601String();
     isCheckedList = List<bool>.filled(controller.originalData.length, false);
     _qtyShippedController = TextEditingController();
     _qtyRejectedController = TextEditingController();
@@ -218,6 +219,7 @@ class _NewPurchaseOrderListViewItemState
                     ),
                   ),
                 ),
+                SizedBox(width: 8),
                 Expanded(
                   flex: flexList[1],
                   child: Text(
@@ -227,6 +229,7 @@ class _NewPurchaseOrderListViewItemState
                         fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
+                SizedBox(width: 8),
                 Expanded(
                   flex: flexList[2],
                   child: Column(
@@ -289,9 +292,13 @@ class _NewPurchaseOrderListViewItemState
                     ],
                   ),
                 ),
+                SizedBox(width: 8),
                 Expanded(
                   flex: flexList[3],
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       RatingBar.builder(
                         initialRating: ratings,
@@ -312,7 +319,7 @@ class _NewPurchaseOrderListViewItemState
                         icon: Icon(
                           Icons.camera_alt,
                           color: AppColors.white,
-                          size: 40,
+                          size: 35,
                         ),
                         onPressed: cameraIconTap,
                       ),
@@ -322,14 +329,14 @@ class _NewPurchaseOrderListViewItemState
               ],
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           if (layoutQuantityRejectedVisibility)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Row(
                 children: [
                   Expanded(
-                    flex: 2,
+                    flex: 3,
                     child: Row(
                       children: [
                         Text('Qty Shipped *',
@@ -459,10 +466,9 @@ class _NewPurchaseOrderListViewItemState
                     ),
                   ),
                   Expanded(
-                    flex: 1,
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         GestureDetector(
                           onTap: () async {
@@ -492,17 +498,17 @@ class _NewPurchaseOrderListViewItemState
                 ],
               ),
             ),
-          if (etQtyShippedEnabled) const SizedBox(height: 8),
+          if (etQtyShippedEnabled) const SizedBox(height: 4),
         ],
       );
     });
   }
 
   Future<void> onEditPressed() async {
-    Inspection? inspection = await dao.findInspectionByID(inspectionId);
-    if (inspection != null && inspection.result != null) {
+    inspection = await dao.findInspectionByID(inspectionId);
+    if (inspection != null && inspection?.result != null) {
       Map<String, dynamic> arguments = {
-        Consts.SERVER_INSPECTION_ID: inspection.inspectionId,
+        Consts.SERVER_INSPECTION_ID: inspection?.inspectionId,
         Consts.PARTNER_NAME:
             appStorage.selectedItemSKUList.elementAt(position).partnerName,
         Consts.PARTNER_ID:
@@ -513,7 +519,7 @@ class _NewPurchaseOrderListViewItemState
             appStorage.selectedItemSKUList.elementAt(position).commodityName,
         Consts.COMMODITY_ID:
             appStorage.selectedItemSKUList.elementAt(position).commodityID,
-        Consts.INSPECTION_RESULT: inspection.result,
+        Consts.INSPECTION_RESULT: inspection?.result,
         Consts.ITEM_SKU: currentNewPurchaseItem.sku,
         Consts.PO_NUMBER: poNumberString,
       };
@@ -802,17 +808,6 @@ class _NewPurchaseOrderListViewItemState
           appStorage.specificationByItemSKUList?.first.specificationTypeName;
     }
 
-    /// change
-    if (partnerItemSKU == null) {
-      valueAssigned.value = true;
-      setState(() {});
-      // return;
-    }
-    if (partnerItemSKU?.inspectionId == null) {
-      valueAssigned.value = true;
-      setState(() {});
-      // return;
-    }
     if (partnerItemSKU != null && partnerItemSKU!.inspectionId != null) {
       inspectionId = partnerItemSKU!.inspectionId!;
 
@@ -822,17 +817,9 @@ class _NewPurchaseOrderListViewItemState
         layoutQuantityRejectedVisibility = true;
         editPencilEnabled = true;
         if (qualityControlItems.qcComments.isNullOrEmpty()) {
-          // todo: set comment icon based on the path
-          // icon_comment.setImageDrawable(
-          //     context.getDrawable(
-          //         R.drawable.spec_comment_added));
-          // icon_comment.setImageDrawable(context.getDrawable(R.drawable.spec_comment));
+          hasComment = false;
         } else {
-          // todo: set comment icon based on the path
-          // icon_comment.setImageDrawable(
-          //     context.getDrawable(
-          //         R.drawable.spec_comment_added));
-          // icon_comment.setImageDrawable(context.getDrawable(R.drawable.spec_comment_added));
+          hasComment = true;
         }
 
         _qtyShippedController.text =
@@ -858,29 +845,31 @@ class _NewPurchaseOrderListViewItemState
 
         appStorage.selectedItemSKUList.elementAt(position).packDate =
             formattedDateString;
-        dao.updatePackdatePartnerItemSKU(inspectionId, formattedDateString);
+        await dao.updatePackdatePartnerItemSKU(
+            inspectionId, formattedDateString);
         // packDateString = formattedDateString;
         // _packDateController.text = formattedDateString;
       }
 
-      Inspection? inspection =
-          await dao.findInspectionByID(partnerItemSKU!.inspectionId!);
+      inspection = await dao.findInspectionByID(partnerItemSKU!.inspectionId!);
 
       if (inspection != null) {
-        ratings = inspection.rating.toDouble();
+        ratings = (inspection?.rating ?? 0).toDouble();
+        _ratings = (inspection?.rating ?? 0).toInt().toDouble();
         informationIconEnabled = true;
         editPencilEnabled = true;
 
-        if (inspection.result != null && inspection.result.equals("RJ")) {
+        if (inspection?.result != null &&
+            (inspection?.result.equals("RJ") ?? false)) {
           layoutPurchaseOrderColor = AppColors.shareifyGold;
-        } else if (inspection.result.equals("AC") ||
-            inspection.result.equals("A-")) {
+        } else if ((inspection?.result.equals("AC") ?? false) ||
+            (inspection?.result.equals("A-") ?? false)) {
           layoutPurchaseOrderColor = AppColors.shareifyGreen;
         } else {
           layoutPurchaseOrderColor = Colors.transparent;
         }
 
-        if (inspection.result != null) {
+        if (inspection?.result != null) {
           layoutQuantityRejectedVisibility = true;
         }
       }
@@ -895,7 +884,7 @@ class _NewPurchaseOrderListViewItemState
         partnerItemSKU!.uniqueId!,
       );
 
-      if (isComplete || (inspection != null && inspection.complete == '1')) {
+      if (isComplete || (inspection != null && inspection?.complete == '1')) {
         inspectButtonIcon = Icon(
           Icons.check_circle_outlined,
           color: AppColors.white,
@@ -940,7 +929,7 @@ class _NewPurchaseOrderListViewItemState
     int overriddenQtyReceived = 0;
 
 // Assuming dao is an instance of your DAO class
-    Inspection? inspection = await dao.findInspectionByID(inspectionId);
+    inspection = await dao.findInspectionByID(inspectionId);
     if (inspection != null) {
       OverriddenResult? overriddenResult =
           await dao.getOverriddenResult(inspectionId);
@@ -949,20 +938,20 @@ class _NewPurchaseOrderListViewItemState
         inspectionResult = overriddenResult.overriddenResult ?? '';
         overriddenQtyRejected = overriddenResult.newQtyRejected!;
         await dao.updateInspectionResult(
-            inspection.inspectionId!, inspectionResult);
+            inspection!.inspectionId!, inspectionResult);
 
         QualityControlItem? qualityControlItems =
-            await dao.findQualityControlDetails(inspection.inspectionId!);
+            await dao.findQualityControlDetails(inspection!.inspectionId!);
         if (qualityControlItems != null) {
           overriddenQtyReceived =
               qualityControlItems.qtyShipped! - overriddenQtyRejected;
         }
-        await dao.updateQuantityRejected(inspection.inspectionId!,
+        await dao.updateQuantityRejected(inspection!.inspectionId!,
             overriddenQtyRejected, overriddenQtyReceived);
 
         _qtyRejectedController.text = overriddenQtyRejected.toString();
       } else {
-        inspectionResult = inspection.result ?? '';
+        inspectionResult = inspection?.result ?? '';
       }
 
       if (inspectionResult.isNotEmpty) {
@@ -1078,23 +1067,21 @@ class _NewPurchaseOrderListViewItemState
     String brandedResult = "";
     ratings = value.ceilToDouble();
     _ratings = value.ceilToDouble();
-    List<SpecificationByItemSKU> specificationByItemSKUList =
+    appStorage.specificationByItemSKUList =
         await dao.getSpecificationByItemSKUFromTable(
       appStorage.selectedItemSKUList[position].partnerId!,
       appStorage.selectedItemSKUList[position].sku!,
       appStorage.selectedItemSKUList[position].sku!,
     );
-
+    List<SpecificationByItemSKU> specificationByItemSKUList =
+        appStorage.specificationByItemSKUList ?? [];
     if (specificationByItemSKUList.isNotEmpty) {
-      String? specificationNumber =
-          specificationByItemSKUList[0].specificationNumber;
-      String? specificationVersion =
-          specificationByItemSKUList[0].specificationVersion;
-      String? specificationName =
-          specificationByItemSKUList[0].specificationName;
-      String? specificationTypeName =
+      specificationNumber = specificationByItemSKUList[0].specificationNumber;
+      specificationVersion = specificationByItemSKUList[0].specificationVersion;
+      specificationName = specificationByItemSKUList[0].specificationName;
+      specificationTypeName =
           specificationByItemSKUList[0].specificationTypeName;
-      int? sampleSizeByCount = specificationByItemSKUList[0].sampleSizeByCount;
+      sampleSizeByCount = specificationByItemSKUList[0].sampleSizeByCount;
 
       if (inspectionId <= 0) {
         // we're creating a new inspection
@@ -1117,7 +1104,7 @@ class _NewPurchaseOrderListViewItemState
             poLineNo,
             appStorage.selectedItemSKUList.elementAt(position).partnerId!,
             appStorage.selectedItemSKUList.elementAt(position).partnerName!,
-            currentNewPurchaseItem.description!,
+            currentNewPurchaseItem.description ?? '',
           );
 
           inspectionId = serverInspectionID!;
@@ -1156,17 +1143,9 @@ class _NewPurchaseOrderListViewItemState
             await dao.findQualityControlDetails(inspectionId);
         if (qualityControlItems != null) {
           if (qualityControlItems.qcComments.isNullOrEmpty()) {
-            // todo: set comment icon based on the path
-            // comment.trim().isNotEmpty
-            //     ? AppImages.ic_specCommentsAdded
-            //     : AppImages.ic_specComments
-            // icon_comment.setImageDrawable(context
-            //     .getDrawable(R.drawable.spec_comment));
+            hasComment = false;
           } else {
-            // todo: set comment icon based on the path
-            // icon_comment.setImageDrawable(
-            //     context.getDrawable(
-            //         R.drawable.spec_comment_added));
+            hasComment = true;
           }
         }
       }
@@ -1243,7 +1222,7 @@ class _NewPurchaseOrderListViewItemState
               brandedResult = "RJ";
             }
 
-            if (isBranded != null) {
+            if (isBranded.isNotEmpty) {
               if (dbobj != null) {
                 await dao.updateSpecificationAttributeBrandedValue(
                     inspectionId, item.analyticalID!, isBranded, comply);
@@ -1315,7 +1294,8 @@ class _NewPurchaseOrderListViewItemState
           inspectionId,
           "",
           appStorage.selectedItemSKUList.elementAt(position).uniqueItemId!,
-          appStorage.selectedItemSKUList.elementAt(position).poLineNo,
+          appStorage.selectedItemSKUList.elementAt(position).poLineNo ??
+              poLineNo,
           poNumber);
 
       await dao
@@ -1497,12 +1477,12 @@ class _NewPurchaseOrderListViewItemState
             inspectionId, Consts.INSPECTION_UPLOAD_READY);
       }
 
-      Inspection? inspection = await dao.findInspectionByID(inspectionId);
+      inspection = await dao.findInspectionByID(inspectionId);
 
       if (ratings >= 0 && ratings <= 2) {
         if (inspection != null &&
-            inspection.result != null &&
-            inspection.result.equals("RJ")) {
+            inspection?.result != null &&
+            (inspection?.result.equals("RJ") ?? false)) {
           ResultRejectionDetail? resultRejectionDetail =
               await dao.getResultRejectionDetails(inspectionId);
           String rejectReason = resultRejectionDetail?.resultReason ?? '';
@@ -1543,8 +1523,8 @@ class _NewPurchaseOrderListViewItemState
 
         if (brandedResult == "RJ") {
           if (inspection != null &&
-              inspection.result != null &&
-              inspection.result.equals("RJ")) {
+              inspection?.result != null &&
+              (inspection?.result.equals("RJ") ?? false)) {
             if (rejectReason.isNotEmpty &&
                 !rejectReason.contains("Branded = N")) {
               rejectReason += "\nBranded = N";
@@ -1565,8 +1545,8 @@ class _NewPurchaseOrderListViewItemState
           _qtyRejectedController.text = qtyShipped.toString();
           layoutPurchaseOrderColor = AppColors.shareifyGold;
         } else {
-          if (inspection != null && inspection.result != null) {
-            if (inspection.result.equals("RJ")) {
+          if (inspection != null && inspection?.result != null) {
+            if (inspection?.result.equals("RJ") ?? false) {
               if (rejectReason.isNotEmpty &&
                   rejectReason.contains("Quality Check")) {
                 String inputString = rejectReason;
@@ -1586,7 +1566,7 @@ class _NewPurchaseOrderListViewItemState
               }
             }
 
-            if (!inspection.result.equals("RJ") || rejectReason.equals("")) {
+            if (!inspection!.result.equals("RJ") || rejectReason.equals("")) {
               await dao.updateInspectionResult(inspectionId, "AC");
               qtyRejectedEnabled = false;
               await dao.updateQuantityRejected(inspectionId, 0, qtyShipped);
@@ -1674,7 +1654,7 @@ class _NewPurchaseOrderListViewItemState
         for (final SpecificationAnalytical item
             in (appStorage.specificationAnalyticalList ?? [])) {
           if (item.analyticalName?.contains("Branded") ?? false) {
-            Inspection? inspection = await dao.findInspectionByID(inspectionId);
+            inspection = await dao.findInspectionByID(inspectionId);
 
             final SpecificationAnalyticalRequest? dbobj = await dao
                 .findSpecAnalyticalObj(inspectionId, item.analyticalID!);
@@ -1697,8 +1677,8 @@ class _NewPurchaseOrderListViewItemState
 
             if (item.inspectionResult.equals("Y") && comply.equals("N")) {
               if (inspection != null &&
-                  inspection.result != null &&
-                  inspection.result.equals("RJ")) {
+                  inspection?.result != null &&
+                  (inspection!.result.equals("RJ") ?? false)) {
                 ResultRejectionDetail? resultRejectionDetail =
                     await dao.getResultRejectionDetails(inspectionId);
                 String? rejectReason = resultRejectionDetail?.resultReason;
@@ -1732,8 +1712,8 @@ class _NewPurchaseOrderListViewItemState
               String result = "";
 
               if (inspection != null &&
-                  inspection.result != null &&
-                  inspection.result.equals("RJ")) {
+                  inspection?.result != null &&
+                  (inspection?.result.equals("RJ") ?? false)) {
                 ResultRejectionDetail? resultRejectionDetail =
                     await dao.getResultRejectionDetails(inspectionId);
 
@@ -1773,7 +1753,7 @@ class _NewPurchaseOrderListViewItemState
     bool checkItemSKUAndLot = false;
     bool isValid = true;
 
-    Inspection? inspection = await dao.findInspectionByID(inspectionId);
+    inspection = await dao.findInspectionByID(inspectionId);
 
     if (inspection != null) {
       if (appStorage.specificationAnalyticalList != null) {
@@ -1928,5 +1908,3 @@ class _NewPurchaseOrderListViewItemState
   NewPurchaseOrderItem get currentInspectionsItem =>
       controller.filteredInspectionsList[position];
 }
-
-final List<int> flexList = [1, 4, 2, 3];

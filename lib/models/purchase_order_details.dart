@@ -1,6 +1,4 @@
 class PurchaseOrderDetails {
-  String? poDetailId;
-  String? poHeaderId;
   String? poNumber;
   int? deliverToId;
   String? deliverToName;
@@ -19,8 +17,6 @@ class PurchaseOrderDetails {
   String? partnerName;
 
   PurchaseOrderDetails({
-    this.poDetailId,
-    this.poHeaderId,
     this.poNumber,
     this.deliverToId,
     this.deliverToName,
@@ -41,47 +37,43 @@ class PurchaseOrderDetails {
 
   Map<String, dynamic> toJson() {
     return {
-      'poDetailId': poDetailId,
-      'poHeaderId': poHeaderId,
-      'poNumber': poNumber,
-      'deliverToId': deliverToId,
-      'deliverToName': deliverToName,
-      'poLineNumber': poLineNumber,
-      'itemSkuId': itemSkuId,
-      'itemSkuCode': itemSkuCode,
-      'itemSkuName': itemSkuName,
-      'quantity': quantity,
-      'quantityUOMId': quantityUOMId,
-      'quantityUOMName': quantityUOMName,
-      'numberSpecification': numberSpecification,
-      'versionSpecification': versionSpecification,
-      'commodityId': commodityId,
-      'commodityName': commodityName,
-      'partnerId': partnerId,
-      'partnerName': partnerName,
+      'PO_Number': poNumber,
+      'PO_Deliver_To_Id': deliverToId,
+      'PO_Deliver_To_Name': deliverToName,
+      'PO_Line_Number': poLineNumber,
+      'PO_Item_Sku_Id': itemSkuId,
+      'PO_Item_Sku_Code': itemSkuCode,
+      'PO_Item_Sku_Name': itemSkuName,
+      'PO_Quantity': quantity,
+      'PO_Qty_UOM_Id': quantityUOMId,
+      'PO_Qty_UOM_Name': quantityUOMName,
+      'PO_Number_Spec': numberSpecification,
+      'PO_Version_Spec': versionSpecification,
+      'PO_Commodity_Id': commodityId,
+      'PO_Commodity_Name': commodityName,
+      'PO_Partner_Id': partnerId,
+      'PO_Partner_Name': partnerName,
     };
   }
 
   factory PurchaseOrderDetails.fromMap(Map<String, dynamic> map) {
     return PurchaseOrderDetails(
-      poDetailId: map['poDetailId'],
-      poHeaderId: map['poHeaderId'],
-      poNumber: map['poNumber'],
-      deliverToId: map['deliverToId'],
-      deliverToName: map['deliverToName'],
-      poLineNumber: map['poLineNumber'],
-      itemSkuId: map['itemSkuId'],
-      itemSkuCode: map['itemSkuCode'],
-      itemSkuName: map['itemSkuName'],
-      quantity: map['quantity'],
-      quantityUOMId: map['quantityUOMId'],
-      quantityUOMName: map['quantityUOMName'],
-      numberSpecification: map['numberSpecification'],
-      versionSpecification: map['versionSpecification'],
-      commodityId: map['commodityId'],
-      commodityName: map['commodityName'],
-      partnerId: map['partnerId'],
-      partnerName: map['partnerName'],
+      poNumber: map['PO_Number'],
+      deliverToId: map['PO_Deliver_To_Id'],
+      deliverToName: map['PO_Deliver_To_Name'],
+      poLineNumber: map['PO_Line_Number'],
+      itemSkuId: map['PO_Item_Sku_Id'],
+      itemSkuCode: map['PO_Item_Sku_Code'],
+      itemSkuName: map['PO_Item_Sku_Name'],
+      quantity: map['PO_Quantity'],
+      quantityUOMId: map['PO_Qty_UOM_Id'],
+      quantityUOMName: map['PO_Qty_UOM_Name'],
+      numberSpecification: map['PO_Number_Spec'],
+      versionSpecification: map['PO_Version_Spec'],
+      commodityId: map['PO_Commodity_Id'],
+      commodityName: map['PO_Commodity_Name'],
+      partnerId: map['PO_Partner_Id'],
+      partnerName: map['PO_Partner_Name'],
     );
   }
 }

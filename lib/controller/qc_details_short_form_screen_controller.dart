@@ -1293,6 +1293,7 @@ class QCDetailsShortFormScreenController extends GetxController {
           arguments: bundle);
     } else if (callerActivity == 'NewPurchaseOrderDetailsActivity') {
       final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+      bundle[Consts.CALLER_ACTIVITY] = 'QCDetailsShortForm';
       var res = await Get.to(() => NewPurchaseOrderDetailsScreen(tag: tag),
           arguments: bundle);
     } else {
@@ -1386,6 +1387,8 @@ class QCDetailsShortFormScreenController extends GetxController {
       } else {
         if (callerActivity == "NewPurchaseOrderDetailsActivity") {
           final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+          // Get.back();
+          passingData[Consts.CALLER_ACTIVITY] = 'QCDetailsShortForm';
           Get.offAll(() => NewPurchaseOrderDetailsScreen(tag: tag),
               arguments: passingData);
         } else {
@@ -1820,6 +1823,7 @@ class QCDetailsShortFormScreenController extends GetxController {
           Get.offAll(() => Home(tag: tag));
         } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
           final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+          passingData[Consts.CALLER_ACTIVITY] = 'QCDetailsShortForm';
           Get.offAll(
             () => NewPurchaseOrderDetailsScreen(tag: tag),
             arguments: passingData,
