@@ -542,12 +542,12 @@ class InspectionDetailsController extends GetxController {
 
       if (tempQty.isEmpty || tempQty == "") {
         hasErrors = true;
-        qtyRejectedController.text = 'Quantity rejected is required';
+        qtyRejectedController.text = '';
       } else if (qualityControlItem != null &&
           (int.tryParse(tempQty)! > qualityControlItem!.qtyShipped! ||
               int.tryParse(tempQty)! < 0)) {
         hasErrors = true;
-        qtyRejectedController.text = 'Invalid quantity rejected';
+        qtyRejectedController.text = '';
       } else {
         if (tempQty.isNotEmpty && tempQty != "") {
           int qtyRejected = int.tryParse(tempQty)!;
