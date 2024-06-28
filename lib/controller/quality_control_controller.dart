@@ -1,15 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/purchase_order_details.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/delivered_from/delivered_from_screen.dart';
+import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
+import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
 import 'package:pverify/ui/supplier/choose_supplier.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/extensions/int_extension.dart';
+import 'package:pverify/utils/utils.dart';
 
 class QualityControlController extends GetxController {
   final orderNoTextController = TextEditingController().obs;
@@ -236,10 +240,10 @@ class QualityControlController extends GetxController {
         if (callerActivity.equals("QualityControlHeaderActivity")) {
           Get.back();
         } else {
-          // showBeginInspectionScreen();
+          showBeginInspectionScreen();
         }
       } else {
-        // showBeginInspectionScreen();
+        showBeginInspectionScreen();
       }
     } else {
       // Here need to call showPurchaseOrder function.
@@ -247,7 +251,7 @@ class QualityControlController extends GetxController {
     }
   }
 
-  /*Future<void> showBeginInspectionScreen() async {
+  Future<void> showBeginInspectionScreen() async {
     for (int i = 0; i < purchaseOrderDetails.length; i++) {
       String itemUniqueId = generateUUID();
 
@@ -256,32 +260,33 @@ class QualityControlController extends GetxController {
       String brandedFlag = await dao
           .getBrandedFlagFromItemSku(purchaseOrderDetails[i].itemSkuId!);
 
-      appStorage.selectedItemSKUList.add(FinishedGoodsItemSKU(
-        poLineNo: purchaseOrderDetails[i].poLineNumber,
-        itemSkuId: purchaseOrderDetails[i].itemSkuId,
-        itemSkuCode: purchaseOrderDetails[i].itemSkuCode,
-        itemSkuName: purchaseOrderDetails[i].itemSkuName,
-        commodityId: purchaseOrderDetails[i].commodityId,
-        commodityName: purchaseOrderDetails[i].commodityName,
+      FinishedGoodsItemSKU fromNewPurchase =
+          FinishedGoodsItemSKU.fromNewPurchase(
+        poLineNo: purchaseOrderDetails.elementAt(i).poLineNumber,
+        id: purchaseOrderDetails.elementAt(i).itemSkuId,
+        sku: purchaseOrderDetails.elementAt(i).itemSkuCode,
+        name: purchaseOrderDetails.elementAt(i).itemSkuName,
+        commodityID: purchaseOrderDetails.elementAt(i).commodityId,
+        commodityName: purchaseOrderDetails.elementAt(i).commodityName,
         uniqueItemId: itemUniqueId,
-        partnerId: purchaseOrderDetails[i].partnerId,
-        partnerName: purchaseOrderDetails[i].partnerName,
-        quantity: purchaseOrderDetails[i].quantity,
-        poNumber: purchaseOrderDetails[i].poNumber,
-        quantityUOMId: purchaseOrderDetails[i].quantityUOMId,
-        quantityUOMName: purchaseOrderDetails[i].quantityUOMName,
-        numberSpecification: purchaseOrderDetails[i].numberSpecification,
-        versionSpecification: purchaseOrderDetails[i].versionSpecification,
-        ftlflag: ftlflag,
-        brandedFlag: brandedFlag,
-        createdDate: purchaseOrderDetails[i].createdDate,
-      ));
+        partnerId: purchaseOrderDetails.elementAt(i).partnerId,
+        partnerName: purchaseOrderDetails.elementAt(i).partnerName,
+        poNo: purchaseOrderDetails.elementAt(i).poNumber,
+        quantity: purchaseOrderDetails.elementAt(i).quantity,
+        quantityUOM: purchaseOrderDetails.elementAt(i).quantityUOMId,
+        quantityUOMName: purchaseOrderDetails.elementAt(i).quantityUOMName,
+        number_spec: purchaseOrderDetails.elementAt(i).numberSpecification,
+        version_spec: purchaseOrderDetails.elementAt(i).versionSpecification,
+        FTLflag: ftlflag,
+        Branded: brandedFlag,
+      );
+      appStorage.selectedItemSKUList.add(fromNewPurchase);
 
       appStorage.selectedItemSKUList
           .sort((a, b) => a.poLineNo!.compareTo(b.poLineNo!));
     }
 
-    int userid = await dao.getHeadquaterIdByUserId(
+    int userid = await dao.getHeadquarterIdByUserId(
         appStorage.getUserData()!.userName!.toLowerCase());
 
     final String tag = DateTime.now().millisecondsSinceEpoch.toString();
@@ -309,7 +314,7 @@ class QualityControlController extends GetxController {
       Get.to(() => PurchaseOrderDetailsScreen(tag: tag), arguments: arguments);
     }
     Get.back();
-  }*/
+  }
 
   void showPurchaseOrder() {
     poNumber = orderNoTextController.value.text.trim();

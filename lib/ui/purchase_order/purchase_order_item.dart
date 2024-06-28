@@ -11,6 +11,7 @@ import 'package:pverify/models/quality_control_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
+import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
 
@@ -477,11 +478,7 @@ class _PurchaseOrderListViewItemState extends State<PurchaseOrderListViewItem> {
                   widget.onTapEdit!(inspection, partnerItemSKU);
                 }
               },
-              icon: Icon(
-                Icons.edit_outlined,
-                size: 30,
-                color: AppColors.white,
-              ),
+              icon: Image.asset(AppImages.editPencil, height: 30),
             ),
         ],
       );

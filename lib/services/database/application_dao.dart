@@ -4547,12 +4547,12 @@ class ApplicationDao {
       final Database db = dbProvider.lazyDatabase;
       await db.transaction((txn) async {
         await txn.update(
-          'QUALITY_CONTROL_TABLE',
+          DBTables.QUALITY_CONTROL,
           {
-            'QCT_QTY_SHIPPED': qtyShipped,
-            'QCT_QTY_RECEIVED': qtyReceived,
+            QualityControlColumn.QTY_SHIPPED: qtyShipped,
+            QualityControlColumn.QTY_RECEIVED: qtyReceived,
           },
-          where: 'QCT_INSPECTION_ID = ?',
+          where: '${QualityControlColumn.INSPECTION_ID} = ?',
           whereArgs: [inspectionID],
         );
       });

@@ -13,7 +13,9 @@ import 'package:pverify/utils/utils.dart';
 
 class PurchaseOrderScreenCTEController extends GetxController {
   final TextEditingController searchController = TextEditingController();
+
   PurchaseOrderScreenCTEController();
+
   final AppStorage appStorage = AppStorage.instance;
   final GlobalConfigController globalConfigController =
       Get.find<GlobalConfigController>();
@@ -38,6 +40,7 @@ class PurchaseOrderScreenCTEController extends GetxController {
   String toLocationName = "";
 
   RxBool listAssigned = false.obs;
+
   @override
   void onInit() {
     Map<String, dynamic>? args = Get.arguments;
@@ -89,7 +92,6 @@ class PurchaseOrderScreenCTEController extends GetxController {
 
   void updateSelectedItemSKUItem(FinishedGoodsItemSKU partner) {
     appStorage.selectedItemSKUList = appStorage.selectedItemSKUList;
-
     // remove if exist in appStorage.selectedItemSKUList
     appStorage.selectedItemSKUList.removeWhere((element) {
       return element.id == partner.id &&

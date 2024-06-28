@@ -88,6 +88,26 @@ class FinishedGoodsItemSKU {
     required this.dateType,
   });
 
+  FinishedGoodsItemSKU.fromNewPurchase({
+    this.poLineNo,
+    this.id,
+    this.sku,
+    this.name,
+    this.commodityID,
+    this.commodityName,
+    this.uniqueItemId,
+    this.partnerId,
+    this.partnerName,
+    this.poNo,
+    this.quantity,
+    this.quantityUOM,
+    this.quantityUOMName,
+    this.number_spec,
+    this.version_spec,
+    this.FTLflag,
+    this.Branded,
+  });
+
   FinishedGoodsItemSKU.fromJson(Map<String, dynamic> json) {
     printKeysAndValueTypes(json);
     uniqueItemId = json['uniqueItemId'];
