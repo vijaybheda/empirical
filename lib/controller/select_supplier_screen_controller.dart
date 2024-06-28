@@ -677,7 +677,7 @@ class SelectSupplierScreenController extends GetxController {
             borderRadius: BorderRadius.circular(5),
           ),
           title: Text(
-            AppStrings.comments,
+            AppStrings.supplierName,
             style: Get.textTheme.titleMedium,
           ),
           content: TextField(

@@ -456,7 +456,7 @@ class AppStrings {
   static const String managerRejection = 'Manager rejection';
   static const String acceptCondition = 'Accept w/Protection';
   static const String a_minus = 'A-';
-
+  static const String supplierName = 'Supplier Name';
   static const String noClaim = 'No Claim';
   static const String partnerClaim = 'Partner Claim';
   static const String carrierClaim = 'Carrier Claim';
