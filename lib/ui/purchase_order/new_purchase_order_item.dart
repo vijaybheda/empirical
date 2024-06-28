@@ -88,6 +88,8 @@ class _NewPurchaseOrderListViewItemState
 
   bool hasComment = false;
 
+  final List<int> flexList = [1, 4, 1, 3];
+
   NewPurchaseOrderDetailsController get controller => widget.controller;
 
   AppStorage get appStorage => controller.appStorage;
@@ -145,7 +147,6 @@ class _NewPurchaseOrderListViewItemState
   @override
   void initState() {
     poLineNo = currentInspectionsItem.poLineNo ?? 0;
-    DateTime.now().toIso8601String();
     isCheckedList = List<bool>.filled(controller.originalData.length, false);
     _qtyShippedController = TextEditingController();
     _qtyRejectedController = TextEditingController();
@@ -198,10 +199,10 @@ class _NewPurchaseOrderListViewItemState
         children: [
           Container(
             color: layoutPurchaseOrderColor,
-            padding: const EdgeInsets.symmetric(horizontal: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
@@ -210,23 +211,28 @@ class _NewPurchaseOrderListViewItemState
                     onTap: () async {
                       await onSkuTap();
                     },
-                    child: Text(
-                      widget.goodsItem.sku ?? '',
-                      textAlign: TextAlign.start,
-                      style: const TextStyle(
-                          fontSize: 16, decoration: TextDecoration.underline),
-                    ),
+                    child: Text(widget.goodsItem.sku ?? '',
+                        textAlign: TextAlign.start,
+                        style: Get.textTheme.bodyMedium?.copyWith(
+                          fontSize: 16,
+                          color: AppColors.white,
+                          fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.underline,
+                        )),
                   ),
                 ),
+                SizedBox(width: 8),
                 Expanded(
                   flex: flexList[1],
-                  child: Text(
-                    widget.goodsItem.description ?? '',
-                    textAlign: TextAlign.start,
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
+                  child: Text(widget.goodsItem.description ?? '',
+                      textAlign: TextAlign.start,
+                      style: Get.textTheme.bodyMedium?.copyWith(
+                        fontSize: 16,
+                        color: AppColors.white,
+                        fontWeight: FontWeight.w700,
+                      )),
                 ),
+                SizedBox(width: 8),
                 Expanded(
                   flex: flexList[2],
                   child: Column(
@@ -257,7 +263,12 @@ class _NewPurchaseOrderListViewItemState
                             overlayColor:
                                 MaterialStateProperty.all(AppColors.white),
                           ),
-                          const Text('Y'),
+                          Text('Y',
+                              style: Get.textTheme.bodyMedium?.copyWith(
+                                fontSize: 28.sp,
+                                color: AppColors.white,
+                                fontWeight: FontWeight.w600,
+                              )),
                         ],
                       ),
                       Row(
@@ -283,15 +294,24 @@ class _NewPurchaseOrderListViewItemState
                             overlayColor:
                                 MaterialStateProperty.all(AppColors.white),
                           ),
-                          const Text('N'),
+                          Text('N',
+                              style: Get.textTheme.bodyMedium?.copyWith(
+                                fontSize: 28.sp,
+                                color: AppColors.white,
+                                fontWeight: FontWeight.w600,
+                              )),
                         ],
                       ),
                     ],
                   ),
                 ),
+                SizedBox(width: 8),
                 Expanded(
                   flex: flexList[3],
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       RatingBar.builder(
                         initialRating: ratings,
@@ -312,7 +332,7 @@ class _NewPurchaseOrderListViewItemState
                         icon: Icon(
                           Icons.camera_alt,
                           color: AppColors.white,
-                          size: 40,
+                          size: 35,
                         ),
                         onPressed: cameraIconTap,
                       ),
@@ -322,14 +342,14 @@ class _NewPurchaseOrderListViewItemState
               ],
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           if (layoutQuantityRejectedVisibility)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Row(
                 children: [
                   Expanded(
-                    flex: 2,
+                    flex: 3,
                     child: Row(
                       children: [
                         Text('Qty Shipped *',
@@ -459,10 +479,9 @@ class _NewPurchaseOrderListViewItemState
                     ),
                   ),
                   Expanded(
-                    flex: 1,
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         GestureDetector(
                           onTap: () async {
@@ -477,11 +496,7 @@ class _NewPurchaseOrderListViewItemState
                           ),
                         ),
                         IconButton(
-                          icon: Icon(
-                            Icons.edit,
-                            color: AppColors.white,
-                            size: 40,
-                          ),
+                          icon: Image.asset(AppImages.editPencil, height: 30),
                           onPressed: () async {
                             await onEditPressed();
                           },
@@ -492,28 +507,27 @@ class _NewPurchaseOrderListViewItemState
                 ],
               ),
             ),
-          if (etQtyShippedEnabled) const SizedBox(height: 8),
+          if (etQtyShippedEnabled) const SizedBox(height: 4),
         ],
       );
     });
   }
 
   Future<void> onEditPressed() async {
-    Inspection? inspection = await dao.findInspectionByID(inspectionId);
-    if (inspection != null && inspection.result != null) {
+    inspection = await dao.findInspectionByID(inspectionId);
+    if (inspection != null && inspection?.result != null) {
       Map<String, dynamic> arguments = {
-        Consts.SERVER_INSPECTION_ID: inspection.inspectionId,
+        Consts.SERVER_INSPECTION_ID: inspection?.inspectionId,
         Consts.PARTNER_NAME:
-            appStorage.selectedItemSKUList.elementAt(position).partnerName,
-        Consts.PARTNER_ID:
-            appStorage.selectedItemSKUList.elementAt(position).partnerId,
+            selectedItemSKUList.elementAt(position).partnerName,
+        Consts.PARTNER_ID: selectedItemSKUList.elementAt(position).partnerId,
         Consts.CARRIER_NAME: carrierName,
         Consts.CARRIER_ID: carrierID,
         Consts.COMMODITY_NAME:
-            appStorage.selectedItemSKUList.elementAt(position).commodityName,
+            selectedItemSKUList.elementAt(position).commodityName,
         Consts.COMMODITY_ID:
-            appStorage.selectedItemSKUList.elementAt(position).commodityID,
-        Consts.INSPECTION_RESULT: inspection.result,
+            selectedItemSKUList.elementAt(position).commodityID,
+        Consts.INSPECTION_RESULT: inspection?.result,
         Consts.ITEM_SKU: currentNewPurchaseItem.sku,
         Consts.PO_NUMBER: poNumberString,
       };
@@ -525,20 +539,16 @@ class _NewPurchaseOrderListViewItemState
         currentNewPurchaseItem.sku!,
       );
 
-      if (appStorage.specificationByItemSKUList != null &&
-          (appStorage.specificationByItemSKUList ?? []).isNotEmpty) {
-        specificationNumber = appStorage.specificationByItemSKUList
-            ?.elementAt(0)
-            .specificationNumber;
-        specificationVersion = appStorage.specificationByItemSKUList
-            ?.elementAt(0)
-            .specificationVersion;
-        specificationName = appStorage.specificationByItemSKUList
-            ?.elementAt(0)
-            .specificationName;
-        specificationTypeName = appStorage.specificationByItemSKUList
-            ?.elementAt(0)
-            .specificationTypeName;
+      if (specificationByItemSKUList != null &&
+          (specificationByItemSKUList ?? []).isNotEmpty) {
+        specificationNumber =
+            specificationByItemSKUList?.elementAt(0).specificationNumber;
+        specificationVersion =
+            specificationByItemSKUList?.elementAt(0).specificationVersion;
+        specificationName =
+            specificationByItemSKUList?.elementAt(0).specificationName;
+        specificationTypeName =
+            specificationByItemSKUList?.elementAt(0).specificationTypeName;
       }
 
       arguments[Consts.SPECIFICATION_NUMBER] = specificationNumber;
@@ -642,9 +652,6 @@ class _NewPurchaseOrderListViewItemState
     );
   }
 
-  NewPurchaseOrderItem get currentNewPurchaseItem =>
-      controller.originalData.elementAt(position);
-
   String getPackDateType() {
     String dateTypeDesc = "Pack Date";
     String dateType = widget.goodsItem.packDate ?? '';
@@ -717,10 +724,10 @@ class _NewPurchaseOrderListViewItemState
 
             await dao.updateSelectedItemSKU(
               inspectionId,
-              appStorage.selectedItemSKUList[position].partnerId!,
-              appStorage.selectedItemSKUList[position].id!,
-              appStorage.selectedItemSKUList[position].sku!,
-              appStorage.selectedItemSKUList[position].uniqueItemId!,
+              selectedItemSKUList[position].partnerId!,
+              selectedItemSKUList[position].id!,
+              selectedItemSKUList[position].sku!,
+              selectedItemSKUList[position].uniqueItemId!,
               true,
               false,
             );
@@ -774,7 +781,7 @@ class _NewPurchaseOrderListViewItemState
     fromSetState = true;
 
     FinishedGoodsItemSKU? selectedItem =
-        appStorage.selectedItemSKUList.elementAtOrNull(position);
+        selectedItemSKUList.elementAtOrNull(position);
     if (selectedItem != null) {
       partnerItemSKU = await dao.findPartnerItemSKUPOLine(
           selectedItem.partnerId!,
@@ -790,29 +797,17 @@ class _NewPurchaseOrderListViewItemState
       );
     }
 
-    if (appStorage.specificationByItemSKUList != null &&
-        appStorage.specificationByItemSKUList!.isNotEmpty) {
+    if (specificationByItemSKUList != null &&
+        specificationByItemSKUList!.isNotEmpty) {
       specificationNumber =
-          appStorage.specificationByItemSKUList?.first.specificationNumber;
+          specificationByItemSKUList?.first.specificationNumber;
       specificationVersion =
-          appStorage.specificationByItemSKUList?.first.specificationVersion;
-      specificationName =
-          appStorage.specificationByItemSKUList?.first.specificationName;
+          specificationByItemSKUList?.first.specificationVersion;
+      specificationName = specificationByItemSKUList?.first.specificationName;
       specificationTypeName =
-          appStorage.specificationByItemSKUList?.first.specificationTypeName;
+          specificationByItemSKUList?.first.specificationTypeName;
     }
 
-    /// change
-    if (partnerItemSKU == null) {
-      valueAssigned.value = true;
-      setState(() {});
-      // return;
-    }
-    if (partnerItemSKU?.inspectionId == null) {
-      valueAssigned.value = true;
-      setState(() {});
-      // return;
-    }
     if (partnerItemSKU != null && partnerItemSKU!.inspectionId != null) {
       inspectionId = partnerItemSKU!.inspectionId!;
 
@@ -822,17 +817,9 @@ class _NewPurchaseOrderListViewItemState
         layoutQuantityRejectedVisibility = true;
         editPencilEnabled = true;
         if (qualityControlItems.qcComments.isNullOrEmpty()) {
-          // todo: set comment icon based on the path
-          // icon_comment.setImageDrawable(
-          //     context.getDrawable(
-          //         R.drawable.spec_comment_added));
-          // icon_comment.setImageDrawable(context.getDrawable(R.drawable.spec_comment));
+          hasComment = false;
         } else {
-          // todo: set comment icon based on the path
-          // icon_comment.setImageDrawable(
-          //     context.getDrawable(
-          //         R.drawable.spec_comment_added));
-          // icon_comment.setImageDrawable(context.getDrawable(R.drawable.spec_comment_added));
+          hasComment = true;
         }
 
         _qtyShippedController.text =
@@ -846,7 +833,7 @@ class _NewPurchaseOrderListViewItemState
 
       String? lot_no = await dao.getLotNoFromQCDetails(inspectionId);
       if (lot_no != null) {
-        appStorage.selectedItemSKUList.elementAt(position).lotNo = lot_no;
+        selectedItemSKUList.elementAt(position).lotNo = lot_no;
         await dao.updateLotNoPartnerItemSKU(inspectionId, lot_no);
       }
 
@@ -856,31 +843,32 @@ class _NewPurchaseOrderListViewItemState
 
         String formattedDateString = DateFormat('MM-dd-yyyy').format(date);
 
-        appStorage.selectedItemSKUList.elementAt(position).packDate =
-            formattedDateString;
-        dao.updatePackdatePartnerItemSKU(inspectionId, formattedDateString);
+        selectedItemSKUList.elementAt(position).packDate = formattedDateString;
+        await dao.updatePackdatePartnerItemSKU(
+            inspectionId, formattedDateString);
         // packDateString = formattedDateString;
         // _packDateController.text = formattedDateString;
       }
 
-      Inspection? inspection =
-          await dao.findInspectionByID(partnerItemSKU!.inspectionId!);
+      inspection = await dao.findInspectionByID(partnerItemSKU!.inspectionId!);
 
       if (inspection != null) {
-        ratings = inspection.rating.toDouble();
+        ratings = (inspection?.rating ?? 0).toDouble();
+        _ratings = (inspection?.rating ?? 0).toInt().toDouble();
         informationIconEnabled = true;
         editPencilEnabled = true;
 
-        if (inspection.result != null && inspection.result.equals("RJ")) {
+        if (inspection?.result != null &&
+            (inspection?.result.equals("RJ") ?? false)) {
           layoutPurchaseOrderColor = AppColors.shareifyGold;
-        } else if (inspection.result.equals("AC") ||
-            inspection.result.equals("A-")) {
+        } else if ((inspection?.result.equals("AC") ?? false) ||
+            (inspection?.result.equals("A-") ?? false)) {
           layoutPurchaseOrderColor = AppColors.shareifyGreen;
         } else {
           layoutPurchaseOrderColor = Colors.transparent;
         }
 
-        if (inspection.result != null) {
+        if (inspection?.result != null) {
           layoutQuantityRejectedVisibility = true;
         }
       }
@@ -895,7 +883,7 @@ class _NewPurchaseOrderListViewItemState
         partnerItemSKU!.uniqueId!,
       );
 
-      if (isComplete || (inspection != null && inspection.complete == '1')) {
+      if (isComplete || (inspection != null && inspection?.complete == '1')) {
         inspectButtonIcon = Icon(
           Icons.check_circle_outlined,
           color: AppColors.white,
@@ -940,7 +928,7 @@ class _NewPurchaseOrderListViewItemState
     int overriddenQtyReceived = 0;
 
 // Assuming dao is an instance of your DAO class
-    Inspection? inspection = await dao.findInspectionByID(inspectionId);
+    inspection = await dao.findInspectionByID(inspectionId);
     if (inspection != null) {
       OverriddenResult? overriddenResult =
           await dao.getOverriddenResult(inspectionId);
@@ -949,20 +937,20 @@ class _NewPurchaseOrderListViewItemState
         inspectionResult = overriddenResult.overriddenResult ?? '';
         overriddenQtyRejected = overriddenResult.newQtyRejected!;
         await dao.updateInspectionResult(
-            inspection.inspectionId!, inspectionResult);
+            inspection!.inspectionId!, inspectionResult);
 
         QualityControlItem? qualityControlItems =
-            await dao.findQualityControlDetails(inspection.inspectionId!);
+            await dao.findQualityControlDetails(inspection!.inspectionId!);
         if (qualityControlItems != null) {
           overriddenQtyReceived =
               qualityControlItems.qtyShipped! - overriddenQtyRejected;
         }
-        await dao.updateQuantityRejected(inspection.inspectionId!,
+        await dao.updateQuantityRejected(inspection!.inspectionId!,
             overriddenQtyRejected, overriddenQtyReceived);
 
         _qtyRejectedController.text = overriddenQtyRejected.toString();
       } else {
-        inspectionResult = inspection.result ?? '';
+        inspectionResult = inspection?.result ?? '';
       }
 
       if (inspectionResult.isNotEmpty) {
@@ -988,11 +976,11 @@ class _NewPurchaseOrderListViewItemState
   }
 
   String getPoNumber(int position) {
-    if (appStorage.selectedItemSKUList[position].poNo != null) {
-      return appStorage.selectedItemSKUList[position].poNo ?? '-';
+    if (selectedItemSKUList[position].poNo != null) {
+      return selectedItemSKUList[position].poNo ?? '-';
     } else {
       String? poNo = widget.goodsItem.poNumber;
-      appStorage.selectedItemSKUList[position].poNo = poNo;
+      selectedItemSKUList[position].poNo = poNo;
       return poNo ?? '-';
     }
   }
@@ -1078,30 +1066,28 @@ class _NewPurchaseOrderListViewItemState
     String brandedResult = "";
     ratings = value.ceilToDouble();
     _ratings = value.ceilToDouble();
-    List<SpecificationByItemSKU> specificationByItemSKUList =
+    appStorage.specificationByItemSKUList =
         await dao.getSpecificationByItemSKUFromTable(
-      appStorage.selectedItemSKUList[position].partnerId!,
-      appStorage.selectedItemSKUList[position].sku!,
-      appStorage.selectedItemSKUList[position].sku!,
+      selectedItemSKUList[position].partnerId!,
+      selectedItemSKUList[position].sku!,
+      selectedItemSKUList[position].sku!,
     );
-
+    List<SpecificationByItemSKU> specificationByItemSKUList =
+        appStorage.specificationByItemSKUList ?? [];
     if (specificationByItemSKUList.isNotEmpty) {
-      String? specificationNumber =
-          specificationByItemSKUList[0].specificationNumber;
-      String? specificationVersion =
-          specificationByItemSKUList[0].specificationVersion;
-      String? specificationName =
-          specificationByItemSKUList[0].specificationName;
-      String? specificationTypeName =
+      specificationNumber = specificationByItemSKUList[0].specificationNumber;
+      specificationVersion = specificationByItemSKUList[0].specificationVersion;
+      specificationName = specificationByItemSKUList[0].specificationName;
+      specificationTypeName =
           specificationByItemSKUList[0].specificationTypeName;
-      int? sampleSizeByCount = specificationByItemSKUList[0].sampleSizeByCount;
+      sampleSizeByCount = specificationByItemSKUList[0].sampleSizeByCount;
 
       if (inspectionId <= 0) {
         // we're creating a new inspection
         if (!isComplete && !isPartialComplete) {
           await createNewInspection(
             currentNewPurchaseItem.sku!,
-            appStorage.selectedItemSKUList.elementAt(position).id!,
+            selectedItemSKUList.elementAt(position).id!,
             currentNewPurchaseItem.lotNumber,
             currentNewPurchaseItem.packDate,
             specificationNumber!,
@@ -1112,12 +1098,12 @@ class _NewPurchaseOrderListViewItemState
             "",
             poNumber,
             ratings.toInt(),
-            appStorage.selectedItemSKUList.elementAt(position).commodityID!,
-            appStorage.selectedItemSKUList.elementAt(position).commodityName!,
+            selectedItemSKUList.elementAt(position).commodityID!,
+            selectedItemSKUList.elementAt(position).commodityName!,
             poLineNo,
-            appStorage.selectedItemSKUList.elementAt(position).partnerId!,
-            appStorage.selectedItemSKUList.elementAt(position).partnerName!,
-            currentNewPurchaseItem.description!,
+            selectedItemSKUList.elementAt(position).partnerId!,
+            selectedItemSKUList.elementAt(position).partnerName!,
+            currentNewPurchaseItem.description ?? '',
           );
 
           inspectionId = serverInspectionID!;
@@ -1125,10 +1111,8 @@ class _NewPurchaseOrderListViewItemState
       } else {
         await dao.updateInspection(
           serverInspectionID: inspectionId,
-          commodityID:
-              appStorage.selectedItemSKUList.elementAt(position).commodityID,
-          commodityName:
-              appStorage.selectedItemSKUList.elementAt(position).commodityName,
+          commodityID: selectedItemSKUList.elementAt(position).commodityID,
+          commodityName: selectedItemSKUList.elementAt(position).commodityName,
           varietyId: null,
           varietyName: "",
           gradeId: 0,
@@ -1138,11 +1122,11 @@ class _NewPurchaseOrderListViewItemState
           specificationTypeName: specificationTypeName,
           sampleSizeByCount: sampleSizeByCount,
           itemSKU: currentNewPurchaseItem.sku,
-          itemSKUId: appStorage.selectedItemSKUList.elementAt(position).id,
+          itemSKUId: selectedItemSKUList.elementAt(position).id,
           poNumber: poNumber,
           cteType: "",
           itemSkuName: currentNewPurchaseItem.description,
-          lotNo: appStorage.selectedItemSKUList[position].lotNo,
+          lotNo: selectedItemSKUList[position].lotNo,
           rating: ratings.toInt(),
         );
       }
@@ -1156,17 +1140,9 @@ class _NewPurchaseOrderListViewItemState
             await dao.findQualityControlDetails(inspectionId);
         if (qualityControlItems != null) {
           if (qualityControlItems.qcComments.isNullOrEmpty()) {
-            // todo: set comment icon based on the path
-            // comment.trim().isNotEmpty
-            //     ? AppImages.ic_specCommentsAdded
-            //     : AppImages.ic_specComments
-            // icon_comment.setImageDrawable(context
-            //     .getDrawable(R.drawable.spec_comment));
+            hasComment = false;
           } else {
-            // todo: set comment icon based on the path
-            // icon_comment.setImageDrawable(
-            //     context.getDrawable(
-            //         R.drawable.spec_comment_added));
+            hasComment = true;
           }
         }
       }
@@ -1186,9 +1162,8 @@ class _NewPurchaseOrderListViewItemState
               if ((item.isPictureRequired ?? false) &&
                   (ratings > 0 && ratings <= 2)) {
                 AppAlertDialog.confirmationAlert(Get.context!, AppStrings.alert,
-                    "At least one picture is required", onYesTap: () {
-                  Get.back();
-                });
+                    "At least one picture is required",
+                    onYesTap: () {});
               }
             }
 
@@ -1243,7 +1218,7 @@ class _NewPurchaseOrderListViewItemState
               brandedResult = "RJ";
             }
 
-            if (isBranded != null) {
+            if (isBranded.isNotEmpty) {
               if (dbobj != null) {
                 await dao.updateSpecificationAttributeBrandedValue(
                     inspectionId, item.analyticalID!, isBranded, comply);
@@ -1308,14 +1283,14 @@ class _NewPurchaseOrderListViewItemState
           specificationNumber, specificationVersion, specificationName);
 
       await dao.createPartnerItemSKU(
-          appStorage.selectedItemSKUList.elementAt(position).partnerId!,
-          appStorage.selectedItemSKUList.elementAt(position).sku!,
+          selectedItemSKUList.elementAt(position).partnerId!,
+          selectedItemSKUList.elementAt(position).sku!,
           currentNewPurchaseItem.lotNumber,
           "",
           inspectionId,
           "",
-          appStorage.selectedItemSKUList.elementAt(position).uniqueItemId!,
-          appStorage.selectedItemSKUList.elementAt(position).poLineNo,
+          selectedItemSKUList.elementAt(position).uniqueItemId!,
+          selectedItemSKUList.elementAt(position).poLineNo ?? poLineNo,
           poNumber);
 
       await dao
@@ -1340,10 +1315,8 @@ class _NewPurchaseOrderListViewItemState
       }
       // No quality control id, create a new one in the database.
       if (qcID == null) {
-        if ((appStorage.selectedItemSKUList.elementAt(position).quantity ?? 0) >
-            0) {
-          qtyShipped =
-              appStorage.selectedItemSKUList.elementAt(position).quantity!;
+        if ((selectedItemSKUList.elementAt(position).quantity ?? 0) > 0) {
+          qtyShipped = selectedItemSKUList.elementAt(position).quantity!;
 
           if (ratings >= 0 && ratings <= 2) {
             qtyRejected = qtyShipped;
@@ -1359,7 +1332,7 @@ class _NewPurchaseOrderListViewItemState
             originID: 0,
             qtyShipped: qtyShipped,
             uomQtyShippedID:
-                appStorage.selectedItemSKUList.elementAt(position).quantityUOM!,
+                selectedItemSKUList.elementAt(position).quantityUOM!,
             poNumber: poNumber,
             pulpTempMin: 0,
             pulpTempMax: 0,
@@ -1369,12 +1342,12 @@ class _NewPurchaseOrderListViewItemState
             claimFiledAgainst: "",
             qtyRejected: qtyRejected,
             uomQtyRejectedID:
-                appStorage.selectedItemSKUList.elementAt(position).quantityUOM!,
+                selectedItemSKUList.elementAt(position).quantityUOM!,
             reasonID: 0,
             qcComments: "",
             qtyReceived: qtyReceived,
             uomQtyReceivedID:
-                appStorage.selectedItemSKUList.elementAt(position).quantityUOM!,
+                selectedItemSKUList.elementAt(position).quantityUOM!,
             specificationName: specificationName!,
             packDate: 0,
             seal_no: appStorage.currentSealNumber!,
@@ -1396,10 +1369,10 @@ class _NewPurchaseOrderListViewItemState
           await dao.updateInspectionComplete(inspectionId, true);
           await dao.updateSelectedItemSKU(
               inspectionId,
-              appStorage.selectedItemSKUList.elementAt(position).partnerId!,
-              appStorage.selectedItemSKUList.elementAt(position).id!,
-              appStorage.selectedItemSKUList.elementAt(position).sku!,
-              appStorage.selectedItemSKUList.elementAt(position).uniqueItemId!,
+              selectedItemSKUList.elementAt(position).partnerId!,
+              selectedItemSKUList.elementAt(position).id!,
+              selectedItemSKUList.elementAt(position).sku!,
+              selectedItemSKUList.elementAt(position).uniqueItemId!,
               true,
               false);
 
@@ -1465,10 +1438,10 @@ class _NewPurchaseOrderListViewItemState
           await dao.updateInspectionComplete(inspectionId, false);
           await dao.updateSelectedItemSKU(
               inspectionId,
-              appStorage.selectedItemSKUList.elementAt(position).partnerId!,
-              appStorage.selectedItemSKUList.elementAt(position).id!,
-              appStorage.selectedItemSKUList.elementAt(position).sku!,
-              appStorage.selectedItemSKUList.elementAt(position).uniqueItemId!,
+              selectedItemSKUList.elementAt(position).partnerId!,
+              selectedItemSKUList.elementAt(position).id!,
+              selectedItemSKUList.elementAt(position).sku!,
+              selectedItemSKUList.elementAt(position).uniqueItemId!,
               false,
               true);
           isPartialComplete = true;
@@ -1483,10 +1456,10 @@ class _NewPurchaseOrderListViewItemState
 
         await dao.updateSelectedItemSKU(
             inspectionId,
-            appStorage.selectedItemSKUList.elementAt(position).partnerId!,
-            appStorage.selectedItemSKUList.elementAt(position).id!,
-            appStorage.selectedItemSKUList.elementAt(position).sku!,
-            appStorage.selectedItemSKUList.elementAt(position).uniqueItemId!,
+            selectedItemSKUList.elementAt(position).partnerId!,
+            selectedItemSKUList.elementAt(position).id!,
+            selectedItemSKUList.elementAt(position).sku!,
+            selectedItemSKUList.elementAt(position).uniqueItemId!,
             true,
             false);
 
@@ -1497,12 +1470,12 @@ class _NewPurchaseOrderListViewItemState
             inspectionId, Consts.INSPECTION_UPLOAD_READY);
       }
 
-      Inspection? inspection = await dao.findInspectionByID(inspectionId);
+      inspection = await dao.findInspectionByID(inspectionId);
 
       if (ratings >= 0 && ratings <= 2) {
         if (inspection != null &&
-            inspection.result != null &&
-            inspection.result.equals("RJ")) {
+            inspection?.result != null &&
+            (inspection?.result.equals("RJ") ?? false)) {
           ResultRejectionDetail? resultRejectionDetail =
               await dao.getResultRejectionDetails(inspectionId);
           String rejectReason = resultRejectionDetail?.resultReason ?? '';
@@ -1543,8 +1516,8 @@ class _NewPurchaseOrderListViewItemState
 
         if (brandedResult == "RJ") {
           if (inspection != null &&
-              inspection.result != null &&
-              inspection.result.equals("RJ")) {
+              inspection?.result != null &&
+              (inspection?.result.equals("RJ") ?? false)) {
             if (rejectReason.isNotEmpty &&
                 !rejectReason.contains("Branded = N")) {
               rejectReason += "\nBranded = N";
@@ -1565,8 +1538,8 @@ class _NewPurchaseOrderListViewItemState
           _qtyRejectedController.text = qtyShipped.toString();
           layoutPurchaseOrderColor = AppColors.shareifyGold;
         } else {
-          if (inspection != null && inspection.result != null) {
-            if (inspection.result.equals("RJ")) {
+          if (inspection != null && inspection?.result != null) {
+            if (inspection?.result.equals("RJ") ?? false) {
               if (rejectReason.isNotEmpty &&
                   rejectReason.contains("Quality Check")) {
                 String inputString = rejectReason;
@@ -1586,7 +1559,7 @@ class _NewPurchaseOrderListViewItemState
               }
             }
 
-            if (!inspection.result.equals("RJ") || rejectReason.equals("")) {
+            if (!inspection!.result.equals("RJ") || rejectReason.equals("")) {
               await dao.updateInspectionResult(inspectionId, "AC");
               qtyRejectedEnabled = false;
               await dao.updateQuantityRejected(inspectionId, 0, qtyShipped);
@@ -1618,8 +1591,8 @@ class _NewPurchaseOrderListViewItemState
 
   void cameraIconTap() {
     Map<String, dynamic> arguments = {
-      Consts.PARTNER_NAME: appStorage.selectedItemSKUList[position].partnerName,
-      Consts.PARTNER_ID: appStorage.selectedItemSKUList[position].partnerId,
+      Consts.PARTNER_NAME: selectedItemSKUList[position].partnerName,
+      Consts.PARTNER_ID: selectedItemSKUList[position].partnerId,
       Consts.CARRIER_NAME: carrierName,
       Consts.CARRIER_ID: carrierID,
       Consts.COMMODITY_NAME: commodityName,
@@ -1654,19 +1627,17 @@ class _NewPurchaseOrderListViewItemState
     if (inspectionId > 0) {
       appStorage.specificationByItemSKUList =
           await dao.getSpecificationByItemSKUFromTable(
-        appStorage.selectedItemSKUList.elementAt(position).partnerId!,
-        appStorage.selectedItemSKUList.elementAt(position).sku!,
-        appStorage.selectedItemSKUList.elementAt(position).sku!,
+        selectedItemSKUList.elementAt(position).partnerId!,
+        selectedItemSKUList.elementAt(position).sku!,
+        selectedItemSKUList.elementAt(position).sku!,
       );
 
-      if (appStorage.specificationByItemSKUList != null &&
-          (appStorage.specificationByItemSKUList ?? []).isNotEmpty) {
-        specificationNumber = appStorage.specificationByItemSKUList
-            ?.elementAt(0)
-            .specificationNumber;
-        specificationVersion = appStorage.specificationByItemSKUList
-            ?.elementAt(0)
-            .specificationVersion;
+      if (specificationByItemSKUList != null &&
+          (specificationByItemSKUList ?? []).isNotEmpty) {
+        specificationNumber =
+            specificationByItemSKUList?.elementAt(0).specificationNumber;
+        specificationVersion =
+            specificationByItemSKUList?.elementAt(0).specificationVersion;
       }
       //appStorage.specificationAnalyticalList = dao.getSpecificationAnalyticalFromTable(specificationNumber, specificationVersion);
 
@@ -1674,7 +1645,7 @@ class _NewPurchaseOrderListViewItemState
         for (final SpecificationAnalytical item
             in (appStorage.specificationAnalyticalList ?? [])) {
           if (item.analyticalName?.contains("Branded") ?? false) {
-            Inspection? inspection = await dao.findInspectionByID(inspectionId);
+            inspection = await dao.findInspectionByID(inspectionId);
 
             final SpecificationAnalyticalRequest? dbobj = await dao
                 .findSpecAnalyticalObj(inspectionId, item.analyticalID!);
@@ -1697,8 +1668,8 @@ class _NewPurchaseOrderListViewItemState
 
             if (item.inspectionResult.equals("Y") && comply.equals("N")) {
               if (inspection != null &&
-                  inspection.result != null &&
-                  inspection.result.equals("RJ")) {
+                  inspection?.result != null &&
+                  (inspection!.result.equals("RJ") ?? false)) {
                 ResultRejectionDetail? resultRejectionDetail =
                     await dao.getResultRejectionDetails(inspectionId);
                 String? rejectReason = resultRejectionDetail?.resultReason;
@@ -1732,8 +1703,8 @@ class _NewPurchaseOrderListViewItemState
               String result = "";
 
               if (inspection != null &&
-                  inspection.result != null &&
-                  inspection.result.equals("RJ")) {
+                  inspection?.result != null &&
+                  (inspection?.result.equals("RJ") ?? false)) {
                 ResultRejectionDetail? resultRejectionDetail =
                     await dao.getResultRejectionDetails(inspectionId);
 
@@ -1773,7 +1744,7 @@ class _NewPurchaseOrderListViewItemState
     bool checkItemSKUAndLot = false;
     bool isValid = true;
 
-    Inspection? inspection = await dao.findInspectionByID(inspectionId);
+    inspection = await dao.findInspectionByID(inspectionId);
 
     if (inspection != null) {
       if (appStorage.specificationAnalyticalList != null) {
@@ -1805,15 +1776,13 @@ class _NewPurchaseOrderListViewItemState
         String? current_Item_SKU = currentInspectionsItem.sku;
         String? current_Item_SKU_Name = currentInspectionsItem.description;
         String? current_pack_Date = currentInspectionsItem.packDate;
-        int? current_Item_SKU_Id = appStorage.selectedItemSKUList[position].id;
-        String? current_unique_id =
-            appStorage.selectedItemSKUList[position].uniqueItemId;
-        int? current_commodity_id =
-            appStorage.selectedItemSKUList[position].commodityID;
+        int? current_Item_SKU_Id = selectedItemSKUList[position].id;
+        String? current_unique_id = selectedItemSKUList[position].uniqueItemId;
+        int? current_commodity_id = selectedItemSKUList[position].commodityID;
         String? current_commodity_name =
-            appStorage.selectedItemSKUList[position].commodityName;
-        String? current_gtin = appStorage.selectedItemSKUList[position].gtin;
-        int? poLineNo = appStorage.selectedItemSKUList[position].poLineNo;
+            selectedItemSKUList[position].commodityName;
+        String? current_gtin = selectedItemSKUList[position].gtin;
+        int? poLineNo = selectedItemSKUList[position].poLineNo;
 
         Map<String, dynamic> bundle = {
           "current_lot_number": current_lot_number,
@@ -1829,9 +1798,8 @@ class _NewPurchaseOrderListViewItemState
         };
 
         if (!isComplete && !isPartialComplete) {
-          appStorage.selectedItemSKUList[position].lotNo = current_lot_number;
-          appStorage.selectedItemSKUList[position].poNo =
-              currentInspectionsItem.poNumber;
+          selectedItemSKUList[position].lotNo = current_lot_number;
+          selectedItemSKUList[position].poNo = currentInspectionsItem.poNumber;
         }
 
         appStorage.specificationByItemSKUList =
@@ -1840,28 +1808,23 @@ class _NewPurchaseOrderListViewItemState
                 currentInspectionsItem.sku!,
                 currentInspectionsItem.sku!);
 
-        if (appStorage.specificationByItemSKUList != null &&
-            (appStorage.specificationByItemSKUList ?? []).isNotEmpty) {
-          specificationNumber = appStorage.specificationByItemSKUList
-              ?.elementAt(0)
-              .specificationNumber;
-          specificationVersion = appStorage.specificationByItemSKUList
-              ?.elementAt(0)
-              .specificationVersion;
-          specificationName = appStorage.specificationByItemSKUList
-              ?.elementAt(0)
-              .specificationName;
-          specificationTypeName = appStorage.specificationByItemSKUList
-              ?.elementAt(0)
-              .specificationTypeName;
+        if (specificationByItemSKUList != null &&
+            (specificationByItemSKUList ?? []).isNotEmpty) {
+          specificationNumber =
+              specificationByItemSKUList?.elementAt(0).specificationNumber;
+          specificationVersion =
+              specificationByItemSKUList?.elementAt(0).specificationVersion;
+          specificationName =
+              specificationByItemSKUList?.elementAt(0).specificationName;
+          specificationTypeName =
+              specificationByItemSKUList?.elementAt(0).specificationTypeName;
 
-          sampleSizeByCount = appStorage.specificationByItemSKUList
-              ?.elementAt(0)
-              .sampleSizeByCount;
+          sampleSizeByCount =
+              specificationByItemSKUList?.elementAt(0).sampleSizeByCount;
         }
 
-        if (appStorage.specificationByItemSKUList != null &&
-            (appStorage.specificationByItemSKUList ?? []).isNotEmpty) {
+        if (specificationByItemSKUList != null &&
+            (specificationByItemSKUList ?? []).isNotEmpty) {
           bool isComplete = await dao.isInspectionComplete(
               currentInspectionsItem.partnerId!,
               current_Item_SKU!,
@@ -1884,9 +1847,8 @@ class _NewPurchaseOrderListViewItemState
           bundle[Consts.PO_NUMBER] = poNumber;
           bundle[Consts.SEAL_NUMBER] = widget.sealNumber;
           bundle[Consts.PARTNER_NAME] =
-              appStorage.selectedItemSKUList[position].partnerName;
-          bundle[Consts.PARTNER_ID] =
-              appStorage.selectedItemSKUList[position].partnerId;
+              selectedItemSKUList[position].partnerName;
+          bundle[Consts.PARTNER_ID] = selectedItemSKUList[position].partnerId;
           bundle[Consts.CARRIER_NAME] = carrierName;
           bundle[Consts.CARRIER_ID] = carrierID;
           bundle[Consts.LOT_NO] = current_lot_number;
@@ -1925,8 +1887,15 @@ class _NewPurchaseOrderListViewItemState
     }
   }
 
+  NewPurchaseOrderItem get currentNewPurchaseItem =>
+      controller.originalData.elementAt(position);
+
+  List<SpecificationByItemSKU>? get specificationByItemSKUList =>
+      appStorage.specificationByItemSKUList;
+
+  List<FinishedGoodsItemSKU> get selectedItemSKUList =>
+      appStorage.selectedItemSKUList;
+
   NewPurchaseOrderItem get currentInspectionsItem =>
       controller.filteredInspectionsList[position];
 }
-
-final List<int> flexList = [1, 4, 2, 3];

@@ -29,7 +29,7 @@ class PurchaseOrderScreenController extends GetxController {
 
   final AppStorage appStorage = AppStorage.instance;
   final GlobalConfigController globalConfigController =
-  Get.find<GlobalConfigController>();
+      Get.find<GlobalConfigController>();
   final ApplicationDao dao = ApplicationDao();
 
   RxList<FinishedGoodsItemSKU> filteredItemSkuList =
@@ -45,12 +45,12 @@ class PurchaseOrderScreenController extends GetxController {
       throw Exception('Arguments required!');
     }
 
-    poNumber = args[Consts.PO_NUMBER] ?? '';
-    sealNumber = args[Consts.SEAL_NUMBER] ?? '';
     partnerName = args[Consts.PARTNER_NAME] ?? '';
     partnerID = args[Consts.PARTNER_ID] ?? 0;
     carrierName = args[Consts.CARRIER_NAME] ?? '';
     carrierID = args[Consts.CARRIER_ID] ?? 0;
+    poNumber = args[Consts.PO_NUMBER] ?? '';
+    sealNumber = args[Consts.SEAL_NUMBER] ?? '';
     commodityID = args[Consts.COMMODITY_ID] ?? 0;
     commodityName = args[Consts.COMMODITY_NAME] ?? '';
     productTransfer = args[Consts.PRODUCT_TRANSFER] ?? '';
@@ -67,9 +67,9 @@ class PurchaseOrderScreenController extends GetxController {
     if (userData != null) {
       if (filteredItemSkuList.isEmpty) {
         int? enterpriseId =
-        await dao.getEnterpriseIdByUserId(userData.userName!.toLowerCase());
+            await dao.getEnterpriseIdByUserId(userData.userName!.toLowerCase());
         List<FinishedGoodsItemSKU>? finishedGoodItems =
-        await dao.getFinishedGoodItemSkuFromTable(
+            await dao.getFinishedGoodItemSkuFromTable(
           partnerID,
           enterpriseId!,
           commodityID,
@@ -78,6 +78,9 @@ class PurchaseOrderScreenController extends GetxController {
           userData.headquarterSupplierId!,
           partnerName,
         );
+
+        appStorage.finishedGoodsItemSKUList?.clear();
+        appStorage.finishedGoodsItemSKUList = finishedGoodItems ?? [];
 
         itemSkuList.addAll(finishedGoodItems ?? []);
         filteredItemSkuList.addAll(itemSkuList);
@@ -92,7 +95,6 @@ class PurchaseOrderScreenController extends GetxController {
 
   void updateSelectedItemSKUItem(FinishedGoodsItemSKU partner) {
     appStorage.selectedItemSKUList = appStorage.selectedItemSKUList;
-
     // remove if exist in appStorage.selectedItemSKUList
     appStorage.selectedItemSKUList.removeWhere((element) {
       return element.id == partner.id &&
@@ -131,14 +133,11 @@ class PurchaseOrderScreenController extends GetxController {
     }
 
     int userId =
-    await dao.getHeadquarterIdByUserId(userData.userName!.toLowerCase());
+        await dao.getHeadquarterIdByUserId(userData.userName!.toLowerCase());
 
     if (appStorage.selectedItemSKUList.isNotEmpty) {
       if (userId == 4180) {
-        final String tag = DateTime
-            .now()
-            .millisecondsSinceEpoch
-            .toString();
+        final String tag = DateTime.now().millisecondsSinceEpoch.toString();
         Map<String, dynamic> arguments = {
           Consts.PARTNER_NAME: partnerName,
           Consts.PARTNER_ID: partnerID,
@@ -152,10 +151,7 @@ class PurchaseOrderScreenController extends GetxController {
         Get.to(() => NewPurchaseOrderDetailsScreen(tag: tag),
             arguments: arguments);
       } else {
-        final String tag = DateTime
-            .now()
-            .millisecondsSinceEpoch
-            .toString();
+        final String tag = DateTime.now().millisecondsSinceEpoch.toString();
         Get.to(() => PurchaseOrderDetailsScreen(tag: tag), arguments: {
           Consts.PARTNER_ID: partnerID,
           Consts.PARTNER_NAME: partnerName,

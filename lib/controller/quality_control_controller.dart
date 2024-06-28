@@ -1,14 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:pverify/models/item_sku_data.dart';
 import 'package:pverify/models/purchase_order_details.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/delivered_from/delivered_from_screen.dart';
+import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
+import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
 import 'package:pverify/ui/supplier/choose_supplier.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
+import 'package:pverify/utils/extensions/int_extension.dart';
+import 'package:pverify/utils/utils.dart';
 
 class QualityControlController extends GetxController {
   final orderNoTextController = TextEditingController().obs;
@@ -231,10 +236,84 @@ class QualityControlController extends GetxController {
     }
 
     if (purchaseOrderDetails.isNotEmpty) {
+      if (!callerActivity.equals("")) {
+        if (callerActivity.equals("QualityControlHeaderActivity")) {
+          Get.back();
+        } else {
+          showBeginInspectionScreen();
+        }
+      } else {
+        showBeginInspectionScreen();
+      }
     } else {
       // Here need to call showPurchaseOrder function.
       showPurchaseOrder();
     }
+  }
+
+  Future<void> showBeginInspectionScreen() async {
+    for (int i = 0; i < purchaseOrderDetails.length; i++) {
+      String itemUniqueId = generateUUID();
+
+      String ftlflag =
+          await dao.getFTLFlagFromItemSku(purchaseOrderDetails[i].itemSkuId!);
+      String brandedFlag = await dao
+          .getBrandedFlagFromItemSku(purchaseOrderDetails[i].itemSkuId!);
+
+      FinishedGoodsItemSKU fromNewPurchase =
+          FinishedGoodsItemSKU.fromNewPurchase(
+        poLineNo: purchaseOrderDetails.elementAt(i).poLineNumber,
+        id: purchaseOrderDetails.elementAt(i).itemSkuId,
+        sku: purchaseOrderDetails.elementAt(i).itemSkuCode,
+        name: purchaseOrderDetails.elementAt(i).itemSkuName,
+        commodityID: purchaseOrderDetails.elementAt(i).commodityId,
+        commodityName: purchaseOrderDetails.elementAt(i).commodityName,
+        uniqueItemId: itemUniqueId,
+        partnerId: purchaseOrderDetails.elementAt(i).partnerId,
+        partnerName: purchaseOrderDetails.elementAt(i).partnerName,
+        poNo: purchaseOrderDetails.elementAt(i).poNumber,
+        quantity: purchaseOrderDetails.elementAt(i).quantity,
+        quantityUOM: purchaseOrderDetails.elementAt(i).quantityUOMId,
+        quantityUOMName: purchaseOrderDetails.elementAt(i).quantityUOMName,
+        number_spec: purchaseOrderDetails.elementAt(i).numberSpecification,
+        version_spec: purchaseOrderDetails.elementAt(i).versionSpecification,
+        FTLflag: ftlflag,
+        Branded: brandedFlag,
+      );
+      appStorage.selectedItemSKUList.add(fromNewPurchase);
+
+      appStorage.selectedItemSKUList
+          .sort((a, b) => a.poLineNo!.compareTo(b.poLineNo!));
+    }
+
+    int userid = await dao.getHeadquarterIdByUserId(
+        appStorage.getUserData()!.userName!.toLowerCase());
+
+    final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+
+    if (userid == 4180) {
+      Map<String, dynamic> arguments = {
+        'partnerName': purchaseOrderDetails[0].partnerName,
+        'partnerId': purchaseOrderDetails[0].partnerId,
+        'carrierName': carrierName,
+        'carrierId': carrierID,
+        'poNumber': poNumber,
+        'callerActivity': 'QualityControlHeaderActivity',
+      };
+      Get.to(() => NewPurchaseOrderDetailsScreen(tag: tag),
+          arguments: arguments);
+    } else {
+      Map<String, dynamic> arguments = {
+        'partnerName': purchaseOrderDetails[0].partnerName,
+        'partnerId': purchaseOrderDetails[0].partnerId,
+        'carrierName': carrierName,
+        'carrierId': carrierID,
+        'poNumber': poNumber,
+        'callerActivity': 'QualityControlHeaderActivity',
+      };
+      Get.to(() => PurchaseOrderDetailsScreen(tag: tag), arguments: arguments);
+    }
+    Get.back();
   }
 
   void showPurchaseOrder() {

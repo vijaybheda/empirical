@@ -2467,7 +2467,7 @@ class ApplicationDao {
       if (hqUser) {
         args = [supplierId, headquarterId, commodityId];
       } else {
-        args = [supplierId, headquarterId, supplierId, commodityId];
+        args = [supplierId, headquarterId, supplier_Id, commodityId];
       }
       final Database db = dbProvider.lazyDatabase;
 
@@ -2639,7 +2639,7 @@ class ApplicationDao {
         'FG',
         'AC',
         headquarterId,
-        supplierId,
+        supplierIdParam,
         'A'
       ];
       String query1 =
@@ -4424,16 +4424,24 @@ class ApplicationDao {
 
     final Database db = dbProvider.lazyDatabase;
     try {
+      //   const query = '''
+      //   SELECT * FROM ${DBTables.PARTNER_ITEMSKU}
+      //   WHERE ${PartnerItemSkuColumn.PARTNER_ID} = ?
+      //   AND ${PartnerItemSkuColumn.ITEM_SKU} = ?
+      //   AND ${PartnerItemSkuColumn.PO_LINE_NO} = ?
+      //   AND ${PartnerItemSkuColumn.PO_NO} = ?
+      // ''';
+
+      // FIXME: removed PO LINE NO
       const query = '''
       SELECT * FROM ${DBTables.PARTNER_ITEMSKU}
       WHERE ${PartnerItemSkuColumn.PARTNER_ID} = ?
       AND ${PartnerItemSkuColumn.ITEM_SKU} = ?
-      AND ${PartnerItemSkuColumn.PO_LINE_NO} = ?
       AND ${PartnerItemSkuColumn.PO_NO} = ?
     ''';
 
       List<Map> result =
-          await db.rawQuery(query, [partnerId, itemSKU, poLineNo, poNo]);
+          await db.rawQuery(query, [partnerId, itemSKU, /*poLineNo,*/ poNo]);
 
       if (result.isNotEmpty) {
         item = PartnerItemSKUInspections.fromMap(
@@ -4539,12 +4547,12 @@ class ApplicationDao {
       final Database db = dbProvider.lazyDatabase;
       await db.transaction((txn) async {
         await txn.update(
-          'QUALITY_CONTROL_TABLE',
+          DBTables.QUALITY_CONTROL,
           {
-            'QCT_QTY_SHIPPED': qtyShipped,
-            'QCT_QTY_RECEIVED': qtyReceived,
+            QualityControlColumn.QTY_SHIPPED: qtyShipped,
+            QualityControlColumn.QTY_RECEIVED: qtyReceived,
           },
-          where: 'QCT_INSPECTION_ID = ?',
+          where: '${QualityControlColumn.INSPECTION_ID} = ?',
           whereArgs: [inspectionID],
         );
       });
@@ -4572,5 +4580,24 @@ class ApplicationDao {
       print('Error has occurred while updating an inspection: $e');
       rethrow;
     }
+  }
+
+  Future<String> getFTLFlagFromItemSku(int itemSkuId) async {
+    String ftl = "";
+
+    try {
+      final Database db = dbProvider.lazyDatabase;
+      List<Map> result = await db.rawQuery(
+          'SELECT FTL FROM ${DBTables.ITEM_SKU} WHERE Item_SKU.SKU_ID = ?',
+          [itemSkuId]);
+
+      if (result.isNotEmpty) {
+        ftl = result.first['FTL'];
+      }
+    } catch (e) {
+      print('Error has occurred while finding quality control items: $e');
+    }
+
+    return ftl;
   }
 }

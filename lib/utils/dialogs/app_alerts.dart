@@ -32,7 +32,7 @@ class AppAlertDialog {
         actions: [
           TextButton(
               onPressed: () {
-                navigator?.pop();
+                Get.back();
               },
               child: Text(
                 AppStrings.ok,
