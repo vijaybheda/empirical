@@ -2942,6 +2942,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
                     result = "AC";
                   }
                 }
+               //todo footerRightButtonText.setVisibility(View.VISIBLE);
               }
 
               if (appStorage.specificationAnalyticalList != null) {
