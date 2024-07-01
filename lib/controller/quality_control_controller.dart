@@ -252,6 +252,7 @@ class QualityControlController extends GetxController {
   }
 
   Future<void> showBeginInspectionScreen() async {
+    appStorage.selectedItemSKUList.clear();
     for (int i = 0; i < purchaseOrderDetails.length; i++) {
       String itemUniqueId = generateUUID();
 
@@ -313,7 +314,7 @@ class QualityControlController extends GetxController {
       };
       Get.to(() => PurchaseOrderDetailsScreen(tag: tag), arguments: arguments);
     }
-    Get.back();
+    // Get.back();
   }
 
   void showPurchaseOrder() {

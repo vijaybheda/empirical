@@ -933,6 +933,7 @@ class LongFormQualityControlScreenController extends GetxController {
       Consts.PO_LINE_NO: poLineNo,
       Consts.PRODUCT_TRANSFER: productTransfer,
       Consts.DATETYPE: dateTypeDesc,
+      Consts.CALLER_ACTIVITY: callerActivity,
     };
 
     final String uniqueTag = DateTime.now().millisecondsSinceEpoch.toString();
@@ -987,6 +988,7 @@ class LongFormQualityControlScreenController extends GetxController {
       Consts.PO_LINE_NO: poLineNo,
       Consts.PRODUCT_TRANSFER: productTransfer,
       Consts.DATETYPE: dateTypeDesc,
+      Consts.CALLER_ACTIVITY: callerActivity,
     };
 
     final String uniqueTag = DateTime.now().millisecondsSinceEpoch.toString();

@@ -20,24 +20,25 @@ class InspectionDefectAttachment {
   });
 
   InspectionDefectAttachment.fromJson(Map<String, dynamic> json) {
-    attachmentId = json[InspectionDefectAttachmentColumn.ATTACHMENT_ID];
+    attachmentId = json[InspectionDefectAttachmentColumn.ID];
     inspectionId = json[InspectionDefectAttachmentColumn.INSPECTION_ID];
     sampleId = json[InspectionDefectAttachmentColumn.INSPECTION_SAMPLE_ID];
     defectId = json[InspectionDefectAttachmentColumn.INSPECTION_DEFECT_ID];
     createdTime = json[InspectionDefectAttachmentColumn.CREATED_TIME];
     fileLocation = json[InspectionDefectAttachmentColumn.FILE_LOCATION];
-    defectSaved = json[InspectionDefectAttachmentColumn.DEFECT_SAVED];
+    defectSaved = (json[InspectionDefectAttachmentColumn.DEFECT_SAVED] == 'Y');
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data[InspectionDefectAttachmentColumn.ATTACHMENT_ID] = attachmentId;
+    data[InspectionDefectAttachmentColumn.ID] = attachmentId;
     data[InspectionDefectAttachmentColumn.INSPECTION_ID] = inspectionId;
     data[InspectionDefectAttachmentColumn.INSPECTION_SAMPLE_ID] = sampleId;
     data[InspectionDefectAttachmentColumn.INSPECTION_DEFECT_ID] = defectId;
     data[InspectionDefectAttachmentColumn.CREATED_TIME] = createdTime;
     data[InspectionDefectAttachmentColumn.FILE_LOCATION] = fileLocation;
-    data[InspectionDefectAttachmentColumn.DEFECT_SAVED] = defectSaved;
+    data[InspectionDefectAttachmentColumn.DEFECT_SAVED] =
+        (defectSaved != null && defectSaved!) ? 'Y' : 'N';
     return data;
   }
 }

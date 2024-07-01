@@ -305,7 +305,7 @@ class _NewPurchaseOrderListViewItemState
                     ],
                   ),
                 ),
-                SizedBox(width: 8),
+                // SizedBox(width: 8),
                 Expanded(
                   flex: flexList[3],
                   child: Row(
@@ -315,18 +315,20 @@ class _NewPurchaseOrderListViewItemState
                     children: [
                       RatingBar.builder(
                         initialRating: ratings,
-                        minRating: 0,
+                        minRating: 1,
                         direction: Axis.horizontal,
                         allowHalfRating: false,
                         itemCount: 5,
-                        itemSize: 30,
+                        itemSize: 35,
                         itemBuilder: (context, _) => Icon(
                           Icons.star,
                           color: AppColors.yellow,
+                          size: 35,
                         ),
                         onRatingUpdate: (value) async {
                           onRatingUpdate(value);
                         },
+                        itemPadding: const EdgeInsets.symmetric(horizontal: 0),
                       ),
                       IconButton(
                         icon: Icon(
@@ -334,6 +336,7 @@ class _NewPurchaseOrderListViewItemState
                           color: AppColors.white,
                           size: 35,
                         ),
+                        padding: EdgeInsets.zero,
                         onPressed: cameraIconTap,
                       ),
                     ],
@@ -806,6 +809,7 @@ class _NewPurchaseOrderListViewItemState
       specificationName = specificationByItemSKUList?.first.specificationName;
       specificationTypeName =
           specificationByItemSKUList?.first.specificationTypeName;
+      sampleSizeByCount = specificationByItemSKUList?.first.sampleSizeByCount;
     }
 
     if (partnerItemSKU != null && partnerItemSKU!.inspectionId != null) {

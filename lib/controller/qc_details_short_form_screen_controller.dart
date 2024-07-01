@@ -1166,6 +1166,7 @@ class QCDetailsShortFormScreenController extends GetxController {
             } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
               final String tag =
                   DateTime.now().millisecondsSinceEpoch.toString();
+              passingData[Consts.CALLER_ACTIVITY] = 'QCDetailsShortForm';
               Get.offAll(
                 () => NewPurchaseOrderDetailsScreen(tag: tag),
                 arguments: passingData,

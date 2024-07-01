@@ -89,7 +89,6 @@ class HomeController extends GetxController {
       if (itemsList.isNotEmpty) {
         appStorage.myInsp48HourList ??= itemsList;
         myInsp48HourList.assignAll(itemsList);
-        update(['inspectionsList']);
       } else {
         myInsp48HourList.value = [];
       }
@@ -100,6 +99,7 @@ class HomeController extends GetxController {
       }
     }
     appStorage.selectedItemSKUList.clear();
+    update(['inspectionsList']);
   }
 
   Future<List<MyInspection48HourItem>> getAllInspectionData() async {
@@ -195,7 +195,7 @@ class HomeController extends GetxController {
       Consts.COMMODITY_ID: selectedItem.commodityId,
       Consts.VARIETY_NAME: selectedItem.varietyName,
       Consts.VARIETY_ID: selectedItem.varietyId,
-      'VARIETY_SIZE': '1',
+      Consts.VARIETY_SIZE: '1',
       Consts.COMPLETED: selectedItem.complete == "1",
       Consts.GRADE_ID: selectedItem.gradeId,
       Consts.INSPECTION_RESULT: selectedItem.inspectionResult ?? "",
@@ -220,7 +220,7 @@ class HomeController extends GetxController {
       //todo add navigation for CTE flow.
     } else {
       final String tag = DateTime.now().millisecondsSinceEpoch.toString();
-      Get.to(QCDetailsShortFormScreen(tag: tag), arguments: passingData);
+      Get.to(() => QCDetailsShortFormScreen(tag: tag), arguments: passingData);
     }
   }
 

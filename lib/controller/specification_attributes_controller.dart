@@ -103,7 +103,6 @@ class SpecificationAttributesController extends GetxController {
       lotNo = args[Consts.LOT_NO] ?? '';
       itemSKU = args[Consts.ITEM_SKU];
       dateTypeDesc = args[Consts.DATETYPE] ?? '';
-      // callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
       varietyName = args[Consts.VARIETY_NAME] ?? '';
       varietySize = args[Consts.VARIETY_SIZE] ?? '';
       varietyId = args[Consts.VARIETY_ID] ?? 0;
@@ -560,15 +559,10 @@ class SpecificationAttributesController extends GetxController {
     if (isComplete) {
       Get.back();
     } else {
-      Map<String, dynamic> navigationArgs = {};
-
-      String callerActivity = args[Consts.CALLER_ACTIVITY] ?? '';
-
       if (callerActivity == "NewPurchaseOrderDetailsActivity") {
-        navigationArgs[Consts.CALLER_ACTIVITY] =
-            "NewPurchaseOrderDetailsActivity";
+        args[Consts.CALLER_ACTIVITY] = "NewPurchaseOrderDetailsActivity";
       } else {
-        navigationArgs[Consts.CALLER_ACTIVITY] = "PurchaseOrderDetailsActivity";
+        args[Consts.CALLER_ACTIVITY] = "PurchaseOrderDetailsActivity";
       }
       final String tag = DateTime.now().millisecondsSinceEpoch.toString();
       Get.to(() => QCDetailsShortFormScreen(tag: tag), arguments: args);

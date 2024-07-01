@@ -342,7 +342,8 @@ class DefectsScreenController extends GetxController {
   }
 
   void addSample() {
-    int setsValue = int.tryParse(sizeOfNewSetTextController.text) ?? 0;
+    int setsValue =
+        (double.tryParse(sizeOfNewSetTextController.text) ?? 0.0).toInt();
 
     final int index = sampleList.length + 1;
 
@@ -1590,7 +1591,7 @@ class DefectsScreenController extends GetxController {
     }
 
     passingData[Consts.FOR_DEFECT_ATTACHMENT] = true;
-
+    passingData[Consts.INSPECTION_ID] = inspectionId;
     final String tag = DateTime.now().millisecondsSinceEpoch.toString();
     var result =
         await Get.to(() => InspectionPhotos(tag: tag), arguments: passingData);
@@ -1620,6 +1621,7 @@ class DefectsScreenController extends GetxController {
     passingData[Consts.VARIETY_NAME] = varietyName;
     passingData[Consts.VARIETY_SIZE] = varietySize;
     passingData[Consts.VARIETY_ID] = varietyId;
+    passingData[Consts.INSPECTION_ID] = inspectionId;
 
     int? sampleId = getSampleID(sampleData.name);
     if (sampleId != null) {

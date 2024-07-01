@@ -292,7 +292,8 @@ class InspectionPhotosController extends GetxController {
   Future<void> loadPicturesFromDB() async {
     List<InspectionAttachment> picsFromDB = [];
     if (appStorage.attachmentIds != null) {
-      hasAttachmentIds = appStorage.attachmentIds!.isNotEmpty ? true : false;
+      hasAttachmentIds =
+          (appStorage.attachmentIds!.isNotEmpty ? true : false) && forDefect;
     }
 
     try {
@@ -300,30 +301,28 @@ class InspectionPhotosController extends GetxController {
         List<int>? attachmentIds = appStorage.attachmentIds;
         if (attachmentIds != null && attachmentIds.isNotEmpty) {
           for (int i = 0; i < attachmentIds.length; i++) {
-            await dao
+            var value = await dao
                 .findAttachmentByAttachmentId(attachmentIds[i])
-                .then((value) {
-              if (value != null) {
-                picsFromDB.add(value);
-              }
-            }).catchError((error) {
+                .catchError((error) {
               debugPrint('Error fetching attachment: $error');
             });
+            if (value != null) {
+              picsFromDB.add(value);
+            }
           }
         }
       } else {
         if (inspectionId > 0) {
-          await dao
-              .findInspectionAttachmentsByInspectionId((inspectionId ?? 0))
-              .then((value) {
-            picsFromDB = value;
-          }).catchError((error) {
+          var value = await dao
+              .findInspectionAttachmentsByInspectionId((inspectionId))
+              .catchError((error) {
             debugPrint('Error in else fetching attachment: $error');
           });
+          picsFromDB = value;
         }
       }
     } catch (e) {
-      debugPrint(e.toString()); // Print any exceptions
+      debugPrint(e.toString());
     }
 
     if (picsFromDB.isNotEmpty) {
