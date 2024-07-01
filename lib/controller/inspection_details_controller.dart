@@ -403,7 +403,7 @@ class InspectionDetailsController extends GetxController {
       SpecificationByItemSKU specificationByItemSKU =
           specificationList[position - 1];
       commodityID = specificationByItemSKU.commodityId;
-      commodityName = specificationByItemSKU.commodityName!;
+      commodityName = specificationByItemSKU.commodityName ?? "";
       varietyName = specificationByItemSKU.itemGroup1Name ?? "";
       varietyId = specificationByItemSKU.itemGroup1Id ?? 0;
       gradeId = specificationByItemSKU.gradeId;
