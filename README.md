@@ -6,7 +6,10 @@ A new Flutter project.
 
 # Automated Android and iOS App Build Script
 
-This script automates the build process for Android and iOS apps, generating APKs and IPAs respectively. It utilizes Flutter for cross-platform development and jq for JSON processing.
+This script automates the build process for Android and iOS apps, generating APKs and IPAs
+respectively. It utilizes Flutter for cross-platform development and jq for JSON processing.
+The script now automatically increments the build number in pubspec.yaml with each build and
+includes OS-specific behavior.
 
 ## Prerequisites
 
@@ -14,10 +17,13 @@ Before running the script, ensure you have the following prerequisites installed
 
 - [Flutter](https://flutter.dev/docs/get-started/install)
 - [jq](https://stedolan.github.io/jq/download/) (for JSON processing)
+- For iOS builds (macOS only):
+    - [Xcode](https://developer.apple.com/xcode/)
+    - [CocoaPods](https://cocoapods.org/)
 
 ## Usage
 
-1. Clone this repository or download the script file.
+1. Clone this repository or download the script file (deploy_script.sh).
 2. Ensure your Flutter environment is set up properly.
 3. Place your Flutter project in the same directory as the script.
 4. Modify the `package_ids` array in the script to include the package IDs of your Flutter apps.
@@ -25,29 +31,36 @@ Before running the script, ensure you have the following prerequisites installed
 
 ```json
 {
-    "ANDROID_APPLICATION_ID": "your_android_application_id",
-    "APP_SUFFIX": "your_app_suffix",
-    "APP_NAME": "your_app_name"
+  "ANDROID_APPLICATION_ID": "your_android_application_id",
+  "APP_NAME": "your_app_name"
 }
 ```
 
-Replace `your_android_application_id`, `your_app_suffix`, and `your_app_name` with the respective values for your app.
+Replace `your_android_application_id` and `your_app_name` with the respective values for your app.
 
-6. Run the script:
+6. Ensure your `pubspec.yaml` file has the correct version and build number set:
+
+```yaml
+version: 1.0.0+1  # Format: <version>+<build_number>
+```
+
+7. Run the script:
 
 ```bash
-./build_script.sh
+./deploy_script.sh
 ```
 
 This script will build both APKs and IPAs for each package ID defined in the `package_ids` array.
 
-Alternatively, to generate APKs specifically, you can run:
+## Output
 
-```bash
-flutter build apk --dart-define-from-file=config.json --profile
-```
+After successful execution, the script will generate:
 
-This command will generate APKs based on the configurations provided in the `config.json` file.
+- Android APK: `output/app/${APP_NAME}_${version}_${build_number}.apk`
+- iOS IPA (macOS only): `output/app/${APP_NAME}_${version}_${build_number}.ipa`
+
+Where `${APP_NAME}` is derived from `config.json`, and `${version}` and `${build_number}` are
+extracted from `pubspec.yaml`.
 
 ## Debugging
 
@@ -57,10 +70,7 @@ If you encounter any issues during the build process, please refer to the follow
 - Double-check the `config.json` file for any syntax errors or missing values.
 - Verify that the package IDs in the `package_ids` array are correct.
 - Check the console output for any error messages during the build process.
-
-## Generating Apps
-
-Once the script has completed successfully, you can find the generated APKs and IPAs in the `build_output` directory. Each app's output is stored in a separate subdirectory named after its package ID.
+- Ensure your `pubspec.yaml` file has the correct version and build number format.
 
 ## Setting Up Run/Debug Configurations
 
@@ -69,24 +79,47 @@ Once the script has completed successfully, you can find the generated APKs and 
 1. Open your Flutter project in Android Studio.
 2. Navigate to "Run" > "Edit Configurations..." from the top menu.
 3. In the "Run/Debug Configurations" dialog, select your Flutter run configuration.
-4. In the "Arguments" field, add `--dart-define-from-file=config.json` as an additional argument.
-5. Click "OK" to save the configuration.
+4. In the "Additional run args" field, add `--dart-define-from-file=config.json`.
+5. Click "Apply" then "OK" to save the configuration.
 
 ### Visual Studio Code:
 
 1. Open your Flutter project in Visual Studio Code.
-2. Navigate to the "Run and Debug" view by clicking on the debug icon in the Activity Bar on the side.
-3. Click on the gear icon to open `launch.json`, which contains your debug configurations.
-4. Find your Flutter debug configuration.
-5. Add `"--dart-define-from-file=config.json"` under the `"args"` section of your configuration.
-6. Save `launch.json`.
+2. Navigate to the "Run and Debug" view (Ctrl+Shift+D or Cmd+Shift+D).
+3. Click on "create a launch.json file" or open the existing one.
+4. Add or modify the Flutter configuration to include:
 
-With these configurations in place, you can easily run and debug your Flutter app on real devices with the specified argument.
+```json
+{
+  "name": "Flutter",
+  "request": "launch",
+  "type": "dart",
+  "args": [
+    "--dart-define-from-file=config.json"
+  ]
+}
+```
+
+5. Save `launch.json`.
 
 ## Notes
 
-- This script assumes a specific project structure and may need modifications to fit your project's layout.
+- This script detects the operating system and adjusts its behavior accordingly.
+- On Windows and Linux, only Android APKs can be built. iOS IPAs require a macOS environment.
+- The script will prompt for confirmation on Windows and Linux before proceeding with Android-only
+  builds.
+- Ensure you have the necessary Android SDK and build tools installed for Android builds on all
+  platforms.
+- For iOS builds on macOS, make sure you have Xcode and CocoaPods properly set up.
+- This script assumes a specific project structure and may need modifications to fit your project's
+  layout.
+- The script now dynamically names the output files based on the app name, version, and build
+  number.
+- For iOS builds, ensure you have run `pod install` in the `ios` directory before running the
+  script, or let the script handle it.
+- The script will continue to the next app if one fails to build, allowing for partial successful
+  builds in a multi-app setup.
 - Customization of build settings and configurations can be done by modifying the script as needed.
-- For more advanced usage and customization, refer to the Flutter and jq documentation.
+- For more advanced usage and customization, refer to the Flutter, jq, and Xcode documentation.
 
 ---

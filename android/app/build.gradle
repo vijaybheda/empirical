@@ -28,15 +28,12 @@ if (flutterVersionName == null) {
 }
 
 def dartEnvironmentVariables = [
-   APP_NAME: project.hasProperty('APP_NAME')
-           ? APP_NAME
-           : 'Pverify',
-   APP_SUFFIX: project.hasProperty('APP_SUFFIX')
-           ? APP_SUFFIX
-           : null,
-    APPLICATION_ID: project.hasProperty('ANDROID_APPLICATION_ID')
-           ? ANDROID_APPLICATION_ID
-           : "com.trt.verify"
+        APP_NAME      : project.hasProperty('APP_NAME')
+                ? APP_NAME
+                : 'Pverify',
+        APPLICATION_ID: project.hasProperty('ANDROID_APPLICATION_ID')
+                ? ANDROID_APPLICATION_ID
+                : "com.trt.verify"
 ];
 
 def keystoreProperties = new Properties()
@@ -64,7 +61,7 @@ android {
 
     defaultConfig {
         applicationId dartEnvironmentVariables.APPLICATION_ID
-        applicationIdSuffix dartEnvironmentVariables.APP_SUFFIX
+//        applicationIdSuffix dartEnvironmentVariables.APP_SUFFIX
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 23
@@ -76,12 +73,12 @@ android {
     }
 
     signingConfigs {
-       release {
-           keyAlias keystoreProperties['keyAlias']
-           keyPassword keystoreProperties['keyPassword']
-           storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-           storePassword keystoreProperties['storePassword']
-       }
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword keystoreProperties['storePassword']
+        }
     }
 
     buildTypes {
@@ -90,7 +87,7 @@ android {
         }
 
         release {
-           signingConfig signingConfigs.release
+            signingConfig signingConfigs.release
         }
     }
 }
@@ -100,5 +97,5 @@ flutter {
 }
 
 dependencies {
-    implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }
