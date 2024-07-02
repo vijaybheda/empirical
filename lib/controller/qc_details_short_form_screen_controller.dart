@@ -20,6 +20,7 @@ import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
 import 'package:pverify/ui/Home/home.dart';
 import 'package:pverify/ui/defects/defects_screen.dart';
+import 'package:pverify/ui/defects/table_dialog.dart';
 import 'package:pverify/ui/inspection_details/inspection_details_screen.dart';
 import 'package:pverify/ui/inspection_photos/inspection_photos_screen.dart';
 import 'package:pverify/ui/long_form_quality_control_screen.dart';
@@ -1342,12 +1343,11 @@ class QCDetailsShortFormScreenController extends GetxController {
     _appStorage.specificationGradeToleranceTable =
         await dao.getSpecificationGradeTolerance(
             specificationNumber!, specificationVersion!);
-
-    // TODO: Implement below code
-    /*SpecTolearanceTableDialog customDialog2 = SpecTolearanceTableDialog(QC_Details_short_form.this, context,
-        specificationNumber, specificationVersion);
-    customDialog2.show();
-    customDialog2.setCanceledOnTouchOutside(false);*/
+    showDialog(
+        context: Get.context!,
+        builder: (BuildContext context) {
+          return tableDialog(context);
+        });
   }
 
   Future deleteInspectionAndGotoMyInspectionScreen() async {

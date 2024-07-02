@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
@@ -27,6 +28,7 @@ class WSUploadInspection {
 
   final GlobalConfigController globalConfigController =
       Get.find<GlobalConfigController>();
+
   WSUploadInspection();
 
   Future<Map<String, dynamic>> requestUpload(int inspectionId) async {
@@ -275,16 +277,16 @@ class WSUploadInspection {
                   await dao.findDefectAttachmentsByDefectId(
                           defectItem.inspectionDefectId!) ??
                       [];
+              List<Map<String, dynamic>> defectsAttachmentArray = [];
               if (attachmentList.isNotEmpty) {
-                List<Map<String, dynamic>> defectsAttachmentArray = [];
                 for (InspectionDefectAttachment attachment in attachmentList) {
                   Map<String, dynamic> dd_obj = {
                     'localPictureId': attachment.attachmentId,
                   };
                   defectsAttachmentArray.add(dd_obj);
                 }
-                d_obj['inspectionDefectAttachments'] = defectsAttachmentArray;
               }
+              d_obj['inspectionDefectAttachments'] = defectsAttachmentArray;
               defectsArray.add(d_obj);
             }
           }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pverify/controller/defects_screen_controller.dart';
 import 'package:pverify/models/inspection_defect.dart';
@@ -93,10 +94,7 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
             ],
           ),
         ),
-        (controller.defectDataMap[
-                        controller.sampleList.elementAt(sampleIndex).name] ??
-                    [])
-                .isNotEmpty
+        Obx(() => hasDefects()
             ? Column(
                 children: [
                   SizedBox(height: 50.h),
@@ -108,7 +106,7 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
                   )
                 ],
               )
-            : const SizedBox(),
+            : const SizedBox()),
         ListView.separated(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -153,6 +151,11 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
       ],
     );
   }
+
+  bool hasDefects() => (controller.defectDataMap[
+              controller.sampleList.elementAt(sampleIndex).name] ??
+          [])
+      .isNotEmpty;
 
   Widget defectCategoryTagRow(DefectsScreenController defectsScreenController) {
     TextStyle textStyle = TextStyle(

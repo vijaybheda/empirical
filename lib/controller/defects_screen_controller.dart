@@ -232,53 +232,31 @@ class DefectsScreenController extends GetxController {
 
     Future.delayed(const Duration(milliseconds: 10)).then((value) async {
       populateSeverityList();
-      /*if (appStorage.severityList != null) {
-        for (var severity in appStorage.severityList!) {
-          if (severity.name == "Injury" || severity.name == "Lesión") {
-            hasSeverityInjury = true;
-            defectList.elementAt(pos).severityInjuryId = severity.id;
-          } else if (severity.name == "Damage" || severity.name == "Daño") {
-            hasSeverityDamage = true;
-            defectList.elementAt(pos).severityDamageId = severity.id;
-          } else if (severity.name == "Serious Damage" ||
-              severity.name == "Daño Serio") {
-            hasSeveritySeriousDamage = true;
-            defectList.elementAt(pos).severitySeriousDamageId = severity.id;
-          } else if (severity.name == "Very Serious Damage" ||
-              severity.name == "Daño Muy Serio") {
-            hasSeverityVerySeriousDamage = true;
-            defectList.elementAt(pos).severityVerySeriousDamageId = severity.id;
-          } else if (severity.name == "Decay" || severity.name == "Pudrición") {
-            hasSeverityDecay = true;
-            defectList.elementAt(pos).severityDecayId = severity.id;
-          }
-        }
-      }*/
+      assignBoolValues();
       await setInit();
-      /*if (appStorage.severityList != null) {
-        for (Severity severity in appStorage.severityList!) {
-          if (severity.name == "Injury" || severity.name == "Lesión") {
-            hasSeverityInjury = true;
-            defectList.elementAt(pos).severityInjuryId = severity.id;
-          } else if (severity.name == "Damage" || severity.name == "Daño") {
-            hasSeverityDamage = true;
-            defectList.elementAt(pos).severityDamageId = severity.id;
-          } else if (severity.name == "Serious Damage" ||
-              severity.name == "Daño Serio") {
-            hasSeveritySeriousDamage = true;
-            defectList.elementAt(pos).severitySeriousDamageId = severity.id;
-          } else if (severity.name == "Very Serious Damage" ||
-              severity.name == "Daño Muy Serio") {
-            hasSeverityVerySeriousDamage = true;
-            defectList.elementAt(pos).severityVerySeriousDamageId = severity.id;
-          } else if (severity.name == "Decay" || severity.name == "Pudrición") {
-            hasSeverityDecay = true;
-            defectList.elementAt(pos).severityDecayId = severity.id;
-          }
-        }
-      }*/
+      assignBoolValues();
       update();
     });
+  }
+
+  void assignBoolValues() {
+    if (appStorage.severityList != null) {
+      for (Severity severity in appStorage.severityList!) {
+        if (severity.name == "Injury" || severity.name == "Lesión") {
+          hasSeverityInjury = true;
+        } else if (severity.name == "Damage" || severity.name == "Daño") {
+          hasSeverityDamage = true;
+        } else if (severity.name == "Serious Damage" ||
+            severity.name == "Daño Serio") {
+          hasSeveritySeriousDamage = true;
+        } else if (severity.name == "Very Serious Damage" ||
+            severity.name == "Daño Muy Serio") {
+          hasSeverityVerySeriousDamage = true;
+        } else if (severity.name == "Decay" || severity.name == "Pudrición") {
+          hasSeverityDecay = true;
+        }
+      }
+    }
   }
 
   Future<void> setInit() async {
@@ -289,10 +267,11 @@ class DefectsScreenController extends GetxController {
             specificationNumber!, specificationVersion!);
     getDefectCategories();
 
-    loadSamplesAndDefectsFromDB();
+    await loadSamplesAndDefectsFromDB();
+    update();
   }
 
-  void loadSamplesAndDefectsFromDB() async {
+  Future<void> loadSamplesAndDefectsFromDB() async {
     bool hasDefects = false;
 
     // Load samples from DB
@@ -1479,6 +1458,7 @@ class DefectsScreenController extends GetxController {
     }
     dataEntered = false;
     dataSaved = true;
+    update();
   }
 
   String getKeyFromIndex(int index, int samples) {
@@ -1806,6 +1786,7 @@ class DefectsScreenController extends GetxController {
 
     print(
         'totalInjury: $totalInjury totalDamage: $totalDamage totalSeriousDamage: $totalSeriousDamage totalVerySeriousDamage: $totalVerySeriousDamage totalDecay: $totalDecay');
+    update();
   }
 
   String getTotalColorDecay() {
