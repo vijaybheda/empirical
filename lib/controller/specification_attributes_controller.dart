@@ -662,8 +662,44 @@ class SpecificationAttributesController extends GetxController {
   }
 
   void onBackButtonClick() {
-    Get.back();
-    Get.back();
-    Get.back();
+    // Get.back();
+    // Get.back();
+    // Get.back();
+
+    Map<String, dynamic> passingData = {
+      Consts.SERVER_INSPECTION_ID: -1,
+      Consts.PARTNER_NAME: partnerName,
+      Consts.PARTNER_ID: partnerID,
+      Consts.CARRIER_NAME: carrierName,
+      Consts.CARRIER_ID: carrierID,
+      Consts.COMMODITY_NAME: commodityName,
+      Consts.COMMODITY_ID: commodityID,
+      Consts.SPECIFICATION_NUMBER: specificationNumber,
+      Consts.SPECIFICATION_VERSION: specificationVersion,
+      Consts.SPECIFICATION_NAME: selectedSpecification,
+      Consts.SPECIFICATION_TYPE_NAME: specificationTypeName,
+      Consts.ITEM_SKU: itemSKU,
+      Consts.ITEM_SKU_NAME: itemSkuName,
+      Consts.ITEM_SKU_ID: itemSkuId,
+      Consts.ITEM_UNIQUE_ID: itemUniqueId,
+      Consts.LOT_NO: lotNo,
+      Consts.GTIN: gtin,
+      Consts.PACK_DATE: packDate,
+      Consts.LOT_SIZE: lotSize,
+      Consts.IS_MY_INSPECTION_SCREEN: isMyInspectionScreen,
+      Consts.PO_NUMBER: poNumber,
+      Consts.PRODUCT_TRANSFER: productTransfer,
+      Consts.DATETYPE: dateTypeDesc,
+    };
+
+    if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+      final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+      Get.to(() => NewPurchaseOrderDetailsScreen(tag: tag),
+          arguments: passingData);
+    } else {
+      final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+      Get.to(() => PurchaseOrderDetailsScreen(tag: tag),
+          arguments: passingData);
+    }
   }
 }
