@@ -692,7 +692,10 @@ class SpecificationAttributesController extends GetxController {
       Consts.DATETYPE: dateTypeDesc,
     };
 
-    if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+    if (isMyInspectionScreen ?? false) {
+      final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+      Get.offAll(() => Home(tag: tag));
+    } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
       final String tag = DateTime.now().millisecondsSinceEpoch.toString();
       Get.to(() => NewPurchaseOrderDetailsScreen(tag: tag),
           arguments: passingData);

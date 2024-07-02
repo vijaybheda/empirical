@@ -194,8 +194,6 @@ class QCDetailsShortFormScreenController extends GetxController {
         });
       }
     });
-
-    setUOMSpinner();
     super.onInit();
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       await specificationSelection();
@@ -522,7 +520,7 @@ class QCDetailsShortFormScreenController extends GetxController {
 
   Future<void> loadFieldsFromDB() async {
     qualityControlItems = await dao.findQualityControlDetails(inspectionId!);
-
+    setUOMSpinner();
     if (_appStorage.getUserData() != null) {
       List<PurchaseOrderDetails> purchaseOrderDetails =
           await dao.getPODetailsFromTable(

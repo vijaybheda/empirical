@@ -11,6 +11,7 @@ import 'package:pverify/models/quality_control_item.dart';
 import 'package:pverify/models/reason_item.dart';
 import 'package:pverify/models/uom_item.dart';
 import 'package:pverify/services/database/application_dao.dart';
+import 'package:pverify/ui/Home/home.dart';
 import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
 import 'package:pverify/ui/qc_short_form/qc_details_short_form_screen.dart';
@@ -1034,7 +1035,10 @@ class LongFormQualityControlScreenController extends GetxController {
       Consts.CALLER_ACTIVITY: callerActivity,
     };
     final String tag = DateTime.now().millisecondsSinceEpoch.toString();
-    if (callerActivity == "NewPurchaseOrderDetailsActivity") {
+    if (isMyInspectionScreen ?? false) {
+      final String tag = DateTime.now().millisecondsSinceEpoch.toString();
+      Get.offAll(() => Home(tag: tag));
+    } else if (callerActivity == "NewPurchaseOrderDetailsActivity") {
       passingData[Consts.CALLER_ACTIVITY] = 'QCDetailsShortForm';
       Get.offAll(
         () => NewPurchaseOrderDetailsScreen(tag: tag),
