@@ -132,15 +132,15 @@ class HomeController extends GetxController {
     if (isSelectAll) {
       List<MyInspection48HourItem> selectedItems =
           itemsList.where((item) => item.uploadStatus == 1).toList();
-      if (selectedItems.length != selectedIDsInspection.length) {
+      if (selectedIDsInspection.length == selectedItems.length) {
+        selectedIDsInspection.clear();
+        uploadCheckedList.clear();
+      } else {
         selectedIDsInspection.clear();
         selectedIDsInspection.addAll(selectedItems);
         uploadCheckedList.clear();
         uploadCheckedList
             .addAll(selectedItems.map((item) => item.inspectionId!));
-      } else {
-        selectedIDsInspection.clear();
-        uploadCheckedList.clear();
       }
       completeAllCheckbox.value = selectedIDsInspection.length ==
           itemsList.where((item) => item.uploadStatus == 1).length;
