@@ -1,3 +1,5 @@
+---
+
 # pverify
 
 A new Flutter project.
@@ -7,9 +9,9 @@ A new Flutter project.
 # Automated Android and iOS App Build Script
 
 This script automates the build process for Android and iOS apps, generating APKs and IPAs
-respectively. It utilizes Flutter for cross-platform development and jq for JSON processing.
-The script now automatically increments the build number in pubspec.yaml with each build and
-includes OS-specific behavior.
+respectively. It utilizes Flutter for cross-platform development and jq for JSON processing. The
+script now automatically increments the build number in pubspec.yaml with each build and includes
+OS-specific behavior.
 
 ## Prerequisites
 
@@ -17,17 +19,18 @@ Before running the script, ensure you have the following prerequisites installed
 
 - [Flutter](https://flutter.dev/docs/get-started/install)
 - [jq](https://stedolan.github.io/jq/download/) (for JSON processing)
+- [Transporter](https://apps.apple.com/us/app/transporter/id1450874784) (iOS App Deployment -
+  Transporter)
 - For iOS builds (macOS only):
     - [Xcode](https://developer.apple.com/xcode/)
     - [CocoaPods](https://cocoapods.org/)
 
 ## Usage
 
-1. Clone this repository or download the script file (deploy_script.sh).
+1. Clone this repository or download the script file (`deploy_script.sh`).
 2. Ensure your Flutter environment is set up properly.
 3. Place your Flutter project in the same directory as the script.
-4. Modify the `package_ids` array in the script to include the package IDs of your Flutter apps.
-5. Create a `config.json` file in the same directory as the script with the following structure:
+4. Create a `config.json` file in the same directory as the script with the following structure:
 
 ```json
 {
@@ -38,26 +41,26 @@ Before running the script, ensure you have the following prerequisites installed
 
 Replace `your_android_application_id` and `your_app_name` with the respective values for your app.
 
-6. Ensure your `pubspec.yaml` file has the correct version and build number set:
+5. Ensure your `pubspec.yaml` file has the correct version and build number set:
 
 ```yaml
 version: 1.0.0+1  # Format: <version>+<build_number>
 ```
 
-7. Run the script:
+6. Run the script:
 
 ```bash
 ./deploy_script.sh
 ```
 
-This script will build both APKs and IPAs for each package ID defined in the `package_ids` array.
+This script will build both APKs and IPAs for the defined application IDs and app names.
 
 ## Output
 
 After successful execution, the script will generate:
 
-- Android APK: `output/app/${APP_NAME}_${version}_${build_number}.apk`
-- iOS IPA (macOS only): `output/app/${APP_NAME}_${version}_${build_number}.ipa`
+- **Android APK:** `output/app/${APP_NAME}_${version}_${build_number}.apk`
+- **iOS IPA (macOS only):** `output/app/${APP_NAME}_${version}_${build_number}.ipa`
 
 Where `${APP_NAME}` is derived from `config.json`, and `${version}` and `${build_number}` are
 extracted from `pubspec.yaml`.
@@ -68,7 +71,7 @@ If you encounter any issues during the build process, please refer to the follow
 
 - Ensure all prerequisites are installed correctly.
 - Double-check the `config.json` file for any syntax errors or missing values.
-- Verify that the package IDs in the `package_ids` array are correct.
+- Verify that the package IDs and app names are correctly defined.
 - Check the console output for any error messages during the build process.
 - Ensure your `pubspec.yaml` file has the correct version and build number format.
 
@@ -113,8 +116,7 @@ If you encounter any issues during the build process, please refer to the follow
 - For iOS builds on macOS, make sure you have Xcode and CocoaPods properly set up.
 - This script assumes a specific project structure and may need modifications to fit your project's
   layout.
-- The script now dynamically names the output files based on the app name, version, and build
-  number.
+- The script dynamically names the output files based on the app name, version, and build number.
 - For iOS builds, ensure you have run `pod install` in the `ios` directory before running the
   script, or let the script handle it.
 - The script will continue to the next app if one fails to build, allowing for partial successful
