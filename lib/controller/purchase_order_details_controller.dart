@@ -3299,7 +3299,7 @@ class PurchaseOrderDetailsController extends GetxController {
         String currentPackDate = packDate;
         int currentItemSKUId = finishedGoodsItemSKU.id!;
         String currentUniqueId = finishedGoodsItemSKU.uniqueItemId!;
-        // int? currentCommodityId = finishedGoodsItemSKU.commodityID;
+        int? currentCommodityId = finishedGoodsItemSKU.commodityID;
         String currentCommodityName = finishedGoodsItemSKU.commodityName!;
         String? currentGtin = finishedGoodsItemSKU.gtin;
         String? dateType = finishedGoodsItemSKU.dateType;
@@ -3368,8 +3368,8 @@ class PurchaseOrderDetailsController extends GetxController {
           passigData[Consts.PACK_DATE] = currentPackDate;
           passigData[Consts.COMPLETED] = isComplete;
           passigData[Consts.PARTIAL_COMPLETED] = ispartialComplete;
-          // passigData[Consts.COMMODITY_ID] = currentCommodityId;
-          passigData[Consts.COMMODITY_ID] = commodityID;
+          passigData[Consts.COMMODITY_ID] = currentCommodityId;
+          // passigData[Consts.COMMODITY_ID] = commodityID;
           passigData[Consts.COMMODITY_NAME] = currentCommodityName;
           passigData[Consts.ITEM_UNIQUE_ID] = currentUniqueId;
           passigData[Consts.GTIN] = currentGtin;
