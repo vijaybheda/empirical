@@ -13,36 +13,11 @@ import 'package:pverify/utils/dialogs/app_alerts.dart';
 import 'package:pverify/utils/theme/colors.dart';
 
 class InspectionPhotos extends GetView<InspectionPhotosController> {
-  // final String? partnerName;
-  // final String? partnerID;
-  // final String? carrierName;
-  // final String? carrierID;
-  // final String? commodityName;
-  // final int? commodityID;
-  // final String? varietyName;
-  // final String? varietySize;
-  // final String? varietyId;
-  // final bool? isViewOnlyMode;
-  // final int? inspectionId;
-  // final String? callerActivity;
-
   final String? tag;
 
   const InspectionPhotos({
     super.key,
     required this.tag,
-    // this.partnerName,
-    // this.partnerID,
-    // this.carrierName,
-    // this.carrierID,
-    // this.commodityName,
-    // this.commodityID,
-    // this.varietyName,
-    // this.varietySize,
-    // this.varietyId,
-    // this.isViewOnlyMode,
-    // this.inspectionId,
-    // this.callerActivity,
   });
 
   @override

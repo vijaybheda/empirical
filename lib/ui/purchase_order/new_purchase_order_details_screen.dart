@@ -281,7 +281,8 @@ class NewPurchaseOrderDetailsScreen
   }
 
   Widget _footerMenuView(NewPurchaseOrderDetailsController controller) {
-    return Padding(
+    return Container(
+      color: AppColors.grey2,
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

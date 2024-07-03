@@ -214,6 +214,16 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
                 textStyle: textStyle,
               ),
             )),
+        SizedBox(width: 10.w),
+        Flexible(
+            flex: defectsScreenController.hasSeverityVerySeriousDamage ? 1 : 0,
+            child: Visibility(
+              visible: defectsScreenController.hasSeverityVerySeriousDamage,
+              child: defectCategoryTag(
+                tag: AppStrings.defectVsd,
+                textStyle: textStyle,
+              ),
+            )),
         Container(width: 280.w),
       ],
     );
@@ -224,7 +234,7 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
       decoration: BoxDecoration(
           border: Border.all(color: AppColors.lightGrey),
           borderRadius: BorderRadius.circular(15)),
-      width: 80.w,
+      width: getWidth(tag),
       child: Text(
           textAlign: TextAlign.center,
           tag,
@@ -236,5 +246,15 @@ class _SampleSetWidgetState extends State<SampleSetWidget> {
             ),
           ).merge(textStyle)),
     );
+  }
+
+  double getWidth(String tag) {
+    if (tag.length > 2) {
+      return 90.w;
+    } else if (tag.length > 1) {
+      return 80.w;
+    } else {
+      return 70.w;
+    }
   }
 }

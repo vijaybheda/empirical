@@ -119,7 +119,7 @@ class _NewPurchaseOrderListViewItemState
   bool layoutQuantityRejectedVisibility = false;
   String poNumberString = '';
   bool poNumberVisibility = true;
-  String isBranded = '';
+  String isBranded = 'No';
 
   Icon inspectButtonIcon = Icon(
     Icons.play_arrow_rounded,
@@ -199,7 +199,7 @@ class _NewPurchaseOrderListViewItemState
         children: [
           Container(
             color: layoutPurchaseOrderColor,
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+            padding: const EdgeInsets.only(left: 5, top: 3, bottom: 3),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,7 +221,7 @@ class _NewPurchaseOrderListViewItemState
                         )),
                   ),
                 ),
-                SizedBox(width: 8),
+                SizedBox(width: 4),
                 Expanded(
                   flex: flexList[1],
                   child: Text(widget.goodsItem.description ?? '',
@@ -232,7 +232,7 @@ class _NewPurchaseOrderListViewItemState
                         fontWeight: FontWeight.w700,
                       )),
                 ),
-                SizedBox(width: 8),
+                SizedBox(width: 4),
                 Expanded(
                   flex: flexList[2],
                   child: Column(
@@ -305,7 +305,6 @@ class _NewPurchaseOrderListViewItemState
                     ],
                   ),
                 ),
-                // SizedBox(width: 8),
                 Expanded(
                   flex: flexList[3],
                   child: Row(

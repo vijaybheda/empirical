@@ -52,13 +52,13 @@ get_version_info() {
     echo "${version}_${build_number}"
 }
 
-# Define platform-specific package IDs and app names
-android_package_id="com.shareify.inspections"
-ios_package_id="com.trt.verify"
-app_name="Ver-ify"
+# Extract values from config.json
+CONFIG_JSON_PATH="$(dirname "${BASH_SOURCE[0]}")/config.json"
+android_package_id=$(jq -r '.ANDROID_APPLICATION_ID' $CONFIG_JSON_PATH)
+ios_package_id=$(jq -r '.IOS_BUNDLE_ID' $CONFIG_JSON_PATH)
+app_name=$(jq -r '.APP_NAME' $CONFIG_JSON_PATH)
 
 # Define common paths
-CONFIG_JSON_PATH="$(dirname "${BASH_SOURCE[0]}")/config.json"
 output_dir="output/app"
 
 info "Starting build process for $app_name..."

@@ -180,12 +180,12 @@ class InspectionPhotosController extends GetxController {
         ));
   }
 
-  removeImage(int index) {
+  void removeImage(int index) {
     imagesList.removeAt(index);
     imagesListBackup.removeAt(index);
   }
 
-  updateContent(int index, String title) {
+  void updateContent(int index, String title) {
     var data = imagesList[index];
     imagesList.removeAt(index);
     PictureData pictureData = PictureData(
@@ -356,7 +356,7 @@ class InspectionPhotosController extends GetxController {
         } else if (hasAttachmentIds) {
           List<int> attachmentIds = appStorage.attachmentIds ?? [];
           if (attachmentIds.isNotEmpty) {
-            for (var id in attachmentIds) {
+            for (int id in attachmentIds) {
               InspectionDefectAttachment? inspectionDefectAttachment =
                   await dao.findDefectAttachmentByAttachmentId(id);
               if (inspectionDefectAttachment != null) {
@@ -371,7 +371,7 @@ class InspectionPhotosController extends GetxController {
     }
 
     if (picsFromDB.isNotEmpty) {
-      for (var pic in picsFromDB) {
+      for (InspectionDefectAttachment pic in picsFromDB) {
         PictureData temp = PictureData();
         temp.setData(pic.attachmentId, pic.fileLocation, true,
             File(pic.fileLocation.toString()));

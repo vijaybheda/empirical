@@ -33,28 +33,10 @@ class _DefectItemWidgetState extends State<DefectItemWidget> {
 
   @override
   Widget build(BuildContext context) {
+    controller.assignBoolValues();
     String? comment =
         controller.sampleList[sampleIndex].defectItems[defectItemIndex].comment;
-    // String? comment = controller.getComment(sampleIndex);
     bool hasComment = comment != null && comment.isNotEmpty;
-    if (controller.appStorage.severityList != null) {
-      for (var severity in controller.appStorage.severityList!) {
-        if (severity.name == "Injury" || severity.name == "Lesión") {
-          controller.hasSeverityInjury = true;
-        } else if (severity.name == "Damage" || severity.name == "Daño") {
-          controller.hasSeverityDamage = true;
-        } else if (severity.name == "Serious Damage" ||
-            severity.name == "Daño Serio") {
-          controller.hasSeveritySeriousDamage = true;
-        } else if (severity.name == "Very Serious Damage" ||
-            severity.name == "Daño Muy Serio") {
-          controller.hasSeverityVerySeriousDamage = true;
-        } else if (severity.name == "Decay" || severity.name == "Pudrición") {
-          controller.hasSeverityDecay = true;
-        }
-      }
-    }
-
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 50.w),
       child: Container(

@@ -299,7 +299,7 @@ class QualityControlController extends GetxController {
         'carrierName': carrierName,
         'carrierId': carrierID,
         'poNumber': poNumber,
-        'callerActivity': 'QualityControlHeaderActivity',
+        Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
       };
       Get.to(() => NewPurchaseOrderDetailsScreen(tag: tag),
           arguments: arguments);
@@ -310,7 +310,7 @@ class QualityControlController extends GetxController {
         'carrierName': carrierName,
         'carrierId': carrierID,
         'poNumber': poNumber,
-        'callerActivity': 'QualityControlHeaderActivity',
+        Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
       };
       Get.to(() => PurchaseOrderDetailsScreen(tag: tag), arguments: arguments);
     }
