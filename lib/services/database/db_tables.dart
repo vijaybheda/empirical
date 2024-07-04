@@ -4,6 +4,7 @@ final class DBTables {
   DBTables();
 
   static const USER = "User";
+  static const DUMMY = "DUMMY";
   static const USER_OFFLINE = "UserOffline";
   static const INSPECTION = "Inspection";
   static const INSPECTION_ATTACHMENT = "Inspection_Attachment";

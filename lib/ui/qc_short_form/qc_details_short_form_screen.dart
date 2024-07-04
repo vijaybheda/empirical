@@ -11,6 +11,7 @@ import 'package:pverify/ui/qc_short_form/spec_analytical_table.dart';
 import 'package:pverify/ui/side_drawer.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
+import 'package:pverify/utils/extensions/int_extension.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
@@ -18,6 +19,7 @@ import 'package:pverify/utils/utils.dart';
 class QCDetailsShortFormScreen
     extends GetWidget<QCDetailsShortFormScreenController> {
   final String tag;
+
   const QCDetailsShortFormScreen({super.key, required this.tag});
 
   @override
@@ -265,11 +267,11 @@ class QCDetailsShortFormScreen
   Widget worksheetWidget(
       QCDetailsShortFormScreenController controller, BuildContext context) {
     return customButton(
-        backgroundColor:
-            (controller.specificationTypeName != "Finished Goods Produce" &&
-                    controller.specificationTypeName != "Raw Produce")
-                ? AppColors.grey2
-                : AppColors.white,
+        backgroundColor: (!controller.specificationTypeName
+                    .equals("Finished Goods Produce") &&
+                !controller.specificationTypeName.equals("Raw Produce"))
+            ? AppColors.grey2
+            : AppColors.white,
         title: AppStrings.inspectionWorksheet,
         width: (MediaQuery.of(context).size.width / 2.5),
         height: 115,

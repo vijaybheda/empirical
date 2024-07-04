@@ -119,7 +119,7 @@ class _NewPurchaseOrderListViewItemState
   bool layoutQuantityRejectedVisibility = false;
   String poNumberString = '';
   bool poNumberVisibility = true;
-  String isBranded = 'No';
+  String isBranded = '';
 
   Icon inspectButtonIcon = Icon(
     Icons.play_arrow_rounded,
@@ -146,12 +146,14 @@ class _NewPurchaseOrderListViewItemState
 
   @override
   void initState() {
-    poLineNo = currentInspectionsItem.poLineNo ?? 0;
-    isCheckedList = List<bool>.filled(controller.originalData.length, false);
+    poLineNo = currentNewPurchaseItem.poLineNo ?? 0;
+    isCheckedList =
+        List<bool>.filled(controller.filteredInspectionsList.length, false);
     _qtyShippedController = TextEditingController();
     _qtyRejectedController = TextEditingController();
 
-    if (controller.originalData.elementAtOrNull(position)?.ftl == '1') {
+    if (controller.filteredInspectionsList.elementAtOrNull(position)?.ftl ==
+        '1') {
       poNumberVisibility = true;
       poNumberString = "FTL";
     } else {
@@ -319,9 +321,10 @@ class _NewPurchaseOrderListViewItemState
                         allowHalfRating: false,
                         itemCount: 5,
                         itemSize: 35,
+                        unratedColor: AppColors.grey2,
                         itemBuilder: (context, _) => Icon(
                           Icons.star,
-                          color: AppColors.yellow,
+                          color: AppColors.black,
                           size: 35,
                         ),
                         onRatingUpdate: (value) async {
@@ -1775,10 +1778,10 @@ class _NewPurchaseOrderListViewItemState
 
     if (isValid) {
       if (isComplete || isPartialComplete || !checkItemSKUAndLot) {
-        String? current_lot_number = currentInspectionsItem.lotNumber;
-        String? current_Item_SKU = currentInspectionsItem.sku;
-        String? current_Item_SKU_Name = currentInspectionsItem.description;
-        String? current_pack_Date = currentInspectionsItem.packDate;
+        String? current_lot_number = currentNewPurchaseItem.lotNumber;
+        String? current_Item_SKU = currentNewPurchaseItem.sku;
+        String? current_Item_SKU_Name = currentNewPurchaseItem.description;
+        String? current_pack_Date = currentNewPurchaseItem.packDate;
         int? current_Item_SKU_Id = selectedItemSKUList[position].id;
         String? current_unique_id = selectedItemSKUList[position].uniqueItemId;
         int? current_commodity_id = selectedItemSKUList[position].commodityID;
@@ -1802,14 +1805,14 @@ class _NewPurchaseOrderListViewItemState
 
         if (!isComplete && !isPartialComplete) {
           selectedItemSKUList[position].lotNo = current_lot_number;
-          selectedItemSKUList[position].poNo = currentInspectionsItem.poNumber;
+          selectedItemSKUList[position].poNo = currentNewPurchaseItem.poNumber;
         }
 
         appStorage.specificationByItemSKUList =
             await dao.getSpecificationByItemSKUFromTable(
-                currentInspectionsItem.partnerId!,
-                currentInspectionsItem.sku!,
-                currentInspectionsItem.sku!);
+                currentNewPurchaseItem.partnerId!,
+                currentNewPurchaseItem.sku!,
+                currentNewPurchaseItem.sku!);
 
         if (specificationByItemSKUList != null &&
             (specificationByItemSKUList ?? []).isNotEmpty) {
@@ -1829,11 +1832,11 @@ class _NewPurchaseOrderListViewItemState
         if (specificationByItemSKUList != null &&
             (specificationByItemSKUList ?? []).isNotEmpty) {
           bool isComplete = await dao.isInspectionComplete(
-              currentInspectionsItem.partnerId!,
+              currentNewPurchaseItem.partnerId!,
               current_Item_SKU!,
               current_unique_id);
           bool ispartialComplete = await dao.isInspectionPartialComplete(
-              currentInspectionsItem.partnerId!,
+              currentNewPurchaseItem.partnerId!,
               current_Item_SKU,
               current_unique_id!);
 
@@ -1891,14 +1894,11 @@ class _NewPurchaseOrderListViewItemState
   }
 
   NewPurchaseOrderItem get currentNewPurchaseItem =>
-      controller.originalData.elementAt(position);
+      controller.filteredInspectionsList.elementAt(position);
 
   List<SpecificationByItemSKU>? get specificationByItemSKUList =>
       appStorage.specificationByItemSKUList;
 
   List<FinishedGoodsItemSKU> get selectedItemSKUList =>
       appStorage.selectedItemSKUList;
-
-  NewPurchaseOrderItem get currentInspectionsItem =>
-      controller.filteredInspectionsList[position];
 }

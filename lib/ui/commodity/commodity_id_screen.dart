@@ -51,11 +51,7 @@ class CommodityIDScreen extends GetWidget<CommodityIDScreenController> {
                 ),
                 const _SearchGradingStandardWidget(),
                 Expanded(flex: 10, child: _commodityListSection(context)),
-                FooterContentView(
-                  onDownloadTap: () {
-                    controller.onDownloadTap();
-                  },
-                )
+                FooterContentView()
               ],
             ),
           );

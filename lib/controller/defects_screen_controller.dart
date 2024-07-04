@@ -650,16 +650,6 @@ class DefectsScreenController extends GetxController {
       }
     }
 
-    // TODO: uncomment this
-    /*if (instruction != null && instruction.isNotEmpty) {
-      informationIcon.backgroundImage =
-          const AssetImage(AppImages.ic_information);
-      informationIcon.enabled = true;
-    } else {
-      informationIcon.backgroundImage =
-          const AssetImage(AppImages.ic_informationDisabled);
-      informationIcon.enabled = false;
-    }*/
     update();
   }
 
@@ -675,36 +665,6 @@ class DefectsScreenController extends GetxController {
       sampleList.refresh();
       update();
     }
-
-    /*showDialog(
-      context: Get.context!,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(isViewOnlyMode ? 'View Defect Comment' : 'Add Comment'),
-          content: TextField(
-            controller: commentController,
-            decoration:
-                const InputDecoration(hintText: "Enter your comment here"),
-            enabled: !isViewOnlyMode,
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-
-              },
-            ),
-            if (!isViewOnlyMode)
-              TextButton(
-                child: const Text('Cancel'),
-                onPressed: () {
-                  Get.back();
-                },
-              ),
-          ],
-        );
-      },
-    );*/
   }
 
   String getCommentsForSample(String key) {
@@ -891,14 +851,6 @@ class DefectsScreenController extends GetxController {
       informationIconEnabled.value = false;
       return false;
     }
-  }
-
-  void showPopup() {
-    // isVisibleInfoPopup.value = true;
-  }
-
-  void hidePopup() {
-    // isVisibleInfoPopup.value = false;
   }
 
   Future onSpecialInstrMenuTap() async {

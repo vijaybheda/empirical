@@ -10,11 +10,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pverify/controller/global_config_controller.dart';
 import 'package:pverify/services/database/application_dao.dart';
-import 'package:pverify/ui/cache_download_screen.dart';
+import 'package:pverify/services/upload_inspections.dart';
 import 'package:pverify/ui/login_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
-import 'package:pverify/utils/dialogs/update_data_dialog.dart';
 import 'package:pverify/utils/dialogs/user_logout.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -103,21 +102,12 @@ class FooterContentView extends StatelessWidget {
                         if (onDownloadTap != null) {
                           onDownloadTap!();
                         } else {
-                          if (globalConfigController.hasStableInternet.value) {
-                            UpdateDataAlert.showUpdateDataDialog(
-                              context,
-                              onOkPressed: () {
-                                debugPrint('Download button tap.');
-                                Get.off(() => const CacheDownloadScreen());
-                              },
-                              message: AppStrings.updateDataConfirmation,
-                            );
-                          } else {
-                            UpdateDataAlert.showUpdateDataDialog(context,
-                                onOkPressed: () {
-                              debugPrint('Download button tap.');
-                            }, message: AppStrings.downloadWifiError);
-                          }
+                          UploadInspections().onDownloadTap();
+
+                          /// below code can be use before app update, when this function return callback then consider user can update app
+                          /*UploadInspections().onDownloadTap(onUpdateAppCallback: () {
+                            debugPrint('onUpdateAppCallback');
+                          });*/
                         }
                       },
                       child: Image.asset(

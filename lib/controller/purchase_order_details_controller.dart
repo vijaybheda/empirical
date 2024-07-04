@@ -371,8 +371,6 @@ class PurchaseOrderDetailsController extends GetxController {
                 if (result == "") {
                   result = "AC";
                 }
-                // TODO: implement logic
-                // footerRightButtonText.setVisibility(View.VISIBLE);
               }
 
               if (result == "A-" || result == "AC") {

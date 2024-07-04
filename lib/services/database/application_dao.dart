@@ -3139,7 +3139,8 @@ class ApplicationDao {
           " left join Grade grade ON MS.Grade_ID=grade.ID" +
           " left join Agency agency ON grade.Agency_ID=agency.ID" +
           " inner join Item_SKU itemSku on SS.Item_SKU_ID=itemSku.SKU_ID" +
-          " where SS.status = 'A'" +
+          " where SS.Supplier_ID = $supplierId"
+              " AND SS.status = 'A'" +
           " AND MS.Status = 'A'" +
           " AND (itemSku.Name = '" +
           itemSkuName +
@@ -3156,14 +3157,14 @@ class ApplicationDao {
           specificationNumber: row['Number'],
           specificationVersion: row['Version'],
           specificationTypeName: row['SpecTypeName'],
-          agencyId: row['AgencyID'],
+          agencyId: row['AgencyID'] ?? 0,
           agencyName: row['AgencyName'],
-          gradeId: row['GradeID'],
+          gradeId: row['GradeID'] ?? 0,
           gradeName: row['GradeName'],
-          commodityId: row['CommodityID'],
+          commodityId: row['CommodityID'] ?? 0,
           commodityName: row['CommodityName'],
-          sampleSizeByCount: row['SampleSizeByCount'],
-          itemGroup1Id: row['Group1ID'],
+          sampleSizeByCount: row['SampleSizeByCount'] ?? 0,
+          itemGroup1Id: row['Group1ID'] ?? 0,
           itemGroup1Name: row['Group1Name'],
         );
         specificationList.add(item);
@@ -3801,8 +3802,8 @@ class ApplicationDao {
           severityDefectID: int.tryParse(
               map[SpecificationGradeToleranceColumn.SEVERITY_DEFECT_ID]),
           defectID: map[SpecificationGradeToleranceColumn.DEFECT_ID],
-          specTolerancePercentage:
-              map[SpecificationGradeToleranceColumn.GRADE_TOLERANCE_PERCENTAGE],
+          specTolerancePercentage: parseDoubleOrReturnNull(map[
+              SpecificationGradeToleranceColumn.GRADE_TOLERANCE_PERCENTAGE]),
           overridden: map[SpecificationGradeToleranceColumn.OVERRIDDEN],
           defectName: map[SpecificationGradeToleranceColumn.DEFECT_NAME],
           defectCategoryName:

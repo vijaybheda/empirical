@@ -65,7 +65,7 @@ info "Starting build process for $app_name..."
 
 # Get version info
 version_info=$(get_version_info "pubspec.yaml")
-app_name_with_version="${app_name}_${version_info}"
+app_name_with_version="${app_name} ${version_info}"
 
 # Update gradle.properties for Android
 info "Updating gradle.properties for Android..."

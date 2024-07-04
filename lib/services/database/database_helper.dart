@@ -50,6 +50,12 @@ class DatabaseHelper {
         "${UserColumn.LOGIN_TIME} INTEGER, "
         "${UserColumn.LANGUAGE} CHAR )");
 
+    db.execute("CREATE TABLE ${DBTables.DUMMY} (${BaseColumns.ID} "
+        "INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "${UserColumn.USER_NAME} CHAR NOT NULL, "
+        "${UserColumn.LOGIN_TIME} INTEGER, "
+        "${UserColumn.LANGUAGE} CHAR )");
+
     db.execute("CREATE TABLE ${DBTables.USER_OFFLINE} (${BaseColumns.ID} "
         "INTEGER PRIMARY KEY AUTOINCREMENT, "
         "${UserOfflineColumn.USER_ID} CHAR NOT NULL, "

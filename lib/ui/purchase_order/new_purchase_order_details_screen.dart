@@ -69,9 +69,9 @@ class NewPurchaseOrderDetailsScreen
                   _footerMenuView(controller),
                   FooterContentView(
                     hasLeftButton: false,
-                    onDownloadTap: () async {
-                      await controller.downloadTap();
-                    },
+                    // onDownloadTap: () async {
+                    //   await controller.downloadTap();
+                    // },
                     onBackTap: controller.onBackPress,
                   )
                 ],
