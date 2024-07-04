@@ -147,7 +147,7 @@ class QCDetailsShortFormScreenController extends GetxController {
     String packDateString = args[Consts.PACK_DATE] ?? '';
     if (packDateString.isNotEmpty) {
       try {
-        packDate = Utils.parseDate(packDateString);
+        packDate = Utils().parseDate(packDateString);
         if (packDate != null) {
           packDateController.text = Utils().dateFormat.format(packDate!);
         }

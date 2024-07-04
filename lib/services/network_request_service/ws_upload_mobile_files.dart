@@ -24,8 +24,6 @@ class WSUploadMobileFiles {
   final AppStorage appStorage = AppStorage.instance;
   Map<String, dynamic>? jsonInspection2;
 
-  static const String serverUrl = String.fromEnvironment('API_HOST');
-
   final ApplicationDao dao = ApplicationDao();
 
   WSUploadMobileFiles(
@@ -55,7 +53,8 @@ class WSUploadMobileFiles {
       }
     }
 
-    request = "$serverUrl${ApiUrls.UPLOAD_MOBILE_FILES_REQUEST}$requestString";
+    request =
+        "${appStorage.serverUrl}${ApiUrls.UPLOAD_MOBILE_FILES_REQUEST}$requestString";
 
     inspectionAttachments =
         await dao.findInspectionAttachmentsByInspectionId(inspectionId);

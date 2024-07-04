@@ -2,20 +2,28 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
 
 class SetupController extends GetxController {
-  List dateformats = AppStrings.dateFormats;
+  List<String> allDateFormats = AppStrings.allDateFormats;
   final banner1TextController = TextEditingController().obs;
   final banner2TextController = TextEditingController().obs;
   final banner3TextController = TextEditingController().obs;
-  var selectetdDateFormat = 'mm-dd-yyyy'.obs;
+  RxString selectedDateFormat = AppStrings.allDateFormats.first.obs;
+  AppStorage appStorage = AppStorage.instance;
 
-  void setSelected(String value) {
-    selectetdDateFormat.value = value;
+  @override
+  void onInit() {
+    super.onInit();
+    selectedDateFormat.value = appStorage.getDateFormat() ?? 'dd-MM-yyyy';
   }
 
+  void setSelected(String value) {
+    selectedDateFormat.value = value;
+    appStorage.setDateFormat(selectedDateFormat.value);
+  }
 
   // SETUP SCREEN VALIDATION'S
 

@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:pverify/services/network_request_service/api_urls.dart';
+import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/common_widget/header/header_controller.dart';
 import 'package:pverify/utils/images.dart';
 import 'package:pverify/utils/theme/colors.dart';
@@ -65,7 +65,7 @@ Widget baseHeaderView(String title, bool isVersionShow) {
 }
 
 Widget getEnvText() {
-  String apiHost = ApiUrls.serverUrl;
+  String apiHost = AppStorage.instance.serverUrl;
   String env = '';
   if (apiHost.contains('appqa')) {
     env = ' QA';

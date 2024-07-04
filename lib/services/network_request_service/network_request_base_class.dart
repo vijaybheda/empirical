@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pverify/services/custom_exception/custom_exception.dart';
-import 'package:pverify/services/network_request_service/api_urls.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 
@@ -18,7 +17,7 @@ class BaseRequestService extends GetConnect {
 
   @override
   void onInit() {
-    httpClient.baseUrl = ApiUrls.serverUrl;
+    httpClient.baseUrl = appStorage.serverUrl;
     httpClient.defaultContentType = "application/json";
     httpClient.timeout = const Duration(seconds: 60);
     // final Map<String, String> headers = {'Authorization': "Bearer $authToken"};

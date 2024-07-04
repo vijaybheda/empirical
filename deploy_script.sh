@@ -63,6 +63,10 @@ output_dir="output/app"
 
 info "Starting build process for $app_name..."
 
+# Get version info
+version_info=$(get_version_info "pubspec.yaml")
+app_name_with_version="${app_name}_${version_info}"
+
 # Update gradle.properties for Android
 info "Updating gradle.properties for Android..."
 {
@@ -70,7 +74,7 @@ info "Updating gradle.properties for Android..."
     echo "android.useAndroidX=true"
     echo "android.enableJetifier=true"
     echo "ANDROID_APPLICATION_ID=$android_package_id"
-    echo "APP_NAME=$app_name"
+    echo "APP_NAME=$app_name_with_version"
     # Add other properties similarly...
 } > android/gradle.properties
 info "gradle.properties updated."
@@ -81,7 +85,7 @@ if [ "$OS" = "mac" ]; then
     sed -i '' "s/PRODUCT_BUNDLE_IDENTIFIER = [^;]*;/PRODUCT_BUNDLE_IDENTIFIER = ${ios_package_id};/g" ios/Runner.xcodeproj/project.pbxproj
 
     info "Updating Info.plist for iOS..."
-    /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName $app_name" ios/Runner/Info.plist
+    /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName $app_name_with_version" ios/Runner/Info.plist
 fi
 
 info "Running flutter clean..."
@@ -90,14 +94,11 @@ flutter clean
 info "Running flutter pub get..."
 flutter pub get
 
-# Get version info
-version_info=$(get_version_info "pubspec.yaml")
-
 # Build Android APK
 info "Building Android APK..."
 if flutter build apk --dart-define-from-file $CONFIG_JSON_PATH; then
     mkdir -p "$output_dir"
-    cp build/app/outputs/flutter-apk/app-release.apk "$output_dir/${app_name}_${version_info}.apk"
+    cp build/app/outputs/flutter-apk/app-release.apk "$output_dir/${app_name_with_version}.apk"
     info "Android APK built successfully and renamed."
 else
     error "Failed to build Android APK."
@@ -113,7 +114,7 @@ if [ "$OS" = "mac" ]; then
         mkdir -p "$output_dir"
         ipa_file=$(find build/ios/ipa -name "*.ipa")
         if [ -n "$ipa_file" ]; then
-            cp "$ipa_file" "$output_dir/${app_name}_${version_info}.ipa"
+            cp "$ipa_file" "$output_dir/${app_name_with_version}.ipa"
             info "iOS IPA built successfully and renamed."
         else
             error "Failed to find the generated .ipa file."

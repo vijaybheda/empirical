@@ -142,7 +142,7 @@ class SetupScreen extends GetView<SetupController> {
                         fontWeight: FontWeight.normal,
                       ),
                     ),
-                    items: setupController.dateformats.map((selectedType) {
+                    items: setupController.allDateFormats.map((selectedType) {
                       return DropdownMenuItem<String>(
                         value: selectedType,
                         child: Text(
@@ -155,7 +155,7 @@ class SetupScreen extends GetView<SetupController> {
                         ),
                       );
                     }).toList(),
-                    value: setupController.selectetdDateFormat.value,
+                    value: setupController.selectedDateFormat.value,
                     onChanged: (newValue) {
                       setupController.setSelected(newValue ?? '');
                     },

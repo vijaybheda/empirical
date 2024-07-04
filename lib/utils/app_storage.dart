@@ -39,6 +39,8 @@ class AppStorage extends GetxController {
   // ignore: prefer_function_declarations_over_variables
   final storageBox = () => GetStorage(StorageKey.kAppStorageKey);
 
+  String get serverUrl => getServerUrl();
+
   List<FinishedGoodsItemSKU> selectedItemSKUList = [];
 
   List<SpecificationAnalytical>? specificationAnalyticalList;
@@ -436,6 +438,19 @@ class AppStorage extends GetxController {
     await GetStorage.init(StorageKey.kAppStorageKey);
   }
 
+  String getServerUrl() {
+    return read(StorageKey.kServerUrl) ??
+        const String.fromEnvironment('API_HOST');
+  }
+
+  String? getDateFormat() {
+    return read(StorageKey.kDateFormat);
+  }
+
+  Future<void> setDateFormat(String value) {
+    return write(StorageKey.kDateFormat, value);
+  }
+
   Future<bool> isBoardWatched() async {
     return getBool(StorageKey.kIsBoardWatched);
   }
@@ -457,11 +472,13 @@ class StorageKey {
   static const String kAppStorageKey = 'AppStorageKey';
 
   static const String kLoginUserData = 'LoginUserData';
+  static const String kServerUrl = 'serverUrl';
   static const String kNotificationSettings = 'notificationSetting';
   static const String kAppLanguage = 'appLanguage';
   static const String kIsBoardWatched = 'isBoardWatched';
   static const String kBaseUrlKey = 'baseUrlKey';
   static const String kCacheDate = 'cacheDate';
+  static const String kDateFormat = 'dateFormat';
   static const String kIsCSVDownloaded1 = 'isCSVDownloaded1';
   static const String kHeaderMap = 'headerMap';
   static const String kPartnerList = 'partnerList';

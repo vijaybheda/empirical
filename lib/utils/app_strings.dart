@@ -616,7 +616,7 @@ class AppStrings {
   static const String pleaseEnterValidQtyRejected =
       'Please enter a valid Quantity Rejected';
   static const List<String> yesNoArray = ['Y', 'N'];
-  static const List<String> dateFormats = [
+  static const List<String> allDateFormats = [
     'mm-dd-yyyy',
     'dd-mm-yyyy',
     'yyyy-mm-dd'

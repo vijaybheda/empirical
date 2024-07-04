@@ -16,6 +16,7 @@ import 'package:pverify/utils/utils.dart';
 class LongFormQualityControlScreen
     extends GetWidget<LongFormQualityControlScreenController> {
   final String tag;
+
   const LongFormQualityControlScreen({super.key, required this.tag});
 
   @override
@@ -851,7 +852,7 @@ class LongFormQualityControlScreen
       context,
       initialDate: controller.packDate,
       onDateSelected: (DateTime selectedDate) {
-        controller.packDateController.text = Utils.formatDate(selectedDate);
+        controller.packDateController.text = Utils().formatDate(selectedDate);
         controller.packDate = selectedDate;
         controller.update();
       },
@@ -872,7 +873,7 @@ class LongFormQualityControlScreen
       context,
       initialDate: controller.workDate,
       onDateSelected: (DateTime selectedDate) {
-        controller.workDateController.text = Utils.formatDate(selectedDate);
+        controller.workDateController.text = Utils().formatDate(selectedDate);
         controller.workDate = selectedDate;
         controller.update();
       },

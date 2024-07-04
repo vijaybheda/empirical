@@ -15,6 +15,7 @@ import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
+import 'package:pverify/utils/dialogs/custom_listview_dialog.dart';
 import 'package:pverify/utils/utils.dart';
 
 class SpecificationAttributesController extends GetxController {
@@ -626,7 +627,12 @@ class SpecificationAttributesController extends GetxController {
   Future<void> specialInstructions() async {
     if (_appStorage.commodityVarietyData != null &&
         _appStorage.commodityVarietyData!.exceptions.isNotEmpty) {
-      //todo navigate to InspectionExceptionActitvity
+      CustomListViewDialog customDialog = CustomListViewDialog(
+        // Get.context!,
+        (selectedValue) {},
+      );
+      customDialog.setCanceledOnTouchOutside(false);
+      customDialog.show();
     } else {
       AppSnackBar.info(message: "No Specification Instructions");
     }

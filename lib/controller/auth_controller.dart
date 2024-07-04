@@ -187,7 +187,7 @@ class AuthController extends GetxController {
     }
   }
 
-  String get loginRequestUrl => ApiUrls.serverUrl + ApiUrls.LOGIN_REQUEST;
+  String get loginRequestUrl => appStorage.serverUrl + ApiUrls.LOGIN_REQUEST;
 
   Future<void> persistUserName() async {
     UserData? userData = appStorage.getUserData();

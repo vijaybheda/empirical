@@ -48,8 +48,10 @@ class Utils {
   static String? appCurrentLanguage;
   static bool isDialogShowing = true;
 
-  DateFormat get dateFormat => _dateFormat;
-  static final _dateFormat = DateFormat('dd-MM-yyyy');
+  DateFormat get dateFormat {
+    String? getDateFormat = _appStorage.getDateFormat();
+    return DateFormat(getDateFormat ?? 'dd-MM-yyyy');
+  }
 
   final AppStorage _appStorage = AppStorage.instance;
 
@@ -149,9 +151,9 @@ class Utils {
     }
   }*/
 
-  static String formatDate(DateTime? date) {
+  String formatDate(DateTime? date) {
     if (date == null) return '';
-    return _dateFormat.format(date);
+    return dateFormat.format(date);
   }
 
   Future<void> showAlertDialog({
@@ -248,11 +250,11 @@ class Utils {
         .join();
   }
 
-  static DateTime? parseDate(String dateString) {
+  DateTime? parseDate(String dateString) {
     try {
       int timestamp = int.tryParse(dateString) ?? 0;
       if (timestamp == 0) {
-        return _dateFormat.parse(dateString);
+        return dateFormat.parse(dateString);
       }
       return DateTime.fromMillisecondsSinceEpoch(timestamp);
     } catch (e) {

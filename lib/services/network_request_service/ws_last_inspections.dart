@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:pverify/models/last_inspections_item.dart';
 import 'package:pverify/services/network_request_service/api_urls.dart';
 import 'package:pverify/utils/app_storage.dart';
@@ -15,9 +16,9 @@ class WSLastInspections {
   String? request;
   int? partnerId;
   final AppStorage appStorage = AppStorage.instance;
+
   WSLastInspections(this.context);
 
-  static const String serverUrl = String.fromEnvironment('API_HOST');
   Future<void> requestLastInspections(int partnerId) async {
     parsedString = "";
 
@@ -49,7 +50,7 @@ class WSLastInspections {
     required int milliseconds,
     required Map<String, dynamic> object,
   }) async {
-    final String url = '$serverUrl$request';
+    final String url = '${appStorage.serverUrl}$request';
     final client = http.Client();
 
     var headers = {

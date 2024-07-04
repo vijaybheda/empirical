@@ -767,7 +767,7 @@ class QCDetailsShortFormScreen
     await controller.selectDate(
       context,
       onDateSelected: (DateTime selectedDate) {
-        controller.packDateController.text = Utils.formatDate(selectedDate);
+        controller.packDateController.text = Utils().formatDate(selectedDate);
         controller.packDate = selectedDate;
         controller.update();
       },
