@@ -242,13 +242,14 @@ class CommodityTransferScreenController extends GetxController {
       }
 
       final progressController = Get.put(ProgressController());
+      int numberOfInspections = uploadCheckedList.length;
 
       Utils.showLinearProgressWithMessage(
         message: AppStrings.uploadMessage,
         progressController: progressController,
+        totalInspection: numberOfInspections,
       );
 
-      int numberOfInspections = uploadCheckedList.length;
       int listIndex = 0;
       int progressDialogStatus = 0;
       while (progressDialogStatus < numberOfInspections) {

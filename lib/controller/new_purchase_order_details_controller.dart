@@ -30,7 +30,6 @@ import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/dialogs/app_alerts.dart';
-import 'package:pverify/utils/dialogs/update_data_dialog.dart';
 import 'package:pverify/utils/utils.dart';
 
 class NewPurchaseOrderDetailsController extends GetxController {
@@ -3055,7 +3054,7 @@ class NewPurchaseOrderDetailsController extends GetxController {
           await dao.findPartnerItemSKUPOLine(
               partnerID,
               appStorage.selectedItemSKUList[i].sku!,
-              appStorage.selectedItemSKUList[i].poLineNo,
+              appStorage.selectedItemSKUList[i].poLineNo ?? 0,
               poNumber!);
 
       if (partnerItemSKU != null) {
@@ -3259,36 +3258,6 @@ class NewPurchaseOrderDetailsController extends GetxController {
       await appStorage.setInt(
           StorageKey.kCacheDate, DateTime.now().millisecondsSinceEpoch);
       await appStorage.write(StorageKey.kIsCSVDownloaded1, true);
-    }
-  }
-
-  Future<void> downloadTap() async {
-    if (globalConfigController.hasStableInternet.value) {
-      UpdateDataAlert.showUpdateDataDialog(
-        Get.context!,
-        onOkPressed: () async {
-          bool checkInsp = await dao.checkInspections();
-          if (checkInsp) {
-            UpdateDataAlert.showUpdateDataDialog(Get.context!,
-                onOkPressed: () async {
-              await uploadAllInspections();
-            }, message: AppStrings.updateDataMessage);
-          } else {
-            debugPrint('Download button tap.');
-            await Get.off(
-              () => const CacheDownloadScreen(),
-              arguments: {
-                Consts.IS_QCDETAILSHORT_SCREEN: true,
-              },
-            );
-          }
-        },
-        message: AppStrings.updateDataConfirmation,
-      );
-    } else {
-      UpdateDataAlert.showUpdateDataDialog(Get.context!, onOkPressed: () {
-        debugPrint('Download button tap.');
-      }, message: AppStrings.downloadWifiError);
     }
   }
 }

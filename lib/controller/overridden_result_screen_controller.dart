@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:pverify/models/quality_control_item.dart';
 import 'package:pverify/models/result_rejection_details.dart';
 import 'package:pverify/services/database/application_dao.dart';
-import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
@@ -278,8 +277,11 @@ class OverriddenResultScreenController extends GetxController {
         if (callerActivity == "PurchaseOrderDetailsActivity" ||
             callerActivity == "NewPurchaseOrderDetailsActivity") {
           if (callerActivity == "NewPurchaseOrderDetailsActivity") {
-            Get.offAll(() => NewPurchaseOrderDetailsScreen(tag: tag),
-                arguments: passingData);
+            Get.back(
+              result: inspectionID,
+            );
+            // Get.offAll(() => NewPurchaseOrderDetailsScreen(tag: tag),
+            //     arguments: passingData);
           } else {
             Get.offAll(() => PurchaseOrderDetailsScreen(tag: tag),
                 arguments: passingData);

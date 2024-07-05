@@ -27,7 +27,7 @@ class QCDetailsShortFormScreen
     return GetBuilder<QCDetailsShortFormScreenController>(
       init: QCDetailsShortFormScreenController(),
       tag: tag,
-      builder: (controller) {
+      builder: (QCDetailsShortFormScreenController controller) {
         if (!controller.hasInitialised.value) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
@@ -324,7 +324,7 @@ class QCDetailsShortFormScreen
             ],
           ),
           DropdownButtonFormField<UOMItem>(
-            value: controller.selectedUOM,
+            value: getSelectedUOM(controller),
             onChanged: (UOMItem? value) {
               controller.selectedUOM = value;
               controller.update();
@@ -369,6 +369,15 @@ class QCDetailsShortFormScreen
         ],
       ),
     );
+  }
+
+  UOMItem? getSelectedUOM(QCDetailsShortFormScreenController controller) {
+    if (controller.selectedUOM == null) {
+      if (controller.uomList.isNotEmpty) {
+        controller.selectedUOM = controller.uomList.first;
+      }
+    }
+    return controller.selectedUOM;
   }
 
   Expanded qcQtyShippedWidget(QCDetailsShortFormScreenController controller) {

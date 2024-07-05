@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:pverify/models/inspection.dart';
 import 'package:pverify/models/item_sku_data.dart';
+import 'package:pverify/models/partner_item_sku_inspections.dart';
 import 'package:pverify/models/purchase_order_details.dart';
 import 'package:pverify/models/qc_header_details.dart';
 import 'package:pverify/services/database/application_dao.dart';
@@ -8,6 +10,7 @@ import 'package:pverify/ui/delivered_from/delivered_from_screen.dart';
 import 'package:pverify/ui/purchase_order/new_purchase_order_details_screen.dart';
 import 'package:pverify/ui/purchase_order/purchase_order_details_screen.dart';
 import 'package:pverify/ui/supplier/choose_supplier.dart';
+import 'package:pverify/ui/trailer_temp/trailertemp.dart';
 import 'package:pverify/utils/app_storage.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/const.dart';
@@ -93,6 +96,8 @@ class QualityControlController extends GetxController {
     }
   }
 
+  String get poNumberString => orderNoTextController.value.text.trim();
+
   // LOGIN SCREEN VALIDATION'S
 
   void loadFieldsFromDB() async {
@@ -175,51 +180,120 @@ class QualityControlController extends GetxController {
   }
 
   Future<void> saveAction() async {
-    qcHeaderDetails =
-        await dao.findTempQCHeaderDetails(orderNoTextController.value.text);
+    bool hasErrors = false;
+    poNumber = orderNoTextController.value.text.trim();
 
-    if (AppStorage.instance.getUserData()!.supplierId != 0) {
-      purchaseOrderDetails = await dao.getPODetailsFromTable(
-          orderNoTextController.value.text,
-          AppStorage.instance.getUserData()!.supplierId ?? 0);
+    if (poNumber.isNotEmpty) {
+      int length = poNumber.length;
+      if (length > 20) {
+        hasErrors = true;
+        AppAlertDialog.validateAlerts(
+          Get.context!,
+          AppStrings.alert,
+          'PO Number should not exceed 20 characters',
+        );
+      } else {
+        qcHeaderDetails = await dao.findTempQCHeaderDetails(poNumber);
 
-      inspectionIDs = await dao
-          .getPartnerSKUInspectionIDsByPONo(orderNoTextController.value.text);
-    }
-    String type = '';
-    if (selectedTypes.value == 'Quality Assurance') {
-      type = 'QA';
-    } else if (selectedTypes.value == 'Transfer') {
-      type = 'Transfer';
+        if (appStorage.getUserData() != null &&
+            appStorage.getUserData()?.supplierId != 0) {
+          purchaseOrderDetails = await dao.getPODetailsFromTable(
+              poNumber, appStorage.getUserData()!.supplierId!);
+
+          inspectionIDs = await dao.getPartnerSKUInspectionIDsByPONo(poNumber);
+
+          for (int id in inspectionIDs) {
+            Inspection? inspection = await dao.findInspectionByID(id);
+
+            if (inspection == null) {
+              PartnerItemSKUInspections? partnerItemSKU =
+                  await dao.findPartnerItemSKUPONumber(id, poNumber);
+
+              if (partnerItemSKU != null) {
+                PurchaseOrderDetails? targetObject;
+
+                for (PurchaseOrderDetails customObject
+                    in purchaseOrderDetails) {
+                  if (customObject.itemSkuCode == partnerItemSKU.itemSKU &&
+                      customObject.poNumber == poNumber) {
+                    targetObject = customObject;
+                    break;
+                  }
+                }
+                if (targetObject != null) {
+                  purchaseOrderDetails.remove(targetObject);
+                }
+              }
+            }
+          }
+        }
+      }
     } else {
-      type = selectedTypes.value;
+      hasErrors = true;
     }
-    appStorage.currentSealNumber =
-        sealTextController.value.text.trim().toString();
 
-    if (qcHeaderDetails == null) {
-      await dao.createTempQCHeaderDetails(
-        partnerID: carrierID,
-        poNo: orderNoTextController.value.text,
-        sealNo: sealTextController.value.text,
-        qchOpen1: certificateDepartureTextController.value.text,
-        qchOpen2: factoryReferenceTextController.value.text,
-        qchOpen3: usdaReferenceTextController.value.text,
-        qchOpen4: containerTextController.value.text,
-        qchOpen5: totalQuantityTextController.value.text,
-        qchOpen6: selectedLoadType.value,
-        qchOpen9: transportConditionTextController.value.text,
-        qchOpen10: commentTextController.value.text,
-        truckTempOk: selectedTruckTempOK.value[0],
-        cteType: cteType,
-        productTransfer: type,
+    String currentSealNumber = sealTextController.value.text.trim();
+    if (currentSealNumber.length > 15) {
+      hasErrors = true;
+      AppAlertDialog.validateAlerts(
+        Get.context!,
+        AppStrings.alert,
+        'Seal No should not exceed 15 characters',
       );
-      qcHeaderDetails =
-          await dao.findTempQCHeaderDetails(orderNoTextController.value.text);
-    } else {
-      QCHeaderDetails? headerDetails = qcHeaderDetails;
-      await dao.updateTempQCHeaderDetails(
-          baseId: headerDetails?.id ?? 0,
+    }
+    appStorage.currentSealNumber = currentSealNumber;
+
+    String certificateNumber =
+        certificateDepartureTextController.value.text.trim();
+    if (certificateNumber.length > 15) {
+      hasErrors = true;
+      AppAlertDialog.validateAlerts(
+        Get.context!,
+        AppStrings.alert,
+        'Certificate Of Departure should not exceed 20 characters',
+      );
+    }
+    String factoryReferenceNumber =
+        factoryReferenceTextController.value.text.trim();
+    if (factoryReferenceNumber.length > 15) {
+      hasErrors = true;
+      AppAlertDialog.validateAlerts(
+        Get.context!,
+        AppStrings.alert,
+        'Factory Reference # should not exceed 20 characters',
+      );
+    }
+    String usdaReferenceNumber = usdaReferenceTextController.value.text.trim();
+    if (usdaReferenceNumber.length > 15) {
+      hasErrors = true;
+      AppAlertDialog.validateAlerts(
+        Get.context!,
+        AppStrings.alert,
+        'USDA Reference # should not exceed 20 characters',
+      );
+    }
+    String containerNumber = containerTextController.value.text.trim();
+    if (containerNumber.length > 15) {
+      hasErrors = true;
+      AppAlertDialog.validateAlerts(
+        Get.context!,
+        AppStrings.alert,
+        'Container # should not exceed 20 characters',
+      );
+    }
+
+    if (!hasErrors) {
+      String type = '';
+      if (selectedTypes.value == 'Quality Assurance') {
+        type = 'QA';
+      } else if (selectedTypes.value == 'Transfer') {
+        type = 'Transfer';
+      } else {
+        type = selectedTypes.value;
+      }
+      if (qcHeaderDetails == null) {
+        await dao.createTempQCHeaderDetails(
+          partnerID: carrierID,
           poNo: orderNoTextController.value.text,
           sealNo: sealTextController.value.text,
           qchOpen1: certificateDepartureTextController.value.text,
@@ -232,22 +306,40 @@ class QualityControlController extends GetxController {
           qchOpen10: commentTextController.value.text,
           truckTempOk: selectedTruckTempOK.value[0],
           cteType: cteType,
-          productTransfer: type);
-    }
+          productTransfer: type,
+        );
+      } else {
+        QCHeaderDetails? headerDetails = qcHeaderDetails;
+        await dao.updateTempQCHeaderDetails(
+            baseId: headerDetails?.id ?? 0,
+            poNo: orderNoTextController.value.text,
+            sealNo: sealTextController.value.text,
+            qchOpen1: certificateDepartureTextController.value.text,
+            qchOpen2: factoryReferenceTextController.value.text,
+            qchOpen3: usdaReferenceTextController.value.text,
+            qchOpen4: containerTextController.value.text,
+            qchOpen5: totalQuantityTextController.value.text,
+            qchOpen6: selectedLoadType.value,
+            qchOpen9: transportConditionTextController.value.text,
+            qchOpen10: commentTextController.value.text,
+            truckTempOk: selectedTruckTempOK.value[0],
+            cteType: cteType,
+            productTransfer: type);
+      }
 
-    if (purchaseOrderDetails.isNotEmpty) {
-      if (!callerActivity.equals("")) {
-        if (callerActivity.equals("QualityControlHeaderActivity")) {
-          Get.back();
+      if (purchaseOrderDetails.isNotEmpty) {
+        if (!callerActivity.equals("")) {
+          if (callerActivity.equals("QualityControlHeaderActivity")) {
+            Get.back();
+          } else {
+            showBeginInspectionScreen();
+          }
         } else {
           showBeginInspectionScreen();
         }
       } else {
-        showBeginInspectionScreen();
+        showPurchaseOrder();
       }
-    } else {
-      // Here need to call showPurchaseOrder function.
-      showPurchaseOrder();
     }
   }
 
@@ -294,22 +386,22 @@ class QualityControlController extends GetxController {
 
     if (userid == 4180) {
       Map<String, dynamic> arguments = {
-        'partnerName': purchaseOrderDetails[0].partnerName,
-        'partnerId': purchaseOrderDetails[0].partnerId,
-        'carrierName': carrierName,
-        'carrierId': carrierID,
-        'poNumber': poNumber,
+        Consts.PARTNER_NAME: purchaseOrderDetails[0].partnerName,
+        Consts.PARTNER_ID: purchaseOrderDetails[0].partnerId,
+        Consts.CARRIER_NAME: carrierName,
+        Consts.CARRIER_ID: carrierID,
+        Consts.PO_NUMBER: poNumberString,
         Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
       };
       Get.to(() => NewPurchaseOrderDetailsScreen(tag: tag),
           arguments: arguments);
     } else {
       Map<String, dynamic> arguments = {
-        'partnerName': purchaseOrderDetails[0].partnerName,
-        'partnerId': purchaseOrderDetails[0].partnerId,
-        'carrierName': carrierName,
-        'carrierId': carrierID,
-        'poNumber': poNumber,
+        Consts.PARTNER_NAME: purchaseOrderDetails[0].partnerName,
+        Consts.PARTNER_ID: purchaseOrderDetails[0].partnerId,
+        Consts.CARRIER_NAME: carrierName,
+        Consts.CARRIER_ID: carrierID,
+        Consts.PO_NUMBER: poNumberString,
         Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
       };
       Get.to(() => PurchaseOrderDetailsScreen(tag: tag), arguments: arguments);
@@ -328,7 +420,7 @@ class QualityControlController extends GetxController {
       } else {
         if (selectedTypes.value == "Transfer") {
           Map<String, Object> passingData = {
-            Consts.PO_NUMBER: poNumber,
+            Consts.PO_NUMBER: poNumberString,
             Consts.SEAL_NUMBER: sealNumber,
             Consts.CARRIER_NAME: carrierName,
             Consts.CARRIER_ID: carrierID,
@@ -364,7 +456,7 @@ class QualityControlController extends GetxController {
             Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
             Consts.CARRIER_ID: carrierID,
             Consts.CARRIER_NAME: carrierName,
-            Consts.PO_NUMBER: poNumber,
+            Consts.PO_NUMBER: poNumberString,
             Consts.SEAL_NUMBER: sealNumber,
           };
 
@@ -417,10 +509,81 @@ class QualityControlController extends GetxController {
           Consts.CALLER_ACTIVITY: 'QualityControlHeaderActivity',
           Consts.CARRIER_ID: carrierID,
           Consts.CARRIER_NAME: carrierName,
-          Consts.PO_NUMBER: poNumber,
+          Consts.PO_NUMBER: poNumberString,
           Consts.SEAL_NUMBER: sealNumber,
         });
       }
+    }
+  }
+
+  Future<void> onTailerTempClick() async {
+    bool hasErrors = false;
+
+    QCHeaderDetails? qcHeaderDetails;
+
+    if (poNumberString.isNotEmpty) {
+      qcHeaderDetails = await dao.findTempQCHeaderDetails(poNumber);
+    } else {
+      hasErrors = true;
+    }
+
+    appStorage.currentSealNumber = sealTextController.value.text.trim();
+
+    String type = '';
+    if (selectedTypes.value == 'Quality Assurance') {
+      type = 'QA';
+    } else if (selectedTypes.value == 'Transfer') {
+      type = 'Transfer';
+    } else {
+      type = selectedTypes.value;
+    }
+
+    if (!hasErrors) {
+      if (qcHeaderDetails == null) {
+        await dao.createTempQCHeaderDetails(
+          partnerID: carrierID,
+          poNo: orderNoTextController.value.text,
+          sealNo: sealTextController.value.text,
+          qchOpen1: certificateDepartureTextController.value.text,
+          qchOpen2: factoryReferenceTextController.value.text,
+          qchOpen3: usdaReferenceTextController.value.text,
+          qchOpen4: containerTextController.value.text,
+          qchOpen5: totalQuantityTextController.value.text,
+          qchOpen6: selectedLoadType.value,
+          qchOpen9: transportConditionTextController.value.text,
+          qchOpen10: commentTextController.value.text,
+          truckTempOk: selectedTruckTempOK.value[0],
+          cteType: cteType,
+          productTransfer: type,
+        );
+      } else {
+        QCHeaderDetails? headerDetails = qcHeaderDetails;
+        await dao.updateTempQCHeaderDetails(
+            baseId: headerDetails.id ?? 0,
+            poNo: orderNoTextController.value.text,
+            sealNo: sealTextController.value.text,
+            qchOpen1: certificateDepartureTextController.value.text,
+            qchOpen2: factoryReferenceTextController.value.text,
+            qchOpen3: usdaReferenceTextController.value.text,
+            qchOpen4: containerTextController.value.text,
+            qchOpen5: totalQuantityTextController.value.text,
+            qchOpen6: selectedLoadType.value,
+            qchOpen9: transportConditionTextController.value.text,
+            qchOpen10: commentTextController.value.text,
+            truckTempOk: selectedTruckTempOK.value[0],
+            cteType: cteType,
+            productTransfer: type);
+      }
+
+      Get.to(
+        () => const TrailerTemp(),
+        arguments: {
+          Consts.CARRIER_NAME: carrierName,
+          Consts.CARRIER_ID: carrierID,
+          Consts.PO_NUMBER: poNumber,
+          Consts.CALLER_ACTIVITY: callerActivity,
+        },
+      );
     }
   }
 }

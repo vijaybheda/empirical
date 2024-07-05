@@ -6,11 +6,9 @@ import 'package:get/get.dart';
 import 'package:pverify/controller/quality_control_controller.dart';
 import 'package:pverify/ui/components/footer_content_view.dart';
 import 'package:pverify/ui/components/header_content_view.dart';
-import 'package:pverify/ui/trailer_temp/trailertemp.dart';
 import 'package:pverify/utils/app_strings.dart';
 import 'package:pverify/utils/common_widget/buttons.dart';
 import 'package:pverify/utils/common_widget/textfield/text_fields.dart';
-import 'package:pverify/utils/const.dart';
 import 'package:pverify/utils/theme/colors.dart';
 import 'package:pverify/utils/utils.dart';
 
@@ -72,19 +70,7 @@ class _QualityControlHeaderState extends State<QualityControlHeader> {
                   ),
                   onClickAction: () {
                     if (controller.isQualityControlFieldsValidate(context)) {
-                      Get.to(
-                          () => const TrailerTemp(
-                              // carrier: carrier,
-                              // orderNumber: controller
-                              //     .orderNoTextController.value.text
-                              //     .trim(),
-                              ),
-                          arguments: {
-                            Consts.PO_NUMBER: getPoNumber(controller),
-                            Consts.CARRIER_ID: controller.carrierID,
-                            Consts.CARRIER_NAME: controller.carrierName,
-                            // Consts.CARRIER: carrier,
-                          });
+                      controller.onTailerTempClick();
                     }
                   }),
               SizedBox(

@@ -20,65 +20,72 @@ class NewPurchaseOrderDetailsScreen
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<NewPurchaseOrderDetailsController>(
-        init: NewPurchaseOrderDetailsController(),
-        tag: tag,
-        builder: (controller) {
-          return WillPopScope(
-            onWillPop: () {
-              controller.onBackPress();
-              return Future.value(false);
-            },
-            child: Scaffold(
-              backgroundColor: Theme.of(context).colorScheme.background,
-              resizeToAvoidBottomInset: false,
-              appBar: AppBar(
-                toolbarHeight: 150.h,
-                leading: const Offstage(),
-                leadingWidth: 0,
-                centerTitle: false,
-                backgroundColor: Theme.of(context).primaryColor,
-                title: HeaderContentView(
-                  title: AppStrings.beginInspection,
-                  message: 'PO# ${controller.poNumber ?? '-'}',
+    return WillPopScope(
+      onWillPop: () {
+        Get.find<NewPurchaseOrderDetailsController>(tag: tag).onBackPress();
+        return Future.value(false);
+      },
+      child: GetBuilder<NewPurchaseOrderDetailsController>(
+          init: NewPurchaseOrderDetailsController(),
+          tag: tag,
+          builder: (controller) {
+            return WillPopScope(
+              onWillPop: () {
+                controller.onBackPress();
+                return Future.value(false);
+              },
+              child: Scaffold(
+                backgroundColor: Theme.of(context).colorScheme.background,
+                resizeToAvoidBottomInset: false,
+                appBar: AppBar(
+                  toolbarHeight: 150.h,
+                  leading: const Offstage(),
+                  leadingWidth: 0,
+                  centerTitle: false,
+                  backgroundColor: Theme.of(context).primaryColor,
+                  title: HeaderContentView(
+                    title: AppStrings.beginInspection,
+                    message: 'PO# ${controller.poNumber ?? '-'}',
+                  ),
                 ),
-              ),
-              body: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 10),
-                    color: AppColors.textFieldText_Color,
-                    width: double.infinity,
-                    child: Text(
-                      controller.partnerName ?? '-',
-                      textAlign: TextAlign.start,
-                      maxLines: 3,
-                      style: Get.textTheme.titleLarge!.copyWith(
-                        fontSize: 38.sp,
-                        fontWeight: FontWeight.w600,
+                body: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      color: AppColors.textFieldText_Color,
+                      width: double.infinity,
+                      child: Text(
+                        controller.partnerName ?? '-',
+                        textAlign: TextAlign.start,
+                        maxLines: 3,
+                        style: Get.textTheme.titleLarge!.copyWith(
+                          fontSize: 38.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                  ),
-                  _SearchOrderItemsWidget(tag),
-                  dataHeaderWidget(),
-                  Expanded(
-                      flex: 10, child: _purchaseOrderItemSection(context, tag)),
-                  _footerMenuView(controller),
-                  FooterContentView(
-                    hasLeftButton: false,
-                    // onDownloadTap: () async {
-                    //   await controller.downloadTap();
-                    // },
-                    onBackTap: controller.onBackPress,
-                  )
-                ],
+                    _SearchOrderItemsWidget(tag),
+                    dataHeaderWidget(),
+                    Expanded(
+                        flex: 10,
+                        child: _purchaseOrderItemSection(context, tag)),
+                    _footerMenuView(controller),
+                    FooterContentView(
+                      hasLeftButton: false,
+                      // onDownloadTap: () async {
+                      //   await controller.downloadTap();
+                      // },
+                      onBackTap: controller.onBackPress,
+                    )
+                  ],
+                ),
               ),
-            ),
-          );
-        });
+            );
+          }),
+    );
   }
 
   Widget dataHeaderWidget() {

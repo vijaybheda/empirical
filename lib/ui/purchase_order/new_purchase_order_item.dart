@@ -129,7 +129,6 @@ class _NewPurchaseOrderListViewItemState
 
   bool editPencilVisibility = false;
   bool layoutQtyRejectedVisibility = false;
-  bool etQtyShippedEnabled = false;
 
   String? specificationNumber;
   String? specificationVersion;
@@ -160,7 +159,6 @@ class _NewPurchaseOrderListViewItemState
       poNumberVisibility = false;
     }
 
-    etQtyShippedEnabled = false;
     asyncTask();
     super.initState();
     _qtyShippedController.addListener(_onQtyShippedChanged);
@@ -375,8 +373,13 @@ class _NewPurchaseOrderListViewItemState
                                 color: AppColors.white,
                                 fontWeight: FontWeight.normal,
                               ),
+                              onChanged: (value) {
+                                _onQtyShippedChanged();
+                                widget.onQuantityShippedChanged(
+                                    int.tryParse(value) ?? 0);
+                              },
                               decoration: InputDecoration(
-                                enabled: etQtyShippedEnabled,
+                                enabled: true,
                                 isDense: true,
                                 border: const UnderlineInputBorder(),
                                 focusedBorder: const UnderlineInputBorder(
@@ -435,9 +438,11 @@ class _NewPurchaseOrderListViewItemState
                                 color: AppColors.white,
                                 fontWeight: FontWeight.normal,
                               ),
-                              onChanged: (value) =>
-                                  widget.onQuantityRejectedChanged(
-                                      int.tryParse(value) ?? 0),
+                              onChanged: (value) {
+                                _onQtyRejectedChanged();
+                                widget.onQuantityRejectedChanged(
+                                    int.tryParse(value) ?? 0);
+                              },
                               decoration: InputDecoration(
                                 isDense: true,
                                 border: const UnderlineInputBorder(
@@ -512,7 +517,7 @@ class _NewPurchaseOrderListViewItemState
                 ],
               ),
             ),
-          if (etQtyShippedEnabled) const SizedBox(height: 4),
+          const SizedBox(height: 4),
         ],
       );
     });
@@ -712,6 +717,11 @@ class _NewPurchaseOrderListViewItemState
       int qtyShipped = int.tryParse(tempQty) ?? 0;
 
       if (qtyShipped > 0) {
+        partnerItemSKU = await dao.findPartnerItemSKUPOLine(
+            selectedItemSKUList[position].partnerId!,
+            selectedItemSKUList[position].sku!,
+            selectedItemSKUList[position].poLineNo ?? 0,
+            poNumber);
         if (partnerItemSKU != null) {
           QualityControlItem? qualityControlItems = await dao
               .findQualityControlDetails(partnerItemSKU!.inspectionId!);
@@ -751,7 +761,7 @@ class _NewPurchaseOrderListViewItemState
   }
 
   Future<void> _onQtyRejectedChanged() async {
-    String tempQty = _qtyRejectedController.text;
+    String tempQty = _qtyRejectedController.text.trim();
 
     if (partnerItemSKU != null) {
       QualityControlItem? qualityControlItems =
@@ -791,7 +801,7 @@ class _NewPurchaseOrderListViewItemState
       partnerItemSKU = await dao.findPartnerItemSKUPOLine(
           selectedItem.partnerId!,
           selectedItem.sku!,
-          selectedItem.poLineNo,
+          selectedItem.poLineNo ?? 0,
           poNumber);
 
       appStorage.specificationByItemSKUList =
@@ -1357,7 +1367,7 @@ class _NewPurchaseOrderListViewItemState
             specificationName: specificationName!,
             packDate: 0,
             seal_no: appStorage.currentSealNumber!,
-            lot_no: currentNewPurchaseItem.lotNumber!,
+            lot_no: currentNewPurchaseItem.lotNumber ?? '',
             qcdOpen1: null,
             qcdOpen2: "",
             qcdOpen3: "",

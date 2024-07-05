@@ -605,7 +605,7 @@ class Utils {
   static Future<void> showLinearProgressWithMessage({
     String? message,
     required ProgressController progressController,
-    int? totalInspection,
+    required int? totalInspection,
   }) async {
     await Future.delayed(const Duration(milliseconds: 10));
 

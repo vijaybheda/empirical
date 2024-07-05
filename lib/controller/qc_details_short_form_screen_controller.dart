@@ -195,6 +195,7 @@ class QCDetailsShortFormScreenController extends GetxController {
         });
       }
     });
+    setUOMSpinner();
     super.onInit();
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       await specificationSelection();
@@ -255,6 +256,9 @@ class QCDetailsShortFormScreenController extends GetxController {
       Future.delayed(const Duration(milliseconds: 100)).then((value) {
         update();
       });
+    });
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      update();
     });
   }
 
@@ -357,39 +361,40 @@ class QCDetailsShortFormScreenController extends GetxController {
   }
 
   Future<void> setUOMSpinner() async {
-    _appStorage.uomList = await JsonFileOperations.parseUOMJson() ?? [];
+    try {
+      _appStorage.uomList = await JsonFileOperations.parseUOMJson() ?? [];
 
-    uomList.clear();
-    uomList.addAll(_appStorage.uomList);
-    uomList.sort((a, b) => a.uomName!.compareTo(b.uomName!));
-
-    UOMItem? chileUOMID = getUOMID("Case");
-    chileUOMID ??= getUOMID("Caja");
-
-    if (qualityControlItems != null) {
-      if (qualityControlItems!.uomQtyShippedID != null) {
-        selectedUOM = uomList.firstWhereOrNull(
-            (element) => element.uomID == qualityControlItems!.uomQtyShippedID);
+      if (_appStorage.uomList.isNotEmpty) {
+        selectedUOM = _appStorage.uomList.first;
       }
-    } else {
+      uomList.clear();
+      uomList.addAll(_appStorage.uomList);
+      uomList.sort((a, b) => a.uomName!.compareTo(b.uomName!));
+
+      UOMItem? chileUOMID = getUOMID("Case");
+      chileUOMID ??= getUOMID("Caja");
+
       if (qualityControlItems != null) {
         if (qualityControlItems!.uomQtyShippedID != null) {
-          selectedUOM = getUOMPos(qualityControlItems!.uomQtyShippedID!);
+          selectedUOM = uomList.firstWhereOrNull((element) =>
+              element.uomID == qualityControlItems!.uomQtyShippedID);
         }
       } else {
         // just for Walmart Chile demo purpose
         selectedUOM = chileUOMID;
       }
+      if (qualityControlItems != null) {
+        lotNoController.text = qualityControlItems!.lot ?? '';
+        gtinController.text = qualityControlItems!.gtin ?? '';
+        glnController.text = qualityControlItems!.gln ?? '';
+        glnAINumber = qualityControlItems!.glnType ?? '';
+      }
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        update();
+      });
+    } catch (e) {
+      print('error while setting up spinner $e');
     }
-    if (qualityControlItems != null) {
-      lotNoController.text = qualityControlItems!.lot ?? '';
-      gtinController.text = qualityControlItems!.gtin ?? '';
-      glnController.text = qualityControlItems!.gln ?? '';
-      glnAINumber = qualityControlItems!.glnType ?? '';
-    }
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      update();
-    });
   }
 
   UOMItem? getUOMID(String uomName) {
@@ -449,6 +454,7 @@ class QCDetailsShortFormScreenController extends GetxController {
       inspectionId = inspectionID;
       _appStorage.currentInspection?.inspectionId = inspectionId;
       serverInspectionID = inspectionId!;
+      return;
     } catch (e) {
       log(e.toString());
       return;
@@ -521,7 +527,7 @@ class QCDetailsShortFormScreenController extends GetxController {
 
   Future<void> loadFieldsFromDB() async {
     qualityControlItems = await dao.findQualityControlDetails(inspectionId!);
-    setUOMSpinner();
+
     if (_appStorage.getUserData() != null) {
       List<PurchaseOrderDetails> purchaseOrderDetails =
           await dao.getPODetailsFromTable(
@@ -533,6 +539,7 @@ class QCDetailsShortFormScreenController extends GetxController {
             qtyShippedController.text =
                 purchaseOrderDetails[i].quantity.toString();
           }
+          selectedUOM = getUOMPos(purchaseOrderDetails[i].quantityUOMId!);
         }
       }
     }
@@ -553,6 +560,8 @@ class QCDetailsShortFormScreenController extends GetxController {
       } else {
         packDateController.text = "";
       }
+
+      selectedUOM = getUOMPos(qualityControlItems!.uomQtyShippedID!);
 
       lotNoController.text = qualityControlItems!.lot ?? '';
       gtinController.text = qualityControlItems!.gtin ?? '';
@@ -581,6 +590,7 @@ class QCDetailsShortFormScreenController extends GetxController {
   Future<bool> saveFieldsToDB() async {
     String qtyShippedString = qtyShippedController.text.trim();
     int qtyShipped = 0;
+    hasErrors2 = false;
     if (qtyShippedString.isNotEmpty) {
       try {
         int qtyLength = qtyShippedController.text.length;

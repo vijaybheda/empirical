@@ -771,7 +771,12 @@ class ApplicationDao {
 
     await deleteDefectAttachmentsByInspectionId(inspectionId);
 
-    await deleteInspection(inspectionId);
+    final Database db = dbProvider.lazyDatabase;
+    await db.delete(
+      DBTables.INSPECTION,
+      where: '${BaseColumns.ID} = ?',
+      whereArgs: [inspectionId],
+    );
   }
 
   Future<int> createInspectionSample(
@@ -4427,29 +4432,19 @@ class ApplicationDao {
   }
 
   Future<PartnerItemSKUInspections?> findPartnerItemSKUPOLine(
-      int partnerId, String itemSKU, int? poLineNo, String poNo) async {
+      int partnerId, String itemSKU, int poLineNo, String poNo) async {
     PartnerItemSKUInspections? item;
 
     final Database db = dbProvider.lazyDatabase;
     try {
-      //   const query = '''
-      //   SELECT * FROM ${DBTables.PARTNER_ITEMSKU}
-      //   WHERE ${PartnerItemSkuColumn.PARTNER_ID} = ?
-      //   AND ${PartnerItemSkuColumn.ITEM_SKU} = ?
-      //   AND ${PartnerItemSkuColumn.PO_LINE_NO} = ?
-      //   AND ${PartnerItemSkuColumn.PO_NO} = ?
-      // ''';
-
-      // FIXME: removed PO LINE NO
-      const query = '''
-      SELECT * FROM ${DBTables.PARTNER_ITEMSKU}
-      WHERE ${PartnerItemSkuColumn.PARTNER_ID} = ?
-      AND ${PartnerItemSkuColumn.ITEM_SKU} = ?
-      AND ${PartnerItemSkuColumn.PO_NO} = ?
-    ''';
+      const query = 'SELECT * FROM ${DBTables.PARTNER_ITEMSKU} '
+          'WHERE ${PartnerItemSkuColumn.PARTNER_ID} = ? '
+          'AND ${PartnerItemSkuColumn.ITEM_SKU} = ? '
+          'AND ${PartnerItemSkuColumn.PO_LINE_NO} = ? '
+          'AND ${PartnerItemSkuColumn.PO_NO} = ?';
 
       List<Map> result =
-          await db.rawQuery(query, [partnerId, itemSKU, /*poLineNo,*/ poNo]);
+          await db.rawQuery(query, [partnerId, itemSKU, poLineNo, poNo]);
 
       if (result.isNotEmpty) {
         item = PartnerItemSKUInspections.fromMap(
